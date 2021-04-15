@@ -1,0 +1,22 @@
+#pragma once
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void WinHttpReadData(void);
+
+int IWinHttpRequestSend();
+
+void WinHttpGetDefaultProxyConfiguration();
+
+void WinHttpGetIEProxyConfigForCurrentUser();
+
+void WinHttpDetectAutoProxyConfigUrl();
+
+void WinHttpGetProxyForUrl();
+
+void Sessions();
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
