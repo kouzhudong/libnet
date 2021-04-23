@@ -158,6 +158,31 @@ EXTERN_C_START
 __declspec(dllimport)
 int WINAPI GetAdaptersAddressesInfo(int argc, char ** argv);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+__declspec(dllimport)
+void WINAPI HttpReadData();
+
+__declspec(dllimport)
+int WINAPI IWinHttpRequestSend();
+
+__declspec(dllimport)
+void WINAPI GetDefaultProxyConfiguration();
+
+__declspec(dllimport)
+void WINAPI GetIEProxyConfigForCurrentUser();
+
+__declspec(dllimport)
+void WINAPI DetectAutoProxyConfigUrl();
+
+__declspec(dllimport)
+void WINAPI GetProxyForUrl();
+
+__declspec(dllimport)
+void WINAPI Sessions();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 EXTERN_C_END
 

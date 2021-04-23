@@ -4,19 +4,32 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void WinHttpReadData(void);
+EXTERN_C_START
 
-int IWinHttpRequestSend();
 
-void WinHttpGetDefaultProxyConfiguration();
+__declspec(dllexport)
+void WINAPI HttpReadData();
 
-void WinHttpGetIEProxyConfigForCurrentUser();
+__declspec(dllexport)
+int WINAPI IWinHttpRequestSend();
 
-void WinHttpDetectAutoProxyConfigUrl();
+__declspec(dllexport)
+void WINAPI GetDefaultProxyConfiguration();
 
-void WinHttpGetProxyForUrl();
+__declspec(dllexport)
+void WINAPI GetIEProxyConfigForCurrentUser();
 
-void Sessions();
+__declspec(dllexport)
+void WINAPI DetectAutoProxyConfigUrl();
+
+__declspec(dllexport)
+void WINAPI GetProxyForUrl();
+
+__declspec(dllexport)
+void WINAPI Sessions();
+
+
+EXTERN_C_END
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

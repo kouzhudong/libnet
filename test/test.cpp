@@ -34,7 +34,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //EnumWfpInfo(Args, Arglist);
 
-    GetAdaptersAddressesInfo(argc, argv);
+    //GetAdaptersAddressesInfo(argc, argv);
 
     //Sessions();
     //GetExtendedUdpTable6();
