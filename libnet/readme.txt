@@ -1,5 +1,6 @@
 建立本工程的目的。
 这是一个应用层的收集各种网路操作的集合，主要是API的用法，主要是枚举和信息的收集。
+详细的有：socket(raw),Spi(lsp),wfp,wlan(wifi),winhttp,wininet,netblos,IpHelper,html,firewall,Netapi等。
 
 命名管道和邮件槽算不算网络?有的说他们是属于文件。
 
@@ -34,6 +35,8 @@ The Security Support Provider Interface (SSPI) 算不算网络，微软把它列为Authentic
 13.接口的参数只有基本类型和指针（没有类，模板和引用）。
 14.只依赖操作系统的库，不再依赖第三方的库，包括CRT。
 15.所有接口皆为C接口，即EXTERN_C。
+16.C语言标准选择：ISO C17 (2018)标准 (/std:c17)。
+17.C++语言标准选择：ISO C++17 标准 (/std:c++17) 或者：预览 - 最新 C++ 工作草案中的功能 (/std:c++latest)。
 
 
 特别说明：
@@ -41,4 +44,7 @@ The Security Support Provider Interface (SSPI) 算不算网络，微软把它列为Authentic
 其他的，如：ASM，C#，GO，PYTHON，JAVA，PHP等自行定义。
 
 注意：
-接口或者回调的调用方式。__stdcall or __cdecl or __fastcall。
+1.接口或者回调的调用方式。__stdcall or __cdecl or __fastcall。
+2.解决方案的默认调试程序是DLL，而不是EXE。
+  且这个是保存在数据库里，而不是配置文件里。
+  所以在调试时，做好设置默认的启动程序为EXE。
