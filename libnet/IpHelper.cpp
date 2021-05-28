@@ -1977,7 +1977,7 @@ EXTERN_C
 __declspec(dllexport)
 void WINAPI RegistersNotifyIpInterfaceChange()
 /*
-The NotifyIpInterfaceChange function registers to be notified for changes to all IP interfaces, 
+The NotifyIpInterfaceChange function registers to be notified for changes to all IP interfaces,
 IPv4 interfaces, or IPv6 interfaces on a local computer.
 
 netsh interface ipv4 show interface
@@ -1991,7 +1991,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyip
 
     NTSTATUS Status = NotifyIpInterfaceChange(Family,
                                               IpInterfaceChange,
-                                              CallerContext, 
+                                              CallerContext,
                                               InitialNotification,
                                               &NotificationHandle);
 
@@ -2041,6 +2041,76 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyne
                                                           CallerContext,
                                                           InitialNotification,
                                                           &NotificationHandle);
+
+    (void)getchar();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+HANDLE RouteChange2Handle = NULL;
+
+
+VOID NETIOAPI_API_ RouteChange2(
+    _In_ PVOID CallerContext,
+    _In_opt_ PMIB_IPFORWARD_ROW2 Row,
+    _In_ MIB_NOTIFICATION_TYPE NotificationType
+)
+/*
+注册的过程中会被调用几次。
+
+route  -f命令会走这里。
+*/
+{
+    switch (NotificationType) {
+    case MibParameterNotification:
+
+        break;
+    case MibAddInstance:
+
+        break;
+    case MibDeleteInstance:
+
+        break;
+    case MibInitialNotification:
+
+        break;
+    default:
+        break;
+    }
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI DeregisterNotifyRouteChange2()
+{
+    NTSTATUS Status = CancelMibChangeNotify2(RouteChange2Handle);
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI RegistersNotifyRouteChange2()
+/*
+The NotifyRouteChange2 function registers to be notified for changes to IP route entries on a local computer.
+
+https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyroutechange2
+*/
+{
+    ADDRESS_FAMILY Family = AF_UNSPEC;
+    PVOID CallerContext = NULL;
+    BOOLEAN InitialNotification = TRUE;
+
+#pragma prefast(push)
+#pragma prefast(disable: 6387, "“_Param_(3)”可能是“0”: 这不符合函数“NotifyRouteChange2”的规范")
+    NTSTATUS Status = NotifyRouteChange2(Family,
+                                         RouteChange2,
+                                         CallerContext,
+                                         InitialNotification,
+                                         &RouteChange2Handle);
+#pragma prefast(pop)
 
     (void)getchar();
 }

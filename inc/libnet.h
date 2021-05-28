@@ -169,6 +169,12 @@ void WINAPI DeregisterNotifyIpInterfaceChange();
 __declspec(dllimport)
 void WINAPI RegistersNotifyNetworkConnectivityHintChange();
 
+__declspec(dllimport)
+void WINAPI DeregisterNotifyRouteChange2();
+
+__declspec(dllimport)
+void WINAPI RegistersNotifyRouteChange2();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

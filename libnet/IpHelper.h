@@ -51,5 +51,11 @@ void WINAPI DeregisterNotifyIpInterfaceChange();
 __declspec(dllexport)
 void WINAPI RegistersNotifyNetworkConnectivityHintChange();
 
+__declspec(dllexport)
+void WINAPI DeregisterNotifyRouteChange2();
+
+__declspec(dllexport)
+void WINAPI RegistersNotifyRouteChange2();
+
 
 EXTERN_C_END

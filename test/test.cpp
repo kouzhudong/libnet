@@ -37,7 +37,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //GetAdaptersAddressesInfo(argc, argv);
 
     //Sessions();
-    RegistersNotifyNetworkConnectivityHintChange();
+    RegistersNotifyRouteChange2();
 
     LocalFree(Arglist);
 }
