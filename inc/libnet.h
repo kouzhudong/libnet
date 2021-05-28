@@ -160,6 +160,12 @@ EXTERN_C_START
 __declspec(dllimport)
 int WINAPI GetAdaptersAddressesInfo(int argc, char ** argv);
 
+__declspec(dllimport)
+void WINAPI RegistersNotifyIpInterfaceChange();
+
+__declspec(dllimport)
+void WINAPI DeregisterNotifyIpInterfaceChange();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

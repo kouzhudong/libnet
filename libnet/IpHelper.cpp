@@ -1928,3 +1928,75 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftab
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+HANDLE NotificationHandle = NULL;
+
+
+VOID NETIOAPI_API_ IpInterfaceChange(
+    _In_ PVOID CallerContext,
+    _In_ PMIB_IPINTERFACE_ROW Row OPTIONAL,
+    _In_ MIB_NOTIFICATION_TYPE NotificationType
+)
+/*
+注册的过程中会被调用几次，NotificationType == MibInitialNotification。
+
+如何触发？使这里被运行呢？
+1.关闭和开启网卡也不行。
+2.改变IP地址也不行。
+*/
+{
+    switch (NotificationType) {
+    case MibParameterNotification:
+
+        break;
+    case MibAddInstance:
+
+        break;
+    case MibDeleteInstance:
+
+        break;
+    case MibInitialNotification:
+
+        break;
+    default:
+        break;
+    }
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI DeregisterNotifyIpInterfaceChange()
+{
+    NTSTATUS Status = CancelMibChangeNotify2(NotificationHandle);
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI RegistersNotifyIpInterfaceChange()
+/*
+The NotifyIpInterfaceChange function registers to be notified for changes to all IP interfaces, 
+IPv4 interfaces, or IPv6 interfaces on a local computer.
+
+netsh interface ipv4 show interface
+
+https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyipinterfacechange
+*/
+{
+    ADDRESS_FAMILY Family = AF_UNSPEC;
+    PVOID CallerContext = NULL;
+    BOOLEAN InitialNotification = TRUE;
+
+    NTSTATUS Status = NotifyIpInterfaceChange(Family,
+                                              IpInterfaceChange,
+                                              CallerContext, 
+                                              InitialNotification,
+                                              &NotificationHandle);
+
+    (void)getchar();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
