@@ -48,5 +48,8 @@ void WINAPI RegistersNotifyIpInterfaceChange();
 __declspec(dllexport)
 void WINAPI DeregisterNotifyIpInterfaceChange();
 
+__declspec(dllexport)
+void WINAPI RegistersNotifyNetworkConnectivityHintChange();
+
 
 EXTERN_C_END

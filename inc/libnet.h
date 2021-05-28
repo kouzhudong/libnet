@@ -166,6 +166,9 @@ void WINAPI RegistersNotifyIpInterfaceChange();
 __declspec(dllimport)
 void WINAPI DeregisterNotifyIpInterfaceChange();
 
+__declspec(dllimport)
+void WINAPI RegistersNotifyNetworkConnectivityHintChange();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
