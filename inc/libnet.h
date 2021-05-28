@@ -175,6 +175,24 @@ void WINAPI DeregisterNotifyRouteChange2();
 __declspec(dllimport)
 void WINAPI RegistersNotifyRouteChange2();
 
+__declspec(dllimport)
+void WINAPI DeregisterNotifyStableUnicastIpAddressTable();
+
+__declspec(dllimport)
+void WINAPI RegistersNotifyStableUnicastIpAddressTable();
+
+__declspec(dllimport)
+void WINAPI DeregisterNotifyTeredoPortChange();
+
+__declspec(dllimport)
+void WINAPI RegistersNotifyTeredoPortChange();
+
+__declspec(dllimport)
+void WINAPI DeregisterNotifyUnicastIpAddressChange();
+
+__declspec(dllimport)
+void WINAPI RegistersNotifyUnicastIpAddressChange();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
