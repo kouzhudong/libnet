@@ -28,17 +28,13 @@ The following example retrieves the TCP connection table for IPv4 and prints the
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcptable
 */
 {
-
     // Declare and initialize variables
     PMIB_TCPTABLE pTcpTable;
     DWORD dwSize = 0;
     DWORD dwRetVal = 0;
-
     char szLocalAddr[128];
     char szRemoteAddr[128];
-
     struct in_addr IpAddr;
-
     int i;
 
     pTcpTable = (MIB_TCPTABLE *)MALLOC(sizeof(MIB_TCPTABLE));
@@ -58,8 +54,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             return 1;
         }
     }
-    // Make a second call to GetTcpTable to get
-    // the actual data we require
+
+    // Make a second call to GetTcpTable to get the actual data we require
     if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
         printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
@@ -68,8 +64,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
             strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
 
-            printf("\n\tTCP[%d] State: %ld - ", i,
-                   pTcpTable->table[i].dwState);
+            printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
             switch (pTcpTable->table[i].dwState) {
             case MIB_TCP_STATE_CLOSED:
                 printf("CLOSED\n");
@@ -112,11 +107,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
                 break;
             }
             printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
-            printf("\tTCP[%d] Local Port: %d \n", i,
-                   ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+            printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
             printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
-            printf("\tTCP[%d] Remote Port: %d\n", i,
-                   ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+            printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
         }
     } else {
         printf("\tGetTcpTable failed with %d\n", dwRetVal);
@@ -140,17 +133,13 @@ The following example retrieves the TCP connection table for IPv4 and prints the
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcptable2
 */
 {
-
     // Declare and initialize variables
     PMIB_TCPTABLE2 pTcpTable;
     ULONG ulSize = 0;
     DWORD dwRetVal = 0;
-
     char szLocalAddr[128];
     char szRemoteAddr[128];
-
     struct in_addr IpAddr;
-
     int i;
 
     pTcpTable = (MIB_TCPTABLE2 *)MALLOC(sizeof(MIB_TCPTABLE2));
@@ -160,10 +149,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
     }
 
     ulSize = sizeof(MIB_TCPTABLE);
-    // Make an initial call to GetTcpTable2 to
-    // get the necessary size into the ulSize variable
-    if ((dwRetVal = GetTcpTable2(pTcpTable, &ulSize, TRUE)) ==
-        ERROR_INSUFFICIENT_BUFFER) {
+    // Make an initial call to GetTcpTable2 to get the necessary size into the ulSize variable
+    if ((dwRetVal = GetTcpTable2(pTcpTable, &ulSize, TRUE)) == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
         pTcpTable = (MIB_TCPTABLE2 *)MALLOC(ulSize);
         if (pTcpTable == NULL) {
@@ -171,13 +158,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             return 1;
         }
     }
-    // Make a second call to GetTcpTable2 to get
-    // the actual data we require
+
+    // Make a second call to GetTcpTable2 to get the actual data we require
     if ((dwRetVal = GetTcpTable2(pTcpTable, &ulSize, TRUE)) == NO_ERROR) {
         printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
-            printf("\n\tTCP[%d] State: %ld - ", i,
-                   pTcpTable->table[i].dwState);
+            printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
             switch (pTcpTable->table[i].dwState) {
             case MIB_TCP_STATE_CLOSED:
                 printf("CLOSED\n");
@@ -219,21 +205,20 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
                 printf("UNKNOWN dwState value\n");
                 break;
             }
+
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
             printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
-            printf("\tTCP[%d] Local Port: %d \n", i,
-                   ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+            printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
 
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
             strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
             printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
-            printf("\tTCP[%d] Remote Port: %d\n", i,
-                   ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+            printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
 
             printf("\tTCP[%d] Owning PID: %d\n", i, pTcpTable->table[i].dwOwningPid);
-            printf("\tTCP[%d] Offload State: %ld - ", i,
-                   pTcpTable->table[i].dwOffloadState);
+            printf("\tTCP[%d] Offload State: %ld - ", i, pTcpTable->table[i].dwOffloadState);
+
             switch (pTcpTable->table[i].dwOffloadState) {
             case TcpConnectionOffloadStateInHost:
                 printf("Owned by the network stack and not offloaded \n");
@@ -251,7 +236,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
                 printf("UNKNOWN Offload state value\n");
                 break;
             }
-
         }
     } else {
         printf("\tGetTcpTable2 failed with %d\n", dwRetVal);
@@ -275,14 +259,11 @@ The following example retrieves the TCP connection table for IPv6 and prints the
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6table
 */
 {
-
     // Declare and initialize variables
     PMIB_TCP6TABLE pTcpTable;
     DWORD dwSize = 0;
     DWORD dwRetVal = 0;
-
     wchar_t ipstringbuffer[46];
-
     int i;
 
     pTcpTable = (MIB_TCP6TABLE *)MALLOC(sizeof(MIB_TCP6TABLE));
@@ -292,10 +273,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
     }
 
     dwSize = sizeof(MIB_TCP6TABLE);
-    // Make an initial call to GetTcp6Table to
-    // get the necessary size into the dwSize variable
-    if ((dwRetVal = GetTcp6Table(pTcpTable, &dwSize, TRUE)) ==
-        ERROR_INSUFFICIENT_BUFFER) {
+    // Make an initial call to GetTcp6Table to get the necessary size into the dwSize variable
+    if ((dwRetVal = GetTcp6Table(pTcpTable, &dwSize, TRUE)) == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
         pTcpTable = (MIB_TCP6TABLE *)MALLOC(dwSize);
         if (pTcpTable == NULL) {
@@ -303,13 +282,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
             return 1;
         }
     }
-    // Make a second call to GetTcp6Table to get
-    // the actual data we require
+
+    // Make a second call to GetTcp6Table to get the actual data we require
     if ((dwRetVal = GetTcp6Table(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
         wprintf(L"\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
-            wprintf(L"\n\tTCP[%d] State: %ld - ", i,
-                    pTcpTable->table[i].State);
+            wprintf(L"\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].State);
             switch (pTcpTable->table[i].State) {
             case MIB_TCP_STATE_CLOSED:
                 wprintf(L"CLOSED\n");
@@ -356,19 +334,17 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
                 wprintf(L"  InetNtop function failed for local IPv6 address\n");
             else
                 wprintf(L"\tTCP[%d] Local Addr: %s\n", i, ipstringbuffer);
-            wprintf(L"\tTCP[%d] Local Scope ID: %d \n", i,
-                    ntohl(pTcpTable->table[i].dwLocalScopeId));
-            wprintf(L"\tTCP[%d] Local Port: %d \n", i,
-                    ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+
+            wprintf(L"\tTCP[%d] Local Scope ID: %d \n", i, ntohl(pTcpTable->table[i].dwLocalScopeId));
+            wprintf(L"\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
 
             if (InetNtop(AF_INET6, &pTcpTable->table[i].RemoteAddr, ipstringbuffer, 46) == NULL)
                 wprintf(L"  InetNtop function failed for remote IPv6 address\n");
             else
                 wprintf(L"\tTCP[%d] Remote Addr: %s\n", i, ipstringbuffer);
-            wprintf(L"\tTCP[%d] Remote Scope ID: %d \n", i,
-                    ntohl(pTcpTable->table[i].dwRemoteScopeId));
-            wprintf(L"\tTCP[%d] Remote Port: %d\n", i,
-                    ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+
+            wprintf(L"\tTCP[%d] Remote Scope ID: %d \n", i, ntohl(pTcpTable->table[i].dwRemoteScopeId));
+            wprintf(L"\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
         }
     } else {
         wprintf(L"\tGetTcp6Table failed with %d\n", dwRetVal);
@@ -891,8 +867,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
             TCPIP_OWNER_MODULE_BASIC_INFO temp = {0};
             DWORD                        Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
-            DWORD ret = GetOwnerModuleFromUdp6Entry(&pUdpTable->table[i], 
-                                                    TCPIP_OWNER_MODULE_INFO_BASIC, 
+            DWORD ret = GetOwnerModuleFromUdp6Entry(&pUdpTable->table[i],
+                                                    TCPIP_OWNER_MODULE_INFO_BASIC,
                                                     &temp,
                                                     &Size);
             _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
@@ -945,7 +921,6 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365949(v=vs.85).aspx
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
 */
 {
-
     int i;
 
     /* Variables used by GetIpAddrTable */
@@ -964,19 +939,18 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
     if (pIPAddrTable) {
         // Make an initial call to GetIpAddrTable to get the
         // necessary size into the dwSize variable
-        if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) ==
-            ERROR_INSUFFICIENT_BUFFER) {
+        if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) {
             FREE(pIPAddrTable);
             pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(dwSize);
-
         }
+
         if (pIPAddrTable == NULL) {
             printf("Memory allocation failed for GetIpAddrTable\n");
             exit(1);
         }
     }
-    // Make a second call to GetIpAddrTable to get the
-    // actual data we want
+
+    // Make a second call to GetIpAddrTable to get the actual data we want
     if ((dwRetVal = GetIpAddrTable(pIPAddrTable, &dwSize, 0)) != NO_ERROR) {
         printf("GetIpAddrTable failed with error %d\n", dwRetVal);
         if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -984,7 +958,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
                           dwRetVal,
                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),       // Default language
                           (LPTSTR)&lpMsgBuf,
-                          0, 
+                          0,
                           NULL)) {
             printf("\tError: %s", (char *)lpMsgBuf);
             LocalFree(lpMsgBuf);
@@ -1042,12 +1016,9 @@ The GetAdaptersAddresses function retrieves the addresses associated with the ad
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 */
 {
-
     /* Declare and initialize variables */
-
     DWORD dwSize = 0;
     DWORD dwRetVal = 0;
-
     unsigned int i = 0;
 
     // Set the flags to pass to GetAdaptersAddresses
@@ -1094,7 +1065,6 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
     outBufLen = WORKING_BUFFER_SIZE;
 
     do {
-
         pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
         if (pAddresses == NULL) {
             printf
@@ -1102,9 +1072,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             exit(1);
         }
 
-        dwRetVal =
-            GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
-
+        dwRetVal = GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
         if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
             FREE(pAddresses);
             pAddresses = NULL;
@@ -1113,15 +1081,13 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
         }
 
         Iterations++;
-
     } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
 
     if (dwRetVal == NO_ERROR) {
         // If successful, output some information from the data we received
         pCurrAddresses = pAddresses;
         while (pCurrAddresses) {
-            printf("\tLength of the IP_ADAPTER_ADDRESS struct: %ld\n",
-                   pCurrAddresses->Length);
+            printf("\tLength of the IP_ADAPTER_ADDRESS struct: %ld\n", pCurrAddresses->Length);
             printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
             printf("\tAdapter name: %s\n", pCurrAddresses->AdapterName);
 
@@ -1163,22 +1129,19 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 
             if (pCurrAddresses->PhysicalAddressLength != 0) {
                 printf("\tPhysical address: ");
-                for (i = 0; i < (int)pCurrAddresses->PhysicalAddressLength;
-                     i++) {
+                for (i = 0; i < (int)pCurrAddresses->PhysicalAddressLength; i++) {
                     if (i == (pCurrAddresses->PhysicalAddressLength - 1))
-                        printf("%.2X\n",
-                               (int)pCurrAddresses->PhysicalAddress[i]);
+                        printf("%.2X\n", (int)pCurrAddresses->PhysicalAddress[i]);
                     else
-                        printf("%.2X-",
-                               (int)pCurrAddresses->PhysicalAddress[i]);
+                        printf("%.2X-", (int)pCurrAddresses->PhysicalAddress[i]);
                 }
             }
+
             printf("\tFlags: %ld\n", pCurrAddresses->Flags);
             printf("\tMtu: %lu\n", pCurrAddresses->Mtu);
             printf("\tIfType: %ld\n", pCurrAddresses->IfType);
             printf("\tOperStatus: %ld\n", pCurrAddresses->OperStatus);
-            printf("\tIpv6IfIndex (IPv6 interface): %u\n",
-                   pCurrAddresses->Ipv6IfIndex);
+            printf("\tIpv6IfIndex (IPv6 interface): %u\n", pCurrAddresses->Ipv6IfIndex);
             printf("\tZoneIndices (hex): ");
             for (i = 0; i < 16; i++)
                 printf("%lx ", pCurrAddresses->ZoneIndices[i]);
@@ -1200,17 +1163,18 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             pCurrAddresses = pCurrAddresses->Next;
         }
     } else {
-        printf("Call to GetAdaptersAddresses failed with error: %d\n",
-               dwRetVal);
+        printf("Call to GetAdaptersAddresses failed with error: %d\n", dwRetVal);
         if (dwRetVal == ERROR_NO_DATA)
             printf("\tNo addresses were found for the requested parameters\n");
         else {
-
-            if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                              FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                              NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                              NULL,
+                              dwRetVal,
+                              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                               // Default language
-                              (LPTSTR)&lpMsgBuf, 0, NULL)) {
+                              (LPTSTR)&lpMsgBuf,
+                              0,
+                              NULL)) {
                 printf("\tError: %s", (char *)lpMsgBuf);
                 LocalFree(lpMsgBuf);
                 if (pAddresses)
@@ -1239,7 +1203,6 @@ On Windows XP and later:  Use the GetAdaptersAddresses function instead of GetAd
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadaptersinfo
 */
 {
-
     /* Declare and initialize variables */
 
 // It is possible for an adapter to have multiple
@@ -1266,8 +1229,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
         printf("Error allocating memory needed to call GetAdaptersinfo\n");
         return 1;
     }
-    // Make an initial call to GetAdaptersInfo to get
-    // the necessary size into the ulOutBufLen variable
+
+    // Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
     if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
         FREE(pAdapterInfo);
         pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(ulOutBufLen);
@@ -1284,13 +1247,16 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
             printf("\tAdapter Name: \t%s\n", pAdapter->AdapterName);
             printf("\tAdapter Desc: \t%s\n", pAdapter->Description);
             printf("\tAdapter Addr: \t");
+
             for (i = 0; i < pAdapter->AddressLength; i++) {
                 if (i == (pAdapter->AddressLength - 1))
                     printf("%.2X\n", (int)pAdapter->Address[i]);
                 else
                     printf("%.2X-", (int)pAdapter->Address[i]);
             }
+
             printf("\tIndex: \t%d\n", pAdapter->Index);
+
             printf("\tType: \t");
             switch (pAdapter->Type) {
             case MIB_IF_TYPE_OTHER:
@@ -1319,8 +1285,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
                 break;
             }
 
-            printf("\tIP Address: \t%s\n",
-                   pAdapter->IpAddressList.IpAddress.String);
+            printf("\tIP Address: \t%s\n", pAdapter->IpAddressList.IpAddress.String);
             printf("\tIP Mask: \t%s\n", pAdapter->IpAddressList.IpMask.String);
 
             printf("\tGateway: \t%s\n", pAdapter->GatewayList.IpAddress.String);
@@ -1328,8 +1293,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
 
             if (pAdapter->DhcpEnabled) {
                 printf("\tDHCP Enabled: Yes\n");
-                printf("\t  DHCP Server: \t%s\n",
-                       pAdapter->DhcpServer.IpAddress.String);
+                printf("\t  DHCP Server: \t%s\n", pAdapter->DhcpServer.IpAddress.String);
 
                 printf("\t  Lease Obtained: ");
                 /* Display local time */
@@ -1364,19 +1328,18 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
 
             if (pAdapter->HaveWins) {
                 printf("\tHave Wins: Yes\n");
-                printf("\t  Primary Wins Server:    %s\n",
-                       pAdapter->PrimaryWinsServer.IpAddress.String);
-                printf("\t  Secondary Wins Server:  %s\n",
-                       pAdapter->SecondaryWinsServer.IpAddress.String);
+                printf("\t  Primary Wins Server:    %s\n", pAdapter->PrimaryWinsServer.IpAddress.String);
+                printf("\t  Secondary Wins Server:  %s\n", pAdapter->SecondaryWinsServer.IpAddress.String);
             } else
                 printf("\tHave Wins: No\n");
+
             pAdapter = pAdapter->Next;
             printf("\n");
         }
     } else {
         printf("GetAdaptersInfo failed with error: %d\n", dwRetVal);
-
     }
+
     if (pAdapterInfo)
         FREE(pAdapterInfo);
 
@@ -1457,13 +1420,10 @@ The GetIpNetTable2 function retrieves the IP neighbor table on the local compute
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
 */
 {
-
     // Declare and initialize variables
-
     int i;
     unsigned int j;
     unsigned long status = 0;
-
     PMIB_IPNET_TABLE2 pipTable = NULL;
     //    MIB_IPNET_ROW2 ipRow;
 
@@ -1472,18 +1432,16 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
         printf("GetIpNetTable for IPv4 table returned error: %ld\n", status);
         exit(1);
     }
+
     // Print some variables from the table
     printf("Number of IPv4 table entries: %d\n\n", pipTable->NumEntries);
 
     for (i = 0; (unsigned)i < pipTable->NumEntries; i++) {
         //        printf("Table entry: %d\n", i);
-        printf("IPv4 Address[%d]:\t %s\n", (int)i,
-               inet_ntoa(pipTable->Table[i].Address.Ipv4.sin_addr));
-        printf("Interface index[%d]:\t\t %lu\n", (int)i,
-               pipTable->Table[i].InterfaceIndex);
+        printf("IPv4 Address[%d]:\t %s\n", (int)i, inet_ntoa(pipTable->Table[i].Address.Ipv4.sin_addr));
+        printf("Interface index[%d]:\t\t %lu\n", (int)i, pipTable->Table[i].InterfaceIndex);
 
-        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n",
-               (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
+        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
         printf("Interface LUID IfType[%d]: ", (int)i);
         switch (pipTable->Table[i].InterfaceLuid.Info.IfType) {
         case IF_TYPE_OTHER:
@@ -1514,8 +1472,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
             printf("IEEE 1394 (Firewire)\n");
             break;
         default:
-            printf("Unknown: %lld\n",
-                   pipTable->Table[i].InterfaceLuid.Info.IfType);
+            printf("Unknown: %lld\n", pipTable->Table[i].InterfaceLuid.Info.IfType);
             break;
         }
 
@@ -1531,8 +1488,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
                 printf("%.2X-", (int)pipTable->Table[i].PhysicalAddress[j]);
         }
 
-        printf("Physical Address Length[%d]:\t %lu\n", (int)i,
-               pipTable->Table[i].PhysicalAddressLength);
+        printf("Physical Address Length[%d]:\t %lu\n", (int)i, pipTable->Table[i].PhysicalAddressLength);
 
         printf("Neighbor State[%d]:\t ", (int)i);
         switch (pipTable->Table[i].State) {
@@ -1562,14 +1518,13 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
             break;
         }
 
-        printf("Flags[%d]:\t\t %u\n", (int)i,
-               (unsigned char)pipTable->Table[i].Flags);
+        printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
 
         printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i,
                pipTable->Table[i].ReachabilityTime.LastReachable,
                pipTable->Table[i].ReachabilityTime.LastUnreachable);
-
     }
+
     FreeMibTable(pipTable);
     pipTable = NULL;
 
@@ -1590,31 +1545,25 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
 程序打印如下，类似route PRINT的输出，但是没有IPv6的。
 */
 {
-
     // Declare and initialize variables.
 
     /* variables used for GetIfForwardTable */
     PMIB_IPFORWARDTABLE pIpForwardTable;
     DWORD dwSize = 0;
     DWORD dwRetVal = 0;
-
     char szDestIp[128];
     char szMaskIp[128];
     char szGatewayIp[128];
-
     struct in_addr IpAddr;
-
     int i;
 
-    pIpForwardTable =
-        (MIB_IPFORWARDTABLE *)MALLOC(sizeof(MIB_IPFORWARDTABLE));
+    pIpForwardTable = (MIB_IPFORWARDTABLE *)MALLOC(sizeof(MIB_IPFORWARDTABLE));
     if (pIpForwardTable == NULL) {
         printf("Error allocating memory\n");
         return 1;
     }
 
-    if (GetIpForwardTable(pIpForwardTable, &dwSize, 0) ==
-        ERROR_INSUFFICIENT_BUFFER) {
+    if (GetIpForwardTable(pIpForwardTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pIpForwardTable);
         pIpForwardTable = (MIB_IPFORWARDTABLE *)MALLOC(dwSize);
         if (pIpForwardTable == NULL) {
@@ -1627,27 +1576,21 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
      * GetIpForwardTable entries are in network byte order
      */
     if ((dwRetVal = GetIpForwardTable(pIpForwardTable, &dwSize, 0)) == NO_ERROR) {
-        printf("\tNumber of entries: %d\n",
-               (int)pIpForwardTable->dwNumEntries);
+        printf("\tNumber of entries: %d\n", (int)pIpForwardTable->dwNumEntries);
         for (i = 0; i < (int)pIpForwardTable->dwNumEntries; i++) {
             /* Convert IPv4 addresses to strings */
-            IpAddr.S_un.S_addr =
-                (u_long)pIpForwardTable->table[i].dwForwardDest;
+            IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardDest;
             strcpy_s(szDestIp, sizeof(szDestIp), inet_ntoa(IpAddr));
-            IpAddr.S_un.S_addr =
-                (u_long)pIpForwardTable->table[i].dwForwardMask;
+            IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardMask;
             strcpy_s(szMaskIp, sizeof(szMaskIp), inet_ntoa(IpAddr));
-            IpAddr.S_un.S_addr =
-                (u_long)pIpForwardTable->table[i].dwForwardNextHop;
+            IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardNextHop;
             strcpy_s(szGatewayIp, sizeof(szGatewayIp), inet_ntoa(IpAddr));
 
             printf("\n\tRoute[%d] Dest IP: %s\n", i, szDestIp);
             printf("\tRoute[%d] Subnet Mask: %s\n", i, szMaskIp);
             printf("\tRoute[%d] Next Hop: %s\n", i, szGatewayIp);
-            printf("\tRoute[%d] If Index: %ld\n", i,
-                   pIpForwardTable->table[i].dwForwardIfIndex);
-            printf("\tRoute[%d] Type: %ld - ", i,
-                   pIpForwardTable->table[i].dwForwardType);
+            printf("\tRoute[%d] If Index: %ld\n", i, pIpForwardTable->table[i].dwForwardIfIndex);
+            printf("\tRoute[%d] Type: %ld - ", i, pIpForwardTable->table[i].dwForwardType);
             switch (pIpForwardTable->table[i].dwForwardType) {
             case MIB_IPROUTE_TYPE_OTHER:
                 printf("other\n");
@@ -1666,8 +1609,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
                 printf("UNKNOWN Type value\n");
                 break;
             }
-            printf("\tRoute[%d] Proto: %ld - ", i,
-                   pIpForwardTable->table[i].dwForwardProto);
+
+            printf("\tRoute[%d] Proto: %ld - ", i, pIpForwardTable->table[i].dwForwardProto);
             switch (pIpForwardTable->table[i].dwForwardProto) {
             case MIB_IPPROTO_OTHER:
                 printf("other\n");
@@ -1694,8 +1637,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
                 printf("Routing Information Protocol (RIP)\n");
                 break;
             case MIB_IPPROTO_IS_IS:
-                printf
-                ("Intermediate System-to-Intermediate System (IS-IS) protocol\n");
+                printf("Intermediate System-to-Intermediate System (IS-IS) protocol\n");
                 break;
             case MIB_IPPROTO_ES_IS:
                 printf("End System-to-Intermediate System (ES-IS) protocol\n");
@@ -1727,11 +1669,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
                 break;
             }
 
-            printf("\tRoute[%d] Age: %ld\n", i,
-                   pIpForwardTable->table[i].dwForwardAge);
-            printf("\tRoute[%d] Metric1: %ld\n", i,
-                   pIpForwardTable->table[i].dwForwardMetric1);
+            printf("\tRoute[%d] Age: %ld\n", i, pIpForwardTable->table[i].dwForwardAge);
+            printf("\tRoute[%d] Metric1: %ld\n", i, pIpForwardTable->table[i].dwForwardMetric1);
         }
+
         FREE(pIpForwardTable);
         return 0;
     } else {
@@ -1739,7 +1680,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
         FREE(pIpForwardTable);
         return 1;
     }
-
 }
 
 
@@ -1763,7 +1703,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
 
     for (ULONG i = 0; i < (int)pIpForwardTable->NumEntries; i++) {
 
-
     }
 
     FreeMibTable(pIpForwardTable);
@@ -1782,7 +1721,6 @@ some data on each entry.
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftable
 */
 {
-
     // Declare and initialize variables.
 
     DWORD dwSize = 0;
@@ -1800,8 +1738,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
         printf("Error allocating memory needed to call GetIfTable\n");
         return 1;
     }
-    // Make an initial call to GetIfTable to get the
-    // necessary size into dwSize
+
+    // Make an initial call to GetIfTable to get the necessary size into dwSize
     dwSize = sizeof(MIB_IFTABLE);
     if (GetIfTable(pIfTable, &dwSize, FALSE) == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pIfTable);
@@ -1811,8 +1749,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
             return 1;
         }
     }
-    // Make a second call to GetIfTable to get the actual
-    // data we want.
+
+    // Make a second call to GetIfTable to get the actual data we want.
     if ((dwRetVal = GetIfTable(pIfTable, &dwSize, FALSE)) == NO_ERROR) {
         printf("\tNum Entries: %ld\n\n", pIfTable->dwNumEntries);
         for (i = 0; i < pIfTable->dwNumEntries; i++) {
@@ -1821,8 +1759,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
             printf("\tInterfaceName[%d]:\t %ws", i, pIfRow->wszName);
             printf("\n");
             printf("\tDescription[%d]:\t ", i);
+
             for (j = 0; j < pIfRow->dwDescrLen; j++)
                 printf("%c", pIfRow->bDescr[j]);
+
             printf("\n");
             printf("\tType[%d]:\t ", i);
             switch (pIfRow->dwType) {
@@ -1857,19 +1797,24 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
                 printf("Unknown type %ld\n", pIfRow->dwType);
                 break;
             }
+
             printf("\tMtu[%d]:\t\t %ld\n", i, pIfRow->dwMtu);
             printf("\tSpeed[%d]:\t %ld\n", i, pIfRow->dwSpeed);
             printf("\tPhysical Addr:\t ");
+
             if (pIfRow->dwPhysAddrLen == 0)
                 printf("\n");
+
             for (j = 0; j < pIfRow->dwPhysAddrLen; j++) {
                 if (j == (pIfRow->dwPhysAddrLen - 1))
                     printf("%.2X\n", (int)pIfRow->bPhysAddr[j]);
                 else
                     printf("%.2X-", (int)pIfRow->bPhysAddr[j]);
             }
+
             printf("\tAdmin Status[%d]:\t %ld\n", i, pIfRow->dwAdminStatus);
             printf("\tOper Status[%d]:\t ", i);
+
             switch (pIfRow->dwOperStatus) {
             case IF_OPER_STATUS_NON_OPERATIONAL:
                 printf("Non Operational\n");
@@ -1893,6 +1838,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
                 printf("Unknown status %ld\n", pIfRow->dwAdminStatus);
                 break;
             }
+
             printf("\n");
         }
     } else {
@@ -1901,10 +1847,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
             FREE(pIfTable);
             pIfTable = NULL;
         }
+
         return 1;
-        // Here you can use FormatMessage to find out why 
-        // it failed.
+        // Here you can use FormatMessage to find out why it failed.
     }
+
     if (pIfTable != NULL) {
         FREE(pIfTable);
         pIfTable = NULL;

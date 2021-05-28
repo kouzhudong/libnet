@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma warning(disable:28251)
+#pragma warning(disable:28301)
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //一些系统的头文件和库的包含。
@@ -37,8 +40,6 @@
 #include <Shlobj.h>
 #include <Softpub.h>
 #include <mscat.h>
-//#include <SubAuth.h>
-//#include <LsaLookup.h>
 #include <WinUser.h>
 #include <direct.h>
 #include <sddl.h>
@@ -60,6 +61,7 @@
 //#include <NTSecAPI.h>
 //#include <ntdef.h>
 //#include <netioapi.h>
+//#include <LsaLookup.h>
 #include <atlstr.h>
 #include <comutil.h>
 #include <wbemidl.h>
@@ -158,7 +160,9 @@ EXTERN_C_START
 __declspec(dllimport)
 int WINAPI GetAdaptersAddressesInfo(int argc, char ** argv);
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 __declspec(dllimport)
 void WINAPI HttpReadData();
@@ -180,6 +184,7 @@ void WINAPI GetProxyForUrl();
 
 __declspec(dllimport)
 void WINAPI Sessions();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
