@@ -42,7 +42,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     service.sin_family = AF_INET;
     service.sin_addr.s_addr = inet_addr(ip);
     service.sin_port = htons(port);
-
     if (bind(ListenSocket, (SOCKADDR *)&service, sizeof(service)) == SOCKET_ERROR) {
         printf("bind failed\n");
         closesocket(ListenSocket);
@@ -58,7 +57,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     // return 0 to the optVal parameter, since the socket is not in listening mode.
     int optVal;
     int optLen = sizeof(int);
-
     if (getsockopt(ListenSocket, SOL_SOCKET, SO_ACCEPTCONN, (char *)&optVal, &optLen) != SOCKET_ERROR)
         printf("SockOpt Value: %ld\n", optVal);
 
@@ -85,14 +83,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
 {
     // Declare and initialize variables
     WSADATA wsaData;
-
     int iResult;
     int i;
     DWORD dwError;
-
     SOCKET Sock = INVALID_SOCKET;
 
-#define DEVICE_LIST_LEN    10
+    #define DEVICE_LIST_LEN    10
 
     SOCKADDR_IRDA DestSockAddr = {AF_IRDA, 0, 0, 0, 0, "SampleIrDAService"};
 
@@ -102,7 +98,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
 
     int DevListLen = sizeof(DevListBuff);
     PDEVICELIST pDevList;
-
     pDevList = (PDEVICELIST)&DevListBuff;
 
     // Initialize Winsock
@@ -210,15 +205,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
 {
     // Declare variables
     WSADATA wsaData;
-
     SOCKET ListenSocket;
     sockaddr_in service;
-
     int iResult = 0;
-
     BOOL bOptVal = FALSE;
     int bOptLen = sizeof(BOOL);
-
     int iOptVal = 0;
     int iOptLen = sizeof(int);
 
@@ -248,7 +239,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
     service.sin_family = AF_INET;
     service.sin_addr.s_addr = inet_addr(ip);
     service.sin_port = htons(port);
-
     iResult = bind(ListenSocket, (SOCKADDR *)&service, sizeof(service));
     if (iResult == SOCKET_ERROR) {
         wprintf(L"bind failed with error %u\n", WSAGetLastError());
@@ -266,11 +256,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
     // configured to send keepalive messages, if FALSE
     // the socket configured to NOT send keepalive messages.
     // This section of code tests the setsockopt function
-    // by checking the status of SO_KEEPALIVE on the socket
-    // using the getsockopt function.
+    // by checking the status of SO_KEEPALIVE on the socket using the getsockopt function.
 
     bOptVal = TRUE;
-
     iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_KEEPALIVE, (char *)&iOptVal, &iOptLen);
     if (iResult == SOCKET_ERROR) {
         wprintf(L"getsockopt for SO_KEEPALIVE failed with error: %u\n", WSAGetLastError());
