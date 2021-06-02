@@ -74,7 +74,12 @@ https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-ioctls
 
 #pragma once
 
-class IOCTL
-{
 
-};
+EXTERN_C_START
+
+
+__declspec(dllexport)
+int WINAPI EnumEntityArray();
+
+
+EXTERN_C_END
