@@ -74,6 +74,11 @@
 #include <af_irda.h>
 #include <mshtmhst.h>
 
+#include <iptypes.h>
+#include "tdiinfo.h"
+#include <..\km\tdistat.h>
+#include "tcpioctl.h"
+
 #include <initguid.h> //注意前后顺序。静态定义UUID用的，否则：error LNK2001。
 #include <usbioctl.h>
 #include <usbiodef.h>

@@ -19,7 +19,9 @@ NotifyStableUnicastIpAddressTable
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int GetTcpTable()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumTcpTable()
 /*
 The GetTcpTable function retrieves the IPv4 TCP connection table.
 
@@ -126,7 +128,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
 }
 
 
-int GetTcpTable2()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumTcpTable2()
 /*
 The following example retrieves the TCP connection table for IPv4 and prints the state of each connection.
 
@@ -252,7 +256,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
 }
 
 
-int GetTcp6Table()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumTcp6Table()
 /*
 The following example retrieves the TCP connection table for IPv6 and prints the state of each connection.
 
@@ -361,7 +367,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
 }
 
 
-int GetTcp6Table2()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumTcp6Table2()
 /*
 这个是自己写的，MSDN没有例子。
 
@@ -449,7 +457,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
 }
 
 
-int GetTcpStatistics()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumTcpStatistics()
 /*
 The following example retrieves the TCP statistics for the local computer and prints some values from the returned data.
 
@@ -498,7 +508,9 @@ GetTcpStatisticsEx2
 }
 
 
-int GetExtendedTcpTable()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumExtendedTcpTable()
 /*
 文件名：GetExtendedTcpTable.Cpp
 功能：获取本地的IPv4的TCP的带进程关联的网络信息。
@@ -615,7 +627,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 }
 
 
-int GetUdpTable()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumUdpTable()
 /*
 这些本地端口应该全是侦听的，但也有可能是连接的通讯的。
 注意：有些端口是重复的，所以要去重。包括本地地址。
@@ -677,7 +691,9 @@ MSDN没有例子。
 }
 
 
-int GetUdp6Table()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumUdp6Table()
 /*
 这些本地端口应该全是侦听的，但也有可能是连接的通讯的。
 注意：有些端口是重复的，所以要去重。包括本地地址。
@@ -740,7 +756,9 @@ MSDN没有例子。
 }
 
 
-int GetExtendedUdpTable4()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumExtendedUdpTable4()
 /*
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedudptable
@@ -823,7 +841,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 }
 
 
-int GetExtendedUdpTable6()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumExtendedUdpTable6()
 /*
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedudptable
@@ -910,7 +930,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 }
 
 
-int __cdecl GetIpAddrTable()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIpAddrTable()
 /*
 interface–to–IPv4 address mapping table
 
@@ -1006,7 +1028,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI GetAdaptersAddressesInfo(int argc, char ** argv)
+int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv)
 /*
 addresses associated with the adapters
 
@@ -1192,7 +1214,9 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 }
 
 
-int __cdecl GetAdaptersInfo()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumdaptersInfo()
 /*
 This example retrieves the adapter information and prints various properties of each adapter.
 
@@ -1347,7 +1371,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
 }
 
 
-int GetIpNetTable()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIpNetTable()
 /*
 IPv4 to physical address mapping table
 
@@ -1413,7 +1439,9 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
 }
 
 
-int GetIpNetTable2()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIpNetTable2()
 /*
 The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
 
@@ -1532,7 +1560,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 }
 
 
-int GetIpForwardTable()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIpForwardTable()
 /*
 * IPv4 routing table
 *
@@ -1683,7 +1713,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
 }
 
 
-int GetIpForwardTable2()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIpForwardTable2()
 /*
 The GetIpForwardTable2 function retrieves the IP route entries on the local computer.
 
@@ -1711,7 +1743,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
 }
 
 
-int GetIfTable()
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIfTable()
 /*
 The GetIfTable function retrieves the MIB-II interface table.
 
@@ -1860,7 +1894,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
 }
 
 
-int __cdecl GetIfTable2(int argc, char ** argv)
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIfTable2(int argc, char ** argv)
 /*
 微软没有例子，这个是自己写的。
 */
@@ -1893,7 +1929,9 @@ int __cdecl GetIfTable2(int argc, char ** argv)
 }
 
 
-int __cdecl GetIfTable2Ex(int argc, char ** argv)
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIfTable2Ex(int argc, char ** argv)
 /*
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftable2ex
 此文是自己编写，微软没有例子。
@@ -1933,10 +1971,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftab
 HANDLE NotificationHandle = NULL;
 
 
-VOID NETIOAPI_API_ IpInterfaceChange(
-    _In_ PVOID CallerContext,
-    _In_ PMIB_IPINTERFACE_ROW Row OPTIONAL,
-    _In_ MIB_NOTIFICATION_TYPE NotificationType
+VOID NETIOAPI_API_ IpInterfaceChange(_In_ PVOID CallerContext,
+                                     _In_ PMIB_IPINTERFACE_ROW Row OPTIONAL,
+                                     _In_ MIB_NOTIFICATION_TYPE NotificationType
 )
 /*
 注册的过程中会被调用几次，NotificationType == MibInitialNotification。
@@ -2002,9 +2039,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyip
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-VOID NETIOAPI_API_ NetworkConnectivityHintChange(
-    _In_ PVOID CallerContext,
-    _In_ NL_NETWORK_CONNECTIVITY_HINT ConnectivityHint
+VOID NETIOAPI_API_ NetworkConnectivityHintChange(_In_ PVOID CallerContext,
+                                                 _In_ NL_NETWORK_CONNECTIVITY_HINT ConnectivityHint
 )
 /*
 注册的过程中会被调用1次。
@@ -2052,10 +2088,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyne
 HANDLE RouteChange2Handle = NULL;
 
 
-VOID NETIOAPI_API_ RouteChange2(
-    _In_ PVOID CallerContext,
-    _In_opt_ PMIB_IPFORWARD_ROW2 Row,
-    _In_ MIB_NOTIFICATION_TYPE NotificationType
+VOID NETIOAPI_API_ RouteChange2(_In_ PVOID CallerContext,
+                                _In_opt_ PMIB_IPFORWARD_ROW2 Row,
+                                _In_ MIB_NOTIFICATION_TYPE NotificationType
 )
 /*
 注册的过程中会被调用几次。
@@ -2122,9 +2157,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyro
 HANDLE NotifyStableUnicastIpAddressTableHandle = NULL;
 
 
-VOID NETIOAPI_API_ StableUnicastIpAddressTableCallerCallback(
-    _In_ PVOID CallerContext,
-    _In_ PMIB_UNICASTIPADDRESS_TABLE AddressTable
+VOID NETIOAPI_API_ StableUnicastIpAddressTableCallerCallback(_In_ PVOID CallerContext,
+                                                             _In_ PMIB_UNICASTIPADDRESS_TABLE AddressTable
 )
 /*
 
@@ -2175,10 +2209,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyst
 HANDLE TeredoPortChangeHandle = NULL;
 
 
-VOID NETIOAPI_API_ TeredoPortChange(
-    _In_ PVOID CallerContext,
-    _In_ USHORT Port,
-    _Inout_ MIB_NOTIFICATION_TYPE NotificationType
+VOID NETIOAPI_API_ TeredoPortChange(_In_ PVOID CallerContext,
+                                    _In_ USHORT Port,
+                                    _Inout_ MIB_NOTIFICATION_TYPE NotificationType
 )
 /*
 注册时，这里被调用了。
@@ -2229,10 +2262,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyte
 HANDLE NotifyUnicastIpAddressChangeHandle = NULL;
 
 
-VOID NETIOAPI_API_ UnicastIpAddressChange(
-    _In_ PVOID CallerContext,
-    _In_opt_ PMIB_UNICASTIPADDRESS_ROW Row,
-    _In_ MIB_NOTIFICATION_TYPE NotificationType
+VOID NETIOAPI_API_ UnicastIpAddressChange(_In_ PVOID CallerContext,
+                                          _In_opt_ PMIB_UNICASTIPADDRESS_ROW Row,
+                                          _In_ MIB_NOTIFICATION_TYPE NotificationType
 )
 /*
 

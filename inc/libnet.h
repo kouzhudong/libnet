@@ -223,6 +223,9 @@ void WINAPI Sessions();
 
 
 __declspec(dllimport)
+void WINAPI EnumTcpTable();
+
+__declspec(dllimport)
 void WINAPI EnumEntityArray();
 
 

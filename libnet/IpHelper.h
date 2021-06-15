@@ -5,7 +5,6 @@
 #pragma once
 
 
-int GetTcpTable();
 int GetTcpTable2();
 
 int GetTcp6Table();
@@ -38,6 +37,9 @@ int __cdecl GetIfTable2Ex(int argc, char ** argv);
 
 EXTERN_C_START
 
+
+__declspec(dllexport)
+int WINAPI EnumTcpTable();
 
 __declspec(dllexport)
 int WINAPI GetAdaptersAddressesInfo(int argc, char ** argv);

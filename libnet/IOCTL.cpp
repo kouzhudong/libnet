@@ -330,14 +330,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocke
 //#define  UNICODE
 //#define  _WIN32_WINNT  0x0500
 
-#include <stdio.h>
-#include <windows.h>
-#include <iptypes.h>
-#include "winternl.h"
-#include "tdiinfo.h"
-#include <..\km\tdistat.h>
-#include "tcpioctl.h"
-
 
 DWORD GetTCPHandle(PHANDLE pTCPDriverHandle)
 /*  Function:              GetTCPHandle
@@ -568,7 +560,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/tcpioctl/ni-tcpioctl-ioctl_tc
 
         ++entityPtr;
     }
-    
+
     LocalFree(entityArray);//  Free the entity-array buffer before quitting.
 
     return(0);
