@@ -12,6 +12,7 @@
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN // 从 Windows 头文件中排除极少使用的内容
+//#define INITGUID
 
 #ifndef UNICODE
 #define UNICODE
@@ -45,14 +46,11 @@
 #include <sddl.h>
 #include <ws2tcpip.h>
 #include <fwpsu.h>
-#include <atlbase.h>
 #include <mbnapi.h>
 #include <iostream>
 #include <netfw.h>
-#include <atlcomcli.h>
 #include <objbase.h>
 #include <oleauto.h>
-#include <atlconv.h>
 #define _WS2DEF_
 #include <mstcpip.h>
 #include <Intshcut.h>
@@ -62,7 +60,6 @@
 //#include <ntdef.h>
 //#include <netioapi.h>
 //#include <LsaLookup.h>
-#include <atlstr.h>
 #include <comutil.h>
 #include <wbemidl.h>
 #include <dbt.h>
@@ -73,6 +70,21 @@
 #include <wtypes.h>
 #include <af_irda.h>
 #include <mshtmhst.h>
+#include <exdisp.h>
+#include <memory.h>
+
+#ifndef INITGUID
+#define INITGUID
+#include <guiddef.h>
+#undef INITGUID
+#else
+#include <guiddef.h>
+#endif
+
+#include <atlstr.h>
+#include <atlbase.h>
+#include <atlcomcli.h>
+#include <atlconv.h>
 
 #include <iptypes.h>
 #include "tdiinfo.h"

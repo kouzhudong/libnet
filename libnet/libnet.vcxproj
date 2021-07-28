@@ -188,6 +188,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sock.h" />
     <ClInclude Include="spi.h" />
+    <ClInclude Include="WebBrowserApp.h" />
     <ClInclude Include="wfp.h" />
     <ClInclude Include="WinhttpExamples.h" />
     <ClInclude Include="WinINetExamples.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="raw.cpp" />
     <ClCompile Include="Sock.cpp" />
     <ClCompile Include="spi.cpp" />
+    <ClCompile Include="WebBrowserApp.cpp" />
     <ClCompile Include="wfp.cpp" />
     <ClCompile Include="WinhttpExamples.cpp" />
     <ClCompile Include="WinINetExamples.cpp" />
