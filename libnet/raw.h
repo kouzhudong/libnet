@@ -1,10 +1,16 @@
 /*
-原始套接字，一个很有用的东西，尽管操作系统对它进行了很多的限制。
+原始套接字，一个很有用的东西，
+但是Windows操作系统对它（包括TDI和WSK）进行了很多的限制（除非破解TCPIP.SYS），如：
+1.不支持tcp raw sockets.
+2.对icmp，udp等raw sockets有限制，如：禁止伪装（修改源地址）。
+3.管理员权限。
 
 SDK中的例子有：
 1.Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
 2.Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
 3.Windows-classic-samples\Samples\Win7Samples\netds\winsock\rcvall\rcvall.c
+
+所以本文也不写raw sockets的具体用法，而是写raw sockets过程中必不可少的数据/协议的封装/组装。
 */
 
 /*
@@ -221,7 +227,105 @@ https://docs.microsoft.com/en-us/windows/win32/winsock/tcp-ip-raw-sockets-2
 
 #pragma once
 
-class raw
-{
 
-};
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+可复制或参考
+\Windows-classic-samples\Samples\Win7Samples\netds\winsock\rcvall\iphdr.h
+\Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\iphdr.h
+*/
+
+
+#include <pshpack1.h>
+
+
+typedef struct tsd_hdr {
+    unsigned long  saddr;//Source Address
+    unsigned long  daddr;//Destination Address 
+    char           mbz;  //zero
+    char           ptcl; //PTCL 
+    unsigned short tcpl; //TCP Length
+}PSD_HEADER;
+
+
+//typedef __declspec(align(4)) struct _tcp_opt {
+//    TCP_OPT_MSS mss;//4字节对齐
+//    TCP_OPT_WS ws;//4字节对齐
+//    TCP_OPT_SACK_PERMITTED sp;//4字节对齐
+//
+//    //还可考虑再添加别的。
+//} TCP_OPT, * PTCP_OPT;
+
+
+typedef struct _tcp_opt {
+    TCP_OPT_MSS mss;//4字节对齐
+    BYTE unuse1;
+    TCP_OPT_WS ws;//4字节对齐
+    WORD unuse2;
+    TCP_OPT_SACK_PERMITTED sp;//4字节对齐
+} TCP_OPT, * PTCP_OPT;
+
+
+#pragma warning(push)
+#pragma warning(disable : 4200) //使用了非标准扩展: 结构/联合中的零大小数组
+typedef struct raw_tcp {
+    ETHERNET_HEADER eth_hdr;
+    IPV4_HEADER ip_hdr;
+    TCP_HDR tcp_hdr;
+
+    //微软的tcp opt 的对齐为4字节，和这里的对齐大小不一致。
+    //不过，不是4字节也行（测试通过），但是最好4字节，因为：TCP的th_len是4的倍数。
+
+    //TCP_OPT_MSS mss;//4字节对齐
+    //TCP_OPT_WS ws;//4字节对齐
+    //TCP_OPT_SACK_PERMITTED sp;//4字节对齐
+    //BYTE data[0];
+} RAW_TCP, * PRAW_TCP;
+#pragma warning(pop)  
+
+
+/*
+the TCP and UDP "pseudo-header" for IPv6
+
+https://www.ietf.org/rfc/rfc2460.txt
+https://www.microsoftpressstore.com/articles/article.aspx?p=2225063&seqNum=6
+深入解析IPv6(第三版)的4.6章节。
+
+亦可参考：
+\Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
+的ComputeUdpPseudoHeaderChecksumV6函数。
+或者\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
+的ComputeIcmp6PseudoHeaderChecksum函数。
+*/
+typedef struct tsd6_hdr {
+    IN6_ADDR      saddr;//Source Address
+    IN6_ADDR      daddr;//Destination Address 
+    unsigned long length;
+    char          unused1;//zero
+    char          unused2;//zero
+    char          unused3;//zero
+    char          proto;
+}PSD6_HEADER;
+
+
+#pragma warning(push)
+#pragma warning(disable : 4200) //使用了非标准扩展: 结构/联合中的零大小数组
+typedef struct raw6_tcp {
+    ETHERNET_HEADER eth_hdr;
+    IPV6_HEADER ip_hdr;
+    TCP_HDR tcp_hdr;
+
+    //tcp opt 的对齐为4字节，和这里的不一致。
+    //BYTE data[0];
+} RAW6_TCP, * PRAW6_TCP;
+#pragma warning(pop)  
+
+
+#include <poppack.h>
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer);
+void PacketizeAck6(IN PIPV6_HEADER ipv6, IN PBYTE SrcMac, OUT PRAW6_TCP buffer);

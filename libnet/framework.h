@@ -60,6 +60,7 @@
 //#include <ntdef.h>
 //#include <netioapi.h>
 //#include <LsaLookup.h>
+#include <netiodef.h>
 #include <comutil.h>
 #include <wbemidl.h>
 #include <dbt.h>
