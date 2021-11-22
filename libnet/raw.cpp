@@ -5,28 +5,31 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void InitEthernet4Header(IN PBYTE SrcMac, OUT PRAW_TCP buffer)
+void InitEthernetHeader(IN PBYTE SrcMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
 /*
-功能：填写IPv4用的以太头。
+功能：填写以太头。
+
+参数：
+Type，取值，如：ETHERNET_TYPE_IPV4，ETHERNET_TYPE_IPV6， ETHERNET_TYPE_ARP等。
 
 注释：填写虚假的目的MAC，也可发送出去。
 */
 {
-    buffer->eth_hdr.Destination.Byte[0] = 0x99;
-    buffer->eth_hdr.Destination.Byte[1] = 0x99;
-    buffer->eth_hdr.Destination.Byte[2] = 0x99;
-    buffer->eth_hdr.Destination.Byte[3] = 0x99;
-    buffer->eth_hdr.Destination.Byte[4] = 0x99;
-    buffer->eth_hdr.Destination.Byte[5] = 0x99;
+    eth_hdr->Destination.Byte[0] = 0x99;
+    eth_hdr->Destination.Byte[1] = 0x99;
+    eth_hdr->Destination.Byte[2] = 0x99;
+    eth_hdr->Destination.Byte[3] = 0x99;
+    eth_hdr->Destination.Byte[4] = 0x99;
+    eth_hdr->Destination.Byte[5] = 0x99;
 
-    buffer->eth_hdr.Source.Byte[0] = SrcMac[0];
-    buffer->eth_hdr.Source.Byte[1] = SrcMac[1];
-    buffer->eth_hdr.Source.Byte[2] = SrcMac[2];
-    buffer->eth_hdr.Source.Byte[3] = SrcMac[3];
-    buffer->eth_hdr.Source.Byte[4] = SrcMac[4];
-    buffer->eth_hdr.Source.Byte[5] = SrcMac[5];
+    eth_hdr->Source.Byte[0] = SrcMac[0];
+    eth_hdr->Source.Byte[1] = SrcMac[1];
+    eth_hdr->Source.Byte[2] = SrcMac[2];
+    eth_hdr->Source.Byte[3] = SrcMac[3];
+    eth_hdr->Source.Byte[4] = SrcMac[4];
+    eth_hdr->Source.Byte[5] = SrcMac[5];
 
-    buffer->eth_hdr.Type = ntohs(ETHERNET_TYPE_IPV4);
+    eth_hdr->Type = ntohs(Type);
 }
 
 
@@ -59,14 +62,31 @@ void InitIpv4Header(IN PIN_ADDR SourceAddress,
 }
 
 
-void InitIpv4Header(IN PIPV4_HEADER in_ipv4, OUT PRAW_TCP buffer)
+void InitIpv4Header(IN PIPV4_HEADER in_ipv4, IN bool IsCopy, OUT PRAW_TCP buffer)
 /*
-功能：把packet的SYN包里的ipv4信息组装为buffer的要发生的ACK的ipv4。
+功能：把in_ipv4的SYN包里的ipv4信息组装为buffer的要发生的ACK的ipv4。
+
+参数：
+IsCopy：是复制还是回复。
 
 注意：如果是回复的包，要把源和目的换一下。
 */
 {
-    InitIpv4Header(&in_ipv4->SourceAddress, &in_ipv4->DestinationAddress, in_ipv4->Protocol, buffer);
+    if (IsCopy) {
+        InitIpv4Header(&in_ipv4->SourceAddress, &in_ipv4->DestinationAddress, in_ipv4->Protocol, buffer);
+    } else {
+        InitIpv4Header(&in_ipv4->DestinationAddress, &in_ipv4->SourceAddress, in_ipv4->Protocol, buffer);
+    }
+}
+
+
+void InitTcpHeader(OUT PRAW_TCP buffer)
+/*
+功能：组装TCP头。
+*/
+{
+
+
 }
 
 
@@ -164,8 +184,8 @@ void PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer
     ASSERT(SrcMac);
     ASSERT(buffer);
 
-    InitEthernet4Header(SrcMac, buffer);
-    InitIpv4Header(in_ipv4, buffer);
+    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV4, &buffer->eth_hdr);
+    InitIpv4Header(in_ipv4, false, buffer);
     InitTcp4HeaderWithAck(in_ipv4, buffer);
 
     InitTcpMss(buffer);
@@ -177,31 +197,6 @@ void PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-void InitEthernet6Header(IN PBYTE SrcMac, OUT PRAW6_TCP buffer)
-/*
-功能：填写IPv6用的以太头。
-
-注释：填写虚假的目的MAC，也可发送出去。
-*/
-{
-    buffer->eth_hdr.Destination.Byte[0] = 0x99;
-    buffer->eth_hdr.Destination.Byte[1] = 0x99;
-    buffer->eth_hdr.Destination.Byte[2] = 0x99;
-    buffer->eth_hdr.Destination.Byte[3] = 0x99;
-    buffer->eth_hdr.Destination.Byte[4] = 0x99;
-    buffer->eth_hdr.Destination.Byte[5] = 0x99;
-
-    buffer->eth_hdr.Source.Byte[0] = SrcMac[0];
-    buffer->eth_hdr.Source.Byte[1] = SrcMac[1];
-    buffer->eth_hdr.Source.Byte[2] = SrcMac[2];
-    buffer->eth_hdr.Source.Byte[3] = SrcMac[3];
-    buffer->eth_hdr.Source.Byte[4] = SrcMac[4];
-    buffer->eth_hdr.Source.Byte[5] = SrcMac[5];
-
-    buffer->eth_hdr.Type = ntohs(ETHERNET_TYPE_IPV6);
-}
 
 
 void InitIpv6Header(IN PIN6_ADDR SourceAddress,
@@ -228,14 +223,21 @@ void InitIpv6Header(IN PIN6_ADDR SourceAddress,
 }
 
 
-void InitIpv6Header(IN PIPV6_HEADER in_ipv6, OUT PRAW6_TCP buffer)
+void InitIpv6Header(IN PIPV6_HEADER in_ipv6, IN bool IsCopy, OUT PRAW6_TCP buffer)
 /*
-功能：把packet的SYN包里的ipv6信息组装为buffer的要发生的ACK的ipv6。
+功能：把in_ipv6的SYN包里的ipv6信息组装为buffer的要发生的ACK的ipv6。
+
+参数：
+IsCopy：是复制还是回复。
 
 注意：如果是回复的包，要把源和目的换一下。
 */
 {
-    InitIpv6Header(&in_ipv6->SourceAddress, &in_ipv6->DestinationAddress, in_ipv6->NextHeader, buffer);
+    if (IsCopy) {
+        InitIpv6Header(&in_ipv6->SourceAddress, &in_ipv6->DestinationAddress, in_ipv6->NextHeader, buffer);
+    } else {
+        InitIpv6Header(&in_ipv6->DestinationAddress, &in_ipv6->SourceAddress, in_ipv6->NextHeader, buffer);
+    }
 }
 
 
@@ -335,8 +337,8 @@ void PacketizeAck6(IN PIPV6_HEADER ipv6, IN PBYTE SrcMac, OUT PRAW6_TCP buffer)
     ASSERT(SrcMac);
     ASSERT(buffer);
 
-    InitEthernet6Header(SrcMac, buffer);
-    InitIpv6Header(ipv6, buffer);
+    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
+    InitIpv6Header(ipv6, false, buffer);
     InitTcp6HeaderWithAck(ipv6, buffer);
 
     InitTcp6Mss(buffer);
