@@ -327,5 +327,32 @@ typedef struct raw6_tcp {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer);
-void PacketizeAck6(IN PIPV6_HEADER ipv6, IN PBYTE SrcMac, OUT PRAW6_TCP buffer);
+EXTERN_C_START
+
+
+__declspec(dllexport)
+void WINAPI PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer);
+
+__declspec(dllexport)
+void WINAPI PacketizeAck6(IN PIPV6_HEADER ipv6, IN PBYTE SrcMac, OUT PRAW6_TCP buffer);
+
+__declspec(dllexport)
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
+                          IN PIN_ADDR SourceAddress,
+                          IN PIN_ADDR DestinationAddress,
+                          IN UINT16 th_sport,
+                          IN UINT16 th_dport,
+                          OUT PRAW_TCP buffer
+);
+
+__declspec(dllexport)
+void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
+                          IN PIN6_ADDR SourceAddress,
+                          IN PIN6_ADDR DestinationAddress,
+                          IN UINT16 th_sport,
+                          IN UINT16 th_dport,
+                          OUT PRAW6_TCP buffer
+);
+
+
+EXTERN_C_END

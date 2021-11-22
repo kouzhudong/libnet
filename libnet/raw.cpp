@@ -36,33 +36,31 @@ Type，取值，如：ETHERNET_TYPE_IPV4，ETHERNET_TYPE_IPV6， ETHERNET_TYPE_ARP等。
 void InitIpv4Header(IN PIN_ADDR SourceAddress,
                     IN PIN_ADDR DestinationAddress,
                     IN UINT8 Protocol, //取值，如：IPPROTO_TCP等。
-                    OUT PRAW_TCP buffer
+                    IN UINT16 TotalLength,//严格计算数据的大小。
+                    OUT PIPV4_HEADER IPv4Header
 )
 /*
 功能：组装IPv4头。
 */
 {
-    ASSERT(buffer);
+    _ASSERTE(TotalLength >= sizeof(IPV4_HEADER) + sizeof(TCP_HDR));
 
-#pragma warning( push )
-#pragma warning( disable : 4366 ) //一元“&”运算符的结果可能是未对齐的
-    PIPV4_HEADER out_ipv4 = &buffer->ip_hdr;
-#pragma warning( pop )
-
-    out_ipv4->VersionAndHeaderLength = (4 << 4) | (sizeof(IPV4_HEADER) / sizeof(unsigned long));
-    out_ipv4->TotalLength = ntohs(sizeof(IPV4_HEADER) +
-                                  sizeof(TCP_HDR) +
-                                  sizeof(TCP_OPT)); //还有内容，可以再加别的。
-    out_ipv4->DontFragment = TRUE;
-    out_ipv4->TimeToLive = 128;
-    out_ipv4->Protocol = Protocol;// IPPROTO_TCP;
-    out_ipv4->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr; 
-    out_ipv4->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
-    out_ipv4->HeaderChecksum = checksum((unsigned short *)out_ipv4, sizeof(IPV4_HEADER));
+    IPv4Header->VersionAndHeaderLength = (4 << 4) | (sizeof(IPV4_HEADER) / sizeof(unsigned long));
+    IPv4Header->TotalLength = ntohs(TotalLength);
+    IPv4Header->DontFragment = TRUE;
+    IPv4Header->TimeToLive = 128;
+    IPv4Header->Protocol = Protocol;
+    IPv4Header->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr;
+    IPv4Header->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
+    IPv4Header->HeaderChecksum = checksum((unsigned short *)IPv4Header, sizeof(IPV4_HEADER));
 }
 
 
-void InitIpv4Header(IN PIPV4_HEADER in_ipv4, IN bool IsCopy, OUT PRAW_TCP buffer)
+void InitIpv4Header(IN PIPV4_HEADER InIPv4Header,
+                    IN UINT16 TotalLength,
+                    IN bool IsCopy,
+                    OUT PIPV4_HEADER OutIPv4Header
+)
 /*
 功能：把in_ipv4的SYN包里的ipv4信息组装为buffer的要发生的ACK的ipv4。
 
@@ -73,44 +71,95 @@ IsCopy：是复制还是回复。
 */
 {
     if (IsCopy) {
-        InitIpv4Header(&in_ipv4->SourceAddress, &in_ipv4->DestinationAddress, in_ipv4->Protocol, buffer);
+        InitIpv4Header(&InIPv4Header->SourceAddress,
+                       &InIPv4Header->DestinationAddress,
+                       InIPv4Header->Protocol,
+                       TotalLength,
+                       OutIPv4Header);
     } else {
-        InitIpv4Header(&in_ipv4->DestinationAddress, &in_ipv4->SourceAddress, in_ipv4->Protocol, buffer);
+        InitIpv4Header(&InIPv4Header->DestinationAddress,
+                       &InIPv4Header->SourceAddress,
+                       InIPv4Header->Protocol,
+                       TotalLength,
+                       OutIPv4Header);
     }
 }
 
 
-void InitTcpHeader(OUT PRAW_TCP buffer)
+void InitTcpHeader(IN UINT16 th_sport, //网络序
+                   IN UINT16 th_dport, //网络序
+                   IN SEQ_NUM th_ack,  //网络序
+                   IN UINT8 th_flags, //TH_ACK, TH_SYN等值的组合。
+                   OUT PTCP_HDR tcp_hdr
+)
 /*
-功能：组装TCP头。
+功能：组装TCP头（总共十个成员）。
+
+注意：
+1.不重要的值，默认为0.
+2.某些值为自己设定的固定的值。
+3.校验和为0，后面再计算。
 */
 {
+    RtlZeroMemory(tcp_hdr, sizeof(TCP_HDR));
 
+    tcp_hdr->th_sport = th_sport;
+    tcp_hdr->th_dport = th_dport;
+    tcp_hdr->th_seq = ntohl(0);
 
+    tcp_hdr->th_ack = th_ack;
+    if (th_flags & TH_ACK) {
+        tcp_hdr->th_ack++;//收到的号加一。
+    }
+
+    UINT8 x = (sizeof(TCP_HDR) + sizeof(TCP_OPT)) / 4;
+    ASSERT(x <= 0xf);//大于这个数会发生溢出，有想不到的结果。    
+    tcp_hdr->th_len = x;
+
+    tcp_hdr->th_flags = th_flags;
+    tcp_hdr->th_win = ntohs(65535);
+    tcp_hdr->th_sum = 0;
+    tcp_hdr->th_urp = 0;
+
+    tcp_hdr->th_sum = 0;
 }
 
 
-void InitTcp4HeaderWithAck(PIPV4_HEADER ipv4, OUT PRAW_TCP buffer)
+void InitTcpHeaderBySyn(IN UINT16 th_sport, //网络序
+                        IN UINT16 th_dport, //网络序
+                        OUT PTCP_HDR tcp_hdr
+)
 {
-    PVOID NextHeader = ((PBYTE)ipv4 + Ip4HeaderLengthInBytes(ipv4));
+    InitTcpHeader(th_sport, th_dport, 0, TH_SYN, tcp_hdr);
+}
 
-    PTCP_HDR tcp = (PTCP_HDR)NextHeader;
-    UINT16 Source_port = ntohs(tcp->th_sport);
-    UINT16 Destination_port = ntohs(tcp->th_dport);
 
-    ASSERT(buffer);
-    ASSERT(NextHeader);
-    ASSERT(TH_SYN == tcp->th_flags);
+void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
+{
+    if (IsCopy) {
+        InitTcpHeader(tcp->th_sport,
+                      tcp->th_dport,
+                      tcp->th_seq,
+                      TH_ACK | TH_SYN,
+                      tcp_hdr);
+    } else {
+        InitTcpHeader(tcp->th_dport,
+                      tcp->th_sport,
+                      tcp->th_seq,
+                      TH_ACK | TH_SYN,
+                      tcp_hdr);
+    }
+}
 
-    LONG th_ack = ntohl(tcp->th_seq);
-    th_ack++;
 
-    PTCP_HDR tcp_hdr = &buffer->tcp_hdr;
-
-    tcp_hdr->th_sport = ntohs(Destination_port);
-    tcp_hdr->th_dport = ntohs(Source_port);
+void InitTcpHeaderWithAck0(PTCP_HDR tcp, OUT PTCP_HDR tcp_hdr)
+{
+    tcp_hdr->th_sport = tcp->th_dport;
+    tcp_hdr->th_dport = tcp->th_sport;
     tcp_hdr->th_seq = ntohl(0);
-    tcp_hdr->th_ack = ntohl(th_ack);//收到的号加一。
+
+    tcp_hdr->th_ack = tcp->th_seq;
+    tcp_hdr->th_ack++;//收到的号加一。
 
     UINT8 x = (sizeof(TCP_HDR) + sizeof(TCP_OPT)) / 4;
     ASSERT(x <= 0xf);//大于这个数会发生溢出，有想不到的结果。    
@@ -157,9 +206,19 @@ void InitTcpSp(OUT PRAW_TCP buffer)
 }
 
 
-void CalculationTcp4Sum(OUT PRAW_TCP buffer)
+void CalculationTcp4Sum(OUT PRAW_TCP buffer, WORD OptLen)
+/*
+功能：计算并设置tcp的校验和。
+
+参数：
+OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)，
+        不包括ETHERNET_HEADER，IPV4_HEADER，TCP_HDR。
+*/
 {
-    BYTE temp[sizeof(PSD_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT)] = {0};
+    PBYTE temp = (PBYTE)HeapAlloc(GetProcessHeap(),
+                                  HEAP_ZERO_MEMORY,
+                                  sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
+    _ASSERTE(temp);
 
     PSD_HEADER * pseudo_header = (PSD_HEADER *)temp;
 
@@ -167,32 +226,65 @@ void CalculationTcp4Sum(OUT PRAW_TCP buffer)
     pseudo_header->daddr = buffer->ip_hdr.DestinationAddress.S_un.S_addr;
     pseudo_header->mbz = 0;
     pseudo_header->ptcl = IPPROTO_TCP;
-    pseudo_header->tcpl = ntohs(sizeof(TCP_HDR) + sizeof(TCP_OPT));
+    pseudo_header->tcpl = ntohs(sizeof(TCP_HDR) + OptLen);
 
     PBYTE test = &temp[0] + sizeof(PSD_HEADER);
     RtlCopyMemory(test, &buffer->tcp_hdr, sizeof(TCP_HDR));
 
     test = test + sizeof(TCP_HDR);
-    RtlCopyMemory(test, (PBYTE)&buffer->tcp_hdr + sizeof(TCP_HDR), sizeof(TCP_OPT));
+    RtlCopyMemory(test, (PBYTE)&buffer->tcp_hdr + sizeof(TCP_HDR), OptLen);
 
-    buffer->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT));
+    buffer->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
+
+    HeapFree(GetProcessHeap(), 0, temp);
 }
 
 
-void PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer)
+EXTERN_C
+__declspec(dllexport)
+void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, OUT PRAW_TCP buffer)
 {
     ASSERT(SrcMac);
     ASSERT(buffer);
 
+    PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv4Header + Ip4HeaderLengthInBytes(IPv4Header));
+
     InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV4, &buffer->eth_hdr);
-    InitIpv4Header(in_ipv4, false, buffer);
-    InitTcp4HeaderWithAck(in_ipv4, buffer);
+    InitIpv4Header(IPv4Header,
+                   sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT),
+                   false,
+                   &buffer->ip_hdr);
+    InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
     InitTcpMss(buffer);
     InitTcpWs(buffer);
     InitTcpSp(buffer);
 
-    CalculationTcp4Sum(buffer);
+    CalculationTcp4Sum(buffer, sizeof(TCP_OPT));
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
+                          IN PIN_ADDR SourceAddress,
+                          IN PIN_ADDR DestinationAddress,
+                          IN UINT16 th_sport,
+                          IN UINT16 th_dport,
+                          OUT PRAW_TCP buffer
+)
+{
+    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV4, &buffer->eth_hdr);
+
+    InitIpv4Header(SourceAddress,
+                   DestinationAddress,
+                   IPPROTO_TCP,
+                   sizeof(IPV4_HEADER) + sizeof(TCP_HDR),
+                   &buffer->ip_hdr);
+
+    InitTcpHeaderBySyn(th_sport, th_dport, &buffer->tcp_hdr);
+
+    CalculationTcp4Sum(buffer, 0);
 }
 
 
@@ -202,28 +294,23 @@ void PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer
 void InitIpv6Header(IN PIN6_ADDR SourceAddress,
                     IN PIN6_ADDR DestinationAddress,
                     IN UINT8 NextHeader, //取值，如：IPPROTO_TCP等。
-                    OUT PRAW6_TCP buffer
+                    OUT PIPV6_HEADER IPv6Header
 )
 /*
 功能：组装IPv6协议的TCP头。
 */
 {
-    ASSERT(buffer);
+    IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0);// IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
+    IPv6Header->PayloadLength = ntohs(sizeof(TCP_HDR) + sizeof(TCP_OPT));
+    IPv6Header->NextHeader = NextHeader;
+    IPv6Header->HopLimit = 128;
 
-//#pragma warning(suppress:4366) //一元“&”运算符的结果可能是未对齐的
-    PIPV6_HEADER ipv6_hdr = (PIPV6_HEADER)&buffer->ip_hdr;
-
-    ipv6_hdr->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0);// IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
-    ipv6_hdr->PayloadLength = ntohs(sizeof(TCP_HDR) + sizeof(TCP_OPT));
-    ipv6_hdr->NextHeader = NextHeader;
-    ipv6_hdr->HopLimit = 128;
-
-    RtlCopyMemory(&ipv6_hdr->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
-    RtlCopyMemory(&ipv6_hdr->DestinationAddress, DestinationAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&IPv6Header->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&IPv6Header->DestinationAddress, DestinationAddress, sizeof(IN6_ADDR));
 }
 
 
-void InitIpv6Header(IN PIPV6_HEADER in_ipv6, IN bool IsCopy, OUT PRAW6_TCP buffer)
+void InitIpv6Header(IN PIPV6_HEADER InIPv6Header, IN bool IsCopy, OUT PIPV6_HEADER OutIPv6Header)
 /*
 功能：把in_ipv6的SYN包里的ipv6信息组装为buffer的要发生的ACK的ipv6。
 
@@ -234,45 +321,16 @@ IsCopy：是复制还是回复。
 */
 {
     if (IsCopy) {
-        InitIpv6Header(&in_ipv6->SourceAddress, &in_ipv6->DestinationAddress, in_ipv6->NextHeader, buffer);
+        InitIpv6Header(&InIPv6Header->SourceAddress,
+                       &InIPv6Header->DestinationAddress,
+                       InIPv6Header->NextHeader,
+                       OutIPv6Header);
     } else {
-        InitIpv6Header(&in_ipv6->DestinationAddress, &in_ipv6->SourceAddress, in_ipv6->NextHeader, buffer);
+        InitIpv6Header(&InIPv6Header->DestinationAddress,
+                       &InIPv6Header->SourceAddress,
+                       InIPv6Header->NextHeader,
+                       OutIPv6Header);
     }
-}
-
-
-void InitTcp6HeaderWithAck(PIPV6_HEADER ipv6, OUT PRAW6_TCP buffer)
-//和ipv4差不多。
-{
-    ASSERT(buffer);
-
-    PVOID NextHeader = ((PBYTE)ipv6 + sizeof(IPV6_HEADER));
-    PTCP_HDR tcp = (PTCP_HDR)NextHeader;
-    UINT16 Source_port = ntohs(tcp->th_sport);
-    UINT16 Destination_port = ntohs(tcp->th_dport);
-
-    ASSERT(TH_SYN == tcp->th_flags);
-
-    LONG th_ack = ntohl(tcp->th_seq);
-    th_ack++;
-
-    PTCP_HDR tcp_hdr = &buffer->tcp_hdr;
-
-    tcp_hdr->th_sport = ntohs(Destination_port);
-    tcp_hdr->th_dport = ntohs(Source_port);
-    tcp_hdr->th_seq = ntohl(0);
-    tcp_hdr->th_ack = ntohl(th_ack);//收到的号加一。
-
-    UINT8 x = (sizeof(TCP_HDR) + sizeof(TCP_OPT)) / 4;
-    ASSERT(x <= 0xf);//大于这个数会发生溢出，有想不到的结果。    
-    tcp_hdr->th_len = x;
-
-    tcp_hdr->th_flags = TH_ACK | TH_SYN;
-    tcp_hdr->th_win = ntohs(65535);
-    tcp_hdr->th_sum = 0;
-    tcp_hdr->th_urp = 0;
-
-    tcp_hdr->th_sum = 0;
 }
 
 
@@ -332,18 +390,42 @@ void CalculationTcp6Sum(OUT PRAW6_TCP buffer)
 }
 
 
-void PacketizeAck6(IN PIPV6_HEADER ipv6, IN PBYTE SrcMac, OUT PRAW6_TCP buffer)
+EXTERN_C
+__declspec(dllexport)
+void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, OUT PRAW6_TCP buffer)
 {
     ASSERT(SrcMac);
     ASSERT(buffer);
 
+    PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv6Header + sizeof(IPV6_HEADER));
+
     InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
-    InitIpv6Header(ipv6, false, buffer);
-    InitTcp6HeaderWithAck(ipv6, buffer);
+    InitIpv6Header(IPv6Header, false, &buffer->ip_hdr);
+    InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
     InitTcp6Mss(buffer);
     InitTcp6Ws(buffer);
     InitTcp6Sp(buffer);
+
+    CalculationTcp6Sum(buffer);
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
+                          IN PIN6_ADDR SourceAddress,
+                          IN PIN6_ADDR DestinationAddress,
+                          IN UINT16 th_sport,
+                          IN UINT16 th_dport,
+                          OUT PRAW6_TCP buffer
+)
+{
+    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
+
+    InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_TCP, &buffer->ip_hdr);
+
+    InitTcpHeaderBySyn(th_sport, th_dport, &buffer->tcp_hdr);
 
     CalculationTcp6Sum(buffer);
 }

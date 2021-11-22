@@ -62,6 +62,7 @@
 //#include <ntdef.h>
 //#include <netioapi.h>
 //#include <LsaLookup.h>
+#include <netiodef.h>
 #include <atlstr.h>
 #include <comutil.h>
 #include <wbemidl.h>
@@ -154,11 +155,106 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+/*
+可复制或参考
+\Windows-classic-samples\Samples\Win7Samples\netds\winsock\rcvall\iphdr.h
+\Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\iphdr.h
+*/
+
+
+#include <pshpack1.h>
+
+
+typedef struct tsd_hdr {
+    unsigned long  saddr;//Source Address
+    unsigned long  daddr;//Destination Address 
+    char           mbz;  //zero
+    char           ptcl; //PTCL 
+    unsigned short tcpl; //TCP Length
+}PSD_HEADER;
+
+
+//typedef __declspec(align(4)) struct _tcp_opt {
+//    TCP_OPT_MSS mss;//4字节对齐
+//    TCP_OPT_WS ws;//4字节对齐
+//    TCP_OPT_SACK_PERMITTED sp;//4字节对齐
+//
+//    //还可考虑再添加别的。
+//} TCP_OPT, * PTCP_OPT;
+
+
+typedef struct _tcp_opt {
+    TCP_OPT_MSS mss;//4字节对齐
+    BYTE unuse1;
+    TCP_OPT_WS ws;//4字节对齐
+    WORD unuse2;
+    TCP_OPT_SACK_PERMITTED sp;//4字节对齐
+} TCP_OPT, * PTCP_OPT;
+
+
+#pragma warning(push)
+#pragma warning(disable : 4200) //使用了非标准扩展: 结构/联合中的零大小数组
+typedef struct raw_tcp {
+    ETHERNET_HEADER eth_hdr;
+    IPV4_HEADER ip_hdr;
+    TCP_HDR tcp_hdr;
+
+    //微软的tcp opt 的对齐为4字节，和这里的对齐大小不一致。
+    //不过，不是4字节也行（测试通过），但是最好4字节，因为：TCP的th_len是4的倍数。
+
+    //TCP_OPT_MSS mss;//4字节对齐
+    //TCP_OPT_WS ws;//4字节对齐
+    //TCP_OPT_SACK_PERMITTED sp;//4字节对齐
+    //BYTE data[0];
+} RAW_TCP, * PRAW_TCP;
+#pragma warning(pop)  
+
+
+/*
+the TCP and UDP "pseudo-header" for IPv6
+
+https://www.ietf.org/rfc/rfc2460.txt
+https://www.microsoftpressstore.com/articles/article.aspx?p=2225063&seqNum=6
+深入解析IPv6(第三版)的4.6章节。
+
+亦可参考：
+\Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
+的ComputeUdpPseudoHeaderChecksumV6函数。
+或者\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
+的ComputeIcmp6PseudoHeaderChecksum函数。
+*/
+typedef struct tsd6_hdr {
+    IN6_ADDR      saddr;//Source Address
+    IN6_ADDR      daddr;//Destination Address 
+    unsigned long length;
+    char          unused1;//zero
+    char          unused2;//zero
+    char          unused3;//zero
+    char          proto;
+}PSD6_HEADER;
+
+
+#pragma warning(push)
+#pragma warning(disable : 4200) //使用了非标准扩展: 结构/联合中的零大小数组
+typedef struct raw6_tcp {
+    ETHERNET_HEADER eth_hdr;
+    IPV6_HEADER ip_hdr;
+    TCP_HDR tcp_hdr;
+
+    //tcp opt 的对齐为4字节，和这里的不一致。
+    //BYTE data[0];
+} RAW6_TCP, * PRAW6_TCP;
+#pragma warning(pop)  
+
+
+#include <poppack.h>
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 EXTERN_C_START
 
-
-__declspec(dllimport)
-int WINAPI GetAdaptersAddressesInfo(int argc, char ** argv);
 
 __declspec(dllimport)
 void WINAPI RegistersNotifyIpInterfaceChange();
@@ -227,6 +323,34 @@ void WINAPI EnumTcpTable();
 
 __declspec(dllimport)
 void WINAPI EnumEntityArray();
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+__declspec(dllimport)
+void WINAPI PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer);
+
+__declspec(dllimport)
+void WINAPI PacketizeAck6(IN PIPV6_HEADER ipv6, IN PBYTE SrcMac, OUT PRAW6_TCP buffer);
+
+__declspec(dllimport)
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
+                          IN PIN_ADDR SourceAddress,
+                          IN PIN_ADDR DestinationAddress,
+                          IN UINT16 th_sport,
+                          IN UINT16 th_dport,
+                          OUT PRAW_TCP buffer
+);
+
+__declspec(dllimport)
+void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
+                          IN PIN6_ADDR SourceAddress,
+                          IN PIN6_ADDR DestinationAddress,
+                          IN UINT16 th_sport,
+                          IN UINT16 th_dport,
+                          OUT PRAW6_TCP buffer
+);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
