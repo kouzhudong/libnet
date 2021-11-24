@@ -37,7 +37,7 @@ void InitIpv4Header(IN PIN_ADDR SourceAddress,
                     IN PIN_ADDR DestinationAddress,
                     IN UINT8 Protocol, //取值，如：IPPROTO_TCP等。
                     IN UINT16 TotalLength,//严格计算数据的大小。
-                    OUT PIPV4_HEADER IPv4Header                    
+                    OUT PIPV4_HEADER IPv4Header
 )
 /*
 功能：组装IPv4头。
@@ -65,6 +65,8 @@ void InitIpv4Header(IN PIPV4_HEADER InIPv4Header,
 /*
 功能：把in_ipv4的SYN包里的ipv4信息组装为buffer的要发生的ACK的ipv4。
 
+用途：欺骗（扫描），而不是扫描和攻击。
+
 参数：
 IsCopy：是复制还是回复。
 
@@ -87,9 +89,9 @@ IsCopy：是复制还是回复。
 }
 
 
-void InitTcpHeader(IN UINT16 th_sport, //网络序
-                   IN UINT16 th_dport, //网络序
-                   IN SEQ_NUM th_ack,  //网络序
+void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
+                   IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
+                   IN SEQ_NUM th_ack,  //网络序。如果是主机序，请用htonl转换下。
                    IN UINT8 th_flags, //TH_ACK, TH_SYN等值的组合。
                    OUT PTCP_HDR tcp_hdr
 )
@@ -104,8 +106,8 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序
 {
     RtlZeroMemory(tcp_hdr, sizeof(TCP_HDR));
 
-    tcp_hdr->th_sport = ntohs(th_sport);
-    tcp_hdr->th_dport = ntohs(th_dport);
+    tcp_hdr->th_sport = th_sport;
+    tcp_hdr->th_dport = th_dport;
     tcp_hdr->th_seq = ntohl(0);
 
     tcp_hdr->th_ack = th_ack;
@@ -126,8 +128,8 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序
 }
 
 
-void InitTcpHeaderBySyn(IN UINT16 th_sport, //网络序
-                        IN UINT16 th_dport, //网络序
+void InitTcpHeaderBySyn(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
+                        IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
                         OUT PTCP_HDR tcp_hdr
 )
 {
@@ -136,6 +138,11 @@ void InitTcpHeaderBySyn(IN UINT16 th_sport, //网络序
 
 
 void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
+/*
+
+
+用途：欺骗（扫描），而不是扫描和攻击。
+*/
 {
     if (IsCopy) {
         InitTcpHeader(tcp->th_sport,
@@ -154,6 +161,7 @@ void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
 
 
 void InitTcpHeaderWithAck0(PTCP_HDR tcp, OUT PTCP_HDR tcp_hdr)
+//暂时保留，无用。
 {
     tcp_hdr->th_sport = tcp->th_dport;
     tcp_hdr->th_dport = tcp->th_sport;
@@ -175,19 +183,6 @@ void InitTcpHeaderWithAck0(PTCP_HDR tcp, OUT PTCP_HDR tcp_hdr)
 }
 
 
-void InitTcpMss(OUT PRAW_TCP buffer)
-{
-    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW_TCP));
-
-    tcp_opt->mss.Kind = TH_OPT_MSS;
-    tcp_opt->mss.Length = 4;
-    tcp_opt->mss.Mss = ntohs(1460);
-
-    tcp_opt->unuse1 = TH_OPT_NOP;
-    tcp_opt->unuse2 = TH_OPT_NOP << 8 | TH_OPT_NOP;
-}
-
-
 void InitTcpMss(OUT TCP_OPT_MSS * mss)
 {
     mss->Kind = TH_OPT_MSS;
@@ -196,22 +191,27 @@ void InitTcpMss(OUT TCP_OPT_MSS * mss)
 }
 
 
-void InitTcpWs(OUT PRAW_TCP buffer)
+void InitTcpMss(OUT PTCP_OPT tcp_opt)
 {
-    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW_TCP));
+    InitTcpMss(&tcp_opt->mss);
 
-    tcp_opt->ws.Kind = TH_OPT_WS;
-    tcp_opt->ws.Length = 3;
-    tcp_opt->ws.ShiftCnt = 8;
+    tcp_opt->unuse1 = TH_OPT_NOP;
+    tcp_opt->unuse2 = TH_OPT_NOP << 8 | TH_OPT_NOP;
 }
 
 
-void InitTcpSp(OUT PRAW_TCP buffer)
+void InitTcpWs(OUT TCP_OPT_WS * ws)
 {
-    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW_TCP));
+    ws->Kind = TH_OPT_WS;
+    ws->Length = 3;
+    ws->ShiftCnt = 8;
+}
 
-    tcp_opt->sp.Kind = TH_OPT_SACK_PERMITTED;
-    tcp_opt->sp.Length = 2;
+
+void InitTcpSp(OUT TCP_OPT_SACK_PERMITTED * sp)
+{
+    sp->Kind = TH_OPT_SACK_PERMITTED;
+    sp->Length = 2;
 }
 
 
@@ -267,9 +267,11 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, OUT PRAW_
                    &buffer->ip_hdr);
     InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
-    InitTcpMss(buffer);
-    InitTcpWs(buffer);
-    InitTcpSp(buffer);
+    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW_TCP));
+
+    InitTcpMss(tcp_opt);
+    InitTcpWs(&tcp_opt->ws);
+    InitTcpSp(&tcp_opt->sp);
 
     CalculationTcp4Sum((PBYTE)buffer, sizeof(TCP_OPT));
 }
@@ -280,8 +282,8 @@ __declspec(dllexport)
 void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
-                          IN UINT16 th_sport,
-                          IN UINT16 th_dport,
+                          IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
+                          IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
                           OUT PBYTE buffer
 )
 {
@@ -330,6 +332,8 @@ void InitIpv6Header(IN PIPV6_HEADER InIPv6Header, IN bool IsCopy, OUT PIPV6_HEAD
 /*
 功能：把in_ipv6的SYN包里的ipv6信息组装为buffer的要发生的ACK的ipv6。
 
+用途：欺骗（扫描），而不是扫描和攻击。
+
 参数：
 IsCopy：是复制还是回复。
 
@@ -347,38 +351,6 @@ IsCopy：是复制还是回复。
                        InIPv6Header->NextHeader,
                        OutIPv6Header);
     }
-}
-
-
-void InitTcp6Mss(OUT PRAW6_TCP buffer)
-{
-    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW6_TCP));
-
-    tcp_opt->mss.Kind = TH_OPT_MSS;
-    tcp_opt->mss.Length = 4;
-    tcp_opt->mss.Mss = ntohs(1460);
-
-    tcp_opt->unuse1 = TH_OPT_NOP;
-    tcp_opt->unuse2 = TH_OPT_NOP << 8 | TH_OPT_NOP;
-}
-
-
-void InitTcp6Ws(OUT PRAW6_TCP buffer)
-{
-    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW6_TCP));
-
-    tcp_opt->ws.Kind = TH_OPT_WS;
-    tcp_opt->ws.Length = 3;
-    tcp_opt->ws.ShiftCnt = 8;
-}
-
-
-void InitTcp6Sp(OUT PRAW6_TCP buffer)
-{
-    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW6_TCP));
-
-    tcp_opt->sp.Kind = TH_OPT_SACK_PERMITTED;
-    tcp_opt->sp.Length = 2;
 }
 
 
@@ -419,9 +391,11 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, OUT PRAW6
     InitIpv6Header(IPv6Header, false, &buffer->ip_hdr);
     InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
-    InitTcp6Mss(buffer);
-    InitTcp6Ws(buffer);
-    InitTcp6Sp(buffer);
+    PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW6_TCP));
+
+    InitTcpMss(tcp_opt);
+    InitTcpWs(&tcp_opt->ws);
+    InitTcpSp(&tcp_opt->sp);
 
     CalculationTcp6Sum(buffer);
 }
@@ -432,8 +406,8 @@ __declspec(dllexport)
 void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
-                          IN UINT16 th_sport,
-                          IN UINT16 th_dport,
+                          IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
+                          IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
                           OUT PRAW6_TCP buffer
 )
 {
