@@ -93,6 +93,7 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
                    IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
                    IN SEQ_NUM th_ack,  //网络序。如果是主机序，请用htonl转换下。
                    IN UINT8 th_flags, //TH_ACK, TH_SYN等值的组合。
+                   IN UINT8 OptLen,
                    OUT PTCP_HDR tcp_hdr
 )
 /*
@@ -115,7 +116,7 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
         tcp_hdr->th_ack++;//收到的号加一。
     }
 
-    UINT8 x = (sizeof(TCP_HDR) + sizeof(TCP_OPT)) / 4;
+    UINT8 x = (sizeof(TCP_HDR) + OptLen) / 4;
     ASSERT(x <= 0xf);//大于这个数会发生溢出，有想不到的结果。    
     tcp_hdr->th_len = x;
 
@@ -130,10 +131,11 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
 
 void InitTcpHeaderBySyn(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
                         IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
+                        IN UINT8 OptLen,
                         OUT PTCP_HDR tcp_hdr
 )
 {
-    InitTcpHeader(th_sport, th_dport, 0, TH_SYN, tcp_hdr);
+    InitTcpHeader(th_sport, th_dport, 0, TH_SYN, OptLen, tcp_hdr);
 }
 
 
@@ -149,37 +151,16 @@ void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
                       tcp->th_dport,
                       tcp->th_seq,
                       TH_ACK | TH_SYN,
+                      0,
                       tcp_hdr);
     } else {
         InitTcpHeader(tcp->th_dport,
                       tcp->th_sport,
                       tcp->th_seq,
                       TH_ACK | TH_SYN,
+                      0,
                       tcp_hdr);
     }
-}
-
-
-void InitTcpHeaderWithAck0(PTCP_HDR tcp, OUT PTCP_HDR tcp_hdr)
-//暂时保留，无用。
-{
-    tcp_hdr->th_sport = tcp->th_dport;
-    tcp_hdr->th_dport = tcp->th_sport;
-    tcp_hdr->th_seq = ntohl(0);
-
-    tcp_hdr->th_ack = tcp->th_seq;
-    tcp_hdr->th_ack++;//收到的号加一。
-
-    UINT8 x = (sizeof(TCP_HDR) + sizeof(TCP_OPT)) / 4;
-    ASSERT(x <= 0xf);//大于这个数会发生溢出，有想不到的结果。    
-    tcp_hdr->th_len = x;
-
-    tcp_hdr->th_flags = TH_ACK | TH_SYN;
-    tcp_hdr->th_win = ntohs(65535);
-    tcp_hdr->th_sum = 0;
-    tcp_hdr->th_urp = 0;
-
-    tcp_hdr->th_sum = 0;
 }
 
 
@@ -297,7 +278,7 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
                    sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT_MSS),
                    &tcp4->ip_hdr);
 
-    InitTcpHeaderBySyn(th_sport, th_dport, &tcp4->tcp_hdr);
+    InitTcpHeaderBySyn(th_sport, th_dport, sizeof(TCP_OPT_MSS), &tcp4->tcp_hdr);
 
     TCP_OPT_MSS * mss = (TCP_OPT_MSS *)(buffer + sizeof(RAW_TCP));
     InitTcpMss(mss);
@@ -415,7 +396,7 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
 
     InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_TCP, &buffer->ip_hdr);
 
-    InitTcpHeaderBySyn(th_sport, th_dport, &buffer->tcp_hdr);
+    InitTcpHeaderBySyn(th_sport, th_dport, 0, &buffer->tcp_hdr);
 
     CalculationTcp6Sum(buffer);
 }
