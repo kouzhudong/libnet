@@ -260,12 +260,12 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, OUT PRAW_
 
 EXTERN_C
 __declspec(dllexport)
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,    //6字节长的本地的MAC。
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
                           IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
                           IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
-                          OUT PBYTE buffer
+                          OUT PBYTE buffer    //长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
 )
 {
     PRAW_TCP tcp4 = (PRAW_TCP)buffer;
