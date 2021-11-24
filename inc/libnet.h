@@ -340,7 +340,7 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
                           IN PIN_ADDR DestinationAddress,
                           IN UINT16 th_sport,
                           IN UINT16 th_dport,
-                          OUT PRAW_TCP buffer
+                          OUT PBYTE buffer
 );
 
 __declspec(dllimport)

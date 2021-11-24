@@ -257,6 +257,7 @@ typedef struct tsd_hdr {
 //} TCP_OPT, * PTCP_OPT;
 
 
+//此结构为回复ACK而服务，包含三个系统的结构，mss+ws+sp。
 typedef struct _tcp_opt {
     TCP_OPT_MSS mss;//4字节对齐
     BYTE unuse1;
@@ -342,7 +343,7 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
                           IN PIN_ADDR DestinationAddress,
                           IN UINT16 th_sport,
                           IN UINT16 th_dport,
-                          OUT PRAW_TCP buffer
+                          OUT PBYTE buffer
 );
 
 __declspec(dllexport)

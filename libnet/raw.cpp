@@ -37,7 +37,7 @@ void InitIpv4Header(IN PIN_ADDR SourceAddress,
                     IN PIN_ADDR DestinationAddress,
                     IN UINT8 Protocol, //取值，如：IPPROTO_TCP等。
                     IN UINT16 TotalLength,//严格计算数据的大小。
-                    OUT PIPV4_HEADER IPv4Header
+                    OUT PIPV4_HEADER IPv4Header                    
 )
 /*
 功能：组装IPv4头。
@@ -47,6 +47,7 @@ void InitIpv4Header(IN PIN_ADDR SourceAddress,
 
     IPv4Header->VersionAndHeaderLength = (4 << 4) | (sizeof(IPV4_HEADER) / sizeof(unsigned long));
     IPv4Header->TotalLength = ntohs(TotalLength);
+    IPv4Header->Identification = ntohs(0);
     IPv4Header->DontFragment = TRUE;
     IPv4Header->TimeToLive = 128;
     IPv4Header->Protocol = Protocol;
@@ -103,8 +104,8 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序
 {
     RtlZeroMemory(tcp_hdr, sizeof(TCP_HDR));
 
-    tcp_hdr->th_sport = th_sport;
-    tcp_hdr->th_dport = th_dport;
+    tcp_hdr->th_sport = ntohs(th_sport);
+    tcp_hdr->th_dport = ntohs(th_dport);
     tcp_hdr->th_seq = ntohl(0);
 
     tcp_hdr->th_ack = th_ack;
@@ -187,6 +188,14 @@ void InitTcpMss(OUT PRAW_TCP buffer)
 }
 
 
+void InitTcpMss(OUT TCP_OPT_MSS * mss)
+{
+    mss->Kind = TH_OPT_MSS;
+    mss->Length = 4;
+    mss->Mss = ntohs(1460);
+}
+
+
 void InitTcpWs(OUT PRAW_TCP buffer)
 {
     PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW_TCP));
@@ -206,7 +215,7 @@ void InitTcpSp(OUT PRAW_TCP buffer)
 }
 
 
-void CalculationTcp4Sum(OUT PRAW_TCP buffer, WORD OptLen)
+void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
 /*
 功能：计算并设置tcp的校验和。
 
@@ -215,6 +224,8 @@ OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)，
         不包括ETHERNET_HEADER，IPV4_HEADER，TCP_HDR。
 */
 {
+    PRAW_TCP tcp4 = (PRAW_TCP)buffer;
+
     PBYTE temp = (PBYTE)HeapAlloc(GetProcessHeap(),
                                   HEAP_ZERO_MEMORY,
                                   sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
@@ -222,19 +233,19 @@ OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)，
 
     PSD_HEADER * pseudo_header = (PSD_HEADER *)temp;
 
-    pseudo_header->saddr = buffer->ip_hdr.SourceAddress.S_un.S_addr;
-    pseudo_header->daddr = buffer->ip_hdr.DestinationAddress.S_un.S_addr;
+    pseudo_header->saddr = tcp4->ip_hdr.SourceAddress.S_un.S_addr;
+    pseudo_header->daddr = tcp4->ip_hdr.DestinationAddress.S_un.S_addr;
     pseudo_header->mbz = 0;
     pseudo_header->ptcl = IPPROTO_TCP;
     pseudo_header->tcpl = ntohs(sizeof(TCP_HDR) + OptLen);
 
     PBYTE test = &temp[0] + sizeof(PSD_HEADER);
-    RtlCopyMemory(test, &buffer->tcp_hdr, sizeof(TCP_HDR));
+    RtlCopyMemory(test, &tcp4->tcp_hdr, sizeof(TCP_HDR));
 
     test = test + sizeof(TCP_HDR);
-    RtlCopyMemory(test, (PBYTE)&buffer->tcp_hdr + sizeof(TCP_HDR), OptLen);
+    RtlCopyMemory(test, (PBYTE)&tcp4->tcp_hdr + sizeof(TCP_HDR), OptLen);
 
-    buffer->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
+    tcp4->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
 
     HeapFree(GetProcessHeap(), 0, temp);
 }
@@ -260,7 +271,7 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, OUT PRAW_
     InitTcpWs(buffer);
     InitTcpSp(buffer);
 
-    CalculationTcp4Sum(buffer, sizeof(TCP_OPT));
+    CalculationTcp4Sum((PBYTE)buffer, sizeof(TCP_OPT));
 }
 
 
@@ -271,20 +282,25 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,
                           IN PIN_ADDR DestinationAddress,
                           IN UINT16 th_sport,
                           IN UINT16 th_dport,
-                          OUT PRAW_TCP buffer
+                          OUT PBYTE buffer
 )
 {
-    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV4, &buffer->eth_hdr);
+    PRAW_TCP tcp4 = (PRAW_TCP)buffer;
+
+    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV4, &tcp4->eth_hdr);
 
     InitIpv4Header(SourceAddress,
                    DestinationAddress,
                    IPPROTO_TCP,
-                   sizeof(IPV4_HEADER) + sizeof(TCP_HDR),
-                   &buffer->ip_hdr);
+                   sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT_MSS),
+                   &tcp4->ip_hdr);
 
-    InitTcpHeaderBySyn(th_sport, th_dport, &buffer->tcp_hdr);
+    InitTcpHeaderBySyn(th_sport, th_dport, &tcp4->tcp_hdr);
 
-    CalculationTcp4Sum(buffer, 0);
+    TCP_OPT_MSS * mss = (TCP_OPT_MSS *)(buffer + sizeof(RAW_TCP));
+    InitTcpMss(mss);
+
+    CalculationTcp4Sum(buffer, sizeof(TCP_OPT_MSS));
 }
 
 
