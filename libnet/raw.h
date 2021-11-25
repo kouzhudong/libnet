@@ -352,7 +352,7 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PIN6_ADDR DestinationAddress,
                           IN UINT16 th_sport,//网络序。如果是主机序，请用htons转换下。
                           IN UINT16 th_dport,//网络序。如果是主机序，请用htons转换下。
-                          OUT PRAW6_TCP buffer
+                          OUT PBYTE buffer    //长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
 );
 
 

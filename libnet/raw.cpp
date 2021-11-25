@@ -332,17 +332,19 @@ IsCopy：是复制还是回复。
 }
 
 
-void CalculationTcp6Sum(OUT PRAW6_TCP buffer, IN int OptLen)
+void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
 {
+    PRAW6_TCP tcp6 = (PRAW6_TCP)buffer;
+
     PBYTE temp = (PBYTE)HeapAlloc(GetProcessHeap(),
                                   HEAP_ZERO_MEMORY,
-                                  sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);//sizeof(TCP_OPT)
+                                  sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
     _ASSERTE(temp);
 
     PSD6_HEADER * PseudoHeader = (PSD6_HEADER *)temp;
 
-    RtlCopyMemory(&PseudoHeader->saddr, &buffer->ip_hdr.SourceAddress, sizeof(IN6_ADDR));
-    RtlCopyMemory(&PseudoHeader->daddr, &buffer->ip_hdr.DestinationAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&PseudoHeader->saddr, &tcp6->ip_hdr.SourceAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&PseudoHeader->daddr, &tcp6->ip_hdr.DestinationAddress, sizeof(IN6_ADDR));
     PseudoHeader->length = ntohl(sizeof(TCP_HDR) + OptLen);
     PseudoHeader->unused1 = 0;
     PseudoHeader->unused2 = 0;
@@ -350,12 +352,12 @@ void CalculationTcp6Sum(OUT PRAW6_TCP buffer, IN int OptLen)
     PseudoHeader->proto = IPPROTO_TCP;
 
     PBYTE test = &temp[0] + sizeof(PSD6_HEADER);
-    RtlCopyMemory(test, &buffer->tcp_hdr, sizeof(TCP_HDR));
+    RtlCopyMemory(test, &tcp6->tcp_hdr, sizeof(TCP_HDR));
 
     test = test + sizeof(TCP_HDR);
-    RtlCopyMemory(test, (PBYTE)&buffer->tcp_hdr + sizeof(TCP_HDR), OptLen);
+    RtlCopyMemory(test, (PBYTE)&tcp6->tcp_hdr + sizeof(TCP_HDR), OptLen);
 
-    buffer->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
+    tcp6->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
 
     HeapFree(GetProcessHeap(), 0, temp);
 }
@@ -380,7 +382,7 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, OUT PRAW6
     InitTcpWs(&tcp_opt->ws);
     InitTcpSp(&tcp_opt->sp);
 
-    CalculationTcp6Sum(buffer, sizeof(TCP_OPT));
+    CalculationTcp6Sum((PBYTE)buffer, sizeof(TCP_OPT));
 }
 
 
@@ -391,14 +393,16 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PIN6_ADDR DestinationAddress,
                           IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
                           IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
-                          OUT PRAW6_TCP buffer
+                          OUT PBYTE buffer    //长度是sizeof(RAW6_TCP) + sizeof(TCP_OPT_MSS)。
 )
 {
-    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
+    PRAW6_TCP tcp6 = (PRAW6_TCP)buffer;
 
-    InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_TCP, &buffer->ip_hdr);
+    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &tcp6->eth_hdr);
 
-    InitTcpHeaderBySyn(th_sport, th_dport, 0, &buffer->tcp_hdr);
+    InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_TCP, &tcp6->ip_hdr);
+
+    InitTcpHeaderBySyn(th_sport, th_dport, 0, &tcp6->tcp_hdr);
 
     CalculationTcp6Sum(buffer, 0);
 }
