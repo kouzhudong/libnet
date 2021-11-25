@@ -92,7 +92,7 @@ IsCopy：是复制还是回复。
 void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
                    IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
                    IN SEQ_NUM th_ack,  //网络序。如果是主机序，请用htonl转换下。
-                   IN UINT8 th_flags, //TH_ACK, TH_SYN等值的组合。
+                   IN UINT8 th_flags,  //TH_ACK, TH_SYN等值的组合。
                    IN UINT8 OptLen,
                    OUT PTCP_HDR tcp_hdr
 )
@@ -109,12 +109,9 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
 
     tcp_hdr->th_sport = th_sport;
     tcp_hdr->th_dport = th_dport;
-    tcp_hdr->th_seq = ntohl(0);
 
+    tcp_hdr->th_seq = ntohl(0);
     tcp_hdr->th_ack = th_ack;
-    if (th_flags & TH_ACK) {
-        tcp_hdr->th_ack++;//收到的号加一。
-    }
 
     UINT8 x = (sizeof(TCP_HDR) + OptLen) / 4;
     ASSERT(x <= 0xf);//大于这个数会发生溢出，有想不到的结果。    
@@ -122,9 +119,9 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
 
     tcp_hdr->th_flags = th_flags;
     tcp_hdr->th_win = ntohs(65535);
+
     tcp_hdr->th_sum = 0;
     tcp_hdr->th_urp = 0;
-
     tcp_hdr->th_sum = 0;
 }
 
@@ -149,14 +146,14 @@ void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
     if (IsCopy) {
         InitTcpHeader(tcp->th_sport,
                       tcp->th_dport,
-                      tcp->th_seq,
+                      tcp->th_seq + 1,//收到的号加一。
                       TH_ACK | TH_SYN,
                       0,
                       tcp_hdr);
     } else {
         InitTcpHeader(tcp->th_dport,
                       tcp->th_sport,
-                      tcp->th_seq,
+                      tcp->th_seq + 1,//收到的号加一。
                       TH_ACK | TH_SYN,
                       0,
                       tcp_hdr);
@@ -212,13 +209,13 @@ OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)，
                                   sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
     _ASSERTE(temp);
 
-    PSD_HEADER * pseudo_header = (PSD_HEADER *)temp;
+    PSD_HEADER * PseudoHeader = (PSD_HEADER *)temp;
 
-    pseudo_header->saddr = tcp4->ip_hdr.SourceAddress.S_un.S_addr;
-    pseudo_header->daddr = tcp4->ip_hdr.DestinationAddress.S_un.S_addr;
-    pseudo_header->mbz = 0;
-    pseudo_header->ptcl = IPPROTO_TCP;
-    pseudo_header->tcpl = ntohs(sizeof(TCP_HDR) + OptLen);
+    PseudoHeader->saddr = tcp4->ip_hdr.SourceAddress.S_un.S_addr;
+    PseudoHeader->daddr = tcp4->ip_hdr.DestinationAddress.S_un.S_addr;
+    PseudoHeader->mbz = 0;
+    PseudoHeader->ptcl = IPPROTO_TCP;
+    PseudoHeader->tcpl = ntohs(sizeof(TCP_HDR) + OptLen);
 
     PBYTE test = &temp[0] + sizeof(PSD_HEADER);
     RtlCopyMemory(test, &tcp4->tcp_hdr, sizeof(TCP_HDR));
@@ -335,27 +332,32 @@ IsCopy：是复制还是回复。
 }
 
 
-void CalculationTcp6Sum(OUT PRAW6_TCP buffer)
+void CalculationTcp6Sum(OUT PRAW6_TCP buffer, IN int OptLen)
 {
-    BYTE temp[sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT)] = {0};
+    PBYTE temp = (PBYTE)HeapAlloc(GetProcessHeap(),
+                                  HEAP_ZERO_MEMORY,
+                                  sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);//sizeof(TCP_OPT)
+    _ASSERTE(temp);
 
-    PSD6_HEADER * pseudo_header = (PSD6_HEADER *)temp;
+    PSD6_HEADER * PseudoHeader = (PSD6_HEADER *)temp;
 
-    RtlCopyMemory(&pseudo_header->saddr, &buffer->ip_hdr.SourceAddress, sizeof(IN6_ADDR));
-    RtlCopyMemory(&pseudo_header->daddr, &buffer->ip_hdr.DestinationAddress, sizeof(IN6_ADDR));
-    pseudo_header->length = ntohl(sizeof(TCP_HDR) + sizeof(TCP_OPT));
-    pseudo_header->unused1 = 0;
-    pseudo_header->unused2 = 0;
-    pseudo_header->unused3 = 0;
-    pseudo_header->proto = IPPROTO_TCP;
+    RtlCopyMemory(&PseudoHeader->saddr, &buffer->ip_hdr.SourceAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&PseudoHeader->daddr, &buffer->ip_hdr.DestinationAddress, sizeof(IN6_ADDR));
+    PseudoHeader->length = ntohl(sizeof(TCP_HDR) + OptLen);
+    PseudoHeader->unused1 = 0;
+    PseudoHeader->unused2 = 0;
+    PseudoHeader->unused3 = 0;
+    PseudoHeader->proto = IPPROTO_TCP;
 
     PBYTE test = &temp[0] + sizeof(PSD6_HEADER);
     RtlCopyMemory(test, &buffer->tcp_hdr, sizeof(TCP_HDR));
 
     test = test + sizeof(TCP_HDR);
-    RtlCopyMemory(test, (PBYTE)&buffer->tcp_hdr + sizeof(TCP_HDR), sizeof(TCP_OPT));
+    RtlCopyMemory(test, (PBYTE)&buffer->tcp_hdr + sizeof(TCP_HDR), OptLen);
 
-    buffer->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT));
+    buffer->tcp_hdr.th_sum = checksum((USHORT *)temp, sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
+
+    HeapFree(GetProcessHeap(), 0, temp);
 }
 
 
@@ -378,7 +380,7 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, OUT PRAW6
     InitTcpWs(&tcp_opt->ws);
     InitTcpSp(&tcp_opt->sp);
 
-    CalculationTcp6Sum(buffer);
+    CalculationTcp6Sum(buffer, sizeof(TCP_OPT));
 }
 
 
@@ -398,7 +400,7 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
 
     InitTcpHeaderBySyn(th_sport, th_dport, 0, &buffer->tcp_hdr);
 
-    CalculationTcp6Sum(buffer);
+    CalculationTcp6Sum(buffer, 0);
 }
 
 
