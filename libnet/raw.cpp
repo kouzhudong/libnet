@@ -290,6 +290,7 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,    //6字节长的本地的MAC。
 void InitIpv6Header(IN PIN6_ADDR SourceAddress,
                     IN PIN6_ADDR DestinationAddress,
                     IN UINT8 NextHeader, //取值，如：IPPROTO_TCP等。
+                    IN UINT16 OptLen,
                     OUT PIPV6_HEADER IPv6Header
 )
 /*
@@ -297,7 +298,7 @@ void InitIpv6Header(IN PIN6_ADDR SourceAddress,
 */
 {
     IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0);// IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
-    IPv6Header->PayloadLength = ntohs(sizeof(TCP_HDR) + sizeof(TCP_OPT));
+    IPv6Header->PayloadLength = ntohs(sizeof(TCP_HDR) + OptLen);
     IPv6Header->NextHeader = NextHeader;
     IPv6Header->HopLimit = 128;
 
@@ -306,7 +307,7 @@ void InitIpv6Header(IN PIN6_ADDR SourceAddress,
 }
 
 
-void InitIpv6Header(IN PIPV6_HEADER InIPv6Header, IN bool IsCopy, OUT PIPV6_HEADER OutIPv6Header)
+void InitIpv6Header(IN PIPV6_HEADER InIPv6Header, IN bool IsCopy, IN UINT16 OptLen, OUT PIPV6_HEADER OutIPv6Header)
 /*
 功能：把in_ipv6的SYN包里的ipv6信息组装为buffer的要发生的ACK的ipv6。
 
@@ -322,11 +323,13 @@ IsCopy：是复制还是回复。
         InitIpv6Header(&InIPv6Header->SourceAddress,
                        &InIPv6Header->DestinationAddress,
                        InIPv6Header->NextHeader,
+                       OptLen,
                        OutIPv6Header);
     } else {
         InitIpv6Header(&InIPv6Header->DestinationAddress,
                        &InIPv6Header->SourceAddress,
                        InIPv6Header->NextHeader,
+                       OptLen,
                        OutIPv6Header);
     }
 }
@@ -373,7 +376,7 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, OUT PRAW6
     PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv6Header + sizeof(IPV6_HEADER));
 
     InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
-    InitIpv6Header(IPv6Header, false, &buffer->ip_hdr);
+    InitIpv6Header(IPv6Header, false, sizeof(TCP_OPT), &buffer->ip_hdr);
     InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
     PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW6_TCP));
@@ -393,14 +396,14 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PIN6_ADDR DestinationAddress,
                           IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
                           IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
-                          OUT PBYTE buffer    //长度是sizeof(RAW6_TCP) + sizeof(TCP_OPT_MSS)。
+                          OUT PBYTE buffer    //长度是sizeof(RAW6_TCP)。
 )
 {
     PRAW6_TCP tcp6 = (PRAW6_TCP)buffer;
 
     InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &tcp6->eth_hdr);
 
-    InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_TCP, &tcp6->ip_hdr);
+    InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_TCP, 0, &tcp6->ip_hdr);
 
     InitTcpHeaderBySyn(th_sport, th_dport, 0, &tcp6->tcp_hdr);
 
