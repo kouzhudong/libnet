@@ -72,47 +72,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
 
             printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
-            switch (pTcpTable->table[i].dwState) {
-            case MIB_TCP_STATE_CLOSED:
-                printf("CLOSED\n");
-                break;
-            case MIB_TCP_STATE_LISTEN:
-                printf("LISTEN\n");
-                break;
-            case MIB_TCP_STATE_SYN_SENT:
-                printf("SYN-SENT\n");
-                break;
-            case MIB_TCP_STATE_SYN_RCVD:
-                printf("SYN-RECEIVED\n");
-                break;
-            case MIB_TCP_STATE_ESTAB:
-                printf("ESTABLISHED\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT1:
-                printf("FIN-WAIT-1\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT2:
-                printf("FIN-WAIT-2 \n");
-                break;
-            case MIB_TCP_STATE_CLOSE_WAIT:
-                printf("CLOSE-WAIT\n");
-                break;
-            case MIB_TCP_STATE_CLOSING:
-                printf("CLOSING\n");
-                break;
-            case MIB_TCP_STATE_LAST_ACK:
-                printf("LAST-ACK\n");
-                break;
-            case MIB_TCP_STATE_TIME_WAIT:
-                printf("TIME-WAIT\n");
-                break;
-            case MIB_TCP_STATE_DELETE_TCB:
-                printf("DELETE-TCB\n");
-                break;
-            default:
-                printf("UNKNOWN dwState value\n");
-                break;
-            }
+            PrintTcpConnectionState(pTcpTable->table[i].dwState);
             printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
             printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
@@ -173,47 +133,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
         printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
             printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
-            switch (pTcpTable->table[i].dwState) {
-            case MIB_TCP_STATE_CLOSED:
-                printf("CLOSED\n");
-                break;
-            case MIB_TCP_STATE_LISTEN:
-                printf("LISTEN\n");
-                break;
-            case MIB_TCP_STATE_SYN_SENT:
-                printf("SYN-SENT\n");
-                break;
-            case MIB_TCP_STATE_SYN_RCVD:
-                printf("SYN-RECEIVED\n");
-                break;
-            case MIB_TCP_STATE_ESTAB:
-                printf("ESTABLISHED\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT1:
-                printf("FIN-WAIT-1\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT2:
-                printf("FIN-WAIT-2 \n");
-                break;
-            case MIB_TCP_STATE_CLOSE_WAIT:
-                printf("CLOSE-WAIT\n");
-                break;
-            case MIB_TCP_STATE_CLOSING:
-                printf("CLOSING\n");
-                break;
-            case MIB_TCP_STATE_LAST_ACK:
-                printf("LAST-ACK\n");
-                break;
-            case MIB_TCP_STATE_TIME_WAIT:
-                printf("TIME-WAIT\n");
-                break;
-            case MIB_TCP_STATE_DELETE_TCB:
-                printf("DELETE-TCB\n");
-                break;
-            default:
-                printf("UNKNOWN dwState value\n");
-                break;
-            }
+            PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
@@ -299,47 +219,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
         wprintf(L"\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
             wprintf(L"\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].State);
-            switch (pTcpTable->table[i].State) {
-            case MIB_TCP_STATE_CLOSED:
-                wprintf(L"CLOSED\n");
-                break;
-            case MIB_TCP_STATE_LISTEN:
-                wprintf(L"LISTEN\n");
-                break;
-            case MIB_TCP_STATE_SYN_SENT:
-                wprintf(L"SYN-SENT\n");
-                break;
-            case MIB_TCP_STATE_SYN_RCVD:
-                wprintf(L"SYN-RECEIVED\n");
-                break;
-            case MIB_TCP_STATE_ESTAB:
-                wprintf(L"ESTABLISHED\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT1:
-                wprintf(L"FIN-WAIT-1\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT2:
-                wprintf(L"FIN-WAIT-2 \n");
-                break;
-            case MIB_TCP_STATE_CLOSE_WAIT:
-                wprintf(L"CLOSE-WAIT\n");
-                break;
-            case MIB_TCP_STATE_CLOSING:
-                wprintf(L"CLOSING\n");
-                break;
-            case MIB_TCP_STATE_LAST_ACK:
-                wprintf(L"LAST-ACK\n");
-                break;
-            case MIB_TCP_STATE_TIME_WAIT:
-                wprintf(L"TIME-WAIT\n");
-                break;
-            case MIB_TCP_STATE_DELETE_TCB:
-                wprintf(L"DELETE-TCB\n");
-                break;
-            default:
-                wprintf(L"UNKNOWN dwState value\n");
-                break;
-            }
+            PrintTcpConnectionState(pTcpTable->table[i].State);
 
             if (InetNtop(AF_INET6, &pTcpTable->table[i].LocalAddr, ipstringbuffer, 46) == NULL)
                 wprintf(L"  InetNtop function failed for local IPv6 address\n");
@@ -515,18 +395,15 @@ GetTcpStatisticsEx2
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI EnumExtendedTcpTable()
+int WINAPI EnumExtendedTcp4TableByPid()
 /*
-文件名：GetExtendedTcpTable.Cpp
 功能：获取本地的IPv4的TCP的带进程关联的网络信息。
 
-扩展：IPV6的及UDP的信息类似。
+注意：IPV6的及TCP的信息类似。
 
 注释：修改自MSDN的GetTcpTable2的例子。
 
-made by correy
-made at 2016.11.30
-http://correy.webs.com
+made in 2016.11.30
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedtcptable
 */
@@ -561,47 +438,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
         printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
             printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
-            switch (pTcpTable->table[i].dwState) {
-            case MIB_TCP_STATE_CLOSED:
-                printf("CLOSED\n");
-                break;
-            case MIB_TCP_STATE_LISTEN:
-                printf("LISTEN\n");
-                break;
-            case MIB_TCP_STATE_SYN_SENT:
-                printf("SYN-SENT\n");
-                break;
-            case MIB_TCP_STATE_SYN_RCVD:
-                printf("SYN-RECEIVED\n");
-                break;
-            case MIB_TCP_STATE_ESTAB:
-                printf("ESTABLISHED\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT1:
-                printf("FIN-WAIT-1\n");
-                break;
-            case MIB_TCP_STATE_FIN_WAIT2:
-                printf("FIN-WAIT-2 \n");
-                break;
-            case MIB_TCP_STATE_CLOSE_WAIT:
-                printf("CLOSE-WAIT\n");
-                break;
-            case MIB_TCP_STATE_CLOSING:
-                printf("CLOSING\n");
-                break;
-            case MIB_TCP_STATE_LAST_ACK:
-                printf("LAST-ACK\n");
-                break;
-            case MIB_TCP_STATE_TIME_WAIT:
-                printf("TIME-WAIT\n");
-                break;
-            case MIB_TCP_STATE_DELETE_TCB:
-                printf("DELETE-TCB\n");
-                break;
-            default:
-                wprintf(L"UNKNOWN dwState value: %d\n", pTcpTable->table[i].dwState);
-                break;
-            }
+            PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
@@ -617,6 +454,234 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
             printf("\tTCP[%d] Owning PID: %d\n", i, pTcpTable->table[i].dwOwningPid);
         }
+    } else {
+        printf("\tGetTcpTable2 failed with %d\n", dwRetVal);
+        FREE(pTcpTable);
+        return 1;
+    }
+
+    if (pTcpTable != NULL) {
+        FREE(pTcpTable);
+        pTcpTable = NULL;
+    }
+
+    return 0;
+}
+
+
+void DumpBasicExtendedTcp4Table(_In_ PMIB_TCPTABLE pTcpTable)
+{
+    char szLocalAddr[128];
+    char szRemoteAddr[128];
+    struct in_addr IpAddr;
+
+    printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
+    for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
+        PrintTcpConnectionState(pTcpTable->table[i].dwState);
+
+        IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
+        strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+        printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
+
+        printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+
+        IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
+        strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+        printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
+
+        printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+    }
+}
+
+
+void DumpModuleExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_MODULE pTcpTable)
+{
+    char szLocalAddr[128];
+    char szRemoteAddr[128];
+    struct in_addr IpAddr;
+
+    printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
+    for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
+        PrintTcpConnectionState(pTcpTable->table[i].dwState);
+
+        IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
+        strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+        printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
+
+        printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+
+        IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
+        strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+        printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
+
+        printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+
+        printf("\tTCP[%d] OwningPid: %d\n", i, pTcpTable->table[i].dwOwningPid);
+
+        WCHAR TimeString[MAX_PATH] = {0};
+        GetTimeString(pTcpTable->table[i].liCreateTimestamp, TimeString);
+        printf("\tTCP[%d] CreateTimestamp: %ls\n", i, TimeString);
+
+        //OwningModuleInfo里的TCPIP_OWNING_MODULE_SIZE个数，全都是0.
+    }
+}
+
+
+void DumpPidExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_PID pTcpTable)
+{
+
+
+}
+
+
+void DumpModuleExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_MODULE pTcpTable)
+{
+
+
+}
+
+
+void DumpPidExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_PID pTcpTable)
+{
+
+
+}
+
+
+void DumpExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass, _In_ PVOID pTcpTable)
+/*
+功能：打印各种情况下的信息。
+
+When the ulAf parameter is set to AF_INET, 
+the following table indicates the TCP table type to retrieve in the structure pointed to by the pTcpTable parameter for each possible TableClass value.
+TableClass value	pTcpTable structure
+TCP_TABLE_BASIC_ALL	MIB_TCPTABLE
+TCP_TABLE_BASIC_CONNECTIONS	MIB_TCPTABLE
+TCP_TABLE_BASIC_LISTENER	MIB_TCPTABLE
+TCP_TABLE_OWNER_MODULE_ALL	MIB_TCPTABLE_OWNER_MODULE
+TCP_TABLE_OWNER_MODULE_CONNECTIONS	MIB_TCPTABLE_OWNER_MODULE
+TCP_TABLE_OWNER_MODULE_LISTENER	MIB_TCPTABLE_OWNER_MODULE
+TCP_TABLE_OWNER_PID_ALL	MIB_TCPTABLE_OWNER_PID
+TCP_TABLE_OWNER_PID_CONNECTIONS	MIB_TCPTABLE_OWNER_PID
+TCP_TABLE_OWNER_PID_LISTENER	MIB_TCPTABLE_OWNER_PID
+
+When the ulAf parameter is set to AF_INET6, 
+the following table indicates the TCP table type to retrieve in the structure pointed to by the pTcpTable parameter for each possible TableClass value.
+TableClass value	pTcpTable structure
+TCP_TABLE_OWNER_MODULE_ALL	MIB_TCP6TABLE_OWNER_MODULE
+TCP_TABLE_OWNER_MODULE_CONNECTIONS	MIB_TCP6TABLE_OWNER_MODULE
+TCP_TABLE_OWNER_MODULE_LISTENER	MIB_TCP6TABLE_OWNER_MODULE
+TCP_TABLE_OWNER_PID_ALL	MIB_TCP6TABLE_OWNER_PID
+TCP_TABLE_OWNER_PID_CONNECTIONS	MIB_TCP6TABLE_OWNER_PID
+TCP_TABLE_OWNER_PID_LISTENER	MIB_TCP6TABLE_OWNER_PID
+
+The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and the TableClass set to TCP_TABLE_BASIC_LISTENER,
+TCP_TABLE_BASIC_CONNECTIONS, or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
+
+https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedtcptable
+*/
+{
+    switch (ulAf) {
+    case AF_INET:
+    {
+        switch (TableClass) {
+        case TCP_TABLE_BASIC_ALL:
+        case TCP_TABLE_BASIC_CONNECTIONS:
+        case TCP_TABLE_BASIC_LISTENER:
+            DumpBasicExtendedTcp4Table((PMIB_TCPTABLE)pTcpTable);
+            break;
+        case TCP_TABLE_OWNER_MODULE_ALL:
+        case TCP_TABLE_OWNER_MODULE_CONNECTIONS:
+        case TCP_TABLE_OWNER_MODULE_LISTENER:
+            DumpModuleExtendedTcp4Table((PMIB_TCPTABLE_OWNER_MODULE)pTcpTable);
+            break;
+        case TCP_TABLE_OWNER_PID_ALL:
+        case TCP_TABLE_OWNER_PID_CONNECTIONS:
+        case TCP_TABLE_OWNER_PID_LISTENER:
+            DumpPidExtendedTcp4Table((PMIB_TCPTABLE_OWNER_PID)pTcpTable);
+            break;
+        default:
+            _ASSERTE(FALSE);
+            break;
+        }
+
+        break;
+    }
+    case AF_INET6:
+    {
+        switch (TableClass) {
+        case TCP_TABLE_BASIC_LISTENER:
+        case TCP_TABLE_BASIC_CONNECTIONS:
+        case TCP_TABLE_BASIC_ALL:
+            _ASSERTE(FALSE);
+            break;
+        case TCP_TABLE_OWNER_MODULE_ALL:
+        case TCP_TABLE_OWNER_MODULE_CONNECTIONS:
+        case TCP_TABLE_OWNER_MODULE_LISTENER:
+            DumpModuleExtendedTcp6Table((PMIB_TCP6TABLE_OWNER_MODULE)pTcpTable);
+            break;
+        case TCP_TABLE_OWNER_PID_ALL:
+        case TCP_TABLE_OWNER_PID_CONNECTIONS:
+        case TCP_TABLE_OWNER_PID_LISTENER:
+            DumpPidExtendedTcp6Table((PMIB_TCP6TABLE_OWNER_PID)pTcpTable);
+            break;
+        default:
+            _ASSERTE(FALSE);
+            break;
+        }
+
+        break;
+    }
+    default:
+        _ASSERTE(FALSE);
+        break;
+    }
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass)
+/*
+功能：获取各类的ExtendedTcpTable信息。
+
+参数：
+[in] ulAf
+The version of IP used by the TCP endpoints.可选的取值有：AF_INET和AF_INET6。
+[in] TableClass
+This parameter can be one of the values from the TCP_TABLE_CLASS enumeration.
+
+The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and the TableClass set to TCP_TABLE_BASIC_LISTENER, 
+TCP_TABLE_BASIC_CONNECTIONS, or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
+
+其实这可以设置一个回调函数。
+*/
+{
+    PVOID pTcpTable = MALLOC(sizeof(void *));
+    if (pTcpTable == NULL) {
+        printf("Error allocating memory\n");
+        return 1;
+    }
+
+    ULONG ulSize = sizeof(void *);
+    DWORD dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, ulAf, TableClass, 0);
+    if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
+        FREE(pTcpTable);
+        pTcpTable = MALLOC(ulSize);
+        if (pTcpTable == NULL) {
+            printf("Error allocating memory\n");
+            return 1;
+        }
+    }
+
+#pragma prefast( push )
+#pragma prefast( disable: 28020, "表达式“*_Param_(2)>=sizeof(MIB_TCPTABLE)”对此调用无效" )
+    dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, ulAf, TableClass, 0);
+#pragma prefast( pop )      
+    if (dwRetVal == NO_ERROR) {
+        DumpExtendedTcpTable(ulAf, TableClass, pTcpTable);
     } else {
         printf("\tGetTcpTable2 failed with %d\n", dwRetVal);
         FREE(pTcpTable);

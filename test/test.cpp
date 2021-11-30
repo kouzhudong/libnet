@@ -36,7 +36,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //GetAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
 
-    RunEstats();
+    EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_MODULE_ALL);
 
     LocalFree(Arglist);
 }

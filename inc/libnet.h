@@ -328,6 +328,15 @@ __declspec(dllimport)
 void WINAPI EnumEntityArray();
 
 __declspec(dllimport)
+int WINAPI EnumExtendedTcp4TableByPid();
+
+__declspec(dllimport)
+int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass);
+
+__declspec(dllimport)
+int WINAPI EnumExtendedUdpTable4();
+
+__declspec(dllimport)
 int WINAPI EnumExtendedUdpTable6();
 
 __declspec(dllimport)
