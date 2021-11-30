@@ -531,22 +531,95 @@ void DumpModuleExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_MODULE pTcpTable)
 
 void DumpPidExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_PID pTcpTable)
 {
+    char szLocalAddr[128];
+    char szRemoteAddr[128];
+    struct in_addr IpAddr;
 
+    printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
+    for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
+        PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
+        IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
+        strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+        printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
+
+        printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+
+        IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
+        strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+        printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
+
+        printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+
+        printf("\tTCP[%d] Owning PID: %d\n", i, pTcpTable->table[i].dwOwningPid);
+    }
 }
 
 
 void DumpModuleExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_MODULE pTcpTable)
 {
+    char szLocalAddr[128];
+    char szRemoteAddr[128];
 
+    printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
+    for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
+        PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
+        InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr));
+        printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
+
+        printf("\tTCP[%d] LocalScopeId: %d \n", i, pTcpTable->table[i].dwLocalScopeId);
+
+        printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+
+        InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr));
+        printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
+
+        printf("\tTCP[%d] RemoteScopeId: %d \n", i, pTcpTable->table[i].dwRemoteScopeId);
+
+        printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+
+        printf("\tTCP[%d] OwningPid: %d\n", i, pTcpTable->table[i].dwOwningPid);
+
+        WCHAR TimeString[MAX_PATH] = {0};
+        GetTimeString(pTcpTable->table[i].liCreateTimestamp, TimeString);
+        printf("\tTCP[%d] CreateTimestamp: %ls\n", i, TimeString);
+
+        for (int j = 0; j < TCPIP_OWNING_MODULE_SIZE; j++) {
+            printf("\tTCP[%d] ModuleInfo: %llX\n", i, pTcpTable->table[i].OwningModuleInfo[j]);
+        }
+    }
 }
 
 
 void DumpPidExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_PID pTcpTable)
 {
+    char szLocalAddr[128];
+    char szRemoteAddr[128];
 
+    printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
+    for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
+        PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
+        InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr));
+        printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
+
+        printf("\tTCP[%d] LocalScopeId: %d \n", i, pTcpTable->table[i].dwLocalScopeId);
+
+        printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+
+        InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr));
+        printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
+
+        printf("\tTCP[%d] RemoteScopeId: %d \n", i, pTcpTable->table[i].dwRemoteScopeId);
+
+        printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+
+        printf("\tTCP[%d] OwningPid: %d\n", i, pTcpTable->table[i].dwOwningPid);
+    }
 }
 
 
