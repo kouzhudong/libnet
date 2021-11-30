@@ -1032,7 +1032,8 @@ int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv)
 /*
 addresses associated with the adapters
 
-This example retrieves the IP_ADAPTER_ADDRESSES structure for the adapters associated with the system and prints some members for each adapter interface.
+This example retrieves the IP_ADAPTER_ADDRESSES structure for the adapters associated with the system and
+prints some members for each adapter interface.
 
 The GetAdaptersAddresses function retrieves the addresses associated with the adapters on the local computer.
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
@@ -1089,8 +1090,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
     do {
         pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
         if (pAddresses == NULL) {
-            printf
-            ("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+            printf("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
             exit(1);
         }
 
@@ -1192,8 +1192,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                               NULL,
                               dwRetVal,
-                              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                              // Default language
+                              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),// Default language
                               (LPTSTR)&lpMsgBuf,
                               0,
                               NULL)) {
@@ -1214,6 +1213,31 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 }
 
 
+void WINAPI GetPerAdapterInfoEx(ULONG IfIndex)
+/*
+
+https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getperadapterinfo
+*/
+{
+    IP_PER_ADAPTER_INFO PerAdapterInfo = {};
+    ULONG               OutBufLen = sizeof(IP_PER_ADAPTER_INFO);
+    DWORD ret = GetPerAdapterInfo(IfIndex, &PerAdapterInfo, &OutBufLen);
+    _ASSERTE(ERROR_BUFFER_OVERFLOW == ret);
+
+    PIP_PER_ADAPTER_INFO pPerAdapterInfo = (PIP_PER_ADAPTER_INFO)HeapAlloc(GetProcessHeap(), 
+                                                                           HEAP_ZERO_MEMORY, 
+                                                                           OutBufLen);
+    _ASSERTE(pPerAdapterInfo);
+
+    ret = GetPerAdapterInfo(IfIndex, pPerAdapterInfo, &OutBufLen);
+    _ASSERTE(ERROR_SUCCESS == ret);
+
+    //这里也没啥东西，内容大多为NULL。
+
+    HeapFree(GetProcessHeap(), 0, pPerAdapterInfo);
+}
+
+
 EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumdaptersInfo()
@@ -1229,13 +1253,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
 {
     /* Declare and initialize variables */
 
-// It is possible for an adapter to have multiple
-// IPv4 addresses, gateways, and secondary WINS servers
-// assigned to the adapter. 
+// It is possible for an adapter to have multiple IPv4 addresses, gateways,
+// and secondary WINS servers assigned to the adapter. 
 //
-// Note that this sample code only prints out the 
-// first entry for the IP address/mask, and gateway, and
-// the primary and secondary WINS server for each adapter. 
+// Note that this sample code only prints out the first entry for the IP address/mask,
+// and gateway, and the primary and secondary WINS server for each adapter. 
 
     PIP_ADAPTER_INFO pAdapterInfo;
     PIP_ADAPTER_INFO pAdapter = NULL;
@@ -1280,6 +1302,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
             }
 
             printf("\tIndex: \t%d\n", pAdapter->Index);
+            GetPerAdapterInfoEx(pAdapter->Index);
 
             printf("\tType: \t");
             switch (pAdapter->Type) {
@@ -2058,7 +2081,8 @@ EXTERN_C
 __declspec(dllexport)
 void WINAPI RegistersNotifyNetworkConnectivityHintChange()
 /*
-Registers an application-defined callback function, to be called when the aggregate network connectivity level and cost hints change.
+Registers an application-defined callback function,
+to be called when the aggregate network connectivity level and cost hints change.
 
 这个也没有反注册的函数？没找到。
 
@@ -2286,8 +2310,8 @@ EXTERN_C
 __declspec(dllexport)
 void WINAPI RegistersNotifyUnicastIpAddressChange()
 /*
-The NotifyUnicastIpAddressChange function registers to be notified for changes to all unicast IP interfaces, unicast IPv4 addresses,
-or unicast IPv6 addresses on a local computer.
+The NotifyUnicastIpAddressChange function registers to be notified for changes to all unicast IP interfaces, 
+unicast IPv4 addresses, or unicast IPv6 addresses on a local computer.
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyunicastipaddresschange
 */

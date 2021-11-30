@@ -21,7 +21,7 @@
 
 int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 {
-    __debugbreak();
+    //__debugbreak();
 
     setlocale(LC_CTYPE, ".936");
 
@@ -32,12 +32,11 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         return 0;
     }
 
-    //EnumWfpInfo(Args, Arglist);
+    //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
 
-    //GetAdaptersAddressesInfo(argc, argv);
+    //GetAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
 
-    //Sessions();
-    EnumTcpTable();
+    EnumdaptersInfo();
 
     LocalFree(Arglist);
 }

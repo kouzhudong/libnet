@@ -42,6 +42,12 @@ __declspec(dllexport)
 int WINAPI EnumTcpTable();
 
 __declspec(dllexport)
+int WINAPI EnumExtendedUdpTable6();
+
+__declspec(dllexport)
+int WINAPI EnumdaptersInfo();
+
+__declspec(dllexport)
 void WINAPI RegistersNotifyIpInterfaceChange();
 
 __declspec(dllexport)
