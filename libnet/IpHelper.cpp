@@ -495,6 +495,33 @@ void DumpBasicExtendedTcp4Table(_In_ PMIB_TCPTABLE pTcpTable)
 }
 
 
+void GetOwnerModuleFromTcp4EntryEx(_In_ PMIB_TCPROW_OWNER_MODULE pTcpEntry)
+{
+    TCPIP_OWNER_MODULE_BASIC_INFO Buffer = {};
+    DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
+    DWORD ret = GetOwnerModuleFromTcpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &Buffer, &Size);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls\n", Buffer.pModuleName);
+        printf("\tModulePath: %ls\n", Buffer.pModulePath);
+        return;
+    }
+
+    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+
+    PTCPIP_OWNER_MODULE_BASIC_INFO pBuffer = (PTCPIP_OWNER_MODULE_BASIC_INFO)
+        HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
+    _ASSERTE(pBuffer);
+
+    ret = GetOwnerModuleFromTcpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, pBuffer, &Size);
+    _ASSERTE(NO_ERROR == ret);
+
+    printf("\tModuleName: %ls\n", pBuffer->pModuleName);
+    printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+
+    HeapFree(GetProcessHeap(), 0, pBuffer);
+}
+
+
 void DumpModuleExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_MODULE pTcpTable)
 {
     char szLocalAddr[128];
@@ -525,6 +552,8 @@ void DumpModuleExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_MODULE pTcpTable)
         printf("\tTCP[%d] CreateTimestamp: %ls\n", i, TimeString);
 
         //OwningModuleInfo里的TCPIP_OWNING_MODULE_SIZE个数，全都是0.
+
+        GetOwnerModuleFromTcp4EntryEx(&pTcpTable->table[i]);
     }
 }
 
@@ -554,6 +583,33 @@ void DumpPidExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_PID pTcpTable)
 
         printf("\tTCP[%d] Owning PID: %d\n", i, pTcpTable->table[i].dwOwningPid);
     }
+}
+
+
+void GetOwnerModuleFromTcp6EntryEx(_In_ PMIB_TCP6ROW_OWNER_MODULE pTcpEntry)
+{
+    TCPIP_OWNER_MODULE_BASIC_INFO Buffer = {};
+    DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
+    DWORD ret = GetOwnerModuleFromTcp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &Buffer, &Size);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls\n", Buffer.pModuleName);
+        printf("\tModulePath: %ls\n", Buffer.pModulePath);
+        return;
+    }
+
+    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+
+    PTCPIP_OWNER_MODULE_BASIC_INFO pBuffer = (PTCPIP_OWNER_MODULE_BASIC_INFO)
+        HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
+    _ASSERTE(pBuffer);
+
+    ret = GetOwnerModuleFromTcp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, pBuffer, &Size);
+    _ASSERTE(NO_ERROR == ret);
+
+    printf("\tModuleName: %ls\n", pBuffer->pModuleName);
+    printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+
+    HeapFree(GetProcessHeap(), 0, pBuffer);
 }
 
 
@@ -590,6 +646,8 @@ void DumpModuleExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_MODULE pTcpTable)
         for (int j = 0; j < TCPIP_OWNING_MODULE_SIZE; j++) {
             printf("\tTCP[%d] ModuleInfo: %llX\n", i, pTcpTable->table[i].OwningModuleInfo[j]);
         }
+
+        GetOwnerModuleFromTcp6EntryEx(&pTcpTable->table[i]);
     }
 }
 
