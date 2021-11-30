@@ -73,6 +73,7 @@
 #include <mshtmhst.h>
 #include <exdisp.h>
 #include <memory.h>
+#include <Tcpestats.h>
 
 #ifndef INITGUID
 #define INITGUID

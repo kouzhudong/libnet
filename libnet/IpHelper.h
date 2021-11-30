@@ -80,4 +80,8 @@ void WINAPI DeregisterNotifyUnicastIpAddressChange();
 __declspec(dllexport)
 void WINAPI RegistersNotifyUnicastIpAddressChange();
 
+__declspec(dllexport)
+int WINAPI RunEstats();
+
+
 EXTERN_C_END

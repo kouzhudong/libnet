@@ -289,6 +289,9 @@ void WINAPI DeregisterNotifyUnicastIpAddressChange();
 __declspec(dllimport)
 void WINAPI RegistersNotifyUnicastIpAddressChange();
 
+__declspec(dllimport)
+int WINAPI RunEstats();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

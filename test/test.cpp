@@ -36,7 +36,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //GetAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
 
-    EnumdaptersInfo();
+    RunEstats();
 
     LocalFree(Arglist);
 }
