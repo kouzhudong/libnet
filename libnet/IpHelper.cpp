@@ -957,6 +957,32 @@ MSDN没有例子。
 }
 
 
+void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
+{
+    TCPIP_OWNER_MODULE_BASIC_INFO temp = {0};
+    DWORD                        Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
+    DWORD ret = GetOwnerModuleFromUdpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
+    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+
+    PTCPIP_OWNER_MODULE_BASIC_INFO ptombi = (PTCPIP_OWNER_MODULE_BASIC_INFO)
+        HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
+    _ASSERTE(ptombi);
+
+    ret = GetOwnerModuleFromUdpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
+    _ASSERTE(NO_ERROR == ret);
+
+    printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
+
+    /*
+    pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
+    其实完全可根据dwOwningPid获取EXE的全路径。
+    GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
+    */    
+
+    HeapFree(GetProcessHeap(), 0, ptombi);
+}
+
+
 EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumExtendedUdpTable4()
@@ -977,7 +1003,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
     // Make an initial call to GetUdpTable to get the necessary size into the dwSize variable
     DWORD dwRetVal = 0;
-    if ((dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET, UDP_TABLE_OWNER_MODULE, 0)) == ERROR_INSUFFICIENT_BUFFER) {
+    dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET, UDP_TABLE_OWNER_MODULE, 0);
+    if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pUdpTable);
         pUdpTable = (PMIB_UDPTABLE_OWNER_MODULE)MALLOC(dwSize);
         if (pUdpTable == NULL) {
@@ -987,7 +1014,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     }
 
     // Make a second call to GetUdpTable to get the actual data we require
-    if ((dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET, UDP_TABLE_OWNER_MODULE, 0)) == NO_ERROR) {
+    dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET, UDP_TABLE_OWNER_MODULE, 0);
+    if (dwRetVal == NO_ERROR) {
 
         printf("\tUdpV4的总数:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
         printf("\n");
@@ -1003,29 +1031,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
             printf("\tUdp[%d] Local Port: %d \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
             printf("\tUdp[%d] OwningPid: %d \n", i, (u_short)pUdpTable->table[i].dwOwningPid);
 
-            TCPIP_OWNER_MODULE_BASIC_INFO temp = {0};
-            DWORD                        Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
-            DWORD ret = GetOwnerModuleFromUdpEntry(&pUdpTable->table[i], TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
-            _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
-
-            PTCPIP_OWNER_MODULE_BASIC_INFO ptombi = (PTCPIP_OWNER_MODULE_BASIC_INFO)
-                HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
-            _ASSERTE(ptombi);
-
-            ret = GetOwnerModuleFromUdpEntry(&pUdpTable->table[i], TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
-            _ASSERTE(NO_ERROR == ret);
-
-            printf("\tUdp[%d] ModuleName: %ls, ModulePath: %ls \n", i, ptombi->pModuleName, ptombi->pModulePath);
-
-            /*
-            pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
-            其实完全可根据dwOwningPid获取EXE的全路径。
-            GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
-            */
+            GetOwnerModuleFromUdpEntryEx(&pUdpTable->table[i]);
 
             printf("\n");
-
-            HeapFree(GetProcessHeap(), 0, ptombi);
         }
     } else {
         printf("\tGetExtendedUdpTable failed with %d\n", dwRetVal);
@@ -1039,6 +1047,38 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     }
 
     return 0;
+}
+
+
+void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
+{
+    TCPIP_OWNER_MODULE_BASIC_INFO temp = {0};
+    DWORD                        Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
+    DWORD ret = GetOwnerModuleFromUdp6Entry(pTcpEntry,
+                                            TCPIP_OWNER_MODULE_INFO_BASIC,
+                                            &temp,
+                                            &Size);
+    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+
+    PTCPIP_OWNER_MODULE_BASIC_INFO ptombi = (PTCPIP_OWNER_MODULE_BASIC_INFO)
+        HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
+    _ASSERTE(ptombi);
+
+    ret = GetOwnerModuleFromUdp6Entry(pTcpEntry,
+                                      TCPIP_OWNER_MODULE_INFO_BASIC,
+                                      ptombi,
+                                      &Size);
+    _ASSERTE(NO_ERROR == ret);
+
+    printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
+
+    /*
+    pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
+    其实完全可根据dwOwningPid获取EXE的全路径。
+    GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
+    */    
+
+    HeapFree(GetProcessHeap(), 0, ptombi);
 }
 
 
@@ -1062,7 +1102,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
     // Make an initial call to GetUdpTable to get the necessary size into the dwSize variable
     DWORD dwRetVal = 0;
-    if ((dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET6, UDP_TABLE_OWNER_MODULE, 0)) == ERROR_INSUFFICIENT_BUFFER) {
+    dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET6, UDP_TABLE_OWNER_MODULE, 0);
+    if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pUdpTable);
         pUdpTable = (PMIB_UDP6TABLE_OWNER_MODULE)MALLOC(dwSize);
         if (pUdpTable == NULL) {
@@ -1072,8 +1113,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     }
 
     // Make a second call to GetUdpTable to get the actual data we require
-    if ((dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET6, UDP_TABLE_OWNER_MODULE, 0)) == NO_ERROR) {
-
+    dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET6, UDP_TABLE_OWNER_MODULE, 0);
+    if (dwRetVal == NO_ERROR) {
         printf("\tUdpV6的总数:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
         printf("\n");
 
@@ -1086,35 +1127,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
             printf("\tUdp[%d] Local Port: %d \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
             printf("\tUdp[%d] OwningPid: %d \n", i, (u_short)pUdpTable->table[i].dwOwningPid);
 
-            TCPIP_OWNER_MODULE_BASIC_INFO temp = {0};
-            DWORD                        Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
-            DWORD ret = GetOwnerModuleFromUdp6Entry(&pUdpTable->table[i],
-                                                    TCPIP_OWNER_MODULE_INFO_BASIC,
-                                                    &temp,
-                                                    &Size);
-            _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
-
-            PTCPIP_OWNER_MODULE_BASIC_INFO ptombi = (PTCPIP_OWNER_MODULE_BASIC_INFO)
-                HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
-            _ASSERTE(ptombi);
-
-            ret = GetOwnerModuleFromUdp6Entry(&pUdpTable->table[i],
-                                              TCPIP_OWNER_MODULE_INFO_BASIC,
-                                              ptombi,
-                                              &Size);
-            _ASSERTE(NO_ERROR == ret);
-
-            printf("\tUdp[%d] ModuleName: %ls, ModulePath: %ls \n", i, ptombi->pModuleName, ptombi->pModulePath);
-
-            /*
-            pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
-            其实完全可根据dwOwningPid获取EXE的全路径。
-            GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
-            */
+            GetOwnerModuleFromUdp6EntryEx(&pUdpTable->table[i]);
 
             printf("\n");
-
-            HeapFree(GetProcessHeap(), 0, ptombi);
         }
     } else {
         printf("\tGetExtendedUdpTable failed with %d\n", dwRetVal);
@@ -1138,7 +1153,8 @@ int WINAPI EnumIpAddrTable()
 interface–to–IPv4 address mapping table
 
 The GetIpAddrTable function retrieves the interface–to–IPv4 address mapping table.
-The following example retrieves the IP address table, then prints some members of the IP address entries in the table.
+The following example retrieves the IP address table, 
+then prints some members of the IP address entries in the table.
 
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa365949(v=vs.85).aspx
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
