@@ -292,6 +292,9 @@ void WINAPI RegistersNotifyUnicastIpAddressChange();
 __declspec(dllimport)
 int WINAPI RunEstats();
 
+__declspec(dllimport)
+int WINAPI GetMacByIPv4(int argc, char ** argv);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
