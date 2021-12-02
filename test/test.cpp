@@ -36,8 +36,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //GetAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
 
-    EnumExtendedUdpTable6();
+    //EnumExtendedUdpTable6();
     //EnumExtendedTcpTable(AF_INET6, TCP_TABLE_OWNER_MODULE_ALL);
+    //EnumIPv4ByMask("192.168.5.3", "255.255.255.0");
+    EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
 
     LocalFree(Arglist);
 }

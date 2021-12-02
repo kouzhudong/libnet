@@ -50,3 +50,13 @@ extern RtlIpv6StringToAddressRoutine Ipv6StringToAddressW;
 
 
 int _cdecl special_ip();
+
+
+EXTERN_C_START
+
+
+__declspec(dllexport)
+void WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask);
+
+
+EXTERN_C_END

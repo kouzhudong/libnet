@@ -300,6 +300,13 @@ int WINAPI GetMacByIPv4(int argc, char ** argv);
 
 
 __declspec(dllimport)
+void WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+__declspec(dllimport)
 void WINAPI HttpReadData();
 
 __declspec(dllimport)
