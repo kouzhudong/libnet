@@ -38,8 +38,9 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //EnumExtendedUdpTable6();
     //EnumExtendedTcpTable(AF_INET6, TCP_TABLE_OWNER_MODULE_ALL);
-    EnumIPv4ByMasks("192.168.5.3", 24);
+    //EnumIPv4ByMasks("192.168.5.3", 24);
     //EnumIPv4ByMasks("172.31.96.1", 20);
+    EnumIPv4ByMasks("1.2.3.5", 1);
 
     LocalFree(Arglist);
 }
