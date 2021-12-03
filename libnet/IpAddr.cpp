@@ -270,15 +270,11 @@ EnumIPv4ByMasks("1.2.3.5", 32);
     InetPtonA(AF_INET, ipv4, &IPv4);
 
     IN_ADDR Mask;    
+    Mask.S_un.S_addr = 0;
 
-    if (32 == mask) {
-        Mask.S_un.S_addr = 0;
-    } else {
-        Mask.S_un.S_addr = 1;
-        for (char x = 0; x < (32 - mask); x++) {
-            ULONG t = 1 << x;
-            Mask.S_un.S_addr |= t;
-        }
+    for (char x = 0; x < (32 - mask); x++) {
+        ULONG t = 1 << x;
+        Mask.S_un.S_addr |= t;
     }
 
     Mask.S_un.S_addr = ~Mask.S_un.S_addr;
@@ -297,21 +293,18 @@ EnumIPv4ByMasks("1.2.3.5", 32);
     printf("BaseAddr:%ls\n", Base);
 
     UINT64 numbers = (UINT64)1 << (32 - mask);
-    if (0 == mask) {
-        numbers = (UINT64)1 << 32;
-    }
 
     printf("IPv4的子网掩码位数：%d\n", mask);
     printf("IPv4地址个数（包括特殊地址）：%I64d\n", numbers);
     printf("\n");
 
     for (ULONG i = 0; i < numbers; i++) {
-        IN_ADDR start;
+        IN_ADDR temp;
 
-        start.S_un.S_addr = base.S_un.S_addr + ntohl(i);
+        temp.S_un.S_addr = base.S_un.S_addr + ntohl(i);
 
         wchar_t buf[46] = {0};
-        InetNtop(AF_INET, &start, buf, _ARRAYSIZE(buf));
+        InetNtop(AF_INET, &temp, buf, _ARRAYSIZE(buf));
 
         printf("%ls\n", buf);
     }
