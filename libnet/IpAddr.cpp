@@ -249,4 +249,61 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
 }
 
 
+EXTERN_C
+__declspec(dllexport)
+void WINAPI EnumIPv4ByMasks(const char * ipv4, BYTE mask)
+/*
+功能：枚举指定网络的IPv4(示例IPv4和子网掩码).
+
+测试用例：
+EnumIPv4ByMasks("192.168.5.3", 24);
+EnumIPv4ByMasks("172.31.96.1", 20);
+*/
+{
+    _ASSERTE(mask <= 32);
+
+    IN_ADDR IPv4;
+    InetPtonA(AF_INET, ipv4, &IPv4);
+
+    IN_ADDR Mask;
+    Mask.S_un.S_addr = 1;
+
+    for (char x = 0; x < (32 - mask); x++) {
+        ULONG t = 1 << x;
+        Mask.S_un.S_addr |= t;
+    }
+
+    Mask.S_un.S_addr = ~Mask.S_un.S_addr;
+
+    Mask.S_un.S_addr = ntohl(Mask.S_un.S_addr);
+
+    wchar_t buffer[46] = {0};
+    InetNtop(AF_INET, &Mask, buffer, _ARRAYSIZE(buffer));
+    printf("mask:%ls\n", buffer);
+
+    IN_ADDR base;
+    base.S_un.S_addr = IPv4.S_un.S_addr & Mask.S_un.S_addr;
+
+    wchar_t Base[46] = {0};
+    InetNtop(AF_INET, &base, Base, _ARRAYSIZE(Base));
+    printf("BaseAddr:%ls\n", Base);
+
+    ULONG numbers = 1 << (32 - mask);
+    printf("IPv4的子网掩码位数：%d\n", mask);
+    printf("IPv4地址个数（包括特殊地址）：%d\n", numbers);
+    printf("\n");
+
+    for (ULONG i = 0; i < numbers; i++) {
+        IN_ADDR start;
+
+        start.S_un.S_addr = base.S_un.S_addr + ntohl(i);
+
+        wchar_t buf[46] = {0};
+        InetNtop(AF_INET, &start, buf, _ARRAYSIZE(buf));
+
+        printf("%ls\n", buf);
+    }
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
