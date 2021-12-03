@@ -216,11 +216,17 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
 
     ULONG z = ntohl(Mask.S_un.S_addr);
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //计算起始地址。
+
     IN_ADDR base;
     base.S_un.S_addr = IPv4.S_un.S_addr & Mask.S_un.S_addr;
 
     wchar_t Base[46] = {0};
     InetNtop(AF_INET, &base, Base, _ARRAYSIZE(Base));
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //扫描子网掩码中（后面的）0的个数（按位计算），既便于计算子网掩码。
 
     char bits = 0;
 
@@ -231,6 +237,9 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
             break;
         }
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //打印信息。
 
     ULONG numbers = 1 << bits;
     printf("IPv4的子网掩码位数：%d\n", 32 - bits);
@@ -266,8 +275,18 @@ EnumIPv4ByMasks("1.2.3.5", 32);
 {
     _ASSERTE(mask <= 32);
 
+    //此处可检验输入IPv4的合法性。
     IN_ADDR IPv4;
     InetPtonA(AF_INET, ipv4, &IPv4);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    （根据mask）生成子网掩码。
+    生成的步骤/思路：
+    1.把子网掩码后面的0变为1.
+    2.再取反。
+    3.再转换为网络序。
+    */
 
     IN_ADDR Mask;    
     Mask.S_un.S_addr = 0;
@@ -285,6 +304,9 @@ EnumIPv4ByMasks("1.2.3.5", 32);
     InetNtop(AF_INET, &Mask, buffer, _ARRAYSIZE(buffer));
     printf("mask:%ls\n", buffer);
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //计算起始/基础地址。
+
     IN_ADDR base;
     base.S_un.S_addr = IPv4.S_un.S_addr & Mask.S_un.S_addr;
 
@@ -292,7 +314,10 @@ EnumIPv4ByMasks("1.2.3.5", 32);
     InetNtop(AF_INET, &base, Base, _ARRAYSIZE(Base));
     printf("BaseAddr:%ls\n", Base);
 
-    UINT64 numbers = (UINT64)1 << (32 - mask);
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //打印信息。
+
+    UINT64 numbers = (UINT64)1 << (32 - mask);//必须是64位，否则可能整数溢出。
 
     printf("IPv4的子网掩码位数：%d\n", mask);
     printf("IPv4地址个数（包括特殊地址）：%I64d\n", numbers);
