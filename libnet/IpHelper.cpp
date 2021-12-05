@@ -1822,6 +1822,19 @@ int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
 
 EXTERN_C
 __declspec(dllexport)
+int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac)
+{
+    char Gateway[4 * 4];
+    GetGatewayByIPv4(IPv4, Gateway);
+
+    GetMacByIPv4(inet_addr(Gateway), GatewayMac);
+
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
 int WINAPI EnumIpNetTable()
 /*
 IPv4 to physical address mapping table

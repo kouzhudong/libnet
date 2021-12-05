@@ -34,18 +34,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
 
-    EnumAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
+    //EnumAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
 
-    EnumdaptersInfo();
-    //EnumExtendedTcpTable(AF_INET6, TCP_TABLE_OWNER_MODULE_ALL);
-    //EnumIPv4ByMasks("192.168.5.3", 24);
-    //EnumIPv4ByMasks("172.31.96.1", 20);
-    //EnumIPv4ByMasks("1.2.3.5", 1);
     BYTE MacAddr[6] = {0};
-    GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
-
-    char Gateway[4 * 4];
-    GetGatewayByIPv4("192.168.5.3", Gateway);
+    GetGatewayMacByIPv4("192.168.5.3", MacAddr);
 
     LocalFree(Arglist);
 }
