@@ -1367,27 +1367,111 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 
             pAnycast = pCurrAddresses->FirstAnycastAddress;
             if (pAnycast) {
-                for (i = 0; pAnycast != NULL; i++)
+                for (i = 0; pAnycast != NULL; i++) {
+                    switch (pAnycast->Address.lpSockaddr->sa_family) {
+                    case AF_INET:
+                    {
+                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pAnycast->Address.lpSockaddr;
+
+                        printf("\tAnycast:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
+
+                        break;
+                    }
+                    case AF_INET6:
+                    {
+                        DWORD ipbufferlength = 46;
+                        char ipstringbuffer[46] = {0};
+
+                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pAnycast->Address.lpSockaddr;
+                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+
+                        printf("\tAnycast:%s\n", ipstringbuffer);
+
+                        break;
+                    }
+                    default:
+                        _ASSERTE(false);
+                        break;
+                    }
+
                     pAnycast = pAnycast->Next;
+                }
                 printf("\tNumber of Anycast Addresses: %d\n", i);
-            } else
+            } else {
                 printf("\tNo Anycast Addresses\n");
+            }
 
             pMulticast = pCurrAddresses->FirstMulticastAddress;
             if (pMulticast) {
-                for (i = 0; pMulticast != NULL; i++)
+                for (i = 0; pMulticast != NULL; i++) {
+                    switch (pMulticast->Address.lpSockaddr->sa_family) {
+                    case AF_INET:
+                    {
+                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pMulticast->Address.lpSockaddr;
+
+                        printf("\tMulticast:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
+
+                        break;
+                    }
+                    case AF_INET6:
+                    {
+                        DWORD ipbufferlength = 46;
+                        char ipstringbuffer[46] = {0};
+
+                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pMulticast->Address.lpSockaddr;
+                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+
+                        printf("\tMulticast:%s\n", ipstringbuffer);
+
+                        break;
+                    }
+                    default:
+                        _ASSERTE(false);
+                        break;
+                    }
+
                     pMulticast = pMulticast->Next;
+                }
                 printf("\tNumber of Multicast Addresses: %d\n", i);
-            } else
+            } else {
                 printf("\tNo Multicast Addresses\n");
+            }
 
             pDnServer = pCurrAddresses->FirstDnsServerAddress;
             if (pDnServer) {
-                for (i = 0; pDnServer != NULL; i++)
+                for (i = 0; pDnServer != NULL; i++) {
+                    switch (pDnServer->Address.lpSockaddr->sa_family) {
+                    case AF_INET:
+                    {
+                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pDnServer->Address.lpSockaddr;
+
+                        printf("\tDnsServer:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
+
+                        break;
+                    }
+                    case AF_INET6:
+                    {
+                        DWORD ipbufferlength = 46;
+                        char ipstringbuffer[46] = {0};
+
+                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pDnServer->Address.lpSockaddr;
+                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+
+                        printf("\tDnsServer:%s\n", ipstringbuffer);
+
+                        break;
+                    }
+                    default:
+                        _ASSERTE(false);
+                        break;
+                    }
+
                     pDnServer = pDnServer->Next;
+                }
                 printf("\tNumber of DNS Server Addresses: %d\n", i);
-            } else
+            } else {
                 printf("\tNo DNS Server Addresses\n");
+            }
 
             printf("\tDNS Suffix: %wS\n", pCurrAddresses->DnsSuffix);
             printf("\tDescription: %wS\n", pCurrAddresses->Description);
