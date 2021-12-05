@@ -359,6 +359,9 @@ __declspec(dllimport)
 int WINAPI EnumdaptersInfo();
 
 __declspec(dllimport)
+int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
+
+__declspec(dllimport)
 int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv);
 
 

@@ -1776,6 +1776,52 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
 
 EXTERN_C
 __declspec(dllexport)
+int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
+{
+    PIP_ADAPTER_INFO pAdapterInfo;
+    PIP_ADAPTER_INFO pAdapter = NULL;
+    DWORD dwRetVal = 0;
+
+    ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+    pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(sizeof(IP_ADAPTER_INFO));
+    if (pAdapterInfo == NULL) {
+        printf("Error allocating memory needed to call GetAdaptersinfo\n");
+        return 1;
+    }
+
+    // Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
+    if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+        FREE(pAdapterInfo);
+        pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(ulOutBufLen);
+        if (pAdapterInfo == NULL) {
+            printf("Error allocating memory needed to call GetAdaptersinfo\n");
+            return 1;
+        }
+    }
+
+    if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
+        pAdapter = pAdapterInfo;
+        while (pAdapter) {
+            if (_stricmp(pAdapter->IpAddressList.IpAddress.String, IPv4) == 0) {
+                lstrcpyA(Gateway, pAdapter->GatewayList.IpAddress.String);
+                break;
+            }
+
+            pAdapter = pAdapter->Next;
+        }
+    } else {
+        printf("GetAdaptersInfo failed with error: %d\n", dwRetVal);
+    }
+
+    if (pAdapterInfo)
+        FREE(pAdapterInfo);
+
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
 int WINAPI EnumIpNetTable()
 /*
 IPv4 to physical address mapping table

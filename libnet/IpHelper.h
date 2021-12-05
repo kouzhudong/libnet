@@ -57,6 +57,9 @@ __declspec(dllexport)
 int WINAPI EnumdaptersInfo();
 
 __declspec(dllexport)
+int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
+
+__declspec(dllexport)
 int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv);
 
 __declspec(dllexport)
