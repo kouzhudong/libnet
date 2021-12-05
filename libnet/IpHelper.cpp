@@ -1248,6 +1248,9 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv)
 /*
+功能：枚举每个网卡的信息。
+      其实，这里好多信息都没打印。
+
 addresses associated with the adapters
 
 This example retrieves the IP_ADAPTER_ADDRESSES structure for the adapters associated with the system and
@@ -1261,13 +1264,9 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
     DWORD dwSize = 0;
     DWORD dwRetVal = 0;
     unsigned int i = 0;
-
-    // Set the flags to pass to GetAdaptersAddresses
-    ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
-
-    // default to unspecified address family (both)
-    ULONG family = AF_UNSPEC;
-
+    
+    ULONG flags = GAA_FLAG_INCLUDE_PREFIX;// Set the flags to pass to GetAdaptersAddresses    
+    ULONG family = AF_UNSPEC;// default to unspecified address family (both)
     LPVOID lpMsgBuf = NULL;
 
     PIP_ADAPTER_ADDRESSES pAddresses = NULL;
@@ -1301,9 +1300,8 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
         printf("AF_INET6\n");
     if (family == AF_UNSPEC)
         printf("AF_UNSPEC\n\n");
-
-    // Allocate a 15 KB buffer to start with.
-    outBufLen = WORKING_BUFFER_SIZE;
+    
+    outBufLen = WORKING_BUFFER_SIZE;// Allocate a 15 KB buffer to start with.
 
     do {
         pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
@@ -1333,8 +1331,36 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 
             pUnicast = pCurrAddresses->FirstUnicastAddress;
             if (pUnicast != NULL) {
-                for (i = 0; pUnicast != NULL; i++)
+                for (i = 0; pUnicast != NULL; i++) {
+                    /*这里可以打印IP地址信息*/
+                    switch (pUnicast->Address.lpSockaddr->sa_family) {
+                    case AF_INET:
+                    {
+                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pUnicast->Address.lpSockaddr;
+
+                        printf("\tIPv4:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
+
+                        break;
+                    }
+                    case AF_INET6:
+                    {
+                        DWORD ipbufferlength = 46;
+                        char ipstringbuffer[46] = {0};
+
+                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pUnicast->Address.lpSockaddr;
+                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+
+                        printf("\tIPv6:%s\n", ipstringbuffer);
+
+                        break;
+                    }
+                    default:
+                        _ASSERTE(false);
+                        break;
+                    }
+
                     pUnicast = pUnicast->Next;
+                }
                 printf("\tNumber of Unicast Addresses: %d\n", i);
             } else
                 printf("\tNo Unicast Addresses\n");
@@ -1392,11 +1418,63 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 
             pPrefix = pCurrAddresses->FirstPrefix;
             if (pPrefix) {
-                for (i = 0; pPrefix != NULL; i++)
+                for (i = 0; pPrefix != NULL; i++) {
+
                     pPrefix = pPrefix->Next;
+                }
                 printf("\tNumber of IP Adapter Prefix entries: %d\n", i);
-            } else
+            } else {
                 printf("\tNumber of IP Adapter Prefix entries: 0\n");
+            }
+
+            PIP_ADAPTER_WINS_SERVER_ADDRESS_LH FirstWinsServerAddress = pCurrAddresses->FirstWinsServerAddress;
+            if (FirstWinsServerAddress) {
+                for (i = 0; FirstWinsServerAddress != NULL; i++) {
+                    //打印 Wins Server Address。
+
+                    FirstWinsServerAddress = FirstWinsServerAddress->Next;
+                }
+                printf("\tNumber of Wins Server: %d\n", i);
+            } else {
+                printf("\tNumber of Wins Server: 0\n");//好像都是这个。
+            }
+
+            PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress = pCurrAddresses->FirstGatewayAddress;
+            if (FirstGatewayAddress) {
+                for (i = 0; FirstGatewayAddress != NULL; i++) {
+                    //打印 Gateway Address。
+                    switch (FirstGatewayAddress->Address.lpSockaddr->sa_family) {
+                    case AF_INET:
+                    {
+                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)FirstGatewayAddress->Address.lpSockaddr;
+
+                        printf("\tGatewayAddress:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
+
+                        break;
+                    }
+                    case AF_INET6:
+                    {
+                        DWORD ipbufferlength = 46;
+                        char ipstringbuffer[46] = {0};
+
+                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
+                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+
+                        printf("\tGatewayAddress:%s\n", ipstringbuffer);
+
+                        break;
+                    }
+                    default:
+                        _ASSERTE(false);
+                        break;
+                    }
+
+                    FirstGatewayAddress = FirstGatewayAddress->Next;
+                }
+                printf("\tNumber of Gateway: %d\n", i);
+            } else {
+                printf("\tNumber of Gateway: 0\n");//好像都是这个。
+            }
 
             printf("\n");
 
@@ -3392,11 +3470,12 @@ void usage(char * pname)
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI GetMacByIPv4(int argc, char ** argv)
+int WINAPI GetMacByIPv4Test(int argc, char ** argv)
 /*
 功能：获取(局域网，不能是互联网)IPv4对应的MAC地址。
 
-The SendARP function sends an Address Resolution Protocol (ARP) request to obtain the physical address that corresponds to the specified destination IPv4 address.
+The SendARP function sends an Address Resolution Protocol (ARP) request to 
+obtain the physical address that corresponds to the specified destination IPv4 address.
 
 The following code demonstrates how to obtain the hardware or media access control (MAC) address associated with a specified IPv4 address.
 
@@ -3450,7 +3529,6 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
     printf("Sending ARP request for IP address: %s\n", DestIpString);
 
     dwRetVal = SendARP(DestIp, SrcIp, &MacAddr, &PhysAddrLen);
-
     if (dwRetVal == NO_ERROR) {
         bPhysAddr = (BYTE *)&MacAddr;
         if (PhysAddrLen) {
@@ -3460,8 +3538,9 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
                 else
                     printf("%.2X-", (int)bPhysAddr[i]);
             }
-        } else
+        } else {
             printf("Warning: SendArp completed successfully, but returned length=0\n");
+        }
     } else {
         printf("Error: SendArp failed with error: %d", dwRetVal);
         switch (dwRetVal) {
@@ -3487,6 +3566,37 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
             printf("\n");
             break;
         }
+    }
+
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr)
+/*
+功能：获取(局域网，不能是互联网)IPv4对应的MAC地址。
+
+用法实例：
+BYTE MacAddr[6] = {0};
+GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
+*/
+{
+    //if (DestIpString == NULL || DestIpString[0] == '\0') {
+    //    return ERROR_INVALID_PARAMETER;
+    //}
+
+    ULONG PhysAddrLen = 6;
+    DWORD dwRetVal = SendARP(DestIp, 0, MacAddr, &PhysAddrLen);
+    if (dwRetVal == NO_ERROR) {
+        if (PhysAddrLen) {
+            
+        } else {
+            printf("Warning: SendArp completed successfully, but returned length=0\n");
+        }
+    } else {
+        printf("Error: SendArp failed with error: %d", dwRetVal);
     }
 
     return 0;

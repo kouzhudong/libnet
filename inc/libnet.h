@@ -293,7 +293,10 @@ __declspec(dllimport)
 int WINAPI RunEstats();
 
 __declspec(dllimport)
-int WINAPI GetMacByIPv4(int argc, char ** argv);
+int WINAPI GetMacByIPv4Test(int argc, char ** argv);
+
+__declspec(dllimport)
+int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,6 +357,9 @@ int WINAPI EnumExtendedUdpTable6();
 
 __declspec(dllimport)
 int WINAPI EnumdaptersInfo();
+
+__declspec(dllimport)
+int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -57,6 +57,9 @@ __declspec(dllexport)
 int WINAPI EnumdaptersInfo();
 
 __declspec(dllexport)
+int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv);
+
+__declspec(dllexport)
 void WINAPI RegistersNotifyIpInterfaceChange();
 
 __declspec(dllexport)
@@ -93,7 +96,10 @@ __declspec(dllexport)
 int WINAPI RunEstats();
 
 __declspec(dllexport)
-int WINAPI GetMacByIPv4(int argc, char ** argv);
+int WINAPI GetMacByIPv4Test(int argc, char ** argv);
+
+__declspec(dllexport)
+int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr);
 
 
 EXTERN_C_END
