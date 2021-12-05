@@ -372,13 +372,14 @@ int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv);
 
 
 __declspec(dllimport)
-void WINAPI PacketizeAck4(IN PIPV4_HEADER in_ipv4, IN PBYTE SrcMac, OUT PRAW_TCP buffer);
+void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW_TCP buffer);
 
 __declspec(dllimport)
-void WINAPI PacketizeAck6(IN PIPV6_HEADER ipv6, IN PBYTE SrcMac, OUT PRAW6_TCP buffer);
+void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer);
 
 __declspec(dllimport)
 void WINAPI PacketizeSyn4(IN PBYTE SrcMac,   //6字节长的本地的MAC。
+                          IN PBYTE DesMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
                           IN UINT16 th_sport,//网络序。如果是主机序，请用htons转换下。
@@ -388,6 +389,7 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,   //6字节长的本地的MAC。
 
 __declspec(dllimport)
 void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
+                          IN PBYTE DesMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
                           IN UINT16 th_sport,//网络序。如果是主机序，请用htons转换下。

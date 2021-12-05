@@ -5,22 +5,25 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void InitEthernetHeader(IN PBYTE SrcMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
+void InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
 /*
 功能：填写以太头。
 
 参数：
 Type，取值，如：ETHERNET_TYPE_IPV4，ETHERNET_TYPE_IPV6， ETHERNET_TYPE_ARP等。
 
-注释：填写虚假的目的MAC，也可发送出去。
+注释：
+1.填写虚假的目的MAC，也可发送出去。
+2.如果是想接收包，还是建议填写正确的目标的MAC（局域网的）.
+3.这个MAC需要计算，如网关的MAC。
 */
 {
-    eth_hdr->Destination.Byte[0] = 0x99;
-    eth_hdr->Destination.Byte[1] = 0x99;
-    eth_hdr->Destination.Byte[2] = 0x99;
-    eth_hdr->Destination.Byte[3] = 0x99;
-    eth_hdr->Destination.Byte[4] = 0x99;
-    eth_hdr->Destination.Byte[5] = 0x99;
+    eth_hdr->Destination.Byte[0] = DesMac[0];
+    eth_hdr->Destination.Byte[1] = DesMac[1];
+    eth_hdr->Destination.Byte[2] = DesMac[2];
+    eth_hdr->Destination.Byte[3] = DesMac[3];
+    eth_hdr->Destination.Byte[4] = DesMac[4];
+    eth_hdr->Destination.Byte[5] = DesMac[5];
 
     eth_hdr->Source.Byte[0] = SrcMac[0];
     eth_hdr->Source.Byte[1] = SrcMac[1];
@@ -231,14 +234,14 @@ OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)，
 
 EXTERN_C
 __declspec(dllexport)
-void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, OUT PRAW_TCP buffer)
+void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW_TCP buffer)
 {
     ASSERT(SrcMac);
     ASSERT(buffer);
 
     PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv4Header + Ip4HeaderLengthInBytes(IPv4Header));
 
-    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV4, &buffer->eth_hdr);
+    InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, &buffer->eth_hdr);
     InitIpv4Header(IPv4Header,
                    sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT),
                    false,
@@ -258,6 +261,7 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, OUT PRAW_
 EXTERN_C
 __declspec(dllexport)
 void WINAPI PacketizeSyn4(IN PBYTE SrcMac,    //6字节长的本地的MAC。
+                          IN PBYTE DesMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
                           IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
@@ -267,7 +271,7 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,    //6字节长的本地的MAC。
 {
     PRAW_TCP tcp4 = (PRAW_TCP)buffer;
 
-    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV4, &tcp4->eth_hdr);
+    InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, &tcp4->eth_hdr);
 
     InitIpv4Header(SourceAddress,
                    DestinationAddress,
@@ -368,14 +372,14 @@ void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
 
 EXTERN_C
 __declspec(dllexport)
-void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, OUT PRAW6_TCP buffer)
+void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer)
 {
     ASSERT(SrcMac);
     ASSERT(buffer);
 
     PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv6Header + sizeof(IPV6_HEADER));
 
-    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
+    InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
     InitIpv6Header(IPv6Header, false, sizeof(TCP_OPT), &buffer->ip_hdr);
     InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
@@ -392,6 +396,7 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, OUT PRAW6
 EXTERN_C
 __declspec(dllexport)
 void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
+                          IN PBYTE DesMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
                           IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
@@ -401,7 +406,7 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
 {
     PRAW6_TCP tcp6 = (PRAW6_TCP)buffer;
 
-    InitEthernetHeader(SrcMac, ETHERNET_TYPE_IPV6, &tcp6->eth_hdr);
+    InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, &tcp6->eth_hdr);
 
     InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_TCP, 0, &tcp6->ip_hdr);
 
