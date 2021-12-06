@@ -74,6 +74,7 @@
 #include <exdisp.h>
 #include <memory.h>
 #include <Tcpestats.h>
+#include <ws2ipdef.h>
 
 #ifndef INITGUID
 #define INITGUID
