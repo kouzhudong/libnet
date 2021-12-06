@@ -1264,7 +1264,14 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
     DWORD dwRetVal = 0;
     unsigned int i = 0;
     
-    ULONG flags = GAA_FLAG_INCLUDE_PREFIX;// Set the flags to pass to GetAdaptersAddresses    
+    // Set the flags to pass to GetAdaptersAddresses  
+    ULONG flags = GAA_FLAG_INCLUDE_PREFIX |
+        GAA_FLAG_INCLUDE_WINS_INFO |
+        GAA_FLAG_INCLUDE_GATEWAYS |
+        GAA_FLAG_INCLUDE_ALL_INTERFACES |
+        GAA_FLAG_INCLUDE_ALL_COMPARTMENTS |
+        GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
+
     ULONG family = AF_UNSPEC;// default to unspecified address family (both)
     LPVOID lpMsgBuf = NULL;
 
