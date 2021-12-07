@@ -16,7 +16,6 @@ GetInvertedIfStackTable
 GetIpInterfaceTable
 GetIpPathTable
 GetMulticastIpAddressTable
-NotifyStableUnicastIpAddressTable
 ...
 */
 
@@ -2508,13 +2507,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftab
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// Need to link with Iphlpapi.lib and Ws2_32.lib
 // Need to run as administrator
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
 
 // An array of name for the TCP_ESTATS_TYPE enum values
 // The names values must match the enum values
@@ -3331,11 +3324,6 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-
 void usage(char * pname)
 {
     printf("Usage: %s [options] ip-address\n", pname);
@@ -3482,15 +3470,6 @@ GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-#ifndef UNICODE
-#define UNICODE
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
 
 
 EXTERN_C

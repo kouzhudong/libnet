@@ -11,7 +11,11 @@
 //#define _WIN32_WINNT 0x0501
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define WIN32_LEAN_AND_MEAN // 从 Windows 头文件中排除极少使用的内容
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN// 从 Windows 头文件中排除极少使用的内容
+#endif
+
 //#define INITGUID
 
 #ifndef UNICODE
