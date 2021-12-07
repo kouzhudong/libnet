@@ -1009,3 +1009,91 @@ void PrintAddressFamily(ULONG Family)
         break;
     }
 }
+
+
+void PrintProviderNamespace(DWORD NameSpace)
+{
+    switch (NameSpace) {
+    case NS_ALL:
+        wprintf(L"NS_ALL\n");
+        break;
+    case NS_SAP:
+        wprintf(L"NS_SAP\n");
+        break;
+    case NS_NDS:
+        wprintf(L"NS_NDS\n");
+        break;    
+    case NS_PEER_BROWSE:
+        wprintf(L"NS_PEER_BROWSE\n");
+        break;
+    case NS_SLP:
+        wprintf(L"NS_SLP\n");
+        break;
+    case NS_DHCP:
+        wprintf(L"NS_DHCP\n");
+        break;
+    case NS_TCPIP_LOCAL:
+        wprintf(L"NS_TCPIP_LOCAL\n");
+        break;
+    case NS_TCPIP_HOSTS:
+        wprintf(L"NS_TCPIP_HOSTS\n");
+        break;
+    case NS_DNS:
+        wprintf(L"Domain Name System (NS_DNS)\n");
+        break;
+    case NS_NETBT:
+        wprintf(L"NetBIOS (NS_NETBT)\n");
+        break;
+    case NS_WINS:
+        wprintf(L"Windows Internet Naming Service (NS_WINS)\n");
+        break;    
+    case NS_NLA:
+        wprintf(L"Network Location Awareness (NS_NLA)\n");
+        break;
+    case NS_BTH:
+        wprintf(L"Bluetooth (NS_BTH)\n");
+        break;
+    case NS_LOCALNAME:
+        wprintf(L"NS_LOCALNAME\n");
+        break;
+    case NS_NBP:
+        wprintf(L"NS_NBP\n");
+        break;
+    case NS_MS:
+        wprintf(L"NS_MS\n");
+        break;
+    case NS_STDA:
+        wprintf(L"NS_STDA\n");
+        break;
+    case NS_NTDS:
+        wprintf(L"Windows NT Directory Services (NS_NTDS)\n");
+        break;   
+    case NS_EMAIL:
+        wprintf(L"Email (NS_EMAIL)\n");
+        break;
+    case NS_PNRPNAME:
+        wprintf(L"Peer-to-peer (NS_PNRPNAME)\n");
+        break;
+    case NS_PNRPCLOUD:
+        wprintf(L"Peer-to-peer collection (NS_PNRPCLOUD)\n");
+        break;    
+    case NS_X500:
+        wprintf(L"NS_X500\n");
+        break;
+    case NS_NIS:
+        wprintf(L"NS_NIS\n");
+        break;
+    case NS_NISPLUS:
+        wprintf(L"NS_NISPLUS\n");
+        break;
+    case NS_WRQ:
+        wprintf(L"NS_WRQ\n");
+        break;
+    case NS_NETDES:/* Network Designers Limited */
+        wprintf(L"NS_NETDES\n");
+        break;
+    default:
+        wprintf(L"Other value (%u)\n", NameSpace);
+        break;
+    }
+}

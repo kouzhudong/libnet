@@ -394,46 +394,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L"\tName = %ws\n", argv[1]);
     wprintf(L"\tServiceName (or port) = %ws\n", argv[2]);
     wprintf(L"\tNamespace = %s (", argv[3]);
-    switch (dwNamespace) {
-    case NS_ALL:
-        wprintf(L"(NS_ALL)\n");
-        break;
-    case NS_DNS:
-        wprintf(L"(NS_DNS)\n");
-        break;
-    case NS_NETBT:
-        wprintf(L"NS_NETBT");
-        break;
-    case NS_WINS:
-        wprintf(L"NS_WINS");
-        break;
-    case NS_NLA:
-        wprintf(L"NS_NLA");
-        break;
-    case NS_BTH:
-        wprintf(L"NS_BTH");
-        break;
-    case NS_NTDS:
-        wprintf(L"NS_NTDS");
-        break;
-    case NS_EMAIL:
-        wprintf(L"NS_EMAIL");
-        break;
-    case NS_PNRPNAME:
-        wprintf(L"NS_PNRPNAME");
-        break;
-    case NS_PNRPCLOUD:
-        wprintf(L"NS_PNRPCLOUD");
-        break;
-    default:
-        wprintf(L"Other");
-        break;
-    }
+    PrintProviderNamespace(dwNamespace);    
     wprintf(L")\n\n");
 
     //--------------------------------
     // Call getaddrinfoex(). If the call succeeds,
-    // the result variable will hold a linked list
+    // the result variable will hold a linked list 
     // of addrinfo structures containing response information
     dwRetval =
         GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result,
@@ -749,41 +715,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L"\tName = %ws\n", argv[1]);
     wprintf(L"\tServiceName (or port) = %ws\n", argv[2]);
     wprintf(L"\tNamespace = %s (", argv[3]);
-    switch (dwNamespace) {
-    case NS_ALL:
-        wprintf(L"(NS_ALL)\n");
-        break;
-    case NS_DNS:
-        wprintf(L"(NS_DNS)\n");
-        break;
-    case NS_NETBT:
-        wprintf(L"NS_NETBT");
-        break;
-    case NS_WINS:
-        wprintf(L"NS_WINS");
-        break;
-    case NS_NLA:
-        wprintf(L"NS_NLA");
-        break;
-    case NS_BTH:
-        wprintf(L"NS_BTH");
-        break;
-    case NS_NTDS:
-        wprintf(L"NS_NTDS");
-        break;
-    case NS_EMAIL:
-        wprintf(L"NS_EMAIL");
-        break;
-    case NS_PNRPNAME:
-        wprintf(L"NS_PNRPNAME");
-        break;
-    case NS_PNRPCLOUD:
-        wprintf(L"NS_PNRPCLOUD");
-        break;
-    default:
-        wprintf(L"Other");
-        break;
-    }
+    PrintProviderNamespace(dwNamespace);    
     wprintf(L")\n\n");
 
     // Call getaddrinfoex(). If the call succeeds,

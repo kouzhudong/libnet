@@ -94,41 +94,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaenumn
             wprintf(L"NameSpace ProviderId[%u] = %ws\n", i, GuidString);
 
         wprintf(L"NameSpace[%u] = ", i);
-        switch (lpProviderInfo[i].dwNameSpace) {
-        case NS_DNS:
-            wprintf(L"Domain Name System (NS_DNS)\n");
-            break;
-        case NS_WINS:
-            wprintf(L"Windows Internet Naming Service (NS_WINS)\n");
-            break;
-        case NS_NETBT:
-            wprintf(L"NetBIOS (NS_NETBT)\n");
-            break;
-        case NS_NTDS:
-            wprintf(L"Windows NT Directory Services (NS_NTDS)\n");
-            break;
-        case NS_NLA:
-            wprintf(L"Network Location Awareness (NS_NLA)\n");
-            break;
-            // following values only defined on Vista and later
-#if(_WIN32_WINNT >= 0x0600)
-        case NS_BTH:
-            wprintf(L"Bluetooth (NS_BTH)\n");
-            break;
-        case NS_EMAIL:
-            wprintf(L"Email (NS_EMAIL)\n");
-            break;
-        case NS_PNRPNAME:
-            wprintf(L"Peer-to-peer (NS_PNRPNAME)\n");
-            break;
-        case NS_PNRPCLOUD:
-            wprintf(L"Peer-to-peer collection (NS_PNRPCLOUD)\n");
-            break;
-#endif
-        default:
-            wprintf(L"Other value (%u)\n", lpProviderInfo[i].dwNameSpace);
-            break;
-        }
+        PrintProviderNamespace(lpProviderInfo[i].dwNameSpace);        
 
         if (lpProviderInfo[i].fActive)
             wprintf(L"Namespace[%u] is active\n", i);

@@ -30,3 +30,4 @@ void PrintNeighborState(_In_ NL_NEIGHBOR_STATE State);
 void PrintProtocol(IPPROTO protocol);
 void PrintSocketType(int SocketType);
 void PrintAddressFamily(ULONG Family);
+void PrintProviderNamespace(DWORD NameSpace);
