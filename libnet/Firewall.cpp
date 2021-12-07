@@ -5,17 +5,16 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// Instantiate INetFwPolicy2
 HRESULT WFCOMInitialize(INetFwPolicy2 ** ppNetFwPolicy2)
+// Instantiate INetFwPolicy2
 {
     HRESULT hr = S_OK;
 
-    hr = CoCreateInstance(
-        __uuidof(NetFwPolicy2),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwPolicy2),
-        (void **)ppNetFwPolicy2);
+    hr = CoCreateInstance(__uuidof(NetFwPolicy2),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwPolicy2),
+                          (void **)ppNetFwPolicy2);
     if (FAILED(hr)) {
         wprintf(L"CoCreateInstance for INetFwPolicy2 failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -26,8 +25,8 @@ Cleanup:
 }
 
 
-// Release INetFwPolicy2
 void WFCOMCleanup(INetFwPolicy2 * pNetFwPolicy2)
+// Release INetFwPolicy2
 {
     // Release the INetFwPolicy2 object (Vista+)
     if (pNetFwPolicy2 != NULL) {
@@ -79,10 +78,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -118,23 +114,19 @@ Cleanup:
 }
 
 
+HRESULT    AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
 // Add firewall rule with EdgeTraversalOption=DeferApp (Windows7+) if available 
 //   else add with Edge=True (Vista and Server 2008).
-HRESULT    AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
 {
     HRESULT hr = S_OK;
     INetFwRules * pNetFwRules = NULL;
-
     INetFwRule * pNetFwRule = NULL;
     INetFwRule2 * pNetFwRule2 = NULL;
-
     WCHAR pwszTemp[STRING_BUFFER_SIZE] = L"";
-
     BSTR RuleName = NULL;
     BSTR RuleGroupName = NULL;
     BSTR RuleDescription = NULL;
     BSTR RuleAppPath = NULL;
-
 
     //  For localization purposes, the rule name, description, and group can be 
     //    provided as indirect strings. These indirect strings can be defined in an rc file.
@@ -145,10 +137,11 @@ HRESULT    AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
     //                          from remote machines located within your network as well as from 
     //                          the Internet (i.e from outside of your Edge device like Firewall or NAT"
 
-
     //    Examples of using indirect strings -
     //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-128");
-    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"Allow inbound TCP traffic to application EdgeTraversalOptions.exe");
+    hr = StringCchPrintfW(pwszTemp,
+                          STRING_BUFFER_SIZE,
+                          L"Allow inbound TCP traffic to application EdgeTraversalOptions.exe");
     if (FAILED(hr)) {
         wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
         goto Cleanup;
@@ -192,7 +185,6 @@ HRESULT    AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
     }
 
     hr = pNetFwPolicy2->get_Rules(&pNetFwRules);
-
     if (FAILED(hr)) {
         wprintf(L"Failed to retrieve firewall rules collection : 0x%08lx\n", hr);
         goto Cleanup;
@@ -204,7 +196,6 @@ HRESULT    AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
         CLSCTX_INPROC_SERVER,
         __uuidof(INetFwRule),   // Identifier of the Interface used for communicating with the object
         (void **)&pNetFwRule);
-
     if (FAILED(hr)) {
         wprintf(L"CoCreateInstance for INetFwRule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -263,7 +254,6 @@ HRESULT    AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
         wprintf(L"Failed INetFwRule::put_Enabled failed with error: 0x %x.\n", hr);
         goto Cleanup;
     }
-
 
     // Check if INetFwRule2 interface is available (i.e Windows7+)
     // If supported, then use EdgeTraversalOptions
@@ -327,18 +317,15 @@ Abstract:
 ********************************************************************/
 
 
-// Output properties of a Firewall rule 
 void DumpFWRulesInCollection(INetFwRule * FwRule)
+// Output properties of a Firewall rule 
 {
     variant_t InterfaceArray;
     variant_t InterfaceString;
-
     VARIANT_BOOL bEnabled;
     BSTR bstrVal;
-
     long lVal = 0;
     long lProfileBitmask = 0;
-
     NET_FW_RULE_DIRECTION fwDirection;
     NET_FW_ACTION fwAction;
 
@@ -496,17 +483,13 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     ULONG cFetched = 0;
     CComVariant var;
-
     IUnknown * pEnumerator;
     IEnumVARIANT * pVariant = NULL;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     long fwRuleCount;
 
     // Initialize COM.
@@ -553,7 +536,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
     while (SUCCEEDED(hr) && hr != S_FALSE) {
         var.Clear();
         hr = pVariant->Next(1, &var, &cFetched);
-
         if (S_FALSE != hr) {
             if (SUCCEEDED(hr)) {
                 hr = var.ChangeType(VT_DISPATCH);
@@ -621,18 +603,13 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-disabli
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
-
     variant_t      vtInterfaceName("Local Area Connection"), vtInterface;
     long           index = 0;
     SAFEARRAY * pSa = NULL;
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -711,14 +688,10 @@ This example disables Windows Firewall using the Windows Firewall with Advanced 
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -799,7 +772,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enablin
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
 
     // Rule group to use
@@ -807,10 +779,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enablin
     VARIANT_BOOL bIsEnabled = FALSE;
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -883,7 +852,6 @@ This example gets firewall settings using the Windows Firewall with Advanced Sec
 
 https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-getting-firewall-settings
 
-
 THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
 TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -894,12 +862,10 @@ Copyright (C) Microsoft. All Rights Reserved.
 Abstract:
     This C++ file includes sample code for reading Windows Firewall
     Settings per profile using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+*/
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
 
     // Initialize COM.
@@ -1006,12 +972,9 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     VARIANT_BOOL isServiceRestricted = FALSE;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwServiceRestriction * pFwServiceRestriction = NULL;
 
@@ -1033,10 +996,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
     if (NULL == bstrRuleLPorts) { printf("Failed to allocate bstrRuleLPorts\n"); goto Cleanup; }
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -1084,12 +1044,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
 
     // Add inbound WSH allow rule for allowing TCP 12345 to the service
     // Create a new Rule object.
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule),
-        (void **)&pFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule),
+                          (void **)&pFwRule);
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1173,7 +1132,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
         printf("The Service could not be properly restricted.\n");
     }
 
-
 Cleanup:
 
     // Free BSTR's
@@ -1231,22 +1189,16 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     long CurrentProfilesBitMask = 0;
-
     BSTR bstrRuleName = SysAllocString(L"GRE_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Allow GRE Traffic");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -1286,12 +1238,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule),
-        (void **)&pFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule),
+                          (void **)&pFwRule);
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1370,11 +1321,9 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     BSTR bstrRuleName = SysAllocString(L"ICMP_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Allow ICMP network traffic");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
@@ -1382,10 +1331,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrICMPTypeCode = SysAllocString(L"8:*");
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -1411,12 +1357,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule),
-        (void **)&pFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule),
+                          (void **)&pFwRule);
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1498,13 +1443,10 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     long CurrentProfilesBitMask = 0;
-
     BSTR bstrRuleName = SysAllocString(L"PER_INTERFACETYPE_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Allow incoming network traffic over port 2400 coming from LAN interface type");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
@@ -1512,10 +1454,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleInterfaceType = SysAllocString(L"LAN");
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -1555,12 +1494,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule),
-        (void **)&pFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule),
+                          (void **)&pFwRule);
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1642,13 +1580,10 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     long CurrentProfilesBitMask = 0;
-
     BSTR bstrRuleName = SysAllocString(L"OUTBOUND_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Allow outbound network traffic from my Application over TCP port 4000");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
@@ -1656,10 +1591,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleLPorts = SysAllocString(L"4000");
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -1699,12 +1631,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule),
-        (void **)&pFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule),
+                          (void **)&pFwRule);
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1794,27 +1725,20 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     variant_t      vtInterfaceName("Local Area Connection"), vtInterface;
     long           index = 0;
     SAFEARRAY * pSa = NULL;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     long CurrentProfilesBitMask = 0;
-
     BSTR bstrRuleName = SysAllocString(L"PER_INTERFACE_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Add a PER_INTERFACE rule");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleLPorts = SysAllocString(L"2300");
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -1866,12 +1790,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule),
-        (void **)&pFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule),
+                          (void **)&pFwRule);
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1953,13 +1876,10 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 {
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
-
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
     INetFwRules * pFwRules = NULL;
     INetFwRule * pFwRule = NULL;
-
     long CurrentProfilesBitMask = 0;
-
     BSTR bstrRuleName = SysAllocString(L"SERVICE_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Allow incoming network traffic to myservice");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
@@ -1968,10 +1888,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleLPorts = SysAllocString(L"135");
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -2011,12 +1928,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule),
-        (void **)&pFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule),
+                          (void **)&pFwRule);
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -2110,8 +2026,7 @@ Abstract:
 DWORD ArrayOfLongsToVariant(
     __in unsigned long numItems,
     __in_ecount(numItems) const long * items,
-    __out VARIANT * dst
-);
+    __out VARIANT * dst);
 
 
 void __cdecl RWFTOFPM()
@@ -2163,8 +2078,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     comInit = TRUE;
 
 
-    hr = CoCreateInstance(__uuidof(NetFwProduct), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), (void **)&product);
-
+    hr = CoCreateInstance(__uuidof(NetFwProduct),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwProduct),
+                          (void **)&product);
     if (FAILED(hr)) {
         //CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
@@ -2172,23 +2090,24 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     }
 
     hr = product->put_DisplayName(displayName);
-
     if (FAILED(hr)) {
         //Put_displayName failed
         wprintf(L"put_DisplayName for INetFwProduct failed Error: 0x%08lx\n", hr);
         goto CLEANUP;
     }
-    hr = product->put_RuleCategories(varCategories);
 
+    hr = product->put_RuleCategories(varCategories);
     if (FAILED(hr)) {
         //Put_rulecategories failed
         wprintf(L"put_RuleCategories failed for INetFwProduct Error: 0x%08lx\n", hr);
         goto CLEANUP;
     }
 
-
-    hr = CoCreateInstance(__uuidof(NetFwProducts), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), (void **)&products);
-
+    hr = CoCreateInstance(__uuidof(NetFwProducts),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwProducts),
+                          (void **)&products);
     if (FAILED(hr)) {
         //CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
@@ -2234,13 +2153,12 @@ CLEANUP:
 }
 
 
-//This Function Converts and Array of Longs to Variant
-
 DWORD ArrayOfLongsToVariant(
     __in unsigned long numItems,
     __in_ecount(numItems) const long * items,
     __out VARIANT * dst
 )
+//This Function Converts and Array of Longs to Variant
 {
     DWORD result = NO_ERROR;
     SAFEARRAYBOUND bound[1];
@@ -2317,14 +2235,12 @@ This example registers a product with Windows Firewall without taking ownership 
 https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registering-with-windows-firewall-no-ownership
 */
 {
-
     HRESULT hr = S_OK;
     INetFwProduct * product = NULL;
     INetFwProducts * products = NULL;
     IUnknown * registration = NULL;
     BSTR displayName = NULL;
     VARIANT varCategories = {VT_EMPTY};
-
     long count = 0;
     BOOL comInit = FALSE;
 
@@ -2345,9 +2261,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     }
     comInit = TRUE;
 
-
-    hr = CoCreateInstance(__uuidof(NetFwProduct), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), (void **)&product);
-
+    hr = CoCreateInstance(__uuidof(NetFwProduct),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwProduct),
+                          (void **)&product);
     if (FAILED(hr)) {
         //CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
@@ -2355,23 +2273,24 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     }
 
     hr = product->put_DisplayName(displayName);
-
     if (FAILED(hr)) {
         //Put_displayName failed
         wprintf(L"put_DisplayName for INetFwProduct failed Error: 0x%08lx\n", hr);
         goto CLEANUP;
     }
-    hr = product->put_RuleCategories(varCategories);
 
+    hr = product->put_RuleCategories(varCategories);
     if (FAILED(hr)) {
         //Put_rulecategories failed
         wprintf(L"put_RuleCategories failed for INetFwProduct Error: 0x%08lx\n", hr);
         goto CLEANUP;
     }
 
-
-    hr = CoCreateInstance(__uuidof(NetFwProducts), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), (void **)&products);
-
+    hr = CoCreateInstance(__uuidof(NetFwProducts),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwProducts),
+                          (void **)&products);
     if (FAILED(hr)) {
         //CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
@@ -2457,10 +2376,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/working-w
     INetFwPolicy2 * pNetFwPolicy2 = NULL;
 
     // Initialize COM.
-    hrComInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED
-    );
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -2544,7 +2460,9 @@ HRESULT GetCurrentFirewallState(__in INetFwPolicy2 * pNetFwPolicy2)
                 wprintf(L"Failed to get FirewallEnabled settings for %s profile. Error: %x.\n", ProfileMap[i].Name, hr);
                 goto CLEANUP;
             }
-            wprintf(L"On %s profile (Current) : Firewall state is %s\n", ProfileMap[i].Name, (bActualFirewallEnabled ? L"ON" : L"OFF"));
+            wprintf(L"On %s profile (Current) : Firewall state is %s\n",
+                    ProfileMap[i].Name,
+                    (bActualFirewallEnabled ? L"ON" : L"OFF"));
         }
     }
 
@@ -2559,15 +2477,12 @@ HRESULT IsRuleGroupCurrentlyEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
 {
     HRESULT hr = S_OK;
     VARIANT_BOOL bActualEnabled = VARIANT_FALSE;
-
     BSTR GroupName = SysAllocString(L"File and Printer Sharing");
 
     wprintf(L"\n\nIs 'File and Printer Sharing' rule group currently enabled ?\n");
     wprintf(L"------------------------------------------------------------\n");
 
-
     hr = pNetFwPolicy2->get_IsRuleGroupCurrentlyEnabled(GroupName, &bActualEnabled);
-
     if (SUCCEEDED(hr)) {
         if (VARIANT_TRUE == bActualEnabled && S_OK == hr) {
             wprintf(L"Rule Group currently enabled on all the current profiles\n");
@@ -2581,7 +2496,6 @@ HRESULT IsRuleGroupCurrentlyEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
         goto Cleanup;
     }
 
-
 Cleanup:
     SysFreeString(GroupName);
     return hr;
@@ -2593,7 +2507,6 @@ HRESULT IsRuleGroupEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
 {
     HRESULT hr = S_OK;
     VARIANT_BOOL bActualEnabled = VARIANT_FALSE;
-
     BSTR GroupName = SysAllocString(L"File and Printer Sharing");
 
     wprintf(L"\n\nIs 'File and Printer Sharing' rule group enabled in public and private profiles ?\n");
@@ -2619,8 +2532,8 @@ Cleanup:
 }
 
 
-// For the currently active firewall profiles display whether the changes to firewall rules will take effect or not
 HRESULT GetLocalPolicyModifyState(__in INetFwPolicy2 * pNetFwPolicy2)
+// For the currently active firewall profiles display whether the changes to firewall rules will take effect or not
 {
     HRESULT hr;
     NET_FW_MODIFY_STATE modifystate;
@@ -2681,13 +2594,11 @@ HRESULT WindowsFirewallInitialize(OUT INetFwProfile ** fwProfile)
     *fwProfile = NULL;
 
     // Create an instance of the firewall settings manager.
-    hr = CoCreateInstance(
-        __uuidof(NetFwMgr),
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwMgr),
-        (void **)&fwMgr
-    );
+    hr = CoCreateInstance(__uuidof(NetFwMgr),
+                          NULL,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwMgr),
+                          (void **)&fwMgr);
     if (FAILED(hr)) {
         printf("CoCreateInstance failed: 0x%08lx\n", hr);
         goto error;
@@ -2874,24 +2785,18 @@ HRESULT WindowsFirewallAppIsEnabled(
             // The authorized application is enabled.
             *fwAppEnabled = TRUE;
 
-            printf(
-                "Authorized application %lS is enabled in the firewall.\n",
-                fwProcessImageFileName
-            );
+            printf("Authorized application %lS is enabled in the firewall.\n",
+                   fwProcessImageFileName);
         } else {
-            printf(
-                "Authorized application %lS is disabled in the firewall.\n",
-                fwProcessImageFileName
-            );
+            printf("Authorized application %lS is disabled in the firewall.\n",
+                   fwProcessImageFileName);
         }
     } else {
         // The authorized application was not in the collection.
         hr = S_OK;
 
-        printf(
-            "Authorized application %lS is disabled in the firewall.\n",
-            fwProcessImageFileName
-        );
+        printf("Authorized application %lS is disabled in the firewall.\n",
+               fwProcessImageFileName);
     }
 
 error:
@@ -2931,11 +2836,7 @@ HRESULT WindowsFirewallAddApp(
     _ASSERT(fwName != NULL);
 
     // First check to see if the application is already authorized.
-    hr = WindowsFirewallAppIsEnabled(
-        fwProfile,
-        fwProcessImageFileName,
-        &fwAppEnabled
-    );
+    hr = WindowsFirewallAppIsEnabled(fwProfile, fwProcessImageFileName, &fwAppEnabled);
     if (FAILED(hr)) {
         printf("WindowsFirewallAppIsEnabled failed: 0x%08lx\n", hr);
         goto error;
@@ -2951,13 +2852,11 @@ HRESULT WindowsFirewallAddApp(
         }
 
         // Create an instance of an authorized application.
-        hr = CoCreateInstance(
-            __uuidof(NetFwAuthorizedApplication),
-            NULL,
-            CLSCTX_INPROC_SERVER,
-            __uuidof(INetFwAuthorizedApplication),
-            (void **)&fwApp
-        );
+        hr = CoCreateInstance(__uuidof(NetFwAuthorizedApplication),
+                              NULL,
+                              CLSCTX_INPROC_SERVER,
+                              __uuidof(INetFwAuthorizedApplication),
+                              (void **)&fwApp);
         if (FAILED(hr)) {
             printf("CoCreateInstance failed: 0x%08lx\n", hr);
             goto error;
@@ -3000,10 +2899,8 @@ HRESULT WindowsFirewallAddApp(
             goto error;
         }
 
-        printf(
-            "Authorized application %lS is now enabled in the firewall.\n",
-            fwProcessImageFileName
-        );
+        printf("Authorized application %lS is now enabled in the firewall.\n",
+               fwProcessImageFileName);
     }
 
 error:
@@ -3026,11 +2923,10 @@ error:
 }
 
 
-HRESULT WindowsFirewallPortIsEnabled(
-    IN INetFwProfile * fwProfile,
-    IN LONG portNumber,
-    IN NET_FW_IP_PROTOCOL ipProtocol,
-    OUT BOOL * fwPortEnabled
+HRESULT WindowsFirewallPortIsEnabled(IN INetFwProfile * fwProfile,
+                                     IN LONG portNumber,
+                                     IN NET_FW_IP_PROTOCOL ipProtocol,
+                                     OUT BOOL * fwPortEnabled
 )
 {
     HRESULT hr = S_OK;
@@ -3091,11 +2987,10 @@ error:
 }
 
 
-HRESULT WindowsFirewallPortAdd(
-    IN INetFwProfile * fwProfile,
-    IN LONG portNumber,
-    IN NET_FW_IP_PROTOCOL ipProtocol,
-    IN const wchar_t * name
+HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile,
+                               IN LONG portNumber,
+                               IN NET_FW_IP_PROTOCOL ipProtocol,
+                               IN const wchar_t * name
 )
 {
     HRESULT hr = S_OK;
@@ -3108,12 +3003,7 @@ HRESULT WindowsFirewallPortAdd(
     _ASSERT(name != NULL);
 
     // First check to see if the port is already added.
-    hr = WindowsFirewallPortIsEnabled(
-        fwProfile,
-        portNumber,
-        ipProtocol,
-        &fwPortEnabled
-    );
+    hr = WindowsFirewallPortIsEnabled(fwProfile, portNumber, ipProtocol, &fwPortEnabled);
     if (FAILED(hr)) {
         printf("WindowsFirewallPortIsEnabled failed: 0x%08lx\n", hr);
         goto error;
@@ -3129,13 +3019,11 @@ HRESULT WindowsFirewallPortAdd(
         }
 
         // Create an instance of an open port.
-        hr = CoCreateInstance(
-            __uuidof(NetFwOpenPort),
-            NULL,
-            CLSCTX_INPROC_SERVER,
-            __uuidof(INetFwOpenPort),
-            (void **)&fwOpenPort
-        );
+        hr = CoCreateInstance(__uuidof(NetFwOpenPort),
+                              NULL,
+                              CLSCTX_INPROC_SERVER,
+                              __uuidof(INetFwOpenPort),
+                              (void **)&fwOpenPort);
         if (FAILED(hr)) {
             printf("CoCreateInstance failed: 0x%08lx\n", hr);
             goto error;
@@ -3218,10 +3106,7 @@ https://docs.microsoft.com/en-us/previous-versions//aa364726(v=vs.85)?redirected
     INetFwProfile * fwProfile = NULL;
 
     // Initialize COM.
-    comInit = CoInitializeEx(
-        0,
-        COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE
-    );
+    comInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 
     // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
     // initialized with a different mode. Since we don't care what the mode is,
@@ -3256,11 +3141,9 @@ https://docs.microsoft.com/en-us/previous-versions//aa364726(v=vs.85)?redirected
     }
 
     // Add Windows Messenger to the authorized application collection.
-    hr = WindowsFirewallAddApp(
-        fwProfile,
-        L"%ProgramFiles%\\Messenger\\msmsgs.exe",
-        L"Windows Messenger"
-    );
+    hr = WindowsFirewallAddApp(fwProfile,
+                               L"%ProgramFiles%\\Messenger\\msmsgs.exe",
+                               L"Windows Messenger");
     if (FAILED(hr)) {
         printf("WindowsFirewallAddApp failed: 0x%08lx\n", hr);
         goto error;
