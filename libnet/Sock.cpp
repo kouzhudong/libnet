@@ -119,44 +119,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             break;
         }
         printf("\tSocket type: ");
-        switch (ptr->ai_socktype) {
-        case 0:
-            printf("Unspecified\n");
-            break;
-        case SOCK_STREAM:
-            printf("SOCK_STREAM (stream)\n");
-            break;
-        case SOCK_DGRAM:
-            printf("SOCK_DGRAM (datagram) \n");
-            break;
-        case SOCK_RAW:
-            printf("SOCK_RAW (raw) \n");
-            break;
-        case SOCK_RDM:
-            printf("SOCK_RDM (reliable message datagram)\n");
-            break;
-        case SOCK_SEQPACKET:
-            printf("SOCK_SEQPACKET (pseudo-stream packet)\n");
-            break;
-        default:
-            printf("Other %ld\n", ptr->ai_socktype);
-            break;
-        }
+        PrintSocketType(ptr->ai_socktype);        
         printf("\tProtocol: ");
-        switch (ptr->ai_protocol) {
-        case 0:
-            printf("Unspecified\n");
-            break;
-        case IPPROTO_TCP:
-            printf("IPPROTO_TCP (TCP)\n");
-            break;
-        case IPPROTO_UDP:
-            printf("IPPROTO_UDP (UDP) \n");
-            break;
-        default:
-            printf("Other %ld\n", ptr->ai_protocol);
-            break;
-        }
+        PrintProtocol((IPPROTO)ptr->ai_protocol);
         printf("\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
         printf("\tCanonical name: %s\n", ptr->ai_canonname);
     }
@@ -240,62 +205,11 @@ http://correy.webs.com
         printf("getaddrinfo response %d\n", i++);
         printf("\tFlags: 0x%x\n", ptr->ai_flags);
         printf("\tFamily: ");
-        switch (ptr->ai_family) {
-        case AF_UNSPEC:
-            printf("Unspecified\n");
-            break;
-        case AF_INET:
-            printf("AF_INET (IPv4)\n");
-            break;
-        case AF_INET6:
-            printf("AF_INET6 (IPv6)\n");
-            break;
-        case AF_NETBIOS:
-            printf("AF_NETBIOS (NetBIOS)\n");
-            break;
-        default:
-            printf("Other %ld\n", ptr->ai_family);
-            break;
-        }
+        PrintAddressFamily(ptr->ai_family);
         printf("\tSocket type: ");
-        switch (ptr->ai_socktype) {
-        case 0:
-            printf("Unspecified\n");
-            break;
-        case SOCK_STREAM:
-            printf("SOCK_STREAM (stream)\n");
-            break;
-        case SOCK_DGRAM:
-            printf("SOCK_DGRAM (datagram) \n");
-            break;
-        case SOCK_RAW:
-            printf("SOCK_RAW (raw) \n");
-            break;
-        case SOCK_RDM:
-            printf("SOCK_RDM (reliable message datagram)\n");
-            break;
-        case SOCK_SEQPACKET:
-            printf("SOCK_SEQPACKET (pseudo-stream packet)\n");
-            break;
-        default:
-            printf("Other %ld\n", ptr->ai_socktype);
-            break;
-        }
+        PrintSocketType(ptr->ai_socktype);        
         printf("\tProtocol: ");
-        switch (ptr->ai_protocol) {
-        case 0:
-            printf("Unspecified\n");
-            break;
-        case IPPROTO_TCP:
-            printf("IPPROTO_TCP (TCP)\n");
-            break;
-        case IPPROTO_UDP:
-            printf("IPPROTO_UDP (UDP) \n");
-            break;
-        default:
-            printf("Other %ld\n", ptr->ai_protocol);
-            break;
-        }
+        PrintProtocol((IPPROTO)ptr->ai_protocol);
         printf("\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
         printf("\tCanonical name: %s\n", ptr->ai_canonname);
     }
@@ -426,44 +340,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             break;
         }
         wprintf(L"\tSocket type: ");
-        switch (ptr->ai_socktype) {
-        case 0:
-            wprintf(L"Unspecified\n");
-            break;
-        case SOCK_STREAM:
-            wprintf(L"SOCK_STREAM (stream)\n");
-            break;
-        case SOCK_DGRAM:
-            wprintf(L"SOCK_DGRAM (datagram) \n");
-            break;
-        case SOCK_RAW:
-            wprintf(L"SOCK_RAW (raw) \n");
-            break;
-        case SOCK_RDM:
-            wprintf(L"SOCK_RDM (reliable message datagram)\n");
-            break;
-        case SOCK_SEQPACKET:
-            wprintf(L"SOCK_SEQPACKET (pseudo-stream packet)\n");
-            break;
-        default:
-            wprintf(L"Other %ld\n", ptr->ai_socktype);
-            break;
-        }
+        PrintSocketType(ptr->ai_socktype);        
         wprintf(L"\tProtocol: ");
-        switch (ptr->ai_protocol) {
-        case 0:
-            wprintf(L"Unspecified\n");
-            break;
-        case IPPROTO_TCP:
-            wprintf(L"IPPROTO_TCP (TCP)\n");
-            break;
-        case IPPROTO_UDP:
-            wprintf(L"IPPROTO_UDP (UDP) \n");
-            break;
-        default:
-            wprintf(L"Other %ld\n", ptr->ai_protocol);
-            break;
-        }
+        PrintProtocol((IPPROTO)ptr->ai_protocol);
         wprintf(L"\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
         wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname);
     }
@@ -647,44 +526,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             break;
         }
         wprintf(L"\tSocket type: ");
-        switch (ptr->ai_socktype) {
-        case 0:
-            wprintf(L"Unspecified\n");
-            break;
-        case SOCK_STREAM:
-            wprintf(L"SOCK_STREAM (stream)\n");
-            break;
-        case SOCK_DGRAM:
-            wprintf(L"SOCK_DGRAM (datagram) \n");
-            break;
-        case SOCK_RAW:
-            wprintf(L"SOCK_RAW (raw) \n");
-            break;
-        case SOCK_RDM:
-            wprintf(L"SOCK_RDM (reliable message datagram)\n");
-            break;
-        case SOCK_SEQPACKET:
-            wprintf(L"SOCK_SEQPACKET (pseudo-stream packet)\n");
-            break;
-        default:
-            wprintf(L"Other %ld\n", ptr->ai_socktype);
-            break;
-        }
+        PrintSocketType(ptr->ai_socktype);        
         wprintf(L"\tProtocol: ");
-        switch (ptr->ai_protocol) {
-        case 0:
-            wprintf(L"Unspecified\n");
-            break;
-        case IPPROTO_TCP:
-            wprintf(L"IPPROTO_TCP (TCP)\n");
-            break;
-        case IPPROTO_UDP:
-            wprintf(L"IPPROTO_UDP (UDP) \n");
-            break;
-        default:
-            wprintf(L"Other %ld\n", ptr->ai_protocol);
-            break;
-        }
+        PrintProtocol((IPPROTO)ptr->ai_protocol);
         wprintf(L"\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
         wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname);
 
@@ -1049,59 +893,21 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             break;
         }
         wprintf(L"\tSocket type: ");
-        switch (ptr->ai_socktype) {
-        case 0:
-            wprintf(L"Unspecified\n");
-            break;
-        case SOCK_STREAM:
-            wprintf(L"SOCK_STREAM (stream)\n");
-            break;
-        case SOCK_DGRAM:
-            wprintf(L"SOCK_DGRAM (datagram) \n");
-            break;
-        case SOCK_RAW:
-            wprintf(L"SOCK_RAW (raw) \n");
-            break;
-        case SOCK_RDM:
-            wprintf(L"SOCK_RDM (reliable message datagram)\n");
-            break;
-        case SOCK_SEQPACKET:
-            wprintf(L"SOCK_SEQPACKET (pseudo-stream packet)\n");
-            break;
-        default:
-            wprintf(L"Other %ld\n", ptr->ai_socktype);
-            break;
-        }
+        PrintSocketType(ptr->ai_socktype);
         wprintf(L"\tProtocol: ");
-        switch (ptr->ai_protocol) {
-        case 0:
-            wprintf(L"Unspecified\n");
-            break;
-        case IPPROTO_TCP:
-            wprintf(L"IPPROTO_TCP (TCP)\n");
-            break;
-        case IPPROTO_UDP:
-            wprintf(L"IPPROTO_UDP (UDP) \n");
-            break;
-        default:
-            wprintf(L"Other %ld\n", ptr->ai_protocol);
-            break;
-        }
+        PrintProtocol((IPPROTO)ptr->ai_protocol);
         wprintf(L"\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
         wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname);
 
         if (ptr->ai_blob == NULL)
             wprintf(L"\tBlob: (null)\n");
         else
-            wprintf(L"\tLength of the blob: %u\n",
-                    (DWORD)ptr->ai_bloblen);
+            wprintf(L"\tLength of the blob: %u\n", (DWORD)ptr->ai_bloblen);
 
         if (ptr->ai_provider == NULL)
             wprintf(L"\tNamespace provider GUID: (null)\n");
         else {
-            iRet =
-                StringFromGUID2(*(ptr->ai_provider), (LPOLESTR)&GuidString,
-                                39);
+            iRet = StringFromGUID2(*(ptr->ai_provider), (LPOLESTR)&GuidString, 39);
             // For c rather than C++ source code, the above line needs to be
             // iRet = StringFromGUID2(&ptr.ai_provider, (LPOLESTR) &GuidString, 39); 
             if (iRet == 0)
@@ -1509,20 +1315,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
             printf("\tAlternate name #%d: %s\n", ++i, *pAlias);
         }
         printf("\tAddress type: ");
-        switch (remoteHost->h_addrtype) {
-        case AF_INET:
-            printf("AF_INET\n");
-            break;
-        case AF_INET6:
-            printf("AF_INET6\n");
-            break;
-        case AF_NETBIOS:
-            printf("AF_NETBIOS\n");
-            break;
-        default:
-            printf(" %d\n", remoteHost->h_addrtype);
-            break;
-        }
+        PrintAddressFamily(remoteHost->h_addrtype);
         printf("\tAddress length: %d\n", remoteHost->h_length);
 
         if (remoteHost->h_addrtype == AF_INET) {

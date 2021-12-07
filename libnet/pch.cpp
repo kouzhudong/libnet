@@ -748,3 +748,264 @@ void PrintNeighborState(_In_ NL_NEIGHBOR_STATE State)
         break;
     }
 }
+
+
+void PrintProtocol(IPPROTO protocol)
+{
+    switch (protocol) {
+    case IPPROTO_HOPOPTS:
+        wprintf(L"Unspecified\n");//IPv6 Hop-by-Hop options
+        break;
+    case IPPROTO_ICMP:
+        wprintf(L"ICMP\n");
+        break;
+    case IPPROTO_IGMP:
+        wprintf(L"IGMP\n");
+        break;
+    case IPPROTO_GGP:
+        wprintf(L"GGP\n");
+        break;
+    case IPPROTO_IPV4:
+        wprintf(L"IPV4\n");
+        break;
+    case IPPROTO_ST:
+        wprintf(L"ST\n");
+        break;
+    case IPPROTO_TCP:
+        wprintf(L"IPPROTO_TCP (TCP)\n");
+        break;
+    case IPPROTO_CBT:
+        wprintf(L"CBT\n");
+        break;
+    case IPPROTO_EGP:
+        wprintf(L"EGP\n");
+        break;
+    case IPPROTO_IGP:
+        wprintf(L"IGP\n");
+        break;
+    case IPPROTO_PUP:
+        wprintf(L"PUP\n");
+        break;
+    case IPPROTO_UDP:
+        wprintf(L"IPPROTO_UDP (UDP) \n");
+        break;
+    case IPPROTO_IDP:
+        wprintf(L"IDP\n");
+        break;
+    case IPPROTO_RDP:
+        wprintf(L"RDP\n");
+        break;
+    case IPPROTO_IPV6:
+        wprintf(L"IPV6\n");
+        break;
+    case IPPROTO_ROUTING:
+        wprintf(L"IPv6 Routing header\n");
+        break;
+    case IPPROTO_FRAGMENT:
+        wprintf(L"IPv6 fragmentation header\n");
+        break;
+    case IPPROTO_ESP:
+        wprintf(L"encapsulating security payload\n");
+        break;
+    case IPPROTO_ICMPV6:
+        wprintf(L"ICMPv6\n");
+        break;
+    case IPPROTO_NONE:
+        wprintf(L"IPv6 no next header\n");
+        break;
+    case IPPROTO_DSTOPTS:
+        wprintf(L"IPv6 Destination options\n");
+        break;
+    case IPPROTO_ND:
+        wprintf(L"ND\n");
+        break;
+    case IPPROTO_ICLFXBM:
+        wprintf(L"ICLFXBM\n");
+        break;
+    case IPPROTO_PIM:
+        wprintf(L"PIM\n");
+        break;
+    case IPPROTO_PGM:
+        wprintf(L"PGM\n");
+        break;
+    case IPPROTO_L2TP:
+        wprintf(L"L2TP\n");
+        break;
+    case IPPROTO_SCTP:
+        wprintf(L"SCTP\n");
+        break;
+    case IPPROTO_RAW:
+        wprintf(L"RAW\n");
+        break;
+    case IPPROTO_MAX:
+        wprintf(L"MAX\n");
+        break;
+    case IPPROTO_RESERVED_RAW:
+        wprintf(L"RESERVED_RAW\n");
+        break;
+    case IPPROTO_RESERVED_IPSEC:
+        wprintf(L"RESERVED_IPSEC\n");
+        break;
+    case IPPROTO_RESERVED_IPSECOFFLOAD:
+        wprintf(L"RESERVED_IPSECOFFLOAD\n");
+        break;
+    case IPPROTO_RESERVED_WNV:
+        wprintf(L"RESERVED_WNV\n");
+        break;
+    case IPPROTO_RESERVED_MAX:
+        wprintf(L"RESERVED_MAX\n");
+        break;
+    default:
+        wprintf(L"Other %ld\n", protocol);
+        break;
+    }
+}
+
+
+void PrintSocketType(int SocketType)
+{
+    switch (SocketType) {
+    case 0:
+        printf("Unspecified\n");
+        break;
+    case SOCK_STREAM:
+        printf("SOCK_STREAM (stream)\n");
+        break;
+    case SOCK_DGRAM:
+        printf("SOCK_DGRAM (datagram) \n");
+        break;
+    case SOCK_RAW:
+        printf("SOCK_RAW (raw) \n");
+        break;
+    case SOCK_RDM:
+        printf("SOCK_RDM (reliable message datagram)\n");
+        break;
+    case SOCK_SEQPACKET:
+        printf("SOCK_SEQPACKET (pseudo-stream packet)\n");
+        break;
+    default:
+        printf("Other %ld\n", SocketType);
+        break;
+    }
+}
+
+
+void PrintAddressFamily(ULONG Family)
+{
+    _ASSERTE(Family < AF_MAX);
+
+    switch (Family) {
+    case AF_UNSPEC:
+        printf("Unspecified\n");
+        break;
+    case AF_UNIX:
+        printf("local to host (pipes, portals)\n");
+        break;
+    case AF_INET:
+        printf("AF_INET (IPv4)\n");
+        break;
+    case AF_IMPLINK:
+        printf("arpanet imp addresses\n");
+        break;
+    case AF_PUP:
+        printf("pup protocols: e.g. BSP\n");
+        break;
+    case AF_CHAOS:
+        printf("mit CHAOS protocols\n");
+        break;
+    case AF_NS:
+        printf("XEROX NS protocols\n");
+        break;
+    //case AF_IPX:
+    //    printf("IPX protocols: IPX, SPX, etc.\n");
+    //    break;
+    case AF_ISO:
+        printf("ISO protocols\n");
+        break;
+    //case AF_OSI:
+    //    printf("OSI is ISO\n");
+    //    break;
+    case AF_ECMA:
+        printf("european computer manufacturers\n");
+        break;
+    case AF_DATAKIT:
+        printf("datakit protocols\n");
+        break;
+    case AF_CCITT:
+        printf("CCITT protocols, X.25 etc\n");
+        break;
+    case AF_SNA:
+        printf("IBM SNA\n");
+        break;
+    case AF_DECnet:
+        printf("DECnet\n");
+        break;
+    case AF_DLI:
+        printf("Direct data link interface\n");
+        break;
+    case AF_LAT:
+        printf("LAT\n");
+        break;
+    case AF_HYLINK:
+        printf("NSC Hyperchannel\n");
+        break;
+    case AF_APPLETALK:
+        printf("AppleTalk\n");
+        break;
+    case AF_NETBIOS:
+        //printf("NetBios-style addresses\n");
+        printf("AF_NETBIOS (NetBIOS)\n");
+        break;
+    case AF_VOICEVIEW:
+        printf("VoiceView\n");
+        break;
+    case AF_FIREFOX:
+        printf("Protocols from Firefox\n");
+        break;
+    case AF_UNKNOWN1:
+        printf("Somebody is using this!\n");
+        break;
+    case AF_BAN:
+        printf("Banyan\n");
+        break;
+    case AF_ATM:
+        printf("Native ATM Services\n");
+        break;
+    case AF_INET6:
+        printf("Internetwork Version 6\n");
+        break;
+    case AF_CLUSTER:
+        printf("Microsoft Wolfpack\n");
+        break;
+    case AF_12844:
+        printf("IEEE 1284.4 WG AF\n");
+        break;
+    case AF_IRDA:
+        printf("IrDA\n");
+        break;
+    case AF_NETDES:
+        printf("Network Designers OSI & gateway\n");
+        break;
+    case AF_TCNPROCESS:
+        printf("TCNPROCESS\n");
+        break;
+    case AF_TCNMESSAGE:
+        printf("TCNMESSAGE\n");
+        break;
+    case AF_ICLFXBM:
+        printf("ICLFXBM\n");
+        break;
+    case AF_BTH:
+        printf("Bluetooth RFCOMM/L2CAP protocols\n");
+        break;
+    case AF_LINK:
+        printf("LINK\n");
+        break;
+    case AF_HYPERV:
+        printf("HYPERV\n");
+        break;
+    default:
+        printf("Other %ld\n", Family);
+        break;
+    }
+}

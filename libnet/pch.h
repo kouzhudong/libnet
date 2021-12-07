@@ -27,3 +27,6 @@ void GetTimeString(LARGE_INTEGER UtcTime, _Out_ LPWSTR TimeString);
 void PrintTcpConnectionState(_In_ DWORD dwState);
 void PrintInterfaceType(_In_ WORD Type);
 void PrintNeighborState(_In_ NL_NEIGHBOR_STATE State);
+void PrintProtocol(IPPROTO protocol);
+void PrintSocketType(int SocketType);
+void PrintAddressFamily(ULONG Family);
