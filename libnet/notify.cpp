@@ -5,6 +5,53 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+VOID NETIOAPI_API_ NetworkConnectivityHintChange(_In_ PVOID CallerContext,
+                                                 _In_ NL_NETWORK_CONNECTIVITY_HINT ConnectivityHint
+)
+/*
+注册的过程中会被调用1次。
+
+如何触发？使这里被运行呢？
+1.关闭和开启网卡也不行。
+2.改变IP地址也不行。
+*/
+{
+
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI RegistersNotifyNetworkConnectivityHintChange()
+/*
+Registers an application-defined callback function,
+to be called when the aggregate network connectivity level and cost hints change.
+
+这个也没有反注册的函数？没找到。
+
+Minimum supported client	Windows 10, version 2004 (10.0; Build 19041)
+Minimum supported server	Windows Server, version 2004 (10.0; Build 19041)
+
+https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifynetworkconnectivityhintchange
+*/
+{
+    ADDRESS_FAMILY Family = AF_UNSPEC;
+    PVOID CallerContext = NULL;
+    BOOLEAN InitialNotification = TRUE;
+    HANDLE NotificationHandle = NULL;
+
+    NTSTATUS Status = NotifyNetworkConnectivityHintChange(NetworkConnectivityHintChange,
+                                                          CallerContext,
+                                                          InitialNotification,
+                                                          &NotificationHandle);
+
+    (void)getchar();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 HANDLE NotificationHandle = NULL;
 
 

@@ -1,3 +1,7 @@
+/*
+功能：一些监控网络变化的代码。
+*/
+
 #pragma once
 #include "pch.h"
 
