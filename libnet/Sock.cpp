@@ -89,8 +89,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         case AF_INET:
             printf("AF_INET (IPv4)\n");
             sockaddr_ipv4 = (struct sockaddr_in *)ptr->ai_addr;
-            printf("\tIPv4 address %s\n",
-                   inet_ntoa(sockaddr_ipv4->sin_addr));
+            printf("\tIPv4 address %s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
             break;
         case AF_INET6:
             printf("AF_INET6 (IPv6)\n");
@@ -486,8 +485,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = (struct sockaddr_in *)ptr->ai_addr;
             wprintf(L"\tIPv4 address %ws\n",
-                    InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer,
-                             46));
+                    InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -506,8 +504,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = (struct sockaddr_in6 *)ptr->ai_addr;
             wprintf(L"\tIPv6 address %ws\n",
-                    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr,
-                             ipstringbuffer, 46));
+                    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -853,8 +850,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = (struct sockaddr_in *)ptr->ai_addr;
             wprintf(L"\tIPv4 address %ws\n",
-                    InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer,
-                             46));
+                    InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -873,8 +869,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = (struct sockaddr_in6 *)ptr->ai_addr;
             wprintf(L"\tIPv6 address %ws\n",
-                    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr,
-                             ipstringbuffer, 46));
+                    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -1399,17 +1394,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
             printf("\tAlternate name #%d: %s\n", ++i, *pAlias);
         }
         printf("\tAddress type: ");
-        switch (remoteHost->h_addrtype) {
-        case AF_INET:
-            printf("AF_INET\n");
-            break;
-        case AF_NETBIOS:
-            printf("AF_NETBIOS\n");
-            break;
-        default:
-            printf(" %d\n", remoteHost->h_addrtype);
-            break;
-        }
+        PrintAddressFamily(remoteHost->h_addrtype);
         printf("\tAddress length: %d\n", remoteHost->h_length);
 
         i = 0;
