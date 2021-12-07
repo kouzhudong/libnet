@@ -75,6 +75,9 @@
     <ClInclude Include="WebBrowserApp.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="notify.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -129,6 +132,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WebBrowserApp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="notify.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

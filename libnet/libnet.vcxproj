@@ -183,6 +183,7 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="NetApi.h" />
     <ClInclude Include="NetBIOS.h" />
+    <ClInclude Include="notify.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="raw.h" />
     <ClInclude Include="resource.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="NetApi.cpp" />
     <ClCompile Include="NetBIOS.cpp" />
+    <ClCompile Include="notify.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
