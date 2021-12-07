@@ -1909,8 +1909,11 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI EnumIpNetTable2()
+int WINAPI EnumIpv4NetTable2()
 /*
+The following example retrieves the IP neighbor table, 
+then prints the values for IP neighbor row entries in the table.
+
 The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
@@ -1939,38 +1942,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
         printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
         printf("Interface LUID IfType[%d]: ", (int)i);
-        switch (pipTable->Table[i].InterfaceLuid.Info.IfType) {
-        case IF_TYPE_OTHER:
-            printf("Other\n");
-            break;
-        case IF_TYPE_ETHERNET_CSMACD:
-            printf("Ethernet\n");
-            break;
-        case IF_TYPE_ISO88025_TOKENRING:
-            printf("Token ring\n");
-            break;
-        case IF_TYPE_PPP:
-            printf("PPP\n");
-            break;
-        case IF_TYPE_SOFTWARE_LOOPBACK:
-            printf("Software loopback\n");
-            break;
-        case IF_TYPE_ATM:
-            printf("ATM\n");
-            break;
-        case IF_TYPE_IEEE80211:
-            printf("802.11 wireless\n");
-            break;
-        case IF_TYPE_TUNNEL:
-            printf("Tunnel encapsulation\n");
-            break;
-        case IF_TYPE_IEEE1394:
-            printf("IEEE 1394 (Firewire)\n");
-            break;
-        default:
-            printf("Unknown: %lld\n", pipTable->Table[i].InterfaceLuid.Info.IfType);
-            break;
-        }
+        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);        
 
         printf("Physical Address[%d]:\t ", (int)i);
         if (pipTable->Table[i].PhysicalAddressLength == 0)
@@ -1987,32 +1959,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
         printf("Physical Address Length[%d]:\t %lu\n", (int)i, pipTable->Table[i].PhysicalAddressLength);
 
         printf("Neighbor State[%d]:\t ", (int)i);
-        switch (pipTable->Table[i].State) {
-        case NlnsUnreachable:
-            printf("NlnsUnreachable\n");
-            break;
-        case NlnsIncomplete:
-            printf("NlnsIncomplete\n");
-            break;
-        case NlnsProbe:
-            printf("NlnsProbe\n");
-            break;
-        case NlnsDelay:
-            printf("NlnsDelay\n");
-            break;
-        case NlnsStale:
-            printf("NlnsStale\n");
-            break;
-        case NlnsReachable:
-            printf("NlnsReachable\n");
-            break;
-        case NlnsPermanent:
-            printf("NlnsPermanent\n");
-            break;
-        default:
-            printf("Unknown: %d\n", pipTable->Table[i].State);
-            break;
-        }
+        PrintNeighborState(pipTable->Table[i].State);
 
         printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
 
@@ -2024,7 +1971,163 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
     FreeMibTable(pipTable);
     pipTable = NULL;
 
-    exit(0);
+    //exit(0);
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIpv6NetTable2()
+/*
+The following example retrieves the IP neighbor table,
+then prints the values for IP neighbor row entries in the table.
+
+The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
+
+https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
+*/
+{
+    // Declare and initialize variables
+    int i;
+    unsigned int j;
+    unsigned long status = 0;
+    PMIB_IPNET_TABLE2 pipTable = NULL;
+    //    MIB_IPNET_ROW2 ipRow;
+
+    status = GetIpNetTable2(AF_INET6, &pipTable);
+    if (status != NO_ERROR) {
+        printf("GetIpNetTable for IPv6 table returned error: %ld\n", status);
+        exit(1);
+    }
+
+    printf("Number of IPv6 table entries: %d\n\n", pipTable->NumEntries);
+
+    for (i = 0; (unsigned)i < pipTable->NumEntries; i++) {
+        //        printf("Table entry: %d\n", i);
+
+        wchar_t IPv6[46] = {0};
+        InetNtop(AF_INET6, &pipTable->Table[i].Address.Ipv6.sin6_addr, IPv6, _ARRAYSIZE(IPv6));
+        printf("IPv4 Address[%d]:\t %ls\n", (int)i, IPv6);
+
+        printf("Interface index[%d]:\t\t %lu\n", (int)i, pipTable->Table[i].InterfaceIndex);
+
+        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
+        printf("Interface LUID IfType[%d]: ", (int)i);
+        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);        
+
+        printf("Physical Address[%d]:\t ", (int)i);
+        if (pipTable->Table[i].PhysicalAddressLength == 0)
+            printf("\n");
+        //        for (j = 0; (unsigned) j < pipTable->Table[i].PhysicalAddressLength; j++)
+        //         printf ("%c" 
+        for (j = 0; j < pipTable->Table[i].PhysicalAddressLength; j++) {
+            if (j == (pipTable->Table[i].PhysicalAddressLength - 1))
+                printf("%.2X\n", (int)pipTable->Table[i].PhysicalAddress[j]);
+            else
+                printf("%.2X-", (int)pipTable->Table[i].PhysicalAddress[j]);
+        }
+
+        printf("Physical Address Length[%d]:\t %lu\n", (int)i, pipTable->Table[i].PhysicalAddressLength);
+
+        printf("Neighbor State[%d]:\t ", (int)i);
+        PrintNeighborState(pipTable->Table[i].State);
+
+        printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
+
+        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i,
+               pipTable->Table[i].ReachabilityTime.LastReachable,
+               pipTable->Table[i].ReachabilityTime.LastUnreachable);
+    }
+
+    FreeMibTable(pipTable);
+    pipTable = NULL;
+
+    //exit(0);
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+int WINAPI EnumIpNetTable2()
+/*
+The following example retrieves the IP neighbor table,
+then prints the values for IP neighbor row entries in the table.
+
+The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
+
+https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
+*/
+{
+    // Declare and initialize variables
+    int i;
+    unsigned int j;
+    unsigned long status = 0;
+    PMIB_IPNET_TABLE2 pipTable = NULL;
+    //    MIB_IPNET_ROW2 ipRow;
+
+    status = GetIpNetTable2(AF_UNSPEC, &pipTable);
+    if (status != NO_ERROR) {
+        printf("GetIpNetTable for IP table returned error: %ld\n", status);
+        exit(1);
+    }
+
+    // Print some variables from the table
+    printf("Number of IP table entries: %d\n\n", pipTable->NumEntries);
+
+    for (i = 0; (unsigned)i < pipTable->NumEntries; i++) {
+        //        printf("Table entry: %d\n", i);
+
+        wchar_t IpStr[46] = {0};
+        switch (pipTable->Table[i].Address.Ipv4.sin_family) {
+        case AF_INET:
+            InetNtop(AF_INET, &pipTable->Table[i].Address.Ipv4.sin_addr, IpStr, _ARRAYSIZE(IpStr));
+            break;
+        case AF_INET6:            
+            InetNtop(AF_INET6, &pipTable->Table[i].Address.Ipv6.sin6_addr, IpStr, _ARRAYSIZE(IpStr));
+            break;
+        default:
+            _ASSERTE(false);
+            break;
+        }
+        printf("IP Address[%d]:\t %ls\n", (int)i, IpStr);
+
+        printf("Interface index[%d]:\t\t %lu\n", (int)i, pipTable->Table[i].InterfaceIndex);
+
+        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
+        printf("Interface LUID IfType[%d]: ", (int)i);
+        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);        
+
+        printf("Physical Address[%d]:\t ", (int)i);
+        if (pipTable->Table[i].PhysicalAddressLength == 0)
+            printf("\n");
+        //        for (j = 0; (unsigned) j < pipTable->Table[i].PhysicalAddressLength; j++)
+        //         printf ("%c" 
+        for (j = 0; j < pipTable->Table[i].PhysicalAddressLength; j++) {
+            if (j == (pipTable->Table[i].PhysicalAddressLength - 1))
+                printf("%.2X\n", (int)pipTable->Table[i].PhysicalAddress[j]);
+            else
+                printf("%.2X-", (int)pipTable->Table[i].PhysicalAddress[j]);
+        }
+
+        printf("Physical Address Length[%d]:\t %lu\n", (int)i, pipTable->Table[i].PhysicalAddressLength);
+
+        printf("Neighbor State[%d]:\t ", (int)i);
+        PrintNeighborState(pipTable->Table[i].State);
+        
+        printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
+
+        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i,
+               pipTable->Table[i].ReachabilityTime.LastReachable,
+               pipTable->Table[i].ReachabilityTime.LastUnreachable);
+    }
+
+    FreeMibTable(pipTable);
+    pipTable = NULL;
+
+    //exit(0);
+    return 0;
 }
 
 
@@ -2267,38 +2370,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
 
             printf("\n");
             printf("\tType[%d]:\t ", i);
-            switch (pIfRow->dwType) {
-            case IF_TYPE_OTHER:
-                printf("Other\n");
-                break;
-            case IF_TYPE_ETHERNET_CSMACD:
-                printf("Ethernet\n");
-                break;
-            case IF_TYPE_ISO88025_TOKENRING:
-                printf("Token Ring\n");
-                break;
-            case IF_TYPE_PPP:
-                printf("PPP\n");
-                break;
-            case IF_TYPE_SOFTWARE_LOOPBACK:
-                printf("Software Lookback\n");
-                break;
-            case IF_TYPE_ATM:
-                printf("ATM\n");
-                break;
-            case IF_TYPE_IEEE80211:
-                printf("IEEE 802.11 Wireless\n");
-                break;
-            case IF_TYPE_TUNNEL:
-                printf("Tunnel type encapsulation\n");
-                break;
-            case IF_TYPE_IEEE1394:
-                printf("IEEE 1394 Firewire\n");
-                break;
-            default:
-                printf("Unknown type %ld\n", pIfRow->dwType);
-                break;
-            }
+            PrintInterfaceType((WORD)pIfRow->dwType);
 
             printf("\tMtu[%d]:\t\t %ld\n", i, pIfRow->dwMtu);
             printf("\tSpeed[%d]:\t %ld\n", i, pIfRow->dwSpeed);
@@ -3811,38 +3883,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
         wprintf(L"Interface LUID NetLuidIndex[%d]:  %lu\n",
                 i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
         wprintf(L"Interface LUID IfType[%d]:\t ", i);
-        switch (pipTable->Table[i].InterfaceLuid.Info.IfType) {
-        case IF_TYPE_OTHER:
-            wprintf(L"Other\n");
-            break;
-        case IF_TYPE_ETHERNET_CSMACD:
-            wprintf(L"Ethernet\n");
-            break;
-        case IF_TYPE_ISO88025_TOKENRING:
-            wprintf(L"Token ring\n");
-            break;
-        case IF_TYPE_PPP:
-            wprintf(L"PPP\n");
-            break;
-        case IF_TYPE_SOFTWARE_LOOPBACK:
-            wprintf(L"Software loopback\n");
-            break;
-        case IF_TYPE_ATM:
-            wprintf(L"ATM\n");
-            break;
-        case IF_TYPE_IEEE80211:
-            wprintf(L"802.11 wireless\n");
-            break;
-        case IF_TYPE_TUNNEL:
-            wprintf(L"Tunnel encapsulation\n");
-            break;
-        case IF_TYPE_IEEE1394:
-            wprintf(L"IEEE 1394 (Firewire)\n");
-            break;
-        default:
-            wprintf(L"Unknown: %d\n", pipTable->Table[i].InterfaceLuid.Info.IfType);
-            break;
-        }
+        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);
 
         wprintf(L"Interface Index[%d]:\t\t %lu\n", i, pipTable->Table[i].InterfaceIndex);
 

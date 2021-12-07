@@ -34,12 +34,14 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
 
-    EnumAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
+    //EnumAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
 
     //BYTE MacAddr[6] = {0};
     //GetGatewayMacByIPv4("192.168.5.3", MacAddr);
 
-    //EnumUnicastIpAddressTable();
+    //EnumIpv4NetTable2();
+    //EnumIpv6NetTable2();
+    EnumIpNetTable2();
 
     LocalFree(Arglist);
 }
