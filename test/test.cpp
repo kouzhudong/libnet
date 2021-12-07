@@ -41,7 +41,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //EnumIpv4NetTable2();
     //EnumIpv6NetTable2();
-    EnumIpNetTable2();
+    Icmp6Test();
 
     LocalFree(Arglist);
 }

@@ -301,6 +301,9 @@ int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr);
 __declspec(dllimport)
 int WINAPI EnumUnicastIpAddressTable();
 
+__declspec(dllimport)
+void WINAPI Icmp6Test();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

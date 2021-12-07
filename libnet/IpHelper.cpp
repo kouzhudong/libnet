@@ -3629,3 +3629,99 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI Icmp6Test()
+/*
+功能：演示Icmp6CreateFile+Icmp6SendEcho2+Icmp6ParseReplies的用法。
+
+说明：实验暂时没成功，参数传递的还不对。
+
+https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
+https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6sendecho2
+https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parsereplies
+*/
+{
+    HANDLE hIcmpFile = Icmp6CreateFile();
+    if (hIcmpFile == INVALID_HANDLE_VALUE) {
+        printf("\tUnable to open handle.\n");
+        printf("Icmp6Createfile returned error: %ld\n", GetLastError());
+        return;
+    }
+
+    struct sockaddr_in6 SourceAddress = {0};
+    InetPtonA(AF_INET6, "240e:471:800:23d2:384d:f664:3c3:e9", &SourceAddress);
+
+    struct sockaddr_in6 DestinationAddress = {0};
+    InetPtonA(AF_INET6, "2001:4860:4860::6464", &DestinationAddress);
+
+    LPVOID                   RequestData = NULL;
+    WORD                     RequestSize = 0;
+
+    /*
+    A pointer to the IPv6 header options for the request, in the form of an IP_OPTION_INFORMATION structure.
+    On a 64-bit platform, this parameter is in the form for an IP_OPTION_INFORMATION32 structure.
+
+    This parameter may be NULL if no IP header options need to be specified.
+
+    Note  On Windows Server 2003 and Windows XP, 
+    the RequestOptions parameter is not optional and must not be NULL and only the Ttl and Flags members are used.
+    */
+    IP_OPTION_INFORMATION32  RequestOptions = {30, 0, 0, 0, NULL};
+
+    PVOID                    ReplyBuffer = NULL;
+
+    /*
+    The size, in bytes, of the reply buffer pointed to by the ReplyBuffer parameter. 
+    This buffer should be large enough to hold at least one ICMPV6_ECHO_REPLY structure plus RequestSize bytes of data. 
+    This buffer should also be large enough to also hold 8 more bytes of data (the size of an ICMP error message) plus space for an IO_STATUS_BLOCK structure.
+    */
+    DWORD ReplySize = sizeof(ICMPV6_ECHO_REPLY) + RequestSize + 8 + sizeof(IO_STATUS_BLOCK);
+
+    /*
+    The time, in milliseconds, to wait for replies. 
+    This parameter is only used if the Icmp6SendEcho2 function is called synchronously. 
+    So this parameter is not used if either the ApcRoutine or Event parameter are not NULL.
+    */
+    DWORD                    Timeout = 0;
+
+    ReplyBuffer = (PVOID)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, ReplySize);;
+    _ASSERTE(ReplyBuffer);
+
+    DWORD ret = Icmp6SendEcho2(hIcmpFile,
+                               NULL,
+                               NULL,
+                               NULL,
+                               &SourceAddress,
+                               &DestinationAddress,
+                               NULL, //RequestData,
+                               0, //RequestSize,
+                               NULL, //(PIP_OPTION_INFORMATION)&RequestOptions,
+                               ReplyBuffer,
+                               ReplySize,
+                               Timeout);
+    if (0 == ret) {
+        printf("LastError:%ld\n", GetLastError());//ERROR_INVALID_PARAMETER
+        IcmpCloseHandle(hIcmpFile);
+        return;
+    }
+
+#pragma prefast( push )
+#pragma prefast( disable: 28020, "表达式“_Param_(2)>sizeof(struct icmpv6_echo_reply_lh ICMPV6_ECHO_REPLY)+8”对此调用无效。" )
+    ret = Icmp6ParseReplies(ReplyBuffer, ReplySize);
+#pragma prefast( pop )     
+    if (0 == ret) {
+        printf("LastError:%ld\n", GetLastError());
+        IcmpCloseHandle(hIcmpFile);
+        return;
+    }
+
+
+    HeapFree(GetProcessHeap(), 0, ReplyBuffer);
+    IcmpCloseHandle(hIcmpFile);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////

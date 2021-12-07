@@ -79,6 +79,8 @@
 #include <memory.h>
 #include <Tcpestats.h>
 #include <ws2ipdef.h>
+#include <IPExport.h>
+#include <icmpapi.h> //前面需先包含IPExport.h。
 
 #ifndef INITGUID
 #define INITGUID

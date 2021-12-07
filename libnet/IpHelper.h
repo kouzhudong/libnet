@@ -59,5 +59,8 @@ int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr);
 __declspec(dllexport)
 int WINAPI EnumUnicastIpAddressTable();
 
+__declspec(dllexport)
+void WINAPI Icmp6Test();
+
 
 EXTERN_C_END
