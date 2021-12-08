@@ -1908,149 +1908,16 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI EnumIpv4NetTable2()
+int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family)
 /*
-The following example retrieves the IP neighbor table, 
-then prints the values for IP neighbor row entries in the table.
+功能：枚举IPv4的路由表或（和）IPv6的邻居表。
 
-The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
+看来网络表（NetTable）包含IPv4的路由表（route table）和IPv6的邻居表（neighbor table）。
 
-https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
-*/
-{
-    // Declare and initialize variables
-    int i;
-    unsigned int j;
-    unsigned long status = 0;
-    PMIB_IPNET_TABLE2 pipTable = NULL;
-    //    MIB_IPNET_ROW2 ipRow;
+Parameters：
+[in] Family
+The values currently supported are AF_INET, AF_INET6, and AF_UNSPEC.
 
-    status = GetIpNetTable2(AF_INET, &pipTable);
-    if (status != NO_ERROR) {
-        printf("GetIpNetTable for IPv4 table returned error: %ld\n", status);
-        exit(1);
-    }
-
-    // Print some variables from the table
-    printf("Number of IPv4 table entries: %d\n\n", pipTable->NumEntries);
-
-    for (i = 0; (unsigned)i < pipTable->NumEntries; i++) {
-        //        printf("Table entry: %d\n", i);
-        printf("IPv4 Address[%d]:\t %s\n", (int)i, inet_ntoa(pipTable->Table[i].Address.Ipv4.sin_addr));
-        printf("Interface index[%d]:\t\t %lu\n", (int)i, pipTable->Table[i].InterfaceIndex);
-
-        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
-        printf("Interface LUID IfType[%d]: ", (int)i);
-        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);        
-
-        printf("Physical Address[%d]:\t ", (int)i);
-        if (pipTable->Table[i].PhysicalAddressLength == 0)
-            printf("\n");
-        //        for (j = 0; (unsigned) j < pipTable->Table[i].PhysicalAddressLength; j++)
-        //         printf ("%c" 
-        for (j = 0; j < pipTable->Table[i].PhysicalAddressLength; j++) {
-            if (j == (pipTable->Table[i].PhysicalAddressLength - 1))
-                printf("%.2X\n", (int)pipTable->Table[i].PhysicalAddress[j]);
-            else
-                printf("%.2X-", (int)pipTable->Table[i].PhysicalAddress[j]);
-        }
-
-        printf("Physical Address Length[%d]:\t %lu\n", (int)i, pipTable->Table[i].PhysicalAddressLength);
-
-        printf("Neighbor State[%d]:\t ", (int)i);
-        PrintNeighborState(pipTable->Table[i].State);
-
-        printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
-
-        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i,
-               pipTable->Table[i].ReachabilityTime.LastReachable,
-               pipTable->Table[i].ReachabilityTime.LastUnreachable);
-    }
-
-    FreeMibTable(pipTable);
-    pipTable = NULL;
-
-    //exit(0);
-    return 0;
-}
-
-
-EXTERN_C
-__declspec(dllexport)
-int WINAPI EnumIpv6NetTable2()
-/*
-The following example retrieves the IP neighbor table,
-then prints the values for IP neighbor row entries in the table.
-
-The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
-
-https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
-*/
-{
-    // Declare and initialize variables
-    int i;
-    unsigned int j;
-    unsigned long status = 0;
-    PMIB_IPNET_TABLE2 pipTable = NULL;
-    //    MIB_IPNET_ROW2 ipRow;
-
-    status = GetIpNetTable2(AF_INET6, &pipTable);
-    if (status != NO_ERROR) {
-        printf("GetIpNetTable for IPv6 table returned error: %ld\n", status);
-        exit(1);
-    }
-
-    printf("Number of IPv6 table entries: %d\n\n", pipTable->NumEntries);
-
-    for (i = 0; (unsigned)i < pipTable->NumEntries; i++) {
-        //        printf("Table entry: %d\n", i);
-
-        wchar_t IPv6[46] = {0};
-        InetNtop(AF_INET6, &pipTable->Table[i].Address.Ipv6.sin6_addr, IPv6, _ARRAYSIZE(IPv6));
-        printf("IPv4 Address[%d]:\t %ls\n", (int)i, IPv6);
-
-        printf("Interface index[%d]:\t\t %lu\n", (int)i, pipTable->Table[i].InterfaceIndex);
-
-        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
-        printf("Interface LUID IfType[%d]: ", (int)i);
-        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);        
-
-        printf("Physical Address[%d]:\t ", (int)i);
-        if (pipTable->Table[i].PhysicalAddressLength == 0)
-            printf("\n");
-        //        for (j = 0; (unsigned) j < pipTable->Table[i].PhysicalAddressLength; j++)
-        //         printf ("%c" 
-        for (j = 0; j < pipTable->Table[i].PhysicalAddressLength; j++) {
-            if (j == (pipTable->Table[i].PhysicalAddressLength - 1))
-                printf("%.2X\n", (int)pipTable->Table[i].PhysicalAddress[j]);
-            else
-                printf("%.2X-", (int)pipTable->Table[i].PhysicalAddress[j]);
-        }
-
-        printf("Physical Address Length[%d]:\t %lu\n", (int)i, pipTable->Table[i].PhysicalAddressLength);
-
-        printf("Neighbor State[%d]:\t ", (int)i);
-        PrintNeighborState(pipTable->Table[i].State);
-
-        printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
-
-        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i,
-               pipTable->Table[i].ReachabilityTime.LastReachable,
-               pipTable->Table[i].ReachabilityTime.LastUnreachable);
-    }
-
-    FreeMibTable(pipTable);
-    pipTable = NULL;
-
-    //exit(0);
-    return 0;
-}
-
-
-EXTERN_C
-__declspec(dllexport)
-int WINAPI EnumIpNetTable2()
-/*
 The following example retrieves the IP neighbor table,
 then prints the values for IP neighbor row entries in the table.
 

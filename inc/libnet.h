@@ -371,13 +371,7 @@ __declspec(dllimport)
 int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac);
 
 __declspec(dllimport)
-int WINAPI EnumIpv4NetTable2();
-
-__declspec(dllimport)
-int WINAPI EnumIpv6NetTable2();
-
-__declspec(dllimport)
-int WINAPI EnumIpNetTable2();
+int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family);
 
 __declspec(dllimport)
 int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv);
