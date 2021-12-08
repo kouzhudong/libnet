@@ -5,6 +5,36 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
+{
+    switch (Address->lpSockaddr->sa_family) {
+    case AF_INET:
+    {
+        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)Address->lpSockaddr;
+
+        printf("\t%s:%s\n", Msg, inet_ntoa(sockaddr_ipv4->sin_addr));
+
+        break;
+    }
+    case AF_INET6:
+    {
+        DWORD ipbufferlength = 46;
+        char ipstringbuffer[46] = {0};
+
+        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)Address->lpSockaddr;
+        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+
+        printf("\t%s:%s\n", Msg, ipstringbuffer);
+
+        break;
+    }
+    default:
+        _ASSERTE(false);
+        break;
+    }
+}
+
+
 EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv)
@@ -101,31 +131,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             if (pUnicast != NULL) {
                 for (i = 0; pUnicast != NULL; i++) {
                     /*这里可以打印IP地址信息*/
-                    switch (pUnicast->Address.lpSockaddr->sa_family) {
-                    case AF_INET:
-                    {
-                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pUnicast->Address.lpSockaddr;
-
-                        printf("\tIPv4:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
-
-                        break;
-                    }
-                    case AF_INET6:
-                    {
-                        DWORD ipbufferlength = 46;
-                        char ipstringbuffer[46] = {0};
-
-                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pUnicast->Address.lpSockaddr;
-                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
-
-                        printf("\tIPv6:%s\n", ipstringbuffer);
-
-                        break;
-                    }
-                    default:
-                        _ASSERTE(false);
-                        break;
-                    }
+                    DumpAddress("ip(Unicast)", &pUnicast->Address);
 
                     pUnicast = pUnicast->Next;
                 }
@@ -136,31 +142,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             pAnycast = pCurrAddresses->FirstAnycastAddress;
             if (pAnycast) {
                 for (i = 0; pAnycast != NULL; i++) {
-                    switch (pAnycast->Address.lpSockaddr->sa_family) {
-                    case AF_INET:
-                    {
-                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pAnycast->Address.lpSockaddr;
-
-                        printf("\tAnycast:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
-
-                        break;
-                    }
-                    case AF_INET6:
-                    {
-                        DWORD ipbufferlength = 46;
-                        char ipstringbuffer[46] = {0};
-
-                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pAnycast->Address.lpSockaddr;
-                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
-
-                        printf("\tAnycast:%s\n", ipstringbuffer);
-
-                        break;
-                    }
-                    default:
-                        _ASSERTE(false);
-                        break;
-                    }
+                    DumpAddress("Anycast", &pAnycast->Address);
 
                     pAnycast = pAnycast->Next;
                 }
@@ -172,31 +154,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             pMulticast = pCurrAddresses->FirstMulticastAddress;
             if (pMulticast) {
                 for (i = 0; pMulticast != NULL; i++) {
-                    switch (pMulticast->Address.lpSockaddr->sa_family) {
-                    case AF_INET:
-                    {
-                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pMulticast->Address.lpSockaddr;
-
-                        printf("\tMulticast:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
-
-                        break;
-                    }
-                    case AF_INET6:
-                    {
-                        DWORD ipbufferlength = 46;
-                        char ipstringbuffer[46] = {0};
-
-                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pMulticast->Address.lpSockaddr;
-                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
-
-                        printf("\tMulticast:%s\n", ipstringbuffer);
-
-                        break;
-                    }
-                    default:
-                        _ASSERTE(false);
-                        break;
-                    }
+                    DumpAddress("Multicast", &pMulticast->Address);
 
                     pMulticast = pMulticast->Next;
                 }
@@ -208,31 +166,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             pDnServer = pCurrAddresses->FirstDnsServerAddress;
             if (pDnServer) {
                 for (i = 0; pDnServer != NULL; i++) {
-                    switch (pDnServer->Address.lpSockaddr->sa_family) {
-                    case AF_INET:
-                    {
-                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)pDnServer->Address.lpSockaddr;
-
-                        printf("\tDnsServer:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
-
-                        break;
-                    }
-                    case AF_INET6:
-                    {
-                        DWORD ipbufferlength = 46;
-                        char ipstringbuffer[46] = {0};
-
-                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pDnServer->Address.lpSockaddr;
-                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
-
-                        printf("\tDnsServer:%s\n", ipstringbuffer);
-
-                        break;
-                    }
-                    default:
-                        _ASSERTE(false);
-                        break;
-                    }
+                    DumpAddress("DnServer", &pDnServer->Address);
 
                     pDnServer = pDnServer->Next;
                 }
@@ -271,6 +205,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             pPrefix = pCurrAddresses->FirstPrefix;
             if (pPrefix) {
                 for (i = 0; pPrefix != NULL; i++) {
+                    DumpAddress("Prefix", &pPrefix->Address);
 
                     pPrefix = pPrefix->Next;
                 }
@@ -283,6 +218,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             if (FirstWinsServerAddress) {
                 for (i = 0; FirstWinsServerAddress != NULL; i++) {
                     //打印 Wins Server Address。
+                    DumpAddress("WinsServerAddress", &FirstWinsServerAddress->Address);
 
                     FirstWinsServerAddress = FirstWinsServerAddress->Next;
                 }
@@ -295,31 +231,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             if (FirstGatewayAddress) {
                 for (i = 0; FirstGatewayAddress != NULL; i++) {
                     //打印 Gateway Address。
-                    switch (FirstGatewayAddress->Address.lpSockaddr->sa_family) {
-                    case AF_INET:
-                    {
-                        PSOCKADDR_IN sockaddr_ipv4 = (PSOCKADDR_IN)FirstGatewayAddress->Address.lpSockaddr;
-
-                        printf("\tGatewayAddress:%s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
-
-                        break;
-                    }
-                    case AF_INET6:
-                    {
-                        DWORD ipbufferlength = 46;
-                        char ipstringbuffer[46] = {0};
-
-                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
-                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
-
-                        printf("\tGatewayAddress:%s\n", ipstringbuffer);
-
-                        break;
-                    }
-                    default:
-                        _ASSERTE(false);
-                        break;
-                    }
+                    DumpAddress("GatewayAddress", &FirstGatewayAddress->Address);
 
                     FirstGatewayAddress = FirstGatewayAddress->Next;
                 }
