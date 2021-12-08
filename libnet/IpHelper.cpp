@@ -147,23 +147,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             printf("\tTCP[%d] Owning PID: %d\n", i, pTcpTable->table[i].dwOwningPid);
             printf("\tTCP[%d] Offload State: %ld - ", i, pTcpTable->table[i].dwOffloadState);
 
-            switch (pTcpTable->table[i].dwOffloadState) {
-            case TcpConnectionOffloadStateInHost:
-                printf("Owned by the network stack and not offloaded \n");
-                break;
-            case TcpConnectionOffloadStateOffloading:
-                printf("In the process of being offloaded\n");
-                break;
-            case TcpConnectionOffloadStateOffloaded:
-                printf("Offloaded to the network interface control\n");
-                break;
-            case TcpConnectionOffloadStateUploading:
-                printf("In the process of being uploaded back to the network stack \n");
-                break;
-            default:
-                printf("UNKNOWN Offload state value\n");
-                break;
-            }
+            PrintOffloadStateOfTcpConnection(pTcpTable->table[i].dwOffloadState);
         }
     } else {
         printf("\tGetTcpTable2 failed with %d\n", dwRetVal);
@@ -293,7 +277,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
             }
 
             wchar_t ipstringbuffer[46];
-
             if (InetNtop(AF_INET6, &pTcpTable->table[i].LocalAddr, ipstringbuffer, 46) == NULL)
                 wprintf(L"  InetNtop function failed for local IPv6 address\n");
             else
@@ -345,7 +328,8 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumTcpStatistics()
 /*
-The following example retrieves the TCP statistics for the local computer and prints some values from the returned data.
+The following example retrieves the TCP statistics for the local computer and 
+prints some values from the returned data.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpstatistics
 
@@ -421,7 +405,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     }
 
     ulSize = sizeof(MIB_TCPTABLE_OWNER_PID);
-    if ((dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0)) == ERROR_INSUFFICIENT_BUFFER) {
+    dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
+    if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
         pTcpTable = (MIB_TCPTABLE_OWNER_PID *)MALLOC(ulSize);
         if (pTcpTable == NULL) {
@@ -432,8 +417,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
 #pragma prefast( push )
 #pragma prefast( disable: 28020, "表达式“*_Param_(2)>=sizeof(MIB_TCPTABLE)”对此调用无效" )
-    if ((dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0)) == NO_ERROR) {
-#pragma prefast( pop )      
+    dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
+#pragma prefast( pop )  
+    if (dwRetVal == NO_ERROR) {    
         printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
             printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
@@ -1184,7 +1170,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
 
         if (pIPAddrTable == NULL) {
             printf("Memory allocation failed for GetIpAddrTable\n");
-            exit(1);
+            return(1);
         }
     }
 
@@ -1201,7 +1187,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
             printf("\tError: %s", (char *)lpMsgBuf);
             LocalFree(lpMsgBuf);
         }
-        exit(1);
+        return(1);
     }
 
     printf("\tNum Entries: %ld\n", pIPAddrTable->dwNumEntries);
@@ -1238,7 +1224,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
         pIPAddrTable = NULL;
     }
 
-    exit(0);
+    return(0);
 }
 
 
@@ -1344,23 +1330,7 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
                 printf("%.2X-", (int)IpNetTable->table[i].bPhysAddr[j]);
         }
 
-        switch (IpNetTable->table[i].Type) {
-        case MIB_IPNET_TYPE_OTHER:
-            printf("Type: OTHER\n");
-            break;
-        case MIB_IPNET_TYPE_INVALID:
-            printf("Type: INVALID\n");
-            break;
-        case MIB_IPNET_TYPE_DYNAMIC:
-            printf("Type: DYNAMIC\n");
-            break;
-        case MIB_IPNET_TYPE_STATIC:
-            printf("Type: STATIC\n");
-            break;
-        default:
-            printf("Type: %d\n", IpNetTable->table[i].Type);
-            break;
-        }
+        PrintArpType(IpNetTable->table[i].Type);
     }
 
     HeapFree(GetProcessHeap(), 0, IpNetTable);
@@ -1455,7 +1425,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
     FreeMibTable(pipTable);
     pipTable = NULL;
 
-    //exit(0);
     return 0;
 }
 
@@ -1521,83 +1490,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
             printf("\tRoute[%d] Next Hop: %s\n", i, szGatewayIp);
             printf("\tRoute[%d] If Index: %ld\n", i, pIpForwardTable->table[i].dwForwardIfIndex);
             printf("\tRoute[%d] Type: %ld - ", i, pIpForwardTable->table[i].dwForwardType);
-            switch (pIpForwardTable->table[i].dwForwardType) {
-            case MIB_IPROUTE_TYPE_OTHER:
-                printf("other\n");
-                break;
-            case MIB_IPROUTE_TYPE_INVALID:
-                printf("invalid route\n");
-                break;
-            case MIB_IPROUTE_TYPE_DIRECT:
-                printf("local route where next hop is final destination\n");
-                break;
-            case MIB_IPROUTE_TYPE_INDIRECT:
-                printf
-                ("remote route where next hop is not final destination\n");
-                break;
-            default:
-                printf("UNKNOWN Type value\n");
-                break;
-            }
+            PrintRouteType(pIpForwardTable->table[i].dwForwardType);
 
             printf("\tRoute[%d] Proto: %ld - ", i, pIpForwardTable->table[i].dwForwardProto);
-            switch (pIpForwardTable->table[i].dwForwardProto) {
-            case MIB_IPPROTO_OTHER:
-                printf("other\n");
-                break;
-            case MIB_IPPROTO_LOCAL:
-                printf("local interface\n");
-                break;
-            case MIB_IPPROTO_NETMGMT:
-                printf("static route set through network management \n");
-                break;
-            case MIB_IPPROTO_ICMP:
-                printf("result of ICMP redirect\n");
-                break;
-            case MIB_IPPROTO_EGP:
-                printf("Exterior Gateway Protocol (EGP)\n");
-                break;
-            case MIB_IPPROTO_GGP:
-                printf("Gateway-to-Gateway Protocol (GGP)\n");
-                break;
-            case MIB_IPPROTO_HELLO:
-                printf("Hello protocol\n");
-                break;
-            case MIB_IPPROTO_RIP:
-                printf("Routing Information Protocol (RIP)\n");
-                break;
-            case MIB_IPPROTO_IS_IS:
-                printf("Intermediate System-to-Intermediate System (IS-IS) protocol\n");
-                break;
-            case MIB_IPPROTO_ES_IS:
-                printf("End System-to-Intermediate System (ES-IS) protocol\n");
-                break;
-            case MIB_IPPROTO_CISCO:
-                printf("Cisco Interior Gateway Routing Protocol (IGRP)\n");
-                break;
-            case MIB_IPPROTO_BBN:
-                printf("BBN Internet Gateway Protocol (IGP) using SPF\n");
-                break;
-            case MIB_IPPROTO_OSPF:
-                printf("Open Shortest Path First (OSPF) protocol\n");
-                break;
-            case MIB_IPPROTO_BGP:
-                printf("Border Gateway Protocol (BGP)\n");
-                break;
-            case MIB_IPPROTO_NT_AUTOSTATIC:
-                printf("special Windows auto static route\n");
-                break;
-            case MIB_IPPROTO_NT_STATIC:
-                printf("special Windows static route\n");
-                break;
-            case MIB_IPPROTO_NT_STATIC_NON_DOD:
-                printf
-                ("special Windows static route not based on Internet standards\n");
-                break;
-            default:
-                printf("UNKNOWN Proto value\n");
-                break;
-            }
+            PrintRoutingProtocols(pIpForwardTable->table[i].dwForwardProto);
 
             printf("\tRoute[%d] Age: %ld\n", i, pIpForwardTable->table[i].dwForwardAge);
             printf("\tRoute[%d] Metric1: %ld\n", i, pIpForwardTable->table[i].dwForwardMetric1);
@@ -1656,10 +1552,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
 */
 {
     // Declare and initialize variables.
-
     DWORD dwSize = 0;
     DWORD dwRetVal = 0;
-
     unsigned int i, j;
 
     /* variables used for GetIfTable and GetIfEntry */
@@ -1718,29 +1612,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
             printf("\tAdmin Status[%d]:\t %ld\n", i, pIfRow->dwAdminStatus);
             printf("\tOper Status[%d]:\t ", i);
 
-            switch (pIfRow->dwOperStatus) {
-            case IF_OPER_STATUS_NON_OPERATIONAL:
-                printf("Non Operational\n");
-                break;
-            case IF_OPER_STATUS_UNREACHABLE:
-                printf("Unreachable\n");
-                break;
-            case IF_OPER_STATUS_DISCONNECTED:
-                printf("Disconnected\n");
-                break;
-            case IF_OPER_STATUS_CONNECTING:
-                printf("Connecting\n");
-                break;
-            case IF_OPER_STATUS_CONNECTED:
-                printf("Connected\n");
-                break;
-            case IF_OPER_STATUS_OPERATIONAL:
-                printf("Operational\n");
-                break;
-            default:
-                printf("Unknown status %ld\n", pIfRow->dwAdminStatus);
-                break;
-            }
+            PrintInterfaceOperationalStatus(pIfRow->dwOperStatus);
 
             printf("\n");
         }
@@ -2914,8 +2786,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
                 pipTable->Table[i].PreferredLifetime,
                 pipTable->Table[i].PreferredLifetime);
 
-        wprintf(L"OnLink PrefixLength[%d]:\t\t %lu\n", i,
-                pipTable->Table[i].OnLinkPrefixLength);
+        wprintf(L"OnLink PrefixLength[%d]:\t\t %lu\n", i, pipTable->Table[i].OnLinkPrefixLength);
 
         wprintf(L"Skip As Source[%d]:\t\t ", i);
         if (pipTable->Table[i].SkipAsSource)
@@ -2953,7 +2824,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
         pipTable = NULL;
     }
 
-    //exit(0);
     return 0;
 }
 

@@ -890,7 +890,7 @@ void PrintSocketType(int SocketType)
 }
 
 
-void PrintAddressFamily(ULONG Family)
+void PrintAddressFamily(_In_ ADDRESS_FAMILY Family)
 {
     _ASSERTE(Family < AF_MAX);
 
@@ -1094,6 +1094,180 @@ void PrintProviderNamespace(DWORD NameSpace)
         break;
     default:
         wprintf(L"Other value (%u)\n", NameSpace);
+        break;
+    }
+}
+
+
+void PrintOffloadStateOfTcpConnection(_In_ TCP_CONNECTION_OFFLOAD_STATE OffloadState)
+{
+    _ASSERTE(OffloadState < TcpConnectionOffloadStateMax);
+
+    switch (OffloadState) {
+    case TcpConnectionOffloadStateInHost:
+        printf("Owned by the network stack and not offloaded \n");
+        break;
+    case TcpConnectionOffloadStateOffloading:
+        printf("In the process of being offloaded\n");
+        break;
+    case TcpConnectionOffloadStateOffloaded:
+        printf("Offloaded to the network interface control\n");
+        break;
+    case TcpConnectionOffloadStateUploading:
+        printf("In the process of being uploaded back to the network stack \n");
+        break;
+    default:
+        printf("UNKNOWN Offload state value\n");
+        break;
+    }
+}
+
+
+void PrintArpType(_In_ MIB_IPNET_TYPE Type)
+{
+    switch (Type) {
+    case MIB_IPNET_TYPE_OTHER:
+        printf("Type: OTHER\n");
+        break;
+    case MIB_IPNET_TYPE_INVALID:
+        printf("Type: INVALID\n");
+        break;
+    case MIB_IPNET_TYPE_DYNAMIC:
+        printf("Type: DYNAMIC\n");
+        break;
+    case MIB_IPNET_TYPE_STATIC:
+        printf("Type: STATIC\n");
+        break;
+    default:
+        printf("Type: %d\n", Type);
+        break;
+    }
+}
+
+
+void PrintRouteType(_In_ DWORD dwForwardType)
+{
+    switch (dwForwardType) {
+    case MIB_IPROUTE_TYPE_OTHER:
+        printf("other\n");
+        break;
+    case MIB_IPROUTE_TYPE_INVALID:
+        printf("invalid route\n");
+        break;
+    case MIB_IPROUTE_TYPE_DIRECT:
+        printf("local route where next hop is final destination\n");
+        break;
+    case MIB_IPROUTE_TYPE_INDIRECT:
+        printf
+        ("remote route where next hop is not final destination\n");
+        break;
+    default:
+        printf("UNKNOWN Type value\n");
+        break;
+    }
+}
+
+
+void PrintRoutingProtocols(_In_ DWORD dwForwardProto)
+{
+    switch (dwForwardProto) {
+    case MIB_IPPROTO_OTHER:
+        printf("other\n");
+        break;
+    case MIB_IPPROTO_LOCAL:
+        printf("local interface\n");
+        break;
+    case MIB_IPPROTO_NETMGMT:
+        printf("static route set through network management \n");
+        break;
+    case MIB_IPPROTO_ICMP:
+        printf("result of ICMP redirect\n");
+        break;
+    case MIB_IPPROTO_EGP:
+        printf("Exterior Gateway Protocol (EGP)\n");
+        break;
+    case MIB_IPPROTO_GGP:
+        printf("Gateway-to-Gateway Protocol (GGP)\n");
+        break;
+    case MIB_IPPROTO_HELLO:
+        printf("Hello protocol\n");
+        break;
+    case MIB_IPPROTO_RIP:
+        printf("Routing Information Protocol (RIP)\n");
+        break;
+    case MIB_IPPROTO_IS_IS:
+        printf("Intermediate System-to-Intermediate System (IS-IS) protocol\n");
+        break;
+    case MIB_IPPROTO_ES_IS:
+        printf("End System-to-Intermediate System (ES-IS) protocol\n");
+        break;
+    case MIB_IPPROTO_CISCO:
+        printf("Cisco Interior Gateway Routing Protocol (IGRP)\n");
+        break;
+    case MIB_IPPROTO_BBN:
+        printf("BBN Internet Gateway Protocol (IGP) using SPF\n");
+        break;
+    case MIB_IPPROTO_OSPF:
+        printf("Open Shortest Path First (OSPF) protocol\n");
+        break;
+    case MIB_IPPROTO_BGP:
+        printf("Border Gateway Protocol (BGP)\n");
+        break;
+    case RouteProtocolIdpr:
+        printf("Idpr\n");
+        break;
+    case RouteProtocolEigrp:
+        printf("Eigrp\n");
+        break;
+    case RouteProtocolDvmrp:
+        printf("Dvmrp\n");
+        break;
+    case RouteProtocolRpl:
+        printf("Rpl\n");
+        break;
+    case RouteProtocolDhcp:
+        printf("Dhcp\n");
+        break;
+    case MIB_IPPROTO_NT_AUTOSTATIC:
+        printf("special Windows auto static route\n");
+        break;
+    case MIB_IPPROTO_NT_STATIC:
+        printf("special Windows static route\n");
+        break;
+    case MIB_IPPROTO_NT_STATIC_NON_DOD:
+        printf
+        ("special Windows static route not based on Internet standards\n");
+        break;
+    default:
+        printf("UNKNOWN Proto value\n");
+        break;
+    }
+}
+
+
+void PrintInterfaceOperationalStatus(_In_ INTERNAL_IF_OPER_STATUS dwOperStatus)
+{
+    switch (dwOperStatus) {
+    case IF_OPER_STATUS_NON_OPERATIONAL:
+        printf("Non Operational\n");
+        break;
+    case IF_OPER_STATUS_UNREACHABLE:
+        printf("Unreachable\n");
+        break;
+    case IF_OPER_STATUS_DISCONNECTED:
+        printf("Disconnected\n");
+        break;
+    case IF_OPER_STATUS_CONNECTING:
+        printf("Connecting\n");
+        break;
+    case IF_OPER_STATUS_CONNECTED:
+        printf("Connected\n");
+        break;
+    case IF_OPER_STATUS_OPERATIONAL:
+        printf("Operational\n");
+        break;
+    default:
+        printf("Unknown status %ld\n", dwOperStatus);
         break;
     }
 }
