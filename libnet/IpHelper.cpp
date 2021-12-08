@@ -695,6 +695,16 @@ The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 
 the TableClass set to TCP_TABLE_BASIC_LISTENER, TCP_TABLE_BASIC_CONNECTIONS, 
 or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
 
+调用示例：
+EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_PID_ALL);
+...
+等等15种组合。
+
+不支持一下3个调用：
+EnumExtendedTcpTable(AF_INET6, TCP_TABLE_BASIC_LISTENER);
+EnumExtendedTcpTable(AF_INET6, TCP_TABLE_BASIC_CONNECTIONS);
+EnumExtendedTcpTable(AF_INET6, TCP_TABLE_BASIC_ALL);
+
 其实这可以设置一个回调函数。
 
 注释：修改自MSDN的GetTcpTable2的例子。
@@ -1090,8 +1100,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
     pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(sizeof(MIB_IPADDRTABLE));
 
     if (pIPAddrTable) {
-        // Make an initial call to GetIpAddrTable to get the
-        // necessary size into the dwSize variable
+        // Make an initial call to GetIpAddrTable to get the necessary size into the dwSize variable
         if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) {
             FREE(pIPAddrTable);
             pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(dwSize);
