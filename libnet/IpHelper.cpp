@@ -376,84 +376,6 @@ GetTcpStatisticsEx2
 }
 
 
-EXTERN_C
-__declspec(dllexport)
-int WINAPI EnumExtendedTcp4TableByPid()
-/*
-功能：获取本地的IPv4的TCP的带进程关联的网络信息。
-
-注意：IPV6的及TCP的信息类似。
-
-注释：修改自MSDN的GetTcpTable2的例子。
-
-made in 2016.11.30
-
-https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedtcptable
-*/
-{
-    PMIB_TCPTABLE_OWNER_PID pTcpTable;
-    ULONG ulSize = 0;
-    DWORD dwRetVal = 0;
-    char szLocalAddr[128];
-    char szRemoteAddr[128];
-    struct in_addr IpAddr;
-
-    pTcpTable = (MIB_TCPTABLE_OWNER_PID *)MALLOC(sizeof(MIB_TCPTABLE_OWNER_PID));
-    if (pTcpTable == NULL) {
-        printf("Error allocating memory\n");
-        return 1;
-    }
-
-    ulSize = sizeof(MIB_TCPTABLE_OWNER_PID);
-    dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
-    if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
-        FREE(pTcpTable);
-        pTcpTable = (MIB_TCPTABLE_OWNER_PID *)MALLOC(ulSize);
-        if (pTcpTable == NULL) {
-            printf("Error allocating memory\n");
-            return 1;
-        }
-    }
-
-#pragma prefast( push )
-#pragma prefast( disable: 28020, "表达式“*_Param_(2)>=sizeof(MIB_TCPTABLE)”对此调用无效" )
-    dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
-#pragma prefast( pop )  
-    if (dwRetVal == NO_ERROR) {    
-        printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
-        for (DWORD i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
-            printf("\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].dwState);
-            PrintTcpConnectionState(pTcpTable->table[i].dwState);
-
-            IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
-            strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
-            printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
-
-            printf("\tTCP[%d] Local Port: %d \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
-
-            IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
-            strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
-            printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
-
-            printf("\tTCP[%d] Remote Port: %d\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
-
-            printf("\tTCP[%d] Owning PID: %d\n", i, pTcpTable->table[i].dwOwningPid);
-        }
-    } else {
-        printf("\tGetTcpTable2 failed with %d\n", dwRetVal);
-        FREE(pTcpTable);
-        return 1;
-    }
-
-    if (pTcpTable != NULL) {
-        FREE(pTcpTable);
-        pTcpTable = NULL;
-    }
-
-    return 0;
-}
-
-
 void DumpBasicExtendedTcp4Table(_In_ PMIB_TCPTABLE pTcpTable)
 {
     char szLocalAddr[128];
@@ -769,19 +691,26 @@ The version of IP used by the TCP endpoints.可选的取值有：AF_INET和AF_INET6。
 [in] TableClass
 This parameter can be one of the values from the TCP_TABLE_CLASS enumeration.
 
-The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and the TableClass set to TCP_TABLE_BASIC_LISTENER, 
-TCP_TABLE_BASIC_CONNECTIONS, or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
+The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and 
+the TableClass set to TCP_TABLE_BASIC_LISTENER, TCP_TABLE_BASIC_CONNECTIONS, 
+or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
 
 其实这可以设置一个回调函数。
+
+注释：修改自MSDN的GetTcpTable2的例子。
+
+made in 2016.11.30
+
+https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedtcptable
 */
 {
-    PVOID pTcpTable = MALLOC(sizeof(void *));
+    PVOID pTcpTable = MALLOC(sizeof(MIB_TCPTABLE_OWNER_PID));
     if (pTcpTable == NULL) {
         printf("Error allocating memory\n");
         return 1;
     }
 
-    ULONG ulSize = sizeof(void *);
+    ULONG ulSize = sizeof(MIB_TCPTABLE_OWNER_PID);
     DWORD dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, ulAf, TableClass, 0);
     if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
