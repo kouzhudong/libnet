@@ -2777,9 +2777,17 @@ void WINAPI Icmp6Test()
 
 说明：实验暂时没成功，参数传递的还不对。
 
+参考：
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6sendecho2
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parsereplies
+
+更多参考：
+\Win2K3\NT\net\tcpip\commands\pathping\pathping.c
+\Win2K3\NT\net\tcpip\commands\ping\ping.c
+\Win2K3\NT\net\tcpip\commands\tracert\tracert.c
+
+注意：要测试互联网，不要你所在的网络支持IPv6.
 */
 {
     HANDLE hIcmpFile = Icmp6CreateFile();
