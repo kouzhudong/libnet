@@ -37,10 +37,14 @@ void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv)
+int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family)
 /*
-功能：枚举每个网卡的信息。
+功能：枚举每个网卡的信息(IPv4 or/and IPv6)。
       其实，这里好多信息都没打印。
+
+Parameters：
+[in] Family
+The values currently supported are AF_INET, AF_INET6, and AF_UNSPEC.
 
 addresses associated with the adapters
 
@@ -64,9 +68,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
         GAA_FLAG_INCLUDE_ALL_COMPARTMENTS |
         GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
 
-    ULONG family = AF_UNSPEC;// default to unspecified address family (both)
     LPVOID lpMsgBuf = NULL;
-
     PIP_ADAPTER_ADDRESSES pAddresses = NULL;
     ULONG outBufLen = 0;
     ULONG Iterations = 0;
@@ -78,25 +80,12 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
     IP_ADAPTER_DNS_SERVER_ADDRESS * pDnServer = NULL;
     IP_ADAPTER_PREFIX * pPrefix = NULL;
 
-    if (argc != 2) {
-        printf(" Usage: getadapteraddresses family\n");
-        printf("        getadapteraddresses 4 (for IPv4)\n");
-        printf("        getadapteraddresses 6 (for IPv6)\n");
-        printf("        getadapteraddresses A (for both IPv4 and IPv6)\n");
-        exit(1);
-    }
-
-    if (atoi(argv[1]) == 4)
-        family = AF_INET;
-    else if (atoi(argv[1]) == 6)
-        family = AF_INET6;
-
     printf("Calling GetAdaptersAddresses function with family = ");
-    if (family == AF_INET)
+    if (Family == AF_INET)
         printf("AF_INET\n");
-    if (family == AF_INET6)
+    if (Family == AF_INET6)
         printf("AF_INET6\n");
-    if (family == AF_UNSPEC)
+    if (Family == AF_UNSPEC)
         printf("AF_UNSPEC\n\n");
 
     outBufLen = WORKING_BUFFER_SIZE;// Allocate a 15 KB buffer to start with.
@@ -105,10 +94,10 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
         pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
         if (pAddresses == NULL) {
             printf("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
-            exit(1);
+            return(1);
         }
 
-        dwRetVal = GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
+        dwRetVal = GetAdaptersAddresses(Family, flags, NULL, pAddresses, &outBufLen);
         if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
             FREE(pAddresses);
             pAddresses = NULL;
@@ -224,7 +213,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
                 }
                 printf("\tNumber of Wins Server: %d\n", i);
             } else {
-                printf("\tNumber of Wins Server: 0\n");//好像都是这个。
+                printf("\tNumber of Wins Server: 0\n");
             }
 
             PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress = pCurrAddresses->FirstGatewayAddress;
@@ -237,7 +226,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
                 }
                 printf("\tNumber of Gateway: %d\n", i);
             } else {
-                printf("\tNumber of Gateway: 0\n");//好像都是这个。
+                printf("\tNumber of Gateway: 0\n");
             }
 
             printf("\n");
@@ -260,7 +249,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
                 LocalFree(lpMsgBuf);
                 if (pAddresses)
                     FREE(pAddresses);
-                exit(1);
+                return(1);
             }
         }
     }

@@ -374,7 +374,7 @@ __declspec(dllimport)
 int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family);
 
 __declspec(dllimport)
-int WINAPI EnumAdaptersAddressesInfo(int argc, char ** argv);
+int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
