@@ -362,7 +362,7 @@ __declspec(dllimport)
 int WINAPI EnumExtendedUdpTable6();
 
 __declspec(dllimport)
-int WINAPI EnumdaptersInfo();
+int WINAPI EnumAdaptersInfo();
 
 __declspec(dllimport)
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
