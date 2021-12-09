@@ -930,7 +930,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     struct sockaddr_in6 SourceAddress = {0};
     InetPtonA(AF_INET6, "fe80::10bb:f0a9:744b:aac2", &SourceAddress.sin6_addr);
 
-    //SourceAddress.sin6_addr = in6addr_any;
+    //SourceAddress.sin6_addr = in6addr_any;//这个更通用。
     SourceAddress.sin6_family = AF_INET6;
     //SourceAddress.sin6_flowinfo = 0;
     //SourceAddress.sin6_port = 0;
@@ -1005,6 +1005,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
         return;
     }
 
+    PICMPV6_ECHO_REPLY Reply = static_cast<PICMPV6_ECHO_REPLY>(ReplyBuffer);
+    printf("Status:%ld\n", Reply->Status);
 
     HeapFree(GetProcessHeap(), 0, ReplyBuffer);
     IcmpCloseHandle(hIcmpFile);
