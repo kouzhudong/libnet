@@ -50,8 +50,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
     }
 
     dwSize = sizeof(MIB_TCPTABLE);
-    // Make an initial call to GetTcpTable to
-    // get the necessary size into the dwSize variable
+    // Make an initial call to GetTcpTable to get the necessary size into the dwSize variable
     if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
         pTcpTable = (MIB_TCPTABLE *)MALLOC(dwSize);
@@ -328,7 +327,7 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumTcpStatistics()
 /*
-The following example retrieves the TCP statistics for the local computer and 
+The following example retrieves the TCP statistics for the local computer and
 prints some values from the returned data.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpstatistics
@@ -592,7 +591,7 @@ void DumpExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass, _In_
 /*
 功能：打印各种情况下的信息。
 
-When the ulAf parameter is set to AF_INET, 
+When the ulAf parameter is set to AF_INET,
 the following table indicates the TCP table type to retrieve in the structure pointed to by the pTcpTable parameter for each possible TableClass value.
 TableClass value	pTcpTable structure
 TCP_TABLE_BASIC_ALL	MIB_TCPTABLE
@@ -605,7 +604,7 @@ TCP_TABLE_OWNER_PID_ALL	MIB_TCPTABLE_OWNER_PID
 TCP_TABLE_OWNER_PID_CONNECTIONS	MIB_TCPTABLE_OWNER_PID
 TCP_TABLE_OWNER_PID_LISTENER	MIB_TCPTABLE_OWNER_PID
 
-When the ulAf parameter is set to AF_INET6, 
+When the ulAf parameter is set to AF_INET6,
 the following table indicates the TCP table type to retrieve in the structure pointed to by the pTcpTable parameter for each possible TableClass value.
 TableClass value	pTcpTable structure
 TCP_TABLE_OWNER_MODULE_ALL	MIB_TCP6TABLE_OWNER_MODULE
@@ -691,8 +690,8 @@ The version of IP used by the TCP endpoints.可选的取值有：AF_INET和AF_INET6。
 [in] TableClass
 This parameter can be one of the values from the TCP_TABLE_CLASS enumeration.
 
-The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and 
-the TableClass set to TCP_TABLE_BASIC_LISTENER, TCP_TABLE_BASIC_CONNECTIONS, 
+The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and
+the TableClass set to TCP_TABLE_BASIC_LISTENER, TCP_TABLE_BASIC_CONNECTIONS,
 or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
 
 调用示例：
@@ -901,7 +900,7 @@ void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
     pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
     其实完全可根据dwOwningPid获取EXE的全路径。
     GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
-    */    
+    */
 
     HeapFree(GetProcessHeap(), 0, ptombi);
 }
@@ -1000,7 +999,7 @@ void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
     pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
     其实完全可根据dwOwningPid获取EXE的全路径。
     GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
-    */    
+    */
 
     HeapFree(GetProcessHeap(), 0, ptombi);
 }
@@ -1077,7 +1076,7 @@ int WINAPI EnumIpAddrTable()
 interface–to–IPv4 address mapping table
 
 The GetIpAddrTable function retrieves the interface–to–IPv4 address mapping table.
-The following example retrieves the IP address table, 
+The following example retrieves the IP address table,
 then prints some members of the IP address entries in the table.
 
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa365949(v=vs.85).aspx
@@ -1091,14 +1090,11 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
     DWORD dwSize = 0;
     DWORD dwRetVal = 0;
     IN_ADDR IPAddr;
-
-    /* Variables used to return error message */
-    LPVOID lpMsgBuf;
+    LPVOID lpMsgBuf;/* Variables used to return error message */
 
     // Before calling AddIPAddress we use GetIpAddrTable to get
     // an adapter to which we can add the IP.
     pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(sizeof(MIB_IPADDRTABLE));
-
     if (pIPAddrTable) {
         // Make an initial call to GetIpAddrTable to get the necessary size into the dwSize variable
         if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) {
@@ -1321,7 +1317,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
         case AF_INET:
             InetNtop(AF_INET, &pipTable->Table[i].Address.Ipv4.sin_addr, IpStr, _ARRAYSIZE(IpStr));
             break;
-        case AF_INET6:            
+        case AF_INET6:
             InetNtop(AF_INET6, &pipTable->Table[i].Address.Ipv6.sin6_addr, IpStr, _ARRAYSIZE(IpStr));
             break;
         default:
@@ -1334,7 +1330,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
         printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
         printf("Interface LUID IfType[%d]: ", (int)i);
-        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);        
+        PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);
 
         printf("Physical Address[%d]:\t ", (int)i);
         if (pipTable->Table[i].PhysicalAddressLength == 0)
@@ -1352,7 +1348,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
         printf("Neighbor State[%d]:\t ", (int)i);
         PrintNeighborState(pipTable->Table[i].State);
-        
+
         printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
 
         printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i,
@@ -1409,8 +1405,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
         }
     }
 
-    /* Note that the IPv4 addresses returned in
-     * GetIpForwardTable entries are in network byte order
+    /*
+    Note that the IPv4 addresses returned in GetIpForwardTable entries are in network byte order
      */
     if ((dwRetVal = GetIpForwardTable(pIpForwardTable, &dwSize, 0)) == NO_ERROR) {
         printf("\tNumber of entries: %d\n", (int)pIpForwardTable->dwNumEntries);
@@ -1820,7 +1816,7 @@ int CreateTcpConnection(bool v6,
                         SOCKET * serviceSocket,
                         SOCKET * clientSocket,
                         SOCKET * acceptSocket,
-                        u_short * serverPort, 
+                        u_short * serverPort,
                         u_short * clientPort
 )
 {
@@ -2137,14 +2133,14 @@ void ToggleAllEstats(void * row, bool enable, bool v6)
 }
 
 
-ULONG GetConnectionEStats(void * row, 
-                          TCP_ESTATS_TYPE type, 
-                          PUCHAR rw, 
+ULONG GetConnectionEStats(void * row,
+                          TCP_ESTATS_TYPE type,
+                          PUCHAR rw,
                           ULONG rwSize,
-                          bool v6, 
-                          PUCHAR ros, 
-                          ULONG rosSize, 
-                          PUCHAR rod, 
+                          bool v6,
+                          PUCHAR ros,
+                          ULONG rosSize,
+                          PUCHAR rod,
                           ULONG rodSize
 )
 // Call GetPerTcp6ConnectionEStats or GetPerTcpConnectionEStats.
@@ -2437,7 +2433,7 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
             wprintf(L"\nInbound Bandwidth:    %lu", bandwidthRod->InboundBandwidth);
             wprintf(L"\nOutbound Instability: %lu", bandwidthRod->OutboundInstability);
             wprintf(L"\nInbound Instability:  %lu", bandwidthRod->InboundInstability);
-            wprintf(L"\nOutbound Bandwidth Peaked: %s", 
+            wprintf(L"\nOutbound Bandwidth Peaked: %s",
                     bandwidthRod->OutboundBandwidthPeaked ? L"Yes" : L"No");
             wprintf(L"\nInbound Bandwidth Peaked:  %s",
                     bandwidthRod->InboundBandwidthPeaked ? L"Yes" : L"No");
@@ -2480,7 +2476,7 @@ int WINAPI GetMacByIPv4Test(int argc, char ** argv)
 /*
 功能：获取(局域网，不能是互联网)IPv4对应的MAC地址。
 
-The SendARP function sends an Address Resolution Protocol (ARP) request to 
+The SendARP function sends an Address Resolution Protocol (ARP) request to
 obtain the physical address that corresponds to the specified destination IPv4 address.
 
 The following code demonstrates how to obtain the hardware or media access control (MAC) address associated with a specified IPv4 address.
@@ -2597,7 +2593,7 @@ GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
     DWORD dwRetVal = SendARP(DestIp, 0, MacAddr, &PhysAddrLen);
     if (dwRetVal == NO_ERROR) {
         if (PhysAddrLen) {
-            
+
         } else {
             printf("Warning: SendArp completed successfully, but returned length=0\n");
         }
@@ -2616,7 +2612,7 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumUnicastIpAddressTable()
 /*
-The following example retrieves a unicast IP address table and 
+The following example retrieves a unicast IP address table and
 prints some values from each of the retrieved MIB_UNICASTIPADDRESS_ROW structures.
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunicastipaddresstable
@@ -2812,7 +2808,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
 
     This parameter may be NULL if no IP header options need to be specified.
 
-    Note  On Windows Server 2003 and Windows XP, 
+    Note  On Windows Server 2003 and Windows XP,
     the RequestOptions parameter is not optional and must not be NULL and only the Ttl and Flags members are used.
     */
     IP_OPTION_INFORMATION32  RequestOptions = {30, 0, 0, 0, NULL};
@@ -2820,15 +2816,15 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     PVOID                    ReplyBuffer = NULL;
 
     /*
-    The size, in bytes, of the reply buffer pointed to by the ReplyBuffer parameter. 
-    This buffer should be large enough to hold at least one ICMPV6_ECHO_REPLY structure plus RequestSize bytes of data. 
+    The size, in bytes, of the reply buffer pointed to by the ReplyBuffer parameter.
+    This buffer should be large enough to hold at least one ICMPV6_ECHO_REPLY structure plus RequestSize bytes of data.
     This buffer should also be large enough to also hold 8 more bytes of data (the size of an ICMP error message) plus space for an IO_STATUS_BLOCK structure.
     */
     DWORD ReplySize = sizeof(ICMPV6_ECHO_REPLY) + RequestSize + 8 + sizeof(IO_STATUS_BLOCK);
 
     /*
-    The time, in milliseconds, to wait for replies. 
-    This parameter is only used if the Icmp6SendEcho2 function is called synchronously. 
+    The time, in milliseconds, to wait for replies.
+    This parameter is only used if the Icmp6SendEcho2 function is called synchronously.
     So this parameter is not used if either the ApcRoutine or Event parameter are not NULL.
     */
     DWORD                    Timeout = 0;
