@@ -27,5 +27,8 @@ int WINAPI EnumTcpStatistics();
 __declspec(dllexport)
 int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass);
 
+__declspec(dllexport)
+int WINAPI RunEstats();
+
 
 EXTERN_C_END

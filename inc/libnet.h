@@ -290,9 +290,6 @@ __declspec(dllimport)
 void WINAPI RegistersNotifyUnicastIpAddressChange();
 
 __declspec(dllimport)
-int WINAPI RunEstats();
-
-__declspec(dllimport)
 int WINAPI GetMacByIPv4Test(int argc, char ** argv);
 
 __declspec(dllimport)
@@ -361,6 +358,9 @@ int WINAPI EnumTcpStatistics();
 
 __declspec(dllimport)
 int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass);
+
+__declspec(dllimport)
+int WINAPI RunEstats();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

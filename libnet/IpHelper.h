@@ -25,9 +25,6 @@ __declspec(dllexport)
 int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family);
 
 __declspec(dllexport)
-int WINAPI RunEstats();
-
-__declspec(dllexport)
 int WINAPI GetMacByIPv4Test(int argc, char ** argv);
 
 __declspec(dllexport)
