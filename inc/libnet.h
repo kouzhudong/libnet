@@ -341,22 +341,50 @@ void WINAPI Sessions();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+//TCP相关的。
 
 
 __declspec(dllimport)
 void WINAPI EnumTcpTable();
 
 __declspec(dllimport)
-void WINAPI EnumEntityArray();
+int WINAPI EnumTcpTable2();
+
+__declspec(dllimport)
+int WINAPI EnumTcp6Table();
+
+__declspec(dllimport)
+int WINAPI EnumTcp6Table2();
+
+__declspec(dllimport)
+int WINAPI EnumTcpStatistics();
 
 __declspec(dllimport)
 int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//UDP相关的。
+
+
+__declspec(dllimport)
+int WINAPI EnumUdpTable();
+
+__declspec(dllimport)
+int WINAPI EnumUdp6Table();
 
 __declspec(dllimport)
 int WINAPI EnumExtendedUdpTable4();
 
 __declspec(dllimport)
 int WINAPI EnumExtendedUdpTable6();
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+__declspec(dllimport)
+void WINAPI EnumEntityArray();
 
 __declspec(dllimport)
 int WINAPI EnumAdaptersInfo();
@@ -375,6 +403,7 @@ int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+//RAW相关的。
 
 
 __declspec(dllimport)

@@ -81,6 +81,12 @@
     <ClInclude Include="Adapter.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tcp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="udp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -141,6 +147,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Adapter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="udp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

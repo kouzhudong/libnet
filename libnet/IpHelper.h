@@ -16,18 +16,6 @@ EXTERN_C_START
 
 
 __declspec(dllexport)
-int WINAPI EnumTcpTable();
-
-__declspec(dllexport)
-int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass);
-
-__declspec(dllexport)
-int WINAPI EnumExtendedUdpTable4();
-
-__declspec(dllexport)
-int WINAPI EnumExtendedUdpTable6();
-
-__declspec(dllexport)
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
 
 __declspec(dllexport)
