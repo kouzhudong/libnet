@@ -81,6 +81,7 @@
 #include <ws2ipdef.h>
 #include <IPExport.h>
 #include <icmpapi.h> //前面需先包含IPExport.h。
+#include <ipmib.h>
 
 #ifndef INITGUID
 #define INITGUID

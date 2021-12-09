@@ -918,6 +918,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
 \Win2K3\NT\net\tcpip\commands\tracert\tracert.c
 
 注意：要测试互联网，不要你所在的网络支持IPv6.
+
+扩展功能：根据IPv6获取MAC，实现类似SendArp的类似功能。
+思路：组装发送ND_NEIGHBOR_SOLICIT类型的nd_neighbor_solicit结构，
+      解析返回的ND_NEIGHBOR_ADVERT类型的nd_neighbor_advert结构。
 */
 {
     HANDLE hIcmpFile = Icmp6CreateFile();
@@ -932,8 +936,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
 
     //SourceAddress.sin6_addr = in6addr_any;//这个更通用。
     SourceAddress.sin6_family = AF_INET6;
-    //SourceAddress.sin6_flowinfo = 0;
-    //SourceAddress.sin6_port = 0;
 
     struct sockaddr_in6 DestinationAddress = {0};
     InetPtonA(AF_INET6, "fe80::ec0f:f6:4a6d:89d2", &DestinationAddress.sin6_addr);
@@ -944,13 +946,15 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     WORD                     RequestSize = 0;
 
     /*
-    A pointer to the IPv6 header options for the request, in the form of an IP_OPTION_INFORMATION structure.
+    A pointer to the IPv6 header options for the request, 
+    in the form of an IP_OPTION_INFORMATION structure.
     On a 64-bit platform, this parameter is in the form for an IP_OPTION_INFORMATION32 structure.
 
     This parameter may be NULL if no IP header options need to be specified.
 
     Note  On Windows Server 2003 and Windows XP,
-    the RequestOptions parameter is not optional and must not be NULL and only the Ttl and Flags members are used.
+    the RequestOptions parameter is not optional and must not be NULL and 
+    only the Ttl and Flags members are used.
     */
     IP_OPTION_INFORMATION  RequestOptions = {30, 0, 0, 0, NULL};
 
