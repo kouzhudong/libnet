@@ -17,21 +17,19 @@ hpmepage:http://correy.webs.com
 
 BOOLEAN GUIDsAreEqual(_In_ const GUID * pGUIDAlpha, _In_ const GUID * pGUIDOmega)
 /**
-   Purpose:  Determine if two GUIDs are identical.                                              <br>
-   MSDN_Ref: HTTP://MSDN.Microsoft.com/En-US/Library/AA379329.aspx                              <br>
+   Purpose:  Determine if two GUIDs are identical.
+   MSDN_Ref: HTTP://MSDN.Microsoft.com/En-US/Library/AA379329.aspx
 */
 {
     RPC_STATUS status = RPC_S_OK;
     UINT32     areEqual = FALSE;
 
-    if (pGUIDAlpha == 0 || pGUIDOmega == 0)
-    {
+    if (pGUIDAlpha == 0 || pGUIDOmega == 0) {
         if ((pGUIDAlpha == 0 && pGUIDOmega) || (pGUIDAlpha && pGUIDOmega == 0))
             goto cleanup;
     }
 
-    if (pGUIDAlpha == 0 && pGUIDOmega == 0)
-    {
+    if (pGUIDAlpha == 0 && pGUIDOmega == 0) {
         areEqual = TRUE;
         goto cleanup;
     }
@@ -232,8 +230,7 @@ void EnumCallout(HANDLE engineHandle)
     result = FwpmCalloutEnum0(engineHandle, enumHandle, INFINITE, &ppCallouts, &calloutCount);
     assert(ERROR_SUCCESS == result);
 
-    for (UINT32 calloutIndex = 0; calloutIndex < calloutCount; calloutIndex++)
-    {
+    for (UINT32 calloutIndex = 0; calloutIndex < calloutCount; calloutIndex++) {
         wchar_t GUID[MAX_PATH] = {0};
 
         int n = StringFromGUID2(ppCallouts[calloutIndex]->calloutKey, GUID, MAX_PATH);
@@ -244,17 +241,15 @@ void EnumCallout(HANDLE engineHandle)
         printf("displayData.description:%ws.\n", ppCallouts[calloutIndex]->displayData.description);
         printf("flags:0x%x.\n", ppCallouts[calloutIndex]->flags);
 
-        if (ppCallouts[calloutIndex]->providerKey)
-        {
+        if (ppCallouts[calloutIndex]->providerKey) {
             RtlZeroMemory(GUID, sizeof(GUID));
             n = StringFromGUID2(*ppCallouts[calloutIndex]->providerKey, GUID, MAX_PATH);
             assert(n);
             printf("providerKey:%ws.\n", GUID);
         }
 
-        if (ppCallouts[calloutIndex]->providerData.size)
-        {
-            printf("calloutKey:%ws.\n", (wchar_t * )ppCallouts[calloutIndex]->providerData.data);//不以NULL结尾，有可能打印非法字符。
+        if (ppCallouts[calloutIndex]->providerData.size) {
+            printf("calloutKey:%ws.\n", (wchar_t *)ppCallouts[calloutIndex]->providerData.data);//不以NULL结尾，有可能打印非法字符。
         }
 
         RtlZeroMemory(GUID, sizeof(GUID));
@@ -317,61 +312,53 @@ Arguments:
     GetDateFormat(LOCALE_USER_DEFAULT, 0, &localTime, NULL, dateStr, MAX_PATH);
 
     wprintf(L"%-16s:%s %s\n", L"Event Time", dateStr, timeStr);
-    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_IP_VERSION_SET)
-    {
+    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_IP_VERSION_SET) {
         wprintf(L"%-16s:%s\n", L"IP Version", mIPVersion[pEvent->header.ipVersion]);
     }
-    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_IP_PROTOCOL_SET)
-    {
+    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_IP_PROTOCOL_SET) {
         wprintf(L"%-16s:%u\n", L"IP Protocol", (UINT32)pEvent->header.ipProtocol);
     }
 
-    if (pEvent->header.ipVersion == FWP_IP_VERSION_V4)
-    {
+    if (pEvent->header.ipVersion == FWP_IP_VERSION_V4) {
         // Print IPv4 addresses
         char * addrstr = NULL;
         struct in_addr addr;
 
-        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_LOCAL_ADDR_SET)
-        {
+        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_LOCAL_ADDR_SET) {
             addr.s_addr = htonl(pEvent->header.localAddrV4);
             addrstr = inet_ntoa(addr);
-            if (addrstr)
-            {
+            if (addrstr) {
                 wprintf(L"%-16s:%S\n", L"Local Address", addrstr);
             }
         }
 
-        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_REMOTE_ADDR_SET)
-        {
+        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_REMOTE_ADDR_SET) {
             addr.s_addr = htonl(pEvent->header.remoteAddrV4);
             addrstr = inet_ntoa(addr);
-            if (addrstr)
-            {
+            if (addrstr) {
                 wprintf(L"%-16s:%S\n", L"Remote  Address", addrstr);
             }
         }
-    } else
-    {
+    } else {
         // Print IPv6 addresses
         int i;
-        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_LOCAL_ADDR_SET)
-        {
+        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_LOCAL_ADDR_SET) {
             wprintf(L"%-16s:", L"Local Address");
-            for (i = 0; i < 16; i = i + 2)
-            {
-                wprintf(L"%02x%02x", pEvent->header.localAddrV6.byteArray16[i], pEvent->header.localAddrV6.byteArray16[i + 1]);
+            for (i = 0; i < 16; i = i + 2) {
+                wprintf(L"%02x%02x",
+                        pEvent->header.localAddrV6.byteArray16[i],
+                        pEvent->header.localAddrV6.byteArray16[i + 1]);
                 if (14 != i) wprintf(L":");
             }
             wprintf(L"\n");
         }
 
-        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_REMOTE_ADDR_SET)
-        {
+        if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_REMOTE_ADDR_SET) {
             wprintf(L"%-16s:", L"Remote Address");
-            for (i = 0; i < 16; i = i + 2)
-            {
-                wprintf(L"%02x%02x", pEvent->header.remoteAddrV6.byteArray16[i], pEvent->header.remoteAddrV6.byteArray16[i + 1]);
+            for (i = 0; i < 16; i = i + 2) {
+                wprintf(L"%02x%02x",
+                        pEvent->header.remoteAddrV6.byteArray16[i],
+                        pEvent->header.remoteAddrV6.byteArray16[i + 1]);
                 if (14 != i) wprintf(L":");
             }
             wprintf(L"\n");
@@ -379,14 +366,12 @@ Arguments:
     }
 
     // Print local port
-    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_LOCAL_PORT_SET)
-    {
+    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_LOCAL_PORT_SET) {
         wprintf(L"%-16s:%u\n", L"Local Port", (UINT32)pEvent->header.localPort);
     }
 
     // Print remote port
-    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_REMOTE_PORT_SET)
-    {
+    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_REMOTE_PORT_SET) {
         wprintf(L"%-16s:%u\n", L"Remote Port", (UINT32)pEvent->header.remotePort);
     }
 
@@ -394,17 +379,14 @@ Arguments:
     wprintf(L"%-16s:%s\n", L"Event Type", mEventType[pEvent->type]);
 
     // Print fully qualified path of the application
-    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_APP_ID_SET)
-    {
+    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_APP_ID_SET) {
         WCHAR * appid = (WCHAR *)pEvent->header.appId.data;
         wprintf(L"%-16s:%s[%u]\n", L"App Id[Size]", appid, pEvent->header.appId.size);
     }
 
     // Print User SID
-    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_USER_ID_SET)
-    {
-        if (ConvertSidToStringSid(pEvent->header.userId, &sidString))
-        {
+    if (pEvent->header.flags & FWPM_NET_EVENT_FLAG_USER_ID_SET) {
+        if (ConvertSidToStringSid(pEvent->header.userId, &sidString)) {
             wprintf(L"%-16s:%s\n", L"SID", sidString);
             LocalFree(sidString);
         }
@@ -428,24 +410,24 @@ Arguments:
 }
 
 
-VOID PrintEvents(__in FWPM_NET_EVENT0 ** matchedEvents, __in UINT32 numMatchedEvents) //参考，摘自：Microsoft SDKs\Windows\v6.0\Samples\NetDs\WFP\DiagEvents
+VOID PrintEvents(__in FWPM_NET_EVENT0 ** matchedEvents, __in UINT32 numMatchedEvents)
 /*++
 Routine Description:
      This routine prints the diagnostic event for illustration purposes.
 Arguments:
     matchedEvents - Array of pointer to the events which are to be printed
     numMatchedEvents - Number of event pointers in the array.
+
+参考，摘自：Microsoft SDKs\Windows\v6.0\Samples\NetDs\WFP\DiagEvents
 --*/
 {
     UINT32 num = 0;
     FWPM_NET_EVENT0 * pEvent;
 
-    for (num = 0; num < numMatchedEvents; num++)
-    {
+    for (num = 0; num < numMatchedEvents; num++) {
         pEvent = matchedEvents[num];
 
-        switch (pEvent->type)
-        {
+        switch (pEvent->type) {
         case FWPM_NET_EVENT_TYPE_IKEEXT_MM_FAILURE:
             //PrintMMEvent(pEvent);
             break;
@@ -495,8 +477,7 @@ void EnumNetEvent(HANDLE engineHandle)
 
 void PRINT_FWP_MATCH_TYPE_STRUCTURE(FWP_MATCH_TYPE pfmt)
 {
-    switch (pfmt)
-    {
+    switch (pfmt) {
     case FWP_MATCH_EQUAL:
 
         break;
@@ -546,13 +527,11 @@ void PRINT_FWP_CONDITION_VALUE0_STRUCTURE(FWP_CONDITION_VALUE0 * pfcv)
 */
 {
     assert(pfcv);
-    if (pfcv == NULL)
-    {
+    if (pfcv == NULL) {
         return;
     }
 
-    switch (pfcv->type)
-    {
+    switch (pfcv->type) {
     case FWP_EMPTY:
 
         break;
@@ -635,13 +614,11 @@ void PRINT_FWP_CONDITION_VALUE0_STRUCTURE(FWP_CONDITION_VALUE0 * pfcv)
 void PRINT_FWP_VALUE0_STRUCTURE(FWP_VALUE0 * pfv)
 {
     assert(pfv);
-    if (pfv == NULL)
-    {
+    if (pfv == NULL) {
         return;
     }
 
-    switch (pfv->type)
-    {
+    switch (pfv->type) {
     case FWP_EMPTY:
 
         break;
@@ -716,8 +693,7 @@ void EnumFilter(HANDLE engineHandle)
     result = FwpmFilterEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
     assert(ERROR_SUCCESS == result);
 
-    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++)
-    {
+    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++) {
         wchar_t GUID[MAX_PATH] = {0};
 
         printf("Index:%d.\n", (calloutIndex + 1));
@@ -730,19 +706,16 @@ void EnumFilter(HANDLE engineHandle)
         printf("displayData.description:%ws.\n", entries[calloutIndex]->displayData.description);
         printf("flags:0x%x.\n", entries[calloutIndex]->flags);
 
-        if (entries[calloutIndex]->providerKey != 0)
-        {
+        if (entries[calloutIndex]->providerKey != 0) {
             RtlZeroMemory(GUID, sizeof(GUID));
             n = StringFromGUID2(*entries[calloutIndex]->providerKey, GUID, MAX_PATH);
-            if (0 == n)
-            {
+            if (0 == n) {
                 DebugBreak();
             }
             printf("providerKey:%ws.\n", GUID);
         }
 
-        if (entries[calloutIndex]->providerData.size)
-        {
+        if (entries[calloutIndex]->providerData.size) {
             printf("calloutKey:%ws.\n", (wchar_t *)entries[calloutIndex]->providerData.data);//不以NULL结尾，有可能打印非法字符。
         }
 
@@ -759,8 +732,7 @@ void EnumFilter(HANDLE engineHandle)
         PRINT_FWP_VALUE0_STRUCTURE(&entries[calloutIndex]->weight);
 
         printf("numFilterConditions:%d.\n", entries[calloutIndex]->numFilterConditions);
-        for (UINT32 x = 0; x < entries[calloutIndex]->numFilterConditions; x++)
-        {
+        for (UINT32 x = 0; x < entries[calloutIndex]->numFilterConditions; x++) {
             RtlZeroMemory(GUID, sizeof(GUID));
             //n = StringFromGUID2(entries[calloutIndex]->filterCondition->fieldKey, GUID, MAX_PATH);//不变。是要变的。
             n = StringFromGUID2(entries[calloutIndex]->filterCondition[x].fieldKey, GUID, MAX_PATH);
@@ -775,8 +747,7 @@ void EnumFilter(HANDLE engineHandle)
         //printf("action.filterType:0x%x.\n", entries[calloutIndex]->action.filterType);
         //printf("action.calloutKey:0x%x.\n", entries[calloutIndex]->action.calloutKey);
 
-        if (entries[calloutIndex]->rawContext)
-        {
+        if (entries[calloutIndex]->rawContext) {
             printf("rawContext:0x%I64x.\n", entries[calloutIndex]->rawContext);
         }
 
@@ -784,16 +755,14 @@ void EnumFilter(HANDLE engineHandle)
             entries[calloutIndex]->providerContextKey.Data2 &&
             entries[calloutIndex]->providerContextKey.Data3 &&
             entries[calloutIndex]->providerContextKey.Data4
-            )
-        {
+            ) {
             RtlZeroMemory(GUID, sizeof(GUID));
             n = StringFromGUID2(entries[calloutIndex]->providerContextKey, GUID, MAX_PATH);
             assert(n);
             printf("providerContextKey:%ws.\n", GUID);
         }
 
-        if (entries[calloutIndex]->reserved)
-        {
+        if (entries[calloutIndex]->reserved) {
             printf("reserved:0x%p.\n", entries[calloutIndex]->reserved);
         }
 
@@ -827,8 +796,7 @@ void EnumLayer(HANDLE engineHandle)
     result = FwpmLayerEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
     assert(ERROR_SUCCESS == result);
 
-    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++)
-    {
+    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++) {
         wchar_t GUID[MAX_PATH] = {0};
 
         printf("Index:%d.\n", (calloutIndex + 1));
@@ -842,8 +810,7 @@ void EnumLayer(HANDLE engineHandle)
         printf("flags:0x%x.\n", entries[calloutIndex]->flags);
 
         printf("numFields:0x%x.\n", entries[calloutIndex]->numFields);
-        for (UINT32 x = 0; x < entries[calloutIndex]->numFields; x++)
-        {
+        for (UINT32 x = 0; x < entries[calloutIndex]->numFields; x++) {
             //int n = StringFromGUID2(*entries[calloutIndex]->field->fieldKey, GUID, MAX_PATH);//重复。
             int n = StringFromGUID2(*entries[calloutIndex]->field[x].fieldKey, GUID, MAX_PATH);
             assert(n);
@@ -885,8 +852,7 @@ void EnumProvider(HANDLE engineHandle)
     result = FwpmProviderEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
     assert(ERROR_SUCCESS == result);
 
-    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++)
-    {
+    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++) {
         wchar_t GUID[MAX_PATH] = {0};
 
         printf("Index:%d.\n", (calloutIndex + 1));
@@ -899,8 +865,7 @@ void EnumProvider(HANDLE engineHandle)
         printf("displayData.description:%ws.\n", entries[calloutIndex]->displayData.description);
         printf("flags:0x%x.\n", entries[calloutIndex]->flags);
 
-        if (entries[calloutIndex]->providerData.size)
-        {
+        if (entries[calloutIndex]->providerData.size) {
             printf("providerData.data:%hs.\n", entries[calloutIndex]->providerData.data);
         }
 
@@ -918,6 +883,7 @@ void EnumProvider(HANDLE engineHandle)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 void EnumProviderContext(HANDLE engineHandle)
 {
     FWPM_PROVIDER_CONTEXT_ENUM_TEMPLATE0 enumTemplate = {0};
@@ -931,8 +897,7 @@ void EnumProviderContext(HANDLE engineHandle)
     result = FwpmProviderContextEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
     assert(ERROR_SUCCESS == result);
 
-    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++)
-    {
+    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++) {
         wchar_t GUID[MAX_PATH] = {0};
 
         printf("Index:%d.\n", (calloutIndex + 1));
@@ -973,8 +938,7 @@ void EnumSession(HANDLE engineHandle)
     result = FwpmSessionEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
     assert(ERROR_SUCCESS == result);
 
-    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++)
-    {
+    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++) {
         wchar_t GUID[MAX_PATH] = {0};
 
         printf("Index:%d.\n", (calloutIndex + 1));
@@ -983,13 +947,11 @@ void EnumSession(HANDLE engineHandle)
         assert(n);
         printf("sessionKey:%ws.\n", GUID);
 
-        if (entries[calloutIndex]->displayData.name)
-        {
+        if (entries[calloutIndex]->displayData.name) {
             printf("displayData.name:%ws.\n", entries[calloutIndex]->displayData.name);
         }
 
-        if (entries[calloutIndex]->displayData.description)
-        {
+        if (entries[calloutIndex]->displayData.description) {
             printf("displayData.description:%ws.\n", entries[calloutIndex]->displayData.description);
         }
 
@@ -1025,8 +987,7 @@ void EnumSubLayer(HANDLE engineHandle)
     result = FwpmSubLayerEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
     assert(ERROR_SUCCESS == result);
 
-    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++)
-    {
+    for (UINT32 calloutIndex = 0; calloutIndex < numEntriesReturned; calloutIndex++) {
         wchar_t GUID[MAX_PATH] = {0};
 
         printf("Index:%d.\n", (calloutIndex + 1));
@@ -1035,27 +996,23 @@ void EnumSubLayer(HANDLE engineHandle)
         assert(n);
         printf("subLayerKey:%ws.\n", GUID);
 
-        if (entries[calloutIndex]->displayData.name)
-        {
+        if (entries[calloutIndex]->displayData.name) {
             printf("displayData.name:%ws.\n", entries[calloutIndex]->displayData.name);
         }
 
-        if (entries[calloutIndex]->displayData.description)
-        {
+        if (entries[calloutIndex]->displayData.description) {
             printf("displayData.description:%ws.\n", entries[calloutIndex]->displayData.description);
         }
 
         printf("flags:0x%x.\n", entries[calloutIndex]->flags);
 
-        if (entries[calloutIndex]->providerKey)
-        {
+        if (entries[calloutIndex]->providerKey) {
             n = StringFromGUID2(*entries[calloutIndex]->providerKey, GUID, MAX_PATH);
             assert(n);
             printf("providerKey:%ws.\n", GUID);
         }
 
-        if (entries[calloutIndex]->providerData.size)
-        {
+        if (entries[calloutIndex]->providerData.size) {
             printf("displayData.name:%hs.\n", entries[calloutIndex]->providerData.data);
         }
 

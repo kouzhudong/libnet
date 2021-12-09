@@ -11,7 +11,6 @@ The following code example shows how to use the getaddrinfo function.
 https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult;
@@ -45,7 +44,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         return 1;
     }
 
-    //--------------------------------
     // Setup the hints address info structure
     // which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
@@ -57,7 +55,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     printf("\tnodename = %s\n", argv[1]);
     printf("\tservname (or port) = %s\n\n", argv[2]);
 
-    //--------------------------------
     // Call getaddrinfo(). If the call succeeds, the result variable will hold a linked list
     // of addrinfo structures containing response information
     dwRetval = getaddrinfo(argv[1], argv[2], &hints, &result);
@@ -140,7 +137,6 @@ made at 2016.12.16
 http://correy.webs.com
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult;
@@ -165,7 +161,6 @@ http://correy.webs.com
         return 1;
     }
 
-    //--------------------------------
     // Setup the hints address info structure
     // which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
@@ -174,7 +169,6 @@ http://correy.webs.com
     //    hints.ai_socktype = SOCK_STREAM;
     //    hints.ai_protocol = IPPROTO_TCP;
 
-    //--------------------------------
     // Call getaddrinfo().
     // If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
     dwRetval = getaddrinfo(//感觉这个函数没啥大的意义。
@@ -216,7 +210,6 @@ The following code example shows how to use the GetAddrInfoW function.
 https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfow
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult;
@@ -250,7 +243,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         return 1;
     }
 
-    //--------------------------------
     // Setup the hints address info structure
     // which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
@@ -262,10 +254,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L"\tnodename = %ws\n", argv[1]);
     wprintf(L"\tservname (or port) = %ws\n\n", argv[2]);
 
-
-    //--------------------------------
     // Call GetAddrinfoW(). If the call succeeds,
-    // the result variable will hold a linked list
+    // the result variable will hold a linked list 
     // of addrinfow structures containing response information
     dwRetval = GetAddrInfoW(argv[1], argv[2], &hints, &result);
     if (dwRetval != 0) {
@@ -394,10 +384,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L"\tName = %ws\n", argv[1]);
     wprintf(L"\tServiceName (or port) = %ws\n", argv[2]);
     wprintf(L"\tNamespace = %s (", argv[3]);
-    PrintProviderNamespace(dwNamespace);    
+    PrintProviderNamespace(dwNamespace);
     wprintf(L")\n\n");
 
-    //--------------------------------
     // Call getaddrinfoex(). If the call succeeds,
     // the result variable will hold a linked list 
     // of addrinfo structures containing response information
@@ -661,7 +650,6 @@ The following example demonstrates the use of the GetAddrInfoEx function.
 https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfoexw
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult;
@@ -715,7 +703,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L"\tName = %ws\n", argv[1]);
     wprintf(L"\tServiceName (or port) = %ws\n", argv[2]);
     wprintf(L"\tNamespace = %s (", argv[3]);
-    PrintProviderNamespace(dwNamespace);    
+    PrintProviderNamespace(dwNamespace);
     wprintf(L")\n\n");
 
     // Call getaddrinfoex(). If the call succeeds,
@@ -1006,8 +994,7 @@ http://correy.webs.com
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         printf("WSAStartup failed: %d\n", iResult);
         return 1;
@@ -1017,8 +1004,6 @@ http://correy.webs.com
     saGNI.sin_family = AF_INET;
     saGNI.sin_addr.s_addr = inet_addr(argv[1]);
     saGNI.sin_port = htons(port);
-
-    // Call getnameinfo
     dwRetval = getnameinfo(//这个函数运行很慢，以分钟来计时单位。
                            (struct sockaddr *)&saGNI,
                            sizeof(struct sockaddr),
@@ -1040,7 +1025,6 @@ http://correy.webs.com
 
 int __cdecl GetNameInfoW(int argc, char ** argv)
 /*
-
 The following example demonstrates the use of the GetNameInfoW function.
 
 https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getnameinfow
@@ -1070,13 +1054,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getnamei
         return 1;
     }
 
-    // Set up sockaddr_in structure which is passed
-    // to the getnameinfo function
+    // Set up sockaddr_in structure which is passed to the getnameinfo function
     saGNI.sin_family = AF_INET;
     saGNI.sin_addr.s_addr = inet_addr(argv[1]);
     saGNI.sin_port = htons(port);
-
-    // Call GetNameInfoW
     dwRetval = GetNameInfoW((struct sockaddr *)&saGNI,
                             sizeof(struct sockaddr),
                             hostname,
