@@ -907,8 +907,6 @@ void WINAPI Icmp6Test()
 /*
 功能：演示Icmp6CreateFile+Icmp6SendEcho2+Icmp6ParseReplies的用法。
 
-说明：实验暂时没成功，参数传递的还不对。
-
 参考：
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6sendecho2
@@ -930,10 +928,17 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     }
 
     struct sockaddr_in6 SourceAddress = {0};
-    InetPtonA(AF_INET6, "240e:471:800:23d2:384d:f664:3c3:e9", &SourceAddress);
+    InetPtonA(AF_INET6, "fe80::10bb:f0a9:744b:aac2", &SourceAddress.sin6_addr);
+
+    //SourceAddress.sin6_addr = in6addr_any;
+    SourceAddress.sin6_family = AF_INET6;
+    //SourceAddress.sin6_flowinfo = 0;
+    //SourceAddress.sin6_port = 0;
 
     struct sockaddr_in6 DestinationAddress = {0};
-    InetPtonA(AF_INET6, "2001:4860:4860::6464", &DestinationAddress);
+    InetPtonA(AF_INET6, "fe80::ec0f:f6:4a6d:89d2", &DestinationAddress.sin6_addr);
+
+    DestinationAddress.sin6_family = AF_INET6;
 
     LPVOID                   RequestData = NULL;
     WORD                     RequestSize = 0;
@@ -947,7 +952,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     Note  On Windows Server 2003 and Windows XP,
     the RequestOptions parameter is not optional and must not be NULL and only the Ttl and Flags members are used.
     */
-    IP_OPTION_INFORMATION32  RequestOptions = {30, 0, 0, 0, NULL};
+    IP_OPTION_INFORMATION  RequestOptions = {30, 0, 0, 0, NULL};
 
     PVOID                    ReplyBuffer = NULL;
 
@@ -956,14 +961,18 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     This buffer should be large enough to hold at least one ICMPV6_ECHO_REPLY structure plus RequestSize bytes of data.
     This buffer should also be large enough to also hold 8 more bytes of data (the size of an ICMP error message) plus space for an IO_STATUS_BLOCK structure.
     */
-    DWORD ReplySize = sizeof(ICMPV6_ECHO_REPLY) + RequestSize + 8 + sizeof(IO_STATUS_BLOCK);
+    DWORD ReplySize = sizeof(ICMPV6_ECHO_REPLY) + RequestSize + 8;// + sizeof(IO_STATUS_BLOCK)
 
     /*
     The time, in milliseconds, to wait for replies.
     This parameter is only used if the Icmp6SendEcho2 function is called synchronously.
     So this parameter is not used if either the ApcRoutine or Event parameter are not NULL.
+    （谷歌翻译：因此，如果 ApcRoutine 或 Event 参数不为 NULL，则不使用此参数。）
+    反过来，ApcRoutine 和 Event 参数为 NULL，则使用此参数。
+
+    这个必须设置，不是可选的，且不能为0，你看是_In_，否则，返回ERROR_INVALID_PARAMETER。
     */
-    DWORD                    Timeout = 0;
+    DWORD                    Timeout = 1000;
 
     ReplyBuffer = (PVOID)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, ReplySize);;
     _ASSERTE(ReplyBuffer);
@@ -976,7 +985,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
                                &DestinationAddress,
                                NULL, //RequestData,
                                0, //RequestSize,
-                               NULL, //(PIP_OPTION_INFORMATION)&RequestOptions,
+                               &RequestOptions,
                                ReplyBuffer,
                                ReplySize,
                                Timeout);

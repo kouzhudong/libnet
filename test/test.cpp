@@ -39,7 +39,9 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //BYTE MacAddr[6] = {0};
     //GetGatewayMacByIPv4("192.168.5.3", MacAddr);
 
-    EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_PID_ALL);
+    Icmp6Test();
+
+    //EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_PID_ALL);
 
     LocalFree(Arglist);
 }
