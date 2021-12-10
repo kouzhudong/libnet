@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "WinINetExamples.h"
+#include "WinINet.h"
 
 #include <Wininet.h>//Winhttp.h与Wininet.h不能包含在同一个文件中编译，且建议不要在头文件里引用。
 #pragma comment(lib, "Wininet.lib")

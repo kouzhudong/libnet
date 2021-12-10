@@ -192,10 +192,10 @@
     <ClInclude Include="spi.h" />
     <ClInclude Include="tcp.h" />
     <ClInclude Include="udp.h" />
-    <ClInclude Include="WebBrowserApp.h" />
+    <ClInclude Include="WebBrowser.h" />
     <ClInclude Include="wfp.h" />
-    <ClInclude Include="WinhttpExamples.h" />
-    <ClInclude Include="WinINetExamples.h" />
+    <ClInclude Include="Winhttp.h" />
+    <ClInclude Include="WinINet.h" />
     <ClInclude Include="Wlan.h" />
   </ItemGroup>
   <ItemGroup>
@@ -221,10 +221,10 @@
     <ClCompile Include="spi.cpp" />
     <ClCompile Include="tcp.cpp" />
     <ClCompile Include="udp.cpp" />
-    <ClCompile Include="WebBrowserApp.cpp" />
+    <ClCompile Include="WebBrowser.cpp" />
     <ClCompile Include="wfp.cpp" />
-    <ClCompile Include="WinhttpExamples.cpp" />
-    <ClCompile Include="WinINetExamples.cpp" />
+    <ClCompile Include="Winhttp.cpp" />
+    <ClCompile Include="WinINet.cpp" />
     <ClCompile Include="Wlan.cpp" />
   </ItemGroup>
   <ItemGroup>

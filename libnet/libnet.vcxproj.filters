@@ -30,10 +30,10 @@
     <ClInclude Include="wfp.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WinhttpExamples.h">
+    <ClInclude Include="Winhttp.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WinINetExamples.h">
+    <ClInclude Include="WinINet.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Firewall.h">
@@ -72,7 +72,7 @@
     <ClInclude Include="html.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WebBrowserApp.h">
+    <ClInclude Include="WebBrowser.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="notify.h">
@@ -104,10 +104,10 @@
     <ClCompile Include="wfp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="WinhttpExamples.cpp">
+    <ClCompile Include="Winhttp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="WinINetExamples.cpp">
+    <ClCompile Include="WinINet.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Firewall.cpp">
@@ -140,7 +140,7 @@
     <ClCompile Include="html.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="WebBrowserApp.cpp">
+    <ClCompile Include="WebBrowser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="notify.cpp">
