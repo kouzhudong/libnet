@@ -54,3 +54,8 @@
 *.recipe
 *.exp
 *.lastcodeanalysissucceeded
+
+x64/
+.vs/
+Debug/
+Release/
