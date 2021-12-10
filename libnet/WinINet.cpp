@@ -31,8 +31,7 @@ homepage:http://correy.webs.com
 
     //获取大小。
     bool b = InternetGetCookie(szURL, NULL, lpszData, &dwSize);
-    if (!dwSize && b == false)
-    {
+    if (!dwSize && b == false) {
         MessageBox(0, L"没有Cookie", szURL, 0);//并非都有，有的没有。
         return 0;
     }
@@ -82,8 +81,7 @@ homepage:http://correy.webs.com
 
     TCHAR sz_cookie[MAX_PATH] = {0};
     b = SHGetSpecialFolderPath(0, sz_cookie, CSIDL_COOKIES, 0);
-    if (b)
-    {
+    if (b) {
         MessageBox(0, sz_cookie, L"cookie的目录是：", 0);//或者直接打开目录。
     }
 

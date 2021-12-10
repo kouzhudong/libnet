@@ -11,7 +11,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaenumn
 https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaenumnamespaceprovidersw
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult;
@@ -94,7 +93,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaenumn
             wprintf(L"NameSpace ProviderId[%u] = %ws\n", i, GuidString);
 
         wprintf(L"NameSpace[%u] = ", i);
-        PrintProviderNamespace(lpProviderInfo[i].dwNameSpace);        
+        PrintProviderNamespace(lpProviderInfo[i].dwNameSpace);
 
         if (lpProviderInfo[i].fActive)
             wprintf(L"Namespace[%u] is active\n", i);
@@ -206,7 +205,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaenump
 https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaenumprotocolsw
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult = 0;
@@ -337,7 +335,6 @@ int WSCEnumProtocols()
 https://docs.microsoft.com/en-us/windows/win32/api/ws2spi/nf-ws2spi-wscenumprotocols
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult = 0;
@@ -463,7 +460,6 @@ https://msdn.microsoft.com/zh-cn/ms742236
 https://docs.microsoft.com/en-us/windows/win32/api/ws2spi/nf-ws2spi-wscenumprotocols32
 */
 {
-    //-----------------------------------------
     // Declare and initialize variables
     WSADATA wsaData;
     int iResult = 0;

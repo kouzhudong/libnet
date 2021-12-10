@@ -47,8 +47,7 @@ void ncbastat(void)
 
     uRetCode = Netbios(&ncb);
     printf("The NCBASTAT return code is: 0x%x \n", uRetCode);
-    if (uRetCode == 0)
-    {
+    if (uRetCode == 0) {
         printf("The Ethernet Number is: %02x%02x%02x%02x%02x%02x\n",
                Adapter.adapt.adapter_address[0],
                Adapter.adapt.adapter_address[1],
@@ -165,8 +164,7 @@ BOOL NBListNames(int nLana, LPCSTR szName)
     if (NULL == pStatus)
         return FALSE;
 
-    if (!NBAdapterStatus(nLana, (PVOID)pStatus, cbBuffer, szName))
-    {
+    if (!NBAdapterStatus(nLana, (PVOID)pStatus, cbBuffer, szName)) {
         HeapFree(hHeap, 0, pStatus);
         return FALSE;
     }

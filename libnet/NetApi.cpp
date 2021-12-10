@@ -797,7 +797,7 @@ https://docs.microsoft.com/en-us/windows/win32/wnet/enumerating-network-resource
             break;
         }
     } while (dwResultEnum != ERROR_NO_MORE_ITEMS);// End do.
-    
+
     GlobalFree((HGLOBAL)lpnrLocal);// Call the GlobalFree function to free the memory.
 
     // Call WNetCloseEnum to end the enumeration.

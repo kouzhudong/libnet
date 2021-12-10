@@ -7,7 +7,6 @@
 
 void getsockopt1()
 /*
-Example Code
 The following code sample demonstrates the use of the getsockopt function.
 
 https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
@@ -50,11 +49,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
 
     // Initialize variables and call getsockopt. 
     // The SO_ACCEPTCONN parameter is a socket option 
-    // that tells the function to check whether the 
-    // socket has been put in listening mode or not. 
-    // The various socket options return different
-    // information about the socket. This call should
-    // return 0 to the optVal parameter, since the socket is not in listening mode.
+    // that tells the function to check whether the socket has been put in listening mode or not. 
+    // The various socket options return different information about the socket.
+    // This call should return 0 to the optVal parameter, since the socket is not in listening mode.
     int optVal;
     int optLen = sizeof(int);
     if (getsockopt(ListenSocket, SOL_SOCKET, SO_ACCEPTCONN, (char *)&optVal, &optLen) != SOCKET_ERROR)
@@ -88,7 +85,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     DWORD dwError;
     SOCKET Sock = INVALID_SOCKET;
 
-    #define DEVICE_LIST_LEN    10
+#define DEVICE_LIST_LEN    10
 
     SOCKADDR_IRDA DestSockAddr = {AF_IRDA, 0, 0, 0, 0, "SampleIrDAService"};
 
@@ -197,7 +194,6 @@ void getsockopt3()
 
 int setsockopt1()
 /*
-Example Code
 The following example demonstrates the setsockopt function.
 
 https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
@@ -249,11 +245,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
 
     // Initialize variables and call setsockopt. 
     // The SO_KEEPALIVE parameter is a socket option 
-    // that makes the socket send keepalive messages
-    // on the session. The SO_KEEPALIVE socket option
-    // requires a boolean value to be passed to the
-    // setsockopt function. If TRUE, the socket is
-    // configured to send keepalive messages, if FALSE
+    // that makes the socket send keepalive messages on the session.
+    // The SO_KEEPALIVE socket option requires a boolean value to be passed to the setsockopt function.
+    // If TRUE, the socket is configured to send keepalive messages, if FALSE
     // the socket configured to NOT send keepalive messages.
     // This section of code tests the setsockopt function
     // by checking the status of SO_KEEPALIVE on the socket using the getsockopt function.
@@ -288,7 +282,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
 
 void ioctlsocket1()
 /*
-Example Code
 The following example demonstrates the use of the ioctlsocket function.
 
 https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocket
@@ -313,8 +306,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocke
     }
 
     // Set the socket I/O mode: In this case FIONBIO
-    // enables or disables the blocking mode for the 
-    // socket based on the numerical value of iMode.
+    // enables or disables the blocking mode for the socket based on the numerical value of iMode.
     // If iMode = 0, blocking is enabled; 
     // If iMode != 0, non-blocking mode is enabled.
 
@@ -340,13 +332,12 @@ DWORD GetTCPHandle(PHANDLE pTCPDriverHandle)
     Return Value (DWORD):  Returns TRUE if successful, and places
                            a valid handle to the TCP driver in the
                            handle pointed to by pTCPDriverHandle, or
-                           returns FALSE otherwise, and sets the
-                           handle to INVALID_HANDLE_VALUE.
+                           returns FALSE otherwise, and sets the handle to INVALID_HANDLE_VALUE.
 */
 {
-    #define FILE_OPEN_IF                    0x00000003
-    #define FILE_SYNCHRONOUS_IO_NONALERT    0x00000020
-    #define OBJ_CASE_INSENSITIVE            0x00000040L
+#define FILE_OPEN_IF                    0x00000003
+#define FILE_SYNCHRONOUS_IO_NONALERT    0x00000020
+#define OBJ_CASE_INSENSITIVE            0x00000040L
 
     typedef NTSTATUS(NTAPI * P_NT_CREATE_FILE)(
         OUT PHANDLE              FileHandle,
@@ -455,8 +446,7 @@ DWORD GetEntityArray(IN HANDLE TCPDriverHandle, OUT TDIEntityID ** lplpEntities)
 
     // The loop below is defensively engineered:
     // (1)  In the first place, it is unlikely that more 
-    //     than MAX_TDI_ENTITIES of TCP/IP entities exist, 
-    //     so the loop should execute only once.
+    //     than MAX_TDI_ENTITIES of TCP/IP entities exist, so the loop should execute only once.
     // (2)  Execution is limited to 4 iterations to rule out 
     //     infinite looping in case of parameter corruption. Only 2
     //     iterations should ever be necessary unless entities are 
@@ -478,13 +468,13 @@ DWORD GetEntityArray(IN HANDLE TCPDriverHandle, OUT TDIEntityID ** lplpEntities)
         }
 
         if (!DeviceIoControl(TCPDriverHandle, // Handle to TCP driver
-            IOCTL_TCP_QUERY_INFORMATION_EX, // Cmd code
-            &req,            // Pointer to input buffer
-            sizeof(req),     // Size of ipt buffer
-            pEntity,         // Ptr to output buffer
-            bufferLen,       // Size of output buffer
-            &arrayLen,       // Actual size of array
-            NULL))
+                             IOCTL_TCP_QUERY_INFORMATION_EX, // Cmd code
+                             &req,            // Pointer to input buffer
+                             sizeof(req),     // Size of ipt buffer
+                             pEntity,         // Ptr to output buffer
+                             bufferLen,       // Size of output buffer
+                             &arrayLen,       // Actual size of array
+                             NULL))
             status = GetLastError();
 
         // Even if the output buffer is too small, the TCP driver 

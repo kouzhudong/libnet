@@ -92,9 +92,9 @@ void WebBrowserApp()
     }
 
     if (FAILED(hr = CoCreateInstance(CLSID_InternetExplorer,
-        NULL, CLSCTX_SERVER,
-        IID_IWebBrowserApp,
-        (LPVOID *)&pWBApp))) {
+                                     NULL, CLSCTX_SERVER,
+                                     IID_IWebBrowserApp,
+                                     (LPVOID *)&pWBApp))) {
         goto Error;
     }
 
@@ -115,7 +115,7 @@ void WebBrowserApp()
     hr = pWBApp->Navigate(bstrURL, &vFlags, &vTargetFrameName, &vPostData, &vHeaders);
     pWBApp->put_Visible(VARIANT_TRUE);//œ‘ æ°£
 
-    Error:
+Error:
     if (bstrURL) SysFreeString(bstrURL);
     if (bstrHeaders) SysFreeString(bstrHeaders);
     VariantClear(&vPostData);

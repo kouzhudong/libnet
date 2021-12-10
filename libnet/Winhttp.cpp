@@ -532,7 +532,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
                                       0,
                                       WINHTTP_NO_REQUEST_DATA,
                                       0,
-                                      0, 
+                                      0,
                                       0);
 
 

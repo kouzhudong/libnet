@@ -7,33 +7,27 @@
 
 int WlanEnum()
 /*
-The following example enumerates the wireless LAN interfaces on the local computer and 
+The following example enumerates the wireless LAN interfaces on the local computer and
 prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and the enumerated WLAN_INTERFACE_INFO structures.
 
-Note  This example will fail to load on Windows Server 2008 and 
+Note  This example will fail to load on Windows Server 2008 and
 Windows Server 2008 R2 if the Wireless LAN Service is not installed and started.
 
 https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenuminterfaces
 */
 {
-
     // Declare and initialize variables.
-
     HANDLE hClient = NULL;
-    DWORD dwMaxClient = 2;   //    
+    DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
     DWORD dwResult = 0;
     int iRet = 0;
-
     WCHAR GuidString[40] = {0};
-
     int i;
 
     /* variables used for WlanEnumInterfaces  */
-
     PWLAN_INTERFACE_INFO_LIST pIfList = NULL;
     PWLAN_INTERFACE_INFO pIfInfo = NULL;
-
 
     dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
     if (dwResult != ERROR_SUCCESS) {
@@ -61,8 +55,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
             else {
                 wprintf(L"  InterfaceGUID[%d]: %ws\n", i, GuidString);
             }
-            wprintf(L"  Interface Description[%d]: %ws", i,
-                    pIfInfo->strInterfaceDescription);
+            wprintf(L"  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription);
             wprintf(L"\n");
             wprintf(L"  Interface State[%d]:\t ", i);
             switch (pIfInfo->isState) {
@@ -109,8 +102,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
 int WlanEnumEx()
 /*
 Examples
-The following example enumerates the wireless LAN interfaces on the local computer, 
-retrieves the list of available networks on each wireless LAN interface, 
+The following example enumerates the wireless LAN interfaces on the local computer,
+retrieves the list of available networks on each wireless LAN interface,
 and prints values from the retrieved WLAN_AVAILABLE_NETWORK_LIST that contains the WLAN_AVAILABLE_NETWORK entries.
 
 Note  This example will fail to load on Windows Server 2008 and Windows Server 2008 R2 if the Wireless LAN Service is not installed and started.
@@ -118,18 +111,14 @@ Note  This example will fail to load on Windows Server 2008 and Windows Server 2
 https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetavailablenetworklist
 */
 {
-
     // Declare and initialize variables.
-
     HANDLE hClient = NULL;
-    DWORD dwMaxClient = 2;      //    
+    DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
     DWORD dwResult = 0;
     DWORD dwRetVal = 0;
     int iRet = 0;
-
     WCHAR GuidString[39] = {0};
-
     unsigned int i, j, k;
 
     /* variables used for WlanEnumInterfaces  */
@@ -170,8 +159,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
             else {
                 wprintf(L"  InterfaceGUID[%d]: %ws\n", i, GuidString);
             }
-            wprintf(L"  Interface Description[%d]: %ws", i,
-                    pIfInfo->strInterfaceDescription);
+            wprintf(L"  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription);
             wprintf(L"\n");
             wprintf(L"  Interface State[%d]:\t ", i);
             switch (pIfInfo->isState) {
@@ -210,20 +198,16 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                                                    0,
                                                    NULL,
                                                    &pBssList);
-
             if (dwResult != ERROR_SUCCESS) {
-                wprintf(L"WlanGetAvailableNetworkList failed with error: %u\n",
-                        dwResult);
+                wprintf(L"WlanGetAvailableNetworkList failed with error: %u\n", dwResult);
                 dwRetVal = 1;
                 // You can use FormatMessage to find out why the function failed
             } else {
                 wprintf(L"WLAN_AVAILABLE_NETWORK_LIST for this interface\n");
 
                 wprintf(L"  Num Entries: %lu\n\n", pBssList->dwNumberOfItems);
-
                 for (j = 0; j < pBssList->dwNumberOfItems; j++) {
-                    pBssEntry =
-                        (WLAN_AVAILABLE_NETWORK *)&pBssList->Network[j];
+                    pBssEntry = (WLAN_AVAILABLE_NETWORK *)&pBssList->Network[j];
 
                     wprintf(L"  Profile Name[%u]:  %ws\n", j, pBssEntry->strProfileName);
 
