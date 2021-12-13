@@ -13,7 +13,7 @@ The Security Support Provider Interface (SSPI) 算不算网络，微软把它列为Authentic
 
 
 本库说明：
-本库主要包含进程相关的内容，
+本库主要包含网络相关的内容，
 如：Sock，WFP，NetBIOS，FireWall，SPI，WinHttp，WinINet等。
 因为本工程是应用层，所以不包含TDI，WSK，WFP，NDIS等的驱动层的内容。
 
