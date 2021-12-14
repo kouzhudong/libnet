@@ -1274,6 +1274,11 @@ void PrintInterfaceOperationalStatus(_In_ INTERNAL_IF_OPER_STATUS dwOperStatus)
 
 
 void PrintAdapterType(INT Type)
+/*
+
+
+注释：这个是精简版，全面的应该用PrintInterfaceType。
+*/
 {
     switch (Type) {
     case MIB_IF_TYPE_OTHER:
@@ -1296,6 +1301,16 @@ void PrintAdapterType(INT Type)
         break;
     case MIB_IF_TYPE_SLIP:
         printf("Slip\n");
+        break;
+    case IF_TYPE_IEEE80211://An IEEE 802.11 wireless network interface.
+        /*
+        Note  This adapter type is returned on Windows Vista and later. 
+        On Windows Server 2003 and Windows XP , 
+        an IEEE 802.11 wireless network interface returns an adapter type of MIB_IF_TYPE_ETHERNET.
+        
+        https://docs.microsoft.com/en-us/windows/win32/api/iptypes/ns-iptypes-ip_adapter_info
+        */
+        printf("Radio spread spectrum\n");
         break;
     default:
         printf("Unknown type %ld\n", Type);
