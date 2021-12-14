@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Adapter.h"
+#include "IpHelper.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -721,6 +722,29 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
     if (pAddresses) {
         FREE(pAddresses);
     }
+
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+int WINAPI GetGatewayMacByIPv6(const char * IPv6, PBYTE GatewayMac)
+/*
+功能：获取一个本地IPv6的一个默认网关的MAC.
+
+参数：
+1.IPv6是本地的IPv6地址（兼容%符号），可以取如下值：
+  IPv6 地址 . . . . . . . . . . . . : 240e:471:810:2006:189e:961c:bcb0:246b(首选)
+  临时 IPv6 地址. . . . . . . . . . : 240e:471:810:2006:89b7:f4a2:9406:a776(首选)
+  本地链接 IPv6 地址. . . . . . . . : fe80::189e:961c:bcb0:246b%10(首选)
+2.GatewayMac容纳下一个MAC地址。
+*/
+{
+    char Gateway[128];
+    GetGatewayByIPv6(IPv6, Gateway);
+
+    GetMacByGatewayIPv6(Gateway, GatewayMac);
 
     return 0;
 }

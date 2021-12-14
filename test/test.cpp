@@ -41,11 +41,8 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //Icmp6Test();
 
-    char Gateway[40 * 4];
-    GetGatewayByIPv6("fe80::189e:961c:bcb0:246b%10", Gateway);
-
     BYTE mac[6];
-    GetGatewayMacByIPv6(Gateway, mac);
+    GetGatewayMacByIPv6("240e:471:810:2006:189e:961c:bcb0:246b", mac);
 
     LocalFree(Arglist);
 }

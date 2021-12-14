@@ -258,7 +258,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI GetGatewayMacByIPv6(const char * ipv6, PBYTE mac)
+int WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
 /*
 功能：获取一个(本地的)IPv6地址(默认网关)的MAC地址。
 

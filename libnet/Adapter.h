@@ -26,5 +26,8 @@ int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
 __declspec(dllexport)
 int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway);
 
+__declspec(dllexport)
+int WINAPI GetGatewayMacByIPv6(const char * IPv6, PBYTE GatewayMac);
+
 
 EXTERN_C_END
