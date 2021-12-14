@@ -387,6 +387,12 @@ The GetAdaptersInfo function retrieves adapter information for the local compute
 
 On Windows XP and later:  Use the GetAdaptersAddresses function instead of GetAdaptersInfo.
 
+Remarks
+1.The GetAdaptersInfo function can retrieve information only for IPv4 addresses.
+2.The GetAdaptersInfo and GetInterfaceInfo functions do not return information about the IPv4 loopback interface. 
+  Information on the loopback interface is returned by the GetIpAddrTable function.
+3.谨记上面的两个局限。
+
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadaptersinfo
 */
 {
@@ -536,6 +542,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
 EXTERN_C
 __declspec(dllexport)
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
+/*
+功能：获取本地IPv4地址的默认网关地址（也是IPv4，不包括IPv6）。
+*/
 {
     PIP_ADAPTER_INFO pAdapterInfo;
     PIP_ADAPTER_INFO pAdapter = NULL;
