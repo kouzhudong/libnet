@@ -399,6 +399,9 @@ __declspec(dllimport)
 int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family);
 
 __declspec(dllimport)
+int WINAPI GetGatewayMacByIPv6(const char * ipv6, PBYTE mac);
+
+__declspec(dllimport)
 int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 
 

@@ -3,8 +3,6 @@
 #include "Adapter.h"
 
 
-#pragma warning(disable:4477)
-#pragma warning(disable:6328)
 #pragma warning(disable:6387)
 
 
@@ -195,7 +193,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
     PMIB_IPNET_TABLE2 pipTable = NULL;
     //    MIB_IPNET_ROW2 ipRow;
 
-    status = GetIpNetTable2(AF_UNSPEC, &pipTable);
+    status = GetIpNetTable2(Family, &pipTable);
     if (status != NO_ERROR) {
         printf("GetIpNetTable for IP table returned error: %ld\n", status);
         exit(1);
@@ -254,6 +252,44 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
     FreeMibTable(pipTable);
     pipTable = NULL;
 
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+int WINAPI GetGatewayMacByIPv6(const char * ipv6, PBYTE mac)
+/*
+功能：获取一个(本地的)IPv6地址(默认网关)的MAC地址。
+
+参数：
+1.ipv6是一个网关的（IPv6）地址，兼容%符号。
+2.mac确保容纳6字节。
+
+思路：一个网关的MAC总是在IPv6的邻居表（neighbor table）中的。
+
+注意：这个功能不能叫 获取一个IPv6地址的默认网关的MAC地址，因为不是所有的IPv6都有MAC在邻居表中。
+*/
+{
+    PMIB_IPNET_TABLE2 pipTable = NULL;
+    unsigned long status = GetIpNetTable2(AF_INET6, &pipTable);
+    if (status != NO_ERROR) {
+        return(1);
+    }
+
+    IN6_ADDR sin6_addr = {0};
+    InetPtonA(AF_INET6, ipv6, &sin6_addr);
+
+    for (int i = 0; (unsigned)i < pipTable->NumEntries; i++) {
+        if (IN6_ADDR_EQUAL(&sin6_addr, &pipTable->Table[i].Address.Ipv6.sin6_addr)) {
+            if (6 == pipTable->Table[i].PhysicalAddressLength) {
+                RtlCopyMemory(mac, pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
+                break;
+            }
+        }
+    }
+
+    FreeMibTable(pipTable);
     return 0;
 }
 
@@ -743,7 +779,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
             break;
         }
 
-        wprintf(L"Interface LUID NetLuidIndex[%d]:  %lu\n",
+        wprintf(L"Interface LUID NetLuidIndex[%d]:  %I64u\n",
                 i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
         wprintf(L"Interface LUID IfType[%d]:\t ", i);
         PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);

@@ -41,7 +41,8 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //Icmp6Test();
 
-    EnumIpNetTable2(AF_INET6);
+    BYTE mac[6];
+    GetGatewayMacByIPv6("fe80::8c2c:fdff:fe7c:db87%10", mac);
 
     LocalFree(Arglist);
 }
