@@ -1271,3 +1271,34 @@ void PrintInterfaceOperationalStatus(_In_ INTERNAL_IF_OPER_STATUS dwOperStatus)
         break;
     }
 }
+
+
+void PrintAdapterType(INT Type)
+{
+    switch (Type) {
+    case MIB_IF_TYPE_OTHER:
+        printf("Other\n");
+        break;
+    case MIB_IF_TYPE_ETHERNET:
+        printf("Ethernet\n");
+        break;
+    case MIB_IF_TYPE_TOKENRING:
+        printf("Token Ring\n");
+        break;
+    case MIB_IF_TYPE_FDDI:
+        printf("FDDI\n");
+        break;
+    case MIB_IF_TYPE_PPP:
+        printf("PPP\n");
+        break;
+    case MIB_IF_TYPE_LOOPBACK:
+        printf("Lookback\n");
+        break;
+    case MIB_IF_TYPE_SLIP:
+        printf("Slip\n");
+        break;
+    default:
+        printf("Unknown type %ld\n", Type);
+        break;
+    }
+}

@@ -36,3 +36,4 @@ void PrintArpType(_In_ MIB_IPNET_TYPE Type);
 void PrintRouteType(_In_ DWORD dwForwardType);
 void PrintRoutingProtocols(_In_ DWORD dwForwardProto);
 void PrintInterfaceOperationalStatus(_In_ INTERNAL_IF_OPER_STATUS dwOperStatus);
+void PrintAdapterType(INT Type);

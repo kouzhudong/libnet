@@ -451,32 +451,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
             GetPerAdapterInfoEx(pAdapter->Index);
 
             printf("\tType: \t");
-            switch (pAdapter->Type) {
-            case MIB_IF_TYPE_OTHER:
-                printf("Other\n");
-                break;
-            case MIB_IF_TYPE_ETHERNET:
-                printf("Ethernet\n");
-                break;
-            case MIB_IF_TYPE_TOKENRING:
-                printf("Token Ring\n");
-                break;
-            case MIB_IF_TYPE_FDDI:
-                printf("FDDI\n");
-                break;
-            case MIB_IF_TYPE_PPP:
-                printf("PPP\n");
-                break;
-            case MIB_IF_TYPE_LOOPBACK:
-                printf("Lookback\n");
-                break;
-            case MIB_IF_TYPE_SLIP:
-                printf("Slip\n");
-                break;
-            default:
-                printf("Unknown type %ld\n", pAdapter->Type);
-                break;
-            }
+            PrintAdapterType(pAdapter->Type);
 
             printf("\tIP Address: \t%s\n", pAdapter->IpAddressList.IpAddress.String);
             printf("\tIP Mask: \t%s\n", pAdapter->IpAddressList.IpMask.String);
