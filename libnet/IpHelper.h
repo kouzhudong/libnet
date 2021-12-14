@@ -16,9 +16,6 @@ EXTERN_C_START
 
 
 __declspec(dllexport)
-int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
-
-__declspec(dllexport)
 int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac);
 
 __declspec(dllexport)

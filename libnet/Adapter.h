@@ -20,5 +20,8 @@ int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 __declspec(dllexport)
 int WINAPI EnumAdaptersInfo();
 
+__declspec(dllexport)
+int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
+
 
 EXTERN_C_END

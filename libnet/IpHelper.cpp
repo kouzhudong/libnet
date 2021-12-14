@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "IpHelper.h"
+#include "Adapter.h"
 
 
 #pragma warning(disable:4477)
@@ -112,65 +113,6 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
     }
 
     return(0);
-}
-
-
-EXTERN_C
-__declspec(dllexport)
-int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
-{
-    PIP_ADAPTER_INFO pAdapterInfo;
-    PIP_ADAPTER_INFO pAdapter = NULL;
-    DWORD dwRetVal = 0;
-
-    ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
-    pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(sizeof(IP_ADAPTER_INFO));
-    if (pAdapterInfo == NULL) {
-        printf("Error allocating memory needed to call GetAdaptersinfo\n");
-        return 1;
-    }
-
-    // Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
-    if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
-        FREE(pAdapterInfo);
-        pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(ulOutBufLen);
-        if (pAdapterInfo == NULL) {
-            printf("Error allocating memory needed to call GetAdaptersinfo\n");
-            return 1;
-        }
-    }
-
-    if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
-        pAdapter = pAdapterInfo;
-        while (pAdapter) {
-            if (_stricmp(pAdapter->IpAddressList.IpAddress.String, IPv4) == 0) {
-                lstrcpyA(Gateway, pAdapter->GatewayList.IpAddress.String);
-                break;
-            }
-
-            pAdapter = pAdapter->Next;
-        }
-    } else {
-        printf("GetAdaptersInfo failed with error: %d\n", dwRetVal);
-    }
-
-    if (pAdapterInfo)
-        FREE(pAdapterInfo);
-
-    return 0;
-}
-
-
-EXTERN_C
-__declspec(dllexport)
-int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac)
-{
-    char Gateway[4 * 4];
-    GetGatewayByIPv4(IPv4, Gateway);
-
-    GetMacByIPv4(inet_addr(Gateway), GatewayMac);
-
-    return 0;
 }
 
 
@@ -320,11 +262,11 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumIpForwardTable()
 /*
-* IPv4 routing table
-*
-//The GetIpForwardTable function retrieves the IPv4 routing table.
+IPv4 routing table
 
-//The following example retrieves the IP routing table then prints some fields for each route in the table.
+The GetIpForwardTable function retrieves the IPv4 routing table.
+
+The following example retrieves the IP routing table then prints some fields for each route in the table.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipforwardtable
 
@@ -736,6 +678,19 @@ GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
     } else {
         printf("Error: SendArp failed with error: %d", dwRetVal);
     }
+
+    return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac)
+{
+    char Gateway[4 * 4];
+    GetGatewayByIPv4(IPv4, Gateway);
+
+    GetMacByIPv4(inet_addr(Gateway), GatewayMac);
 
     return 0;
 }
