@@ -588,4 +588,142 @@ int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
 }
 
 
+EXTERN_C
+__declspec(dllexport)
+int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
+/*
+功能：获取本地IPv6地址的(任意一个)默认网关地址（也是IPv6，不包括IPv4）。
+
+参数：
+1.IPv6是本地的IPv6地址（兼容%符号），可以取如下值：
+  IPv6 地址 . . . . . . . . . . . . : 240e:471:810:2006:189e:961c:bcb0:246b(首选)
+  临时 IPv6 地址. . . . . . . . . . : 240e:471:810:2006:89b7:f4a2:9406:a776(首选)
+  本地链接 IPv6 地址. . . . . . . . : fe80::189e:961c:bcb0:246b%10(首选)
+2.Gateway容纳下一个IPv6地址的字符串。
+*/
+{
+    /* Declare and initialize variables */
+    DWORD dwSize = 0;
+    DWORD dwRetVal = 0;
+    unsigned int i = 0;
+
+    // Set the flags to pass to GetAdaptersAddresses  
+    ULONG flags = GAA_FLAG_INCLUDE_PREFIX |
+        GAA_FLAG_INCLUDE_WINS_INFO |
+        GAA_FLAG_INCLUDE_GATEWAYS |
+        GAA_FLAG_INCLUDE_ALL_INTERFACES |
+        GAA_FLAG_INCLUDE_ALL_COMPARTMENTS |
+        GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
+
+    LPVOID lpMsgBuf = NULL;
+    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+    ULONG outBufLen = WORKING_BUFFER_SIZE;// Allocate a 15 KB buffer to start with.
+    ULONG Iterations = 0;
+
+    PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
+    PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
+    IP_ADAPTER_PREFIX * pPrefix = NULL;
+
+    IN6_ADDR sin6_addr = {0};
+    InetPtonA(AF_INET6, IPv6, &sin6_addr);
+
+    do {
+        pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
+        if (pAddresses == NULL) {
+            printf("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+            return(1);
+        }
+
+        dwRetVal = GetAdaptersAddresses(AF_INET6, flags, NULL, pAddresses, &outBufLen);
+        if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
+            FREE(pAddresses);
+            pAddresses = NULL;
+        } else {
+            break;
+        }
+
+        Iterations++;
+    } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
+
+    if (dwRetVal == NO_ERROR) {
+        pCurrAddresses = pAddresses;
+        while (pCurrAddresses) {
+            pUnicast = pCurrAddresses->FirstUnicastAddress;
+            if (pUnicast != NULL) {
+                for (i = 0; pUnicast != NULL; i++) {
+                    switch (pUnicast->Address.lpSockaddr->sa_family) {
+                    case AF_INET6:
+                    {
+                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pUnicast->Address.lpSockaddr;
+                        if (IN6_ADDR_EQUAL(&sin6_addr, &sa_in6->sin6_addr)) {
+
+                            PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress = pCurrAddresses->FirstGatewayAddress;
+                            if (FirstGatewayAddress) {
+                                for (i = 0; FirstGatewayAddress != NULL; i++) {
+
+                                    switch (FirstGatewayAddress->Address.lpSockaddr->sa_family) {
+                                    case AF_INET6:
+                                    {
+                                        DWORD ipbufferlength = 46;
+                                        char ipstringbuffer[46] = {0};
+
+                                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
+                                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+
+                                        lstrcpyA(Gateway, ipstringbuffer);//会有多个，取最后一个。
+
+                                        break;
+                                    }
+                                    default:
+                                        _ASSERTE(false);
+                                        break;
+                                    }
+
+                                    FirstGatewayAddress = FirstGatewayAddress->Next;
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                    default:
+                        _ASSERTE(false);
+                        break;
+                    }
+
+                    pUnicast = pUnicast->Next;
+                }
+            }            
+
+            pCurrAddresses = pCurrAddresses->Next;
+        }
+    } else {
+        printf("Call to GetAdaptersAddresses failed with error: %d\n", dwRetVal);
+        if (dwRetVal == ERROR_NO_DATA)
+            printf("\tNo addresses were found for the requested parameters\n");
+        else {
+            if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                              NULL,
+                              dwRetVal,
+                              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),// Default language
+                              (LPTSTR)&lpMsgBuf,
+                              0,
+                              NULL)) {
+                printf("\tError: %s", (char *)lpMsgBuf);
+                LocalFree(lpMsgBuf);
+                if (pAddresses)
+                    FREE(pAddresses);
+                return(1);
+            }
+        }
+    }
+
+    if (pAddresses) {
+        FREE(pAddresses);
+    }
+
+    return 0;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////

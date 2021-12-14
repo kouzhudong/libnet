@@ -393,6 +393,9 @@ __declspec(dllimport)
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
 
 __declspec(dllimport)
+int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway);
+
+__declspec(dllimport)
 int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac);
 
 __declspec(dllimport)
