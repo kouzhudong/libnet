@@ -258,7 +258,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
+bool WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
 /*
 功能：获取一个(本地的)IPv6地址(默认网关)的MAC地址。
 
@@ -271,10 +271,12 @@ int WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
 注意：这个功能不能叫 获取一个IPv6地址的默认网关的MAC地址，因为不是所有的IPv6都有MAC在邻居表中。
 */
 {
+    bool ret = false;
+
     PMIB_IPNET_TABLE2 pipTable = NULL;
     unsigned long status = GetIpNetTable2(AF_INET6, &pipTable);
     if (status != NO_ERROR) {
-        return(1);
+        return ret;
     }
 
     IN6_ADDR sin6_addr = {0};
@@ -285,6 +287,7 @@ int WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
             if (pipTable->Table[i].IsRouter) { // && (pipTable->Table[i].State == NlnsStale)
                 if (6 == pipTable->Table[i].PhysicalAddressLength) {
                     RtlCopyMemory(mac, pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
+                    ret = true;
                     break;
                 }
             }
@@ -292,7 +295,7 @@ int WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
     }
 
     FreeMibTable(pipTable);
-    return 0;
+    return ret;
 }
 
 
