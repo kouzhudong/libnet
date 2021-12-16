@@ -186,23 +186,17 @@ The GetIpNetTable2 function retrieves the IP neighbor table on the local compute
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
 */
 {
-    // Declare and initialize variables
-    int i;
-    unsigned int j;
-    unsigned long status = 0;
     PMIB_IPNET_TABLE2 pipTable = NULL;
-    //    MIB_IPNET_ROW2 ipRow;
-
-    status = GetIpNetTable2(Family, &pipTable);
+    unsigned long status = GetIpNetTable2(Family, &pipTable);
     if (status != NO_ERROR) {
         printf("GetIpNetTable for IP table returned error: %ld\n", status);
-        exit(1);
+        return(1);
     }
 
     // Print some variables from the table
     printf("Number of IP table entries: %d\n\n", pipTable->NumEntries);
 
-    for (i = 0; (unsigned)i < pipTable->NumEntries; i++) {
+    for (ULONG i = 0; (unsigned)i < pipTable->NumEntries; i++) {
         //        printf("Table entry: %d\n", i);
 
         wchar_t IpStr[46] = {0};
@@ -230,7 +224,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
             printf("\n");
         //        for (j = 0; (unsigned) j < pipTable->Table[i].PhysicalAddressLength; j++)
         //         printf ("%c" 
-        for (j = 0; j < pipTable->Table[i].PhysicalAddressLength; j++) {
+        for (ULONG j = 0; j < pipTable->Table[i].PhysicalAddressLength; j++) {
             if (j == (pipTable->Table[i].PhysicalAddressLength - 1))
                 printf("%.2X\n", (int)pipTable->Table[i].PhysicalAddress[j]);
             else
@@ -243,16 +237,87 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
         PrintNeighborState(pipTable->Table[i].State);
 
         printf("Flags[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].Flags);
+        printf("IsRouter[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].IsRouter);
+        printf("IsUnreachable[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].IsUnreachable);
 
         printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i,
                pipTable->Table[i].ReachabilityTime.LastReachable,
                pipTable->Table[i].ReachabilityTime.LastUnreachable);
+
+        NTSTATUS status = ResolveIpNetEntry2(&pipTable->Table[i], NULL);//此函数会改变LastUnreachable的值。
     }
 
     FreeMibTable(pipTable);
     pipTable = NULL;
-
     return 0;
+}
+
+
+EXTERN_C
+__declspec(dllexport)
+void WINAPI ResolveIpNetEntry2Test(const char * ip)
+/*
+功能：获取IP地址的一些信息（主要是MAC）。
+
+参数：
+ip的取值可以是：
+   1.IPv6 地址 . . . . . . . . . . . . : 240e:473:800:3d64:bdd2:6c5:62e5:c423
+   2.临时 IPv6 地址. . . . . . . . . . : 240e:473:800:3d64:6957:b225:3185:1f75
+   3.本地链接 IPv6 地址. . . . . . . . : fe80::bdd2:6c5:62e5:c423%10
+   4.IPv4 地址 . . . . . . . . . . . . : 192.168.42.21
+   5.默认网关. . . . . . . . . . . . . : fe80::ac72:b0ff:fe68:99b%10
+                                         192.168.42.129
+但不可以是2001:4860:4860::6464和8.8.8.8之类的互联网地址（理论上也不应该是），否者返回0x43，而且时间还超慢.
+
+注意：
+1.对于IPv6的网关地址不要带%符号。否则，返回0x57（参数错误），可能是某个成员没有设置。
+2.对于IPv6的网关地址，操作之前最好先ping一下。
+3.本地链接 IPv6 地址不要带%符号。否则，返回0x57（参数错误），可能是某个成员没有设置。
+
+The ResolveIpNetEntry2 function resolves the physical address for a neighbor IP address entry on the local computer.
+
+The ResolveIpNetEntry2 function is used to resolve the physical address for a neighbor IP address entry on a local computer. 
+This function flushes any existing neighbor entry that matches the IP address on the interface and 
+then resolves the physical address (MAC) address by sending ARP requests for an IPv4 address or 
+neighbor solicitation requests for an IPv6 address.
+
+In addition, at least one of the following members in the MIB_IPNET_ROW2 structure pointed to the Row parameter must be initialized to the interface: the InterfaceLuid or InterfaceIndex.
+
+The fields are used in the order listed above. So if the InterfaceLuid is specified, 
+then this member is used to determine the interface on which to add the unicast IP address. 
+If no value was set for the InterfaceLuid member (the values of this member was set to zero),
+then the InterfaceIndex member is next used to determine the interface.
+
+https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-resolveipnetentry2
+*/
+{
+    MIB_IPNET_ROW2 Row = {0};
+
+    IN6_ADDR sin6_addr = {0};
+    IN_ADDR sin_addr = {0};
+
+    if (InetPtonA(AF_INET6, ip, &sin6_addr)) {
+        Row.Address.si_family = AF_INET6;
+        RtlCopyMemory(&Row.Address.Ipv6.sin6_addr, &sin6_addr, sizeof(IN6_ADDR));
+    }
+
+    if (InetPtonA(AF_INET, ip, &sin_addr)) {
+        Row.Address.si_family = AF_INET;
+        Row.Address.Ipv4.sin_addr.S_un.S_addr = sin_addr.S_un.S_addr;
+    }
+
+    NTSTATUS status = ResolveIpNetEntry2(&Row, NULL);
+    if (NO_ERROR != status) {
+        printf("%d\n", status);
+        return;
+    }
+    
+    for (ULONG j = 0; j < Row.PhysicalAddressLength; j++) {
+        if (j == (Row.PhysicalAddressLength - 1))
+            printf("%.2X\n", (int)Row.PhysicalAddress[j]);
+        else
+            printf("%.2X-", (int)Row.PhysicalAddress[j]);
+    }
 }
 
 
@@ -760,7 +825,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
     Result = GetUnicastIpAddressTable(AF_UNSPEC, &pipTable);
     if (Result != NO_ERROR) {
         wprintf(L"GetUnicastIpAddressTable returned error: %ld\n", Result);
-        exit(1);
+        return(1);
     }
     // Print some variables from the rows in the table
     wprintf(L"Number of table entries: %d\n\n", pipTable->NumEntries);

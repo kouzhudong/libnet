@@ -402,6 +402,9 @@ __declspec(dllimport)
 int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family);
 
 __declspec(dllimport)
+void WINAPI ResolveIpNetEntry2Test(const char * ip);
+
+__declspec(dllimport)
 bool WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac);
 
 __declspec(dllimport)

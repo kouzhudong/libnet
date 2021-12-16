@@ -51,7 +51,7 @@ int UserEnum(int argc, wchar_t * argv[])
 
     if (argc > 2) {
         fwprintf(stderr, L"Usage: %s [\\\\ServerName]\n", argv[0]);
-        exit(1);
+        return(1);
     }
 
     // The server is not the default local computer.
@@ -299,7 +299,7 @@ int EnumWkstaUser(int argc, wchar_t * argv[])
 
     if (argc > 2) {
         fwprintf(stderr, L"Usage: %s [\\\\ServerName]\n", argv[0]);
-        exit(1);
+        return(1);
     }
 
     // The server is not the default local computer.
@@ -379,7 +379,7 @@ int EnumSession(int argc, wchar_t * argv[])
     // Check command line arguments.
     if (argc > 4) {
         wprintf(L"Usage: %s [\\\\ServerName] [\\\\ClientName] [UserName]\n", argv[0]);
-        exit(1);
+        return(1);
     }
 
     if (argc >= 2)
@@ -512,7 +512,7 @@ int EnumServer(int argc, wchar_t * argv[])
 
     if (argc > 2) {
         fwprintf(stderr, L"Usage: %s [DomainName]\n", argv[0]);
-        exit(1);
+        return(1);
     }
 
     // The request is not for the primary domain.
@@ -600,7 +600,7 @@ int EnumServerDisk(int argc, wchar_t * argv[])
 
     if (argc > 2) {
         fwprintf(stderr, L"Usage: %s [\\\\ServerName]\n", argv[0]);
-        exit(1);
+        return(1);
     }
 
     // The server is not the default local computer.
