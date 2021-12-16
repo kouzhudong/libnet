@@ -282,9 +282,11 @@ int WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
 
     for (int i = 0; (unsigned)i < pipTable->NumEntries; i++) {
         if (IN6_ADDR_EQUAL(&sin6_addr, &pipTable->Table[i].Address.Ipv6.sin6_addr)) {
-            if (6 == pipTable->Table[i].PhysicalAddressLength) {
-                RtlCopyMemory(mac, pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
-                break;
+            if (pipTable->Table[i].IsRouter) { // && (pipTable->Table[i].State == NlnsStale)
+                if (6 == pipTable->Table[i].PhysicalAddressLength) {
+                    RtlCopyMemory(mac, pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
+                    break;
+                }
             }
         }
     }
