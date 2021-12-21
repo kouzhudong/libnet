@@ -75,6 +75,33 @@ https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-ioctls
 #pragma once
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+#define FILE_OPEN_IF                    0x00000003
+#define FILE_SYNCHRONOUS_IO_NONALERT    0x00000020
+#define OBJ_CASE_INSENSITIVE            0x00000040L
+
+typedef NTSTATUS(NTAPI * P_NT_CREATE_FILE)(
+    OUT PHANDLE              FileHandle,
+    IN  ACCESS_MASK          DesiredAccess,
+    IN  POBJECT_ATTRIBUTES   ObjectAttributes,
+    OUT PIO_STATUS_BLOCK     IoStatusBlock,
+    IN  PLARGE_INTEGER       AllocationSize OPTIONAL,
+    IN  ULONG                FileAttributes,
+    IN  ULONG                ShareAccess,
+    IN  ULONG                CreateDisposition,
+    IN  ULONG                CreateOptions,
+    IN  PVOID                EaBuffer OPTIONAL,
+    IN  ULONG                EaLength);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+extern P_NT_CREATE_FILE pNtCreateFile;
+
+
 EXTERN_C_START
 
 

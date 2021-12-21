@@ -2,6 +2,9 @@
 #include "html.h"
 
 
+SHOWHTMLDIALOGFN * pfnShowHTMLDialog;
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -32,8 +35,7 @@ made at 2014.07.22
     if (hinstMSHTML == NULL) {
         return;// Error loading module -- fail as securely as possible
     }
-
-    SHOWHTMLDIALOGFN * pfnShowHTMLDialog;
+    
     pfnShowHTMLDialog = (SHOWHTMLDIALOGFN *)GetProcAddress(hinstMSHTML, "ShowHTMLDialog");
     if (pfnShowHTMLDialog) {
         IMoniker * pURLMoniker;

@@ -2,6 +2,9 @@
 #include "IOCTL.h"
 
 
+P_NT_CREATE_FILE pNtCreateFile;
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -335,38 +338,14 @@ DWORD GetTCPHandle(PHANDLE pTCPDriverHandle)
                            returns FALSE otherwise, and sets the handle to INVALID_HANDLE_VALUE.
 */
 {
-#define FILE_OPEN_IF                    0x00000003
-#define FILE_SYNCHRONOUS_IO_NONALERT    0x00000020
-#define OBJ_CASE_INSENSITIVE            0x00000040L
-
-    typedef NTSTATUS(NTAPI * P_NT_CREATE_FILE)(
-        OUT PHANDLE              FileHandle,
-        IN  ACCESS_MASK          DesiredAccess,
-        IN  POBJECT_ATTRIBUTES   ObjectAttributes,
-        OUT PIO_STATUS_BLOCK     IoStatusBlock,
-        IN  PLARGE_INTEGER       AllocationSize OPTIONAL,
-        IN  ULONG                FileAttributes,
-        IN  ULONG                ShareAccess,
-        IN  ULONG                CreateDisposition,
-        IN  ULONG                CreateOptions,
-        IN  PVOID                EaBuffer OPTIONAL,
-        IN  ULONG                EaLength);
-
-    HINSTANCE hNtDLL;
-    P_NT_CREATE_FILE pNtCreateFile;
     NTSTATUS rVal;
     WCHAR TCPDriverName[] = DD_TCP_DEVICE_NAME;
-
     OBJECT_ATTRIBUTES  objectAttributes;
     IO_STATUS_BLOCK    ioStatusBlock;
     UNICODE_STRING     UnicodeStr;
 
     *pTCPDriverHandle = INVALID_HANDLE_VALUE;
 
-    if ((hNtDLL = LoadLibrary(L"ntdll")) == NULL)
-        return(FALSE);
-
-    pNtCreateFile = (P_NT_CREATE_FILE)GetProcAddress(hNtDLL, "NtCreateFile");
     if (pNtCreateFile == NULL)
         return(FALSE);
 
@@ -403,20 +382,19 @@ DWORD GetTCPHandle(PHANDLE pTCPDriverHandle)
 
 
 DWORD GetEntityArray(IN HANDLE TCPDriverHandle, OUT TDIEntityID ** lplpEntities)
-/*  Function:              GetEntityList
-    Description:
+/*
+Function:              GetEntityList
+
+Description:
       Allocates a buffer for and retrieves an array of TDIEntityID
-    structures that identifies the entities supported by
-    the TCP/IP device driver.
-    Parameters:
-      TCPDriverHandle  --  An open handle to the TCP Driver; if
-            no such handle is available,
-            may be INVALID_HANDLE_VALUE.
-      lplpEntities     --  Pointer to a buffer that contains
-            the array of TDIEntityID structures.
-            Must be freed by the calling process
-            using LocalFree( ).
-    Return Value:
+    structures that identifies the entities supported by the TCP/IP device driver.
+
+Parameters:
+      TCPDriverHandle  --  An open handle to the TCP Driver;
+                           if no such handle is available, may be INVALID_HANDLE_VALUE.
+      lplpEntities     --  Pointer to a buffer that contains the array of TDIEntityID structures.
+                           Must be freed by the calling process using LocalFree( ).
+Return Value:
       DWORD  --  the number of entity structures in the returned array
 */
 {

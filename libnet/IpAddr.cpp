@@ -15,26 +15,6 @@ RtlIpv6StringToAddressRoutine Ipv6StringToAddressW;
 
 int _cdecl special_ip()
 {
-    HMODULE ntdll = GetModuleHandle(TEXT("Ntdll"));
-    _ASSERTE(ntdll);
-
-    Ipv4AddressToStringW = (PRtlIpv4AddressToString)GetProcAddress(ntdll, "RtlIpv4AddressToStringW");
-    _ASSERTE(Ipv4AddressToStringW);
-    Ipv4StringToAddressW = (RtlIpv4StringToAddressRoutine)GetProcAddress(ntdll, "RtlIpv4StringToAddressW");
-    _ASSERTE(Ipv4StringToAddressW);
-
-    Ipv6AddressToStringW = (PRtlIpv6AddressToString)GetProcAddress(ntdll, "RtlIpv6AddressToStringW");
-    _ASSERTE(Ipv6AddressToStringW);
-    Ipv6StringToAddressW = (RtlIpv6StringToAddressRoutine)GetProcAddress(ntdll, "RtlIpv6StringToAddressW");
-    _ASSERTE(Ipv6StringToAddressW);
-
-    Ipv6AddressToStringA = (PRtlIpv6AddressToStringA)GetProcAddress(ntdll, "RtlIpv6AddressToStringA");
-    _ASSERTE(Ipv6AddressToStringA);
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     WCHAR IPv4[16 + 1] = {0};
     IN_ADDR test;
 
