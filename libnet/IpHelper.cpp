@@ -255,6 +255,25 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
 EXTERN_C
 __declspec(dllexport)
+void WINAPI GetMacByIPv6(const char * IPv6, PBYTE Mac)
+{
+    MIB_IPNET_ROW2 Row = {0};
+
+    Row.Address.si_family = AF_INET6;
+    InetPtonA(AF_INET6, IPv6, &Row.Address.Ipv6.sin6_addr);
+
+    NTSTATUS status = ResolveIpNetEntry2(&Row, NULL);
+    if (NO_ERROR != status) {
+        printf("%d\n", status);
+        return;
+    }
+
+    RtlCopyMemory(Mac, Row.PhysicalAddress, Row.PhysicalAddressLength);
+}
+
+
+EXTERN_C
+__declspec(dllexport)
 void WINAPI ResolveIpNetEntry2Test(const char * ip)
 /*
 功能：获取IP地址的一些信息（主要是MAC）。

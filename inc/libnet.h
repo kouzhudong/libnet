@@ -405,6 +405,9 @@ __declspec(dllimport)
 void WINAPI ResolveIpNetEntry2Test(const char * ip);
 
 __declspec(dllimport)
+void WINAPI GetMacByIPv6(const char * IPv6, PBYTE Mac);
+
+__declspec(dllimport)
 bool WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac);
 
 __declspec(dllimport)

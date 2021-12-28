@@ -28,7 +28,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     int Args;
     LPWSTR * Arglist = CommandLineToArgvW(GetCommandLineW(), &Args);
     if (NULL == Arglist) {
-        //LOGA(ERROR_LEVEL, "LastError：%d", GetLastError());
+        printf("LastError：%d", GetLastError());
         return 0;
     }
 
@@ -43,8 +43,8 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     ResolveIpNetEntry2Test("8.8.8.8");
 
-    //BYTE mac[6];
-    //GetGatewayMacByIPv6("240e:473:800:3d64:bdd2:6c5:62e5:c423", mac);
+    BYTE mac[6];
+    GetMacByIPv6("fe80::95c9:6378:91c0:d5b2", mac);
 
     LocalFree(Arglist);
 }

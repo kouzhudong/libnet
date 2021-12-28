@@ -714,6 +714,11 @@ int WINAPI GetGatewayMacByIPv6(const char * IPv6, PBYTE GatewayMac)
   临时 IPv6 地址. . . . . . . . . . : 240e:471:810:2006:89b7:f4a2:9406:a776(首选)
   本地链接 IPv6 地址. . . . . . . . : fe80::189e:961c:bcb0:246b%10(首选)
 2.GatewayMac容纳下一个MAC地址。
+
+注意：
+1.有的interface/NIC/ipv6没有对应的网关。
+2.改进的思路是用Icmp6SendEcho2发送邻居报文。
+3.最好的思路是用ResolveIpNetEntry2实现。
 */
 {
     char Gateway[128];
