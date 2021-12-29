@@ -2,6 +2,9 @@
 #include "notify.h"
 
 
+#pragma warning(disable:4189) //局部变量已初始化但不引用
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,7 +19,8 @@ VOID NETIOAPI_API_ NetworkConnectivityHintChange(_In_ PVOID CallerContext,
 2.改变IP地址也不行。
 */
 {
-
+    UNREFERENCED_PARAMETER(CallerContext);
+    UNREFERENCED_PARAMETER(ConnectivityHint);
 }
 
 
@@ -67,6 +71,9 @@ VOID NETIOAPI_API_ IpInterfaceChange(_In_ PVOID CallerContext,
 2.改变IP地址也不行。
 */
 {
+    UNREFERENCED_PARAMETER(CallerContext);
+    UNREFERENCED_PARAMETER(Row);
+
     switch (NotificationType) {
     case MibParameterNotification:
 
@@ -136,6 +143,9 @@ VOID NETIOAPI_API_ RouteChange2(_In_ PVOID CallerContext,
 route  -f命令会走这里。
 */
 {
+    UNREFERENCED_PARAMETER(CallerContext);
+    UNREFERENCED_PARAMETER(Row);
+
     switch (NotificationType) {
     case MibParameterNotification:
 
@@ -202,7 +212,8 @@ VOID NETIOAPI_API_ StableUnicastIpAddressTableCallerCallback(_In_ PVOID CallerCo
 
 */
 {
-
+    UNREFERENCED_PARAMETER(CallerContext);
+    UNREFERENCED_PARAMETER(AddressTable);
 }
 
 
@@ -226,7 +237,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyst
     ADDRESS_FAMILY Family = AF_UNSPEC;
     PMIB_UNICASTIPADDRESS_TABLE * Table = NULL;
     PVOID CallerContext = NULL;
-    BOOLEAN InitialNotification = TRUE;
 
 #pragma prefast(push)
 #pragma prefast(disable: 6387, "“Table”可能是“0”: 这不符合函数“NotifyStableUnicastIpAddressTable”的规范")
@@ -255,7 +265,9 @@ VOID NETIOAPI_API_ TeredoPortChange(_In_ PVOID CallerContext,
 注册时，这里被调用了。
 */
 {
-
+    UNREFERENCED_PARAMETER(CallerContext);
+    UNREFERENCED_PARAMETER(Port);
+    UNREFERENCED_PARAMETER(NotificationType);
 }
 
 
@@ -276,8 +288,6 @@ The NotifyTeredoPortChange function registers to be notified for changes to the 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyteredoportchange
 */
 {
-    ADDRESS_FAMILY Family = AF_UNSPEC;
-    PMIB_UNICASTIPADDRESS_TABLE * Table = NULL;
     PVOID CallerContext = NULL;
     BOOLEAN InitialNotification = TRUE;
 
@@ -308,7 +318,9 @@ VOID NETIOAPI_API_ UnicastIpAddressChange(_In_ PVOID CallerContext,
 
 */
 {
-
+    UNREFERENCED_PARAMETER(CallerContext);
+    UNREFERENCED_PARAMETER(Row);
+    UNREFERENCED_PARAMETER(NotificationType);
 }
 
 
@@ -331,7 +343,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyun
 */
 {
     ADDRESS_FAMILY Family = AF_UNSPEC;
-    PMIB_UNICASTIPADDRESS_TABLE * Table = NULL;
     PVOID CallerContext = NULL;
     BOOLEAN InitialNotification = TRUE;
 

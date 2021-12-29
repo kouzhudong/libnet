@@ -22,7 +22,7 @@ void UserEnum()
                 1,
                 FILTER_NORMAL_ACCOUNT,
                 (LPBYTE *)&pBuf,
-                -1,
+                (DWORD)-1,
                 &dwEntriesRead,
                 &dwTotalEntries,
                 &dwResumeHandle);
@@ -123,7 +123,7 @@ void EnumLocalGroup()
     DWORD total;
     DWORD_PTR resume = 0;
     LPVOID buff;
-    NetLocalGroupEnum(0, 1, (unsigned char **)&buff, -1, &read, &total, &resume);
+    NetLocalGroupEnum(0, 1, (unsigned char **)&buff, (DWORD)-1, &read, &total, &resume);
     PLOCALGROUP_INFO_1 info = (PLOCALGROUP_INFO_1)buff;
 
     for (DWORD i = 0; i < read; i++) {
@@ -132,34 +132,28 @@ void EnumLocalGroup()
         WideCharToMultiByte(CP_ACP, 0, info[i].lgrpi1_comment, -1, comment, 255, 0, 0);
         printf("COMMENT: %s\n", comment);
 
-        //进一步获取组内各个用户的信息。
-        //覆盖上面的变量。这样做不好，局部变量里面会有两个同名的变量。
-        DWORD read;
-        DWORD total;
-        DWORD_PTR resume = 0;
-
         NetLocalGroupGetMembers(0, info[i].lgrpi1_name, 2, (unsigned char **)&buff, 1024, &read, &total, &resume);
-        PLOCALGROUP_MEMBERS_INFO_2 info = (PLOCALGROUP_MEMBERS_INFO_2)buff;
-        for (unsigned i = 0; i < read; i++) {
-            printf("\t域\\名:%S\n", info[i].lgrmi2_domainandname);
+        PLOCALGROUP_MEMBERS_INFO_2 info2 = (PLOCALGROUP_MEMBERS_INFO_2)buff;
+        for (unsigned j = 0; j < read; j++) {
+            printf("\t域\\名:%S\n", info2[j].lgrmi2_domainandname);
             //printf("\tSID:%d\n", info[i].lgrmi2_sid);
-            if (info[i].lgrmi2_sidusage == SidTypeUser) {
+            if (info2[j].lgrmi2_sidusage == SidTypeUser) {
                 printf("\tSIDUSAGE:The account is a user account\n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeGroup) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeGroup) {
                 printf("\tSIDUSAGE:The account is a global group account\n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeWellKnownGroup) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeWellKnownGroup) {
                 printf("\tSIDUSAGE:The account is a well-known group account (such as Everyone). \n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeDeletedAccount) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeDeletedAccount) {
                 printf("\tSIDUSAGE:The account has been deleted\n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeDomain) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeDomain) {
                 printf("\tSIDUSAGE:SidTypeDomain\n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeAlias) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeAlias) {
                 printf("\tSIDUSAGE:SidTypeAlias\n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeInvalid) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeInvalid) {
                 printf("\tSIDUSAGE:SidTypeInvalid\n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeComputer) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeComputer) {
                 printf("\tSIDUSAGE:SidTypeComputer\n");
-            } else if (info[i].lgrmi2_sidusage == SidTypeLabel) {
+            } else if (info2[j].lgrmi2_sidusage == SidTypeLabel) {
                 printf("\tSIDUSAGE:SidTypeLabel\n");
             } else {
                 printf("\tSIDUSAGE:未知\n");
@@ -185,7 +179,7 @@ void EnumShare()
     printf("共享名:            资源:                          注释               \n");
     printf("---------------------------------------------------------------------\n");
 
-    (void)NetShareEnum((LPWSTR)L".", 502, (LPBYTE *)&p, -1, &er, &tr, &resume);
+    (void)NetShareEnum((LPWSTR)L".", 502, (LPBYTE *)&p, (DWORD)-1, &er, &tr, &resume);
     p1 = p;
 
     for (DWORD i = 1; i <= er; i++) {
@@ -270,7 +264,7 @@ void EnumWkstaUser()
     DWORD dwTotalEntries = 0;
     DWORD dwResumeHandle = 0;
 
-    NetWkstaUserEnum((LPWSTR)L".", 0, (LPBYTE *)&pBuf, -1, &dwEntriesRead, &dwTotalEntries, &dwResumeHandle);
+    NetWkstaUserEnum((LPWSTR)L".", 0, (LPBYTE *)&pBuf, (DWORD)-1, &dwEntriesRead, &dwTotalEntries, &dwResumeHandle);
     pTmpBuf = pBuf;
 
     for (DWORD i = 0; (i < dwEntriesRead); i++) {
@@ -746,7 +740,7 @@ https://docs.microsoft.com/en-us/windows/win32/wnet/enumerating-network-resource
     DWORD dwResult, dwResultEnum;
     HANDLE hEnum;
     DWORD cbBuffer = 16384;     // 16K is a good size
-    DWORD cEntries = -1;        // enumerate all possible entries
+    DWORD cEntries = (DWORD)-1;        // enumerate all possible entries
     LPNETRESOURCE lpnrLocal;    // pointer to enumerated structures
     DWORD i;
 

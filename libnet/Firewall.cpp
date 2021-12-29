@@ -3105,6 +3105,9 @@ https://docs.microsoft.com/en-us/previous-versions//aa364726(v=vs.85)?redirected
     HRESULT comInit = E_FAIL;
     INetFwProfile * fwProfile = NULL;
 
+    UNREFERENCED_PARAMETER(argc);
+    UNREFERENCED_PARAMETER(argv);
+
     // Initialize COM.
     comInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 

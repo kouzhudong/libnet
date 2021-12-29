@@ -52,7 +52,7 @@ www.126.com
                            0);//#define WINHTTP_NO_PROXY_BYPASS   NULL                       
     if (hSession) {// Specify an HTTP server.
         DWORD data;
-        DWORD dwSize = sizeof(DWORD);
+        dwSize = sizeof(DWORD);
 
         //我这台电脑上的原始值是:60000ms,设置大点,防止因为这个而出现错误.
         WinHttpSetTimeouts(hSession, 60000000, 60000000, 60000000, 60000000);
@@ -93,7 +93,7 @@ www.126.com
                                       0,
                                       0,
                                       0); //用GetLastError返回的错误码,结合函数说明在头文件里面查,msdn上也有的.
-    int x = ERROR_WINHTTP_CANNOT_CONNECT; //goto definition用的.
+
     //具体的查看信息是:http://msdn.microsoft.com/en-us/library/windows/desktop/aa383770(v=vs.85).aspx
 
     // End the request.
@@ -153,6 +153,7 @@ www.126.com
 #pragma prefast(push)
 #pragma prefast(disable: 33005, "XXX")
 #pragma prefast(disable: 26812, "XXX")
+#pragma warning(disable:4471)
 #import "C:\\Windows\\SysWOW64\\winhttpcom.dll"  no_namespace //OK
 #pragma prefast(pop)
 

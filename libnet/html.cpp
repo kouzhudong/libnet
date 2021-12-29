@@ -78,7 +78,6 @@ void show_my_website(HWND hWnd)
         return;// Error loading module -- fail as securely as possible
     }
 
-    SHOWHTMLDIALOGFN * pfnShowHTMLDialog;
     pfnShowHTMLDialog = (SHOWHTMLDIALOGFN *)GetProcAddress(hinstMSHTML, "ShowHTMLDialog");
     if (pfnShowHTMLDialog) {
         IMoniker * pURLMoniker;
@@ -136,6 +135,7 @@ made at 2014.07.23
         0};
 
     ATOM a = RegisterClassEx(&sWndClassEx);
+    _ASSERTE(a);
     HWND hWindow = CreateWindowEx(0,
                                   L"correy",
                                   L"correy",

@@ -92,6 +92,6 @@ void LogA(IN LOG_LEVEL Level, IN char const * Format, ...)
 
 void LogW(IN LOG_LEVEL Level, IN wchar_t const * Format, ...)
 {
-
-
+    UNREFERENCED_PARAMETER(Level);
+    UNREFERENCED_PARAMETER(Format);
 }

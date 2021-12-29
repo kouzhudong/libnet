@@ -244,7 +244,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
                pipTable->Table[i].ReachabilityTime.LastReachable,
                pipTable->Table[i].ReachabilityTime.LastUnreachable);
 
-        NTSTATUS status = ResolveIpNetEntry2(&pipTable->Table[i], NULL);//此函数会改变LastUnreachable的值。
+        status = ResolveIpNetEntry2(&pipTable->Table[i], NULL);//此函数会改变LastUnreachable的值。
     }
 
     FreeMibTable(pipTable);
@@ -591,7 +591,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI EnumIfTable2(int argc, char ** argv)
+int WINAPI EnumIfTable2()
 /*
 微软没有例子，这个是自己写的。
 */
@@ -626,7 +626,7 @@ int WINAPI EnumIfTable2(int argc, char ** argv)
 
 EXTERN_C
 __declspec(dllexport)
-int WINAPI EnumIfTable2Ex(int argc, char ** argv)
+int WINAPI EnumIfTable2Ex()
 /*
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftable2ex
 此文是自己编写，微软没有例子。
@@ -1022,7 +1022,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
 
     DestinationAddress.sin6_family = AF_INET6;
 
-    LPVOID                   RequestData = NULL;
     WORD                     RequestSize = 0;
 
     /*

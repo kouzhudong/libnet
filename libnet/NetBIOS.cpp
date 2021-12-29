@@ -81,10 +81,10 @@ This causes the adapter status to be treated as a remote call, which enables you
                     }
 
 void MakeNetbiosName(char *, LPCSTR);
-BOOL NBAddName(int, LPCSTR);
-BOOL NBReset(int, int, int);
+BOOL NBAddName(UCHAR nLana, LPCSTR szName);
+BOOL NBReset(UCHAR nLana, UCHAR nSessions, UCHAR nNames);
 BOOL NBListNames(int, LPCSTR);
-BOOL NBAdapterStatus(int, PVOID, int, LPCSTR);
+BOOL NBAdapterStatus(int nLana, PVOID pBuffer, int cbBuffer, LPCSTR szName);
 
 
 void NBListNames()
@@ -99,7 +99,7 @@ void NBListNames()
 }
 
 
-BOOL NBReset(int nLana, int nSessions, int nNames)
+BOOL NBReset(UCHAR nLana, UCHAR nSessions, UCHAR nNames)
 {
     NCB ncb;
 
@@ -117,7 +117,7 @@ BOOL NBReset(int nLana, int nSessions, int nNames)
 }
 
 
-BOOL NBAddName(int nLana, LPCSTR szName)
+BOOL NBAddName(UCHAR nLana, LPCSTR szName)
 {
     NCB ncb;
 
@@ -187,10 +187,10 @@ BOOL NBAdapterStatus(int nLana, PVOID pBuffer, int cbBuffer, LPCSTR szName)
 
     memset(&ncb, 0, sizeof(ncb));
     ncb.ncb_command = NCBASTAT;
-    ncb.ncb_lana_num = nLana;
+    ncb.ncb_lana_num = (UCHAR)nLana;
 
     ncb.ncb_buffer = (PUCHAR)pBuffer;
-    ncb.ncb_length = cbBuffer;
+    ncb.ncb_length = (WORD)cbBuffer;
 
     MakeNetbiosName((char *)ncb.ncb_callname, szName);
 

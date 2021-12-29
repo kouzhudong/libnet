@@ -487,7 +487,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/tcpioctl/ni-tcpioctl-ioctl_tc
     DWORD entityCount;
     TDIEntityID * entityArray, * entityPtr;
 
-    if (!(entityCount = GetEntityArray(INVALID_HANDLE_VALUE, &entityArray)))
+    entityCount = GetEntityArray(INVALID_HANDLE_VALUE, &entityArray);
+    if (!(entityCount))
         return(1);
 
     entityPtr = entityArray;

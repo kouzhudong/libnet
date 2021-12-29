@@ -812,7 +812,7 @@ void EnumLayer(HANDLE engineHandle)
         printf("numFields:0x%x.\n", entries[calloutIndex]->numFields);
         for (UINT32 x = 0; x < entries[calloutIndex]->numFields; x++) {
             //int n = StringFromGUID2(*entries[calloutIndex]->field->fieldKey, GUID, MAX_PATH);//ÖØ¸´¡£
-            int n = StringFromGUID2(*entries[calloutIndex]->field[x].fieldKey, GUID, MAX_PATH);
+            n = StringFromGUID2(*entries[calloutIndex]->field[x].fieldKey, GUID, MAX_PATH);
             assert(n);
             printf("field->fieldKey:%ws.\n", GUID);
 

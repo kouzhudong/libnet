@@ -147,7 +147,6 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 */
 {
     /* Declare and initialize variables */
-    DWORD dwSize = 0;
     DWORD dwRetVal = 0;
     unsigned int i = 0;
 
@@ -579,7 +578,6 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
 */
 {
     /* Declare and initialize variables */
-    DWORD dwSize = 0;
     DWORD dwRetVal = 0;
     unsigned int i = 0;
 
@@ -598,7 +596,6 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
 
     PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
     PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-    IP_ADAPTER_PREFIX * pPrefix = NULL;
 
     IN6_ADDR sin6_addr = {0};
     InetPtonA(AF_INET6, IPv6, &sin6_addr);
@@ -643,8 +640,8 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
                                         DWORD ipbufferlength = 46;
                                         char ipstringbuffer[46] = {0};
 
-                                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
-                                        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+                                        PSOCKADDR_IN6_LH temp = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
+                                        inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, ipbufferlength);
 
                                         lstrcpyA(Gateway, ipstringbuffer);//会有多个，取最后一个。
 

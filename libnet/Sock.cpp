@@ -189,7 +189,7 @@ http://correy.webs.com
         printf("getaddrinfo response %d\n", i++);
         printf("\tFlags: 0x%x\n", ptr->ai_flags);
         printf("\tFamily: ");
-        PrintAddressFamily(ptr->ai_family);
+        PrintAddressFamily((ADDRESS_FAMILY)ptr->ai_family);
         printf("\tSocket type: ");
         PrintSocketType(ptr->ai_socktype);
         printf("\tProtocol: ");
