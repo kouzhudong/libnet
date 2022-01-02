@@ -175,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="..\inc\libnet.h" />
     <ClInclude Include="Adapter.h" />
+    <ClInclude Include="dns.h" />
     <ClInclude Include="Firewall.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="html.h" />
@@ -201,6 +202,7 @@
   <ItemGroup>
     <ClCompile Include="Adapter.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="dns.cpp" />
     <ClCompile Include="Firewall.cpp" />
     <ClCompile Include="html.cpp" />
     <ClCompile Include="IOCTL.cpp" />

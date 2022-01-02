@@ -178,6 +178,9 @@
 #include <Sensapi.h>
 #pragma comment (lib,"Sensapi.lib")
 
+#include <windns.h>   //DNS api's
+#pragma comment (lib,"Dnsapi.lib")
+
 #include <string>
 #include <list>
 #include <regex>

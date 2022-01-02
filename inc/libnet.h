@@ -306,6 +306,16 @@ void WINAPI Icmp6Test();
 
 
 __declspec(dllimport)
+void WINAPI DnsQueryTest(int argc, char * argv[]);
+
+__declspec(dllimport)
+void WINAPI ModifyRecords(int argc, wchar_t * argv[]);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+__declspec(dllimport)
 void WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask);
 
 __declspec(dllimport)
