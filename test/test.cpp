@@ -32,7 +32,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         return 0;
     }
 
-    //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
+    EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
 
     //EnumAdaptersAddressesInfo(argc, argv);//单字符函数入口示例。
 
@@ -41,10 +41,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //EnumIpNetTable2(AF_INET6);
 
-    ResolveIpNetEntry2Test("8.8.8.8");
+    //ResolveIpNetEntry2Test("8.8.8.8");
 
-    BYTE mac[6];
-    GetMacByIPv6("fe80::95c9:6378:91c0:d5b2", mac);
+    //BYTE mac[6];
+    //GetMacByIPv6("fe80::95c9:6378:91c0:d5b2", mac);
 
     LocalFree(Arglist);
 }
