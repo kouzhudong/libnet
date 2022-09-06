@@ -204,11 +204,7 @@ made at 2012.04.16
 
     hr = CLSIDFromProgID(L"WinHttp.WinHttpRequest.5.1", &clsid);
     if (SUCCEEDED(hr)) {
-        hr = CoCreateInstance(clsid,
-                              NULL,
-                              CLSCTX_INPROC_SERVER,
-                              IID_IWinHttpRequest,
-                              (void **)&pIWinHttpRequest);
+        hr = CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IWinHttpRequest, (void **)&pIWinHttpRequest);
     }
     if (SUCCEEDED(hr)) {    // Open WinHttpRequest.
         BSTR bstrMethod = SysAllocString(L"GET");
@@ -417,8 +413,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
     AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
 
     // Use DHCP and DNS-based auto-detection.
-    AutoProxyOptions.dwAutoDetectFlags =
-        WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
+    AutoProxyOptions.dwAutoDetectFlags = WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
 
     // If obtaining the PAC script requires NTLM/Negotiate
     // authentication, then automatically supply the client domain credentials.
@@ -518,8 +513,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
 
     // Create an HTTP request handle.
     if (hConnect)
-        hRequest = WinHttpOpenRequest(hConnect,
-                                      L"GET",
+        hRequest = WinHttpOpenRequest(hConnect, L"GET",
                                       NULL,
                                       NULL,
                                       WINHTTP_NO_REFERER,
@@ -528,14 +522,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
 
     // Send a request.
     if (hRequest)
-        bResults = WinHttpSendRequest(hRequest,
-                                      WINHTTP_NO_ADDITIONAL_HEADERS,
-                                      0,
-                                      WINHTTP_NO_REQUEST_DATA,
-                                      0,
-                                      0,
-                                      0);
-
+        bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
 
     // End the request.
     if (bResults)
@@ -554,10 +541,8 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
             if (!pszOutBuffer) {
                 printf("Out of memory\n");
                 dwSize = 0;
-            } else {
-                // Read the data.
+            } else {// Read the data.                
                 ZeroMemory(pszOutBuffer, (size_t)dwSize + 1);
-
                 if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
                     printf("Error %u in WinHttpReadData.\n", GetLastError());
                 else
