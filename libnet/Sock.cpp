@@ -23,12 +23,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     struct sockaddr_in * sockaddr_ipv4;
     //    struct sockaddr_in6 *sockaddr_ipv6;
     LPSOCKADDR sockaddr_ip;
-
     char ipstringbuffer[46];
     DWORD ipbufferlength = 46;
 
-    // Validate the parameters
-    if (argc != 3) {
+    if (argc != 3) {// Validate the parameters
         printf("usage: %s <hostname> <servicename>\n", argv[0]);
         printf("getaddrinfo provides protocol-independent translation\n");
         printf("   from an ANSI host name to an IP address\n");
@@ -37,15 +35,13 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         printf("WSAStartup failed: %d\n", iResult);
         return 1;
     }
 
-    // Setup the hints address info structure
-    // which is passed to the getaddrinfo() function
+    // Setup the hints address info structure which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -84,16 +80,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             printf("AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             // sockaddr_ipv6 = (struct sockaddr_in6 *) ptr->ai_addr;
-            // printf("\tIPv6 address %s\n",
-            //    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46) );
+            // printf("\tIPv6 address %s\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46) );
 
             // We use WSAAddressToString since it is supported on Windows XP and later
             sockaddr_ip = (LPSOCKADDR)ptr->ai_addr;
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             ipbufferlength = 46;
-            iRetval = WSAAddressToStringA(sockaddr_ip, (DWORD)ptr->ai_addrlen, NULL,
-                                          ipstringbuffer, &ipbufferlength);
+            iRetval = WSAAddressToStringA(sockaddr_ip, (DWORD)ptr->ai_addrlen, NULL, ipstringbuffer, &ipbufferlength);
             if (iRetval)
                 printf("WSAAddressToString failed with %u\n", WSAGetLastError());
             else
@@ -146,23 +140,20 @@ http://correy.webs.com
     struct addrinfo * ptr = NULL;
     struct addrinfo hints;
 
-    // Validate the parameters
-    if (argc != 2) {
+    if (argc != 2) {// Validate the parameters
         printf("usage: %s <IP Address String>\n", argv[0]);
         printf("  getaddrinfo determines the IP binary network address\n");
         printf("       %s 207.46.197.32\n", argv[0]);  /* www.contoso.com */
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         printf("WSAStartup failed: %d\n", iResult);
         return 1;
     }
 
-    // Setup the hints address info structure
-    // which is passed to the getaddrinfo() function
+    // Setup the hints address info structure which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
     hints.ai_flags = AI_NUMERICHOST;
     hints.ai_family = AF_UNSPEC;
@@ -219,15 +210,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     ADDRINFOW * result = NULL;
     ADDRINFOW * ptr = NULL;
     ADDRINFOW hints;
-
     //    struct sockaddr_in6 *sockaddr_ipv6;
     LPSOCKADDR sockaddr_ip;
-
     wchar_t ipstringbuffer[46];
     DWORD ipbufferlength = 46;
 
-    // Validate the parameters
-    if (argc != 3) {
+    if (argc != 3) {// Validate the parameters
         wprintf(L"usage: %ws <hostname> <servicename>\n", argv[0]);
         wprintf(L"getaddrinfow provides protocol-independent translation\n");
         wprintf(L"   from an Unicode host name to an IP address\n");
@@ -236,15 +224,13 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         wprintf(L"WSAStartup failed: %d\n", iResult);
         return 1;
     }
 
-    // Setup the hints address info structure
-    // which is passed to the getaddrinfo() function
+    // Setup the hints address info structure which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -255,8 +241,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L"\tservname (or port) = %ws\n\n", argv[2]);
 
     // Call GetAddrinfoW(). If the call succeeds,
-    // the result variable will hold a linked list 
-    // of addrinfow structures containing response information
+    // the result variable will hold a linked list of addrinfow structures containing response information
     dwRetval = GetAddrInfoW(argv[1], argv[2], &hints, &result);
     if (dwRetval != 0) {
         wprintf(L"GetAddrInfoW failed with error: %d\n", dwRetval);
@@ -281,8 +266,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             ipbufferlength = 46;
-            iRetval = WSAAddressToString(sockaddr_ip, (DWORD)ptr->ai_addrlen, NULL,
-                                         ipstringbuffer, &ipbufferlength);
+            iRetval = WSAAddressToString(sockaddr_ip, (DWORD)ptr->ai_addrlen, NULL, ipstringbuffer, &ipbufferlength);
             if (iRetval)
                 wprintf(L"WSAAddressToString failed with %u\n", WSAGetLastError());
             else
@@ -292,16 +276,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             // sockaddr_ipv6 = (struct sockaddr_in6 *) ptr->ai_addr;
-            // printf("\tIPv6 address %s\n",
-            //    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46) );
+            // printf("\tIPv6 address %s\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46) );
 
             // We use WSAAddressToString since it is supported on Windows XP and later
             sockaddr_ip = (LPSOCKADDR)ptr->ai_addr;
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             ipbufferlength = 46;
-            iRetval = WSAAddressToString(sockaddr_ip, (DWORD)ptr->ai_addrlen, NULL,
-                                         ipstringbuffer, &ipbufferlength);
+            iRetval = WSAAddressToString(sockaddr_ip, (DWORD)ptr->ai_addrlen, NULL, ipstringbuffer, &ipbufferlength);
             if (iRetval)
                 wprintf(L"WSAAddressToString failed with %u\n", WSAGetLastError());
             else
@@ -353,8 +335,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     int iRet = 0;
     WCHAR GuidString[40] = {0};
 
-    // Validate the parameters
-    if (argc != 4) {
+    if (argc != 4) {// Validate the parameters
         wprintf(L"usage: %ws <hostname> <servicename> <namespace>\n", argv[0]);
         wprintf(L"getaddrinfoex provides protocol-independent translation\n");
         wprintf(L"   from a host name to an IP address\n");
@@ -364,15 +345,13 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         wprintf(L"WSAStartup failed: %d\n", iResult);
         return 1;
     }
 
-    // Setup the hints address info structure
-    // which is passed to the getaddrinfo() function
+    // Setup the hints address info structure which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -388,11 +367,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L")\n\n");
 
     // Call getaddrinfoex(). If the call succeeds,
-    // the result variable will hold a linked list 
-    // of addrinfo structures containing response information
-    dwRetval =
-        GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result,
-                      NULL, NULL, NULL, NULL);
+    // the result variable will hold a linked list of addrinfo structures containing response information
+    dwRetval = GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result, NULL, NULL, NULL, NULL);
     if (dwRetval != 0) {
         wprintf(L"GetAddrInfoEx failed with error: %d\n", dwRetval);
         WSACleanup();
@@ -414,16 +390,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET (IPv4)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = (struct sockaddr_in *)ptr->ai_addr;
-            wprintf(L"\tIPv4 address %ws\n",
-                    InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             // ipbufferlength = 46;
-            // iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, 
-            //    ipstringbuffer, &ipbufferlength );
+            // iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, ipstringbuffer, &ipbufferlength );
             // if (iRetval)
             //    wprintf(L"WSAAddressToString failed with %u\n", WSAGetLastError() );
             // else    
@@ -433,16 +407,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = (struct sockaddr_in6 *)ptr->ai_addr;
-            wprintf(L"\tIPv6 address %ws\n",
-                    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             // ipbufferlength = 46;
-            //iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, 
-            //    ipstringbuffer, &ipbufferlength );
+            //iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, ipstringbuffer, &ipbufferlength );
             //if (iRetval)
             //    wprintf(L"WSAAddressToString failed with %u\n", WSAGetLastError() );
             //else    
@@ -512,14 +484,12 @@ The following example demonstrates how to use the GetAddrInfoEx function asynchr
 
     ZeroMemory(&QueryContext, sizeof(QueryContext));
 
-    //  Validate the parameters
-    if (Argc != 2) {
+    if (Argc != 2) {//  Validate the parameters
         wprintf(L"Usage: ResolveName <QueryName>\n");
         goto exit;
     }
 
-    //  All Winsock functions require WSAStartup() to be called first
-    Error = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    Error = WSAStartup(MAKEWORD(2, 2), &wsaData);//  All Winsock functions require WSAStartup() to be called first
     if (Error != 0) {
         wprintf(L"WSAStartup failed with %d\n", Error);
         goto exit;
@@ -542,8 +512,7 @@ The following example demonstrates how to use the GetAddrInfoEx function asynchr
     //  Initiate asynchronous GetAddrInfoExW.
     //
     //  Note GetAddrInfoEx can also be invoked asynchronously using an event
-    //  in the overlapped object (Just set hEvent in the Overlapped object
-    //  and set NULL as completion callback.)
+    //  in the overlapped object (Just set hEvent in the Overlapped object and set NULL as completion callback.)
     //
     //  This sample uses the completion callback method.
 
@@ -558,9 +527,8 @@ The following example demonstrates how to use the GetAddrInfoEx function asynchr
                            QueryCompleteCallback,
                            &CancelHandle);
 
-    //  If GetAddrInfoExW() returns  WSA_IO_PENDING, GetAddrInfoExW will invoke
-    //  the completion routine. If GetAddrInfoExW returned anything else we must
-    //  invoke the completion directly.
+    //  If GetAddrInfoExW() returns  WSA_IO_PENDING, GetAddrInfoExW will invoke the completion routine.
+    //  If GetAddrInfoExW returned anything else we must invoke the completion directly.
     if (Error != WSA_IO_PENDING) {
         QueryCompleteCallback(Error, 0, &QueryContext.QueryOverlapped);
         goto exit;
@@ -629,14 +597,11 @@ VOID WINAPI QueryCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOVE
     }
 
 exit:
-
     if (QueryContext->QueryResults) {
         FreeAddrInfoEx(QueryContext->QueryResults);
     }
 
-    //  Notify caller that the query completed
-    SetEvent(QueryContext->CompleteEvent);
-    return;
+    SetEvent(QueryContext->CompleteEvent);//  Notify caller that the query completed
 }
 
 
@@ -672,8 +637,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     int iRet = 0;
     WCHAR GuidString[40] = {0};
 
-    // Validate the parameters
-    if (argc != 4) {
+    if (argc != 4) {// Validate the parameters
         wprintf(L"usage: %ws <hostname> <servicename> <namespace>\n", argv[0]);
         wprintf(L"getaddrinfoex provides protocol-independent translation\n");
         wprintf(L"   from a host name to an IP address\n");
@@ -683,8 +647,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         wprintf(L"WSAStartup failed: %d\n", iResult);
         return 1;
@@ -707,11 +670,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L")\n\n");
 
     // Call getaddrinfoex(). If the call succeeds,
-    // the result variable will hold a linked list
-    // of addrinfo structures containing response information
-    dwRetval =
-        GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result,
-                      NULL, NULL, NULL, NULL);
+    // the result variable will hold a linked list of addrinfo structures containing response information
+    dwRetval = GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result, NULL, NULL, NULL, NULL);
     if (dwRetval != 0) {
         wprintf(L"GetAddrInfoEx failed with error: %d\n", dwRetval);
         WSACleanup();
@@ -733,16 +693,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET (IPv4)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = (struct sockaddr_in *)ptr->ai_addr;
-            wprintf(L"\tIPv4 address %ws\n",
-                    InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             // ipbufferlength = 46;
-            // iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, 
-            //    ipstringbuffer, &ipbufferlength );
+            // iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, ipstringbuffer, &ipbufferlength );
             // if (iRetval)
             //    wprintf(L"WSAAddressToString failed with %u\n", WSAGetLastError() );
             // else    
@@ -752,16 +710,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = (struct sockaddr_in6 *)ptr->ai_addr;
-            wprintf(L"\tIPv6 address %ws\n",
-                    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             // ipbufferlength = 46;
-            //iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, 
-            //    ipstringbuffer, &ipbufferlength );
+            //iRetval = WSAAddressToString(sockaddr_ip, (DWORD) ptr->ai_addrlen, NULL, ipstringbuffer, &ipbufferlength );
             //if (iRetval)
             //    wprintf(L"WSAAddressToString failed with %u\n", WSAGetLastError() );
             //else    
@@ -831,14 +787,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
 
     ZeroMemory(&QueryContext, sizeof(QueryContext));
 
-    //  Validate the parameters
-    if (Argc != 2) {
+    if (Argc != 2) {//  Validate the parameters
         wprintf(L"Usage: ResolveName <QueryName>\n");
         goto exit;
     }
 
-    //  All Winsock functions require WSAStartup() to be called first
-    Error = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    Error = WSAStartup(MAKEWORD(2, 2), &wsaData);//  All Winsock functions require WSAStartup() to be called first
     if (Error != 0) {
         wprintf(L"WSAStartup failed with %d\n", Error);
         goto exit;
@@ -849,8 +803,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     ZeroMemory(&Hints, sizeof(Hints));
     Hints.ai_family = AF_UNSPEC;
 
-    //  Note that this is a simple sample that waits/cancels a single
-    //  asynchronous query. The reader may extend this to support multiple asynchronous queries.
+    //  Note that this is a simple sample that waits/cancels a single asynchronous query.
+    //  The reader may extend this to support multiple asynchronous queries.
     QueryContext.CompleteEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (QueryContext.CompleteEvent == NULL) {
         Error = GetLastError();
@@ -861,8 +815,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     //  Initiate asynchronous GetAddrInfoExW.
     //
     //  Note GetAddrInfoEx can also be invoked asynchronously using an event
-    //  in the overlapped object (Just set hEvent in the Overlapped object
-    //  and set NULL as completion callback.)
+    //  in the overlapped object (Just set hEvent in the Overlapped object and set NULL as completion callback.)
     //
     //  This sample uses the completion callback method.
     Error = GetAddrInfoExW(Argv[1],
@@ -935,25 +888,18 @@ VOID WINAPI QueryCompleteCallback2(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOV
     while (QueryResults) {
         AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
 
-        WSAAddressToString(QueryResults->ai_addr,
-                           (DWORD)QueryResults->ai_addrlen,
-                           NULL,
-                           AddrString,
-                           &AddressStringLength);
+        WSAAddressToString(QueryResults->ai_addr, (DWORD)QueryResults->ai_addrlen, NULL, AddrString, &AddressStringLength);
 
         wprintf(L"Ip Address: %s\n", AddrString);
         QueryResults = QueryResults->ai_next;
     }
 
 exit:
-
     if (QueryContext->QueryResults) {
         FreeAddrInfoEx(QueryContext->QueryResults);
     }
 
-    //  Notify caller that the query completed
-    SetEvent(QueryContext->CompleteEvent);
-    return;
+    SetEvent(QueryContext->CompleteEvent);//  Notify caller that the query completed
 }
 
 
@@ -986,8 +932,7 @@ http://correy.webs.com
     char servInfo[NI_MAXSERV];
     u_short port = 80;
 
-    // Validate the parameters
-    if (argc != 2) {
+    if (argc != 2) {// Validate the parameters
         printf("usage: %s IPv4 address\n", argv[0]);
         printf("  to return hostname\n");
         printf("       %s 127.0.0.1\n", argv[0]);
@@ -1039,16 +984,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getnamei
     WCHAR servInfo[NI_MAXSERV];
     u_short port = 27015;
 
-    // Validate the parameters
-    if (argc != 2) {
+    if (argc != 2) {// Validate the parameters
         wprintf(L"usage: %hs IPv4 address\n", argv[0]);
         wprintf(L"  to return hostname\n");
         wprintf(L"       %hs 127.0.0.1\n", argv[0]);
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         wprintf(L"WSAStartup failed: %d\n", iResult);
         return 1;
@@ -1061,7 +1004,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getnamei
     dwRetval = GetNameInfoW((struct sockaddr *)&saGNI,
                             sizeof(struct sockaddr),
                             hostname,
-                            NI_MAXHOST, servInfo, NI_MAXSERV, NI_NUMERICSERV);
+                            NI_MAXHOST,
+                            servInfo,
+                            NI_MAXSERV,
+                            NI_NUMERICSERV);
     if (dwRetval != 0) {
         wprintf(L"GetNameInfoW failed with error # %ld\n", WSAGetLastError());
         return 1;
@@ -1099,8 +1045,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
     IN6_ADDR addr6;
     char ** pAlias;
 
-    // Validate the parameters
-    if (argc < 2) {
+    if (argc < 2) {// Validate the parameters
         printf("usage: %s 4 ipv4address\n", argv[0]);
         printf(" or\n");
         printf("usage: %s 6 ipv6address\n", argv[0]);
@@ -1125,8 +1070,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         printf("WSAStartup failed: %d\n", iResult);
         return 1;
@@ -1136,14 +1080,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
 
     printf("Calling gethostbyaddr with %s\n", host_addr);
     if (bIpv6 == 1) {
-        {
-            iResult = inet_pton(AF_INET6, host_addr, &addr6);
-            if (iResult == 0) {
-                printf("The IPv6 address entered must be a legal address\n");
-                return 1;
-            } else
-                remoteHost = gethostbyaddr((char *)&addr6, 16, AF_INET6);
-        }
+        iResult = inet_pton(AF_INET6, host_addr, &addr6);
+        if (iResult == 0) {
+            printf("The IPv6 address entered must be a legal address\n");
+            return 1;
+        } else
+            remoteHost = gethostbyaddr((char *)&addr6, 16, AF_INET6);
     } else {
         addr.s_addr = inet_addr(host_addr);
         if (addr.s_addr == INADDR_NONE) {
@@ -1207,8 +1149,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
     struct in_addr addr;
     char ** pAlias;
 
-    // Validate the parameters
-    if (argc != 2) {
+    if (argc != 2) {// Validate the parameters
         printf("usage: %s hostname\n", argv[0]);
         printf("  to return the IP addresses for the host\n");
         printf("       %s www.contoso.com\n", argv[0]);
@@ -1219,8 +1160,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
         return 1;
     }
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock
     if (iResult != 0) {
         printf("WSAStartup failed: %d\n", iResult);
         return 1;
