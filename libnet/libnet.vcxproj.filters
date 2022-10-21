@@ -180,5 +180,8 @@
     <CustomBuild Include="localmsg.mc">
       <Filter>资源文件</Filter>
     </CustomBuild>
+    <CustomBuild Include="nlstxt.mc">
+      <Filter>资源文件</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

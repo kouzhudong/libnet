@@ -2,6 +2,7 @@
 //
 #include "resource.h"
 #include "localmsg.rc"
+//#include "nlstxt.rc"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
