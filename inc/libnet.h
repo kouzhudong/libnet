@@ -306,6 +306,13 @@ void WINAPI Icmp6Test();
 
 
 __declspec(dllimport)
+int WINAPI tracert(int argc, char ** argv);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+__declspec(dllimport)
 void WINAPI DnsQueryTest(int argc, char * argv[]);
 
 __declspec(dllimport)

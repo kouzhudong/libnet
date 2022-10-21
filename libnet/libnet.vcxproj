@@ -192,6 +192,7 @@
     <ClInclude Include="Sock.h" />
     <ClInclude Include="spi.h" />
     <ClInclude Include="tcp.h" />
+    <ClInclude Include="tracert.h" />
     <ClInclude Include="udp.h" />
     <ClInclude Include="WebBrowser.h" />
     <ClInclude Include="wfp.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Sock.cpp" />
     <ClCompile Include="spi.cpp" />
     <ClCompile Include="tcp.cpp" />
+    <ClCompile Include="tracert.cpp" />
     <ClCompile Include="udp.cpp" />
     <ClCompile Include="WebBrowser.cpp" />
     <ClCompile Include="wfp.cpp" />
