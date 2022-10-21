@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "tracert.h"
+#include "localmsg.h"
 
 
 /*++
@@ -62,33 +63,33 @@ char     RcvBuffer[DEFAULT_RECEIVE_SIZE];
 WSADATA  WsaData;
 
 
-//struct IPErrorTable
-//{
-//    IP_STATUS   Error;                      // The IP Error
-//    DWORD       ErrorNlsID;                 // The corresponding NLS string ID.
-//} ErrorTable[] =
-//{
-//    { IP_BUF_TOO_SMALL,           TRACERT_BUF_TOO_SMALL            },
-//    { IP_DEST_NET_UNREACHABLE,    TRACERT_DEST_NET_UNREACHABLE     },
-//    { IP_DEST_HOST_UNREACHABLE,   TRACERT_DEST_HOST_UNREACHABLE    },
-//    { IP_DEST_PROT_UNREACHABLE,   TRACERT_DEST_PROT_UNREACHABLE    },
-//    { IP_DEST_PORT_UNREACHABLE,   TRACERT_DEST_PORT_UNREACHABLE    },
-//    { IP_NO_RESOURCES,            TRACERT_NO_RESOURCES             },
-//    { IP_BAD_OPTION,              TRACERT_BAD_OPTION               },
-//    { IP_HW_ERROR,                TRACERT_HW_ERROR                 },
-//    { IP_PACKET_TOO_BIG,          TRACERT_PACKET_TOO_BIG           },
-//    { IP_REQ_TIMED_OUT,           TRACERT_REQ_TIMED_OUT            },
-//    { IP_BAD_REQ,                 TRACERT_BAD_REQ                  },
-//    { IP_BAD_ROUTE,               TRACERT_BAD_ROUTE                },
-//    { IP_TTL_EXPIRED_TRANSIT,     TRACERT_TTL_EXPIRED_TRANSIT      },
-//    { IP_TTL_EXPIRED_REASSEM,     TRACERT_TTL_EXPIRED_REASSEM      },
-//    { IP_PARAM_PROBLEM,           TRACERT_PARAM_PROBLEM            },
-//    { IP_SOURCE_QUENCH,           TRACERT_SOURCE_QUENCH            },
-//    { IP_OPTION_TOO_BIG,          TRACERT_OPTION_TOO_BIG           },
-//    { IP_BAD_DESTINATION,         TRACERT_BAD_DESTINATION          },
-//    { IP_NEGOTIATING_IPSEC,       TRACERT_NEGOTIATING_IPSEC        },
-//    { IP_GENERAL_FAILURE,         TRACERT_GENERAL_FAILURE          }
-//};
+struct IPErrorTable
+{
+    IP_STATUS   Error;                      // The IP Error
+    DWORD       ErrorNlsID;                 // The corresponding NLS string ID.
+} ErrorTable[] =
+{
+    { IP_BUF_TOO_SMALL,           TRACERT_BUF_TOO_SMALL            },
+    { IP_DEST_NET_UNREACHABLE,    TRACERT_DEST_NET_UNREACHABLE     },
+    { IP_DEST_HOST_UNREACHABLE,   TRACERT_DEST_HOST_UNREACHABLE    },
+    { IP_DEST_PROT_UNREACHABLE,   TRACERT_DEST_PROT_UNREACHABLE    },
+    { IP_DEST_PORT_UNREACHABLE,   TRACERT_DEST_PORT_UNREACHABLE    },
+    { IP_NO_RESOURCES,            TRACERT_NO_RESOURCES             },
+    { IP_BAD_OPTION,              TRACERT_BAD_OPTION               },
+    { IP_HW_ERROR,                TRACERT_HW_ERROR                 },
+    { IP_PACKET_TOO_BIG,          TRACERT_PACKET_TOO_BIG           },
+    { IP_REQ_TIMED_OUT,           TRACERT_REQ_TIMED_OUT            },
+    { IP_BAD_REQ,                 TRACERT_BAD_REQ                  },
+    { IP_BAD_ROUTE,               TRACERT_BAD_ROUTE                },
+    { IP_TTL_EXPIRED_TRANSIT,     TRACERT_TTL_EXPIRED_TRANSIT      },
+    { IP_TTL_EXPIRED_REASSEM,     TRACERT_TTL_EXPIRED_REASSEM      },
+    { IP_PARAM_PROBLEM,           TRACERT_PARAM_PROBLEM            },
+    { IP_SOURCE_QUENCH,           TRACERT_SOURCE_QUENCH            },
+    { IP_OPTION_TOO_BIG,          TRACERT_OPTION_TOO_BIG           },
+    { IP_BAD_DESTINATION,         TRACERT_BAD_DESTINATION          },
+    { IP_NEGOTIATING_IPSEC,       TRACERT_NEGOTIATING_IPSEC        },
+    { IP_GENERAL_FAILURE,         TRACERT_GENERAL_FAILURE          }
+};
 
 
 PWCHAR GetErrorString(int ErrorCode)
@@ -107,32 +108,39 @@ PWCHAR GetErrorString(int ErrorCode)
 }
 
 
-//unsigned NlsPutMsg(unsigned Handle, unsigned usMsgNum, ...)
-//{
-//    unsigned msglen;
-//    VOID * vp;
-//    va_list arglist;
-//    DWORD StrLen;
-//
-//    va_start(arglist, usMsgNum);
-//    if ((msglen = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE,
-//                                NULL,
-//                                usMsgNum,
-//                                0L,       // Default country ID.
-//                                (LPTSTR)&vp,
-//                                0,
-//                                &arglist)) == 0)
-//        return(0);
-//
-//    // Convert vp to oem
-//    StrLen = (DWORD)strlen((const char *)vp);
-//    CharToOemBuff((LPCTSTR)vp, (LPSTR)vp, StrLen);
-//
-//    msglen = WriteFile(Handle, vp, StrLen);
-//    LocalFree(vp);
-//
-//    return(msglen);
-//}
+unsigned NlsPutMsg(unsigned Handle, unsigned usMsgNum, ...)
+{
+    unsigned msglen;
+    VOID * vp;
+    va_list arglist;
+    DWORD StrLen;
+
+    va_start(arglist, usMsgNum);
+    if ((msglen = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE,
+                                 NULL,
+                                 usMsgNum,
+                                 0L,       // Default country ID.
+                                 (LPSTR)&vp,
+                                 0,
+                                 &arglist)) == 0) {
+        printf("LastError：%d", GetLastError());//1813
+        return(0);
+    }
+
+    // Convert vp to oem
+    StrLen = (DWORD)strlen((const char *)vp);
+    CharToOemBuff((LPCTSTR)vp, (LPSTR)vp, StrLen);
+
+    //msglen = _write(Handle, vp, StrLen);
+    DWORD NumberOfBytesWritten = 0;
+#pragma warning(push)
+#pragma warning(disable:4312)//“类型强制转换”: 从“unsigned int”转换到更大的“HANDLE”
+    msglen = WriteFile((HANDLE)Handle, vp, StrLen, &NumberOfBytesWritten, NULL);
+#pragma warning(pop)    
+    LocalFree(vp);
+
+    return(msglen);
+}
 
 
 unsigned long str2ip(char * addr)
@@ -170,7 +178,7 @@ void print_addr(SOCKADDR * sa, socklen_t salen, BOOLEAN DoReverseLookup)
         i = getnameinfo(sa, salen, hostname, sizeof(hostname), NULL, 0, NI_NAMEREQD);
         if (i == NO_ERROR) {
             didReverse = TRUE;
-            //NlsPutMsg(STDOUT, TRACERT_TARGET_NAME, hostname);
+            NlsPutMsg(STDOUT, TRACERT_TARGET_NAME, hostname);
         }
     }
 
@@ -178,14 +186,14 @@ void print_addr(SOCKADDR * sa, socklen_t salen, BOOLEAN DoReverseLookup)
     if (i != NO_ERROR) {
         // This should never happen unless there is a memory problem,
         // in which case the message associated with TRACERT_NO_RESOURCES is reasonable.
-        //NlsPutMsg(STDOUT, TRACERT_NO_RESOURCES);
+        NlsPutMsg(STDOUT, TRACERT_NO_RESOURCES);
         exit(1);
     }
 
     if (didReverse) {
-        //NlsPutMsg(STDOUT, TRACERT_BRKT_IP_ADDRESS, hostname);
+        NlsPutMsg(STDOUT, TRACERT_BRKT_IP_ADDRESS, hostname);
     } else {
-        //NlsPutMsg(STDOUT, TRACERT_IP_ADDRESS, hostname);
+        NlsPutMsg(STDOUT, TRACERT_IP_ADDRESS, hostname);
     }
 }
 
@@ -217,9 +225,9 @@ void print_ipv6_addr(IN6_ADDR * ipv6Addr, BOOLEAN DoReverseLookup)
 void print_time(ulong Time)
 {
     if (Time) {
-        //NlsPutMsg(STDOUT, TRACERT_TIME, Time);
+        NlsPutMsg(STDOUT, TRACERT_TIME, Time);
     } else {
-        //NlsPutMsg(STDOUT, TRACERT_TIME_10MS);
+        NlsPutMsg(STDOUT, TRACERT_TIME_10MS);
     }
 }
 
@@ -238,13 +246,13 @@ param(
     char * dummy;
 
     if (current == (argc - 1)) {
-        //NlsPutMsg(STDOUT, TRACERT_NO_OPTION_VALUE, argv[current]);
+        NlsPutMsg(STDOUT, TRACERT_NO_OPTION_VALUE, argv[current]);
         return(FALSE);
     }
 
     temp = strtoul(argv[current + 1], &dummy, 0);
     if (temp < min || temp > max) {
-        //NlsPutMsg(STDOUT, TRACERT_BAD_OPTION_VALUE, argv[current]);
+        NlsPutMsg(STDOUT, TRACERT_BAD_OPTION_VALUE, argv[current]);
         return(FALSE);
     }
 
@@ -321,7 +329,7 @@ BOOLEAN SetFamily(DWORD * Family, DWORD Value, char * arg)
     UNREFERENCED_PARAMETER(arg);
 
     if ((*Family != AF_UNSPEC) && (*Family != Value)) {
-        //NlsPutMsg(STDOUT, TRACERT_FAMILY, arg, (Value == AF_INET) ? "IPv4" : "IPv6");
+        NlsPutMsg(STDOUT, TRACERT_FAMILY, arg, (Value == AF_INET) ? "IPv4" : "IPv6");
         return FALSE;
     }
 
@@ -364,7 +372,7 @@ int WINAPI tracert(int argc, char ** argv)
     SetThreadUILanguage(0);
 
     if (WSAStartup(MAKEWORD(2, 0), &WsaData)) {
-        //NlsPutMsg(STDOUT, TRACERT_WSASTARTUP_FAILED, GetLastError());
+        NlsPutMsg(STDOUT, TRACERT_WSASTARTUP_FAILED, GetLastError());
         return(1);
     }
 
@@ -379,7 +387,7 @@ int WINAPI tracert(int argc, char ** argv)
     options.OptionsData = optionsData;
 
     if (argc < 2) {
-        //NlsPutMsg(STDOUT, TRACERT_USAGE, argv[0]);
+        NlsPutMsg(STDOUT, TRACERT_USAGE, argv[0]);
         goto error_exit;
     }
 
@@ -390,7 +398,7 @@ int WINAPI tracert(int argc, char ** argv)
         if ((arg[0] == '-') || (arg[0] == '/')) {
             switch (arg[1]) {
             case '?':
-                //NlsPutMsg(STDOUT, TRACERT_USAGE, argv[0]);
+                NlsPutMsg(STDOUT, TRACERT_USAGE, argv[0]);
                 goto error_exit;
             case 'd':
                 doReverseLookup = FALSE;
@@ -409,7 +417,7 @@ int WINAPI tracert(int argc, char ** argv)
                 currentIndex = options.OptionsSize;
 
                 if ((currentIndex + 7) > MAX_OPT_SIZE) {
-                    //NlsPutMsg(STDOUT, TRACERT_TOO_MANY_OPTIONS);
+                    NlsPutMsg(STDOUT, TRACERT_TOO_MANY_OPTIONS);
                     goto error_exit;
                 }
 
@@ -421,7 +429,7 @@ int WINAPI tracert(int argc, char ** argv)
 
                 while ((i < (argc - 2)) && (*argv[i + 1] != '-')) {
                     if ((currentIndex + 7) > MAX_OPT_SIZE) {
-                        //NlsPutMsg(STDOUT, TRACERT_TOO_MANY_OPTIONS);
+                        NlsPutMsg(STDOUT, TRACERT_TOO_MANY_OPTIONS);
                         goto error_exit;
                     }
 
@@ -429,7 +437,7 @@ int WINAPI tracert(int argc, char ** argv)
                     tempAddr = inet_addr(arg);
 
                     if (tempAddr == INADDR_NONE) {
-                        //NlsPutMsg(STDOUT, TRACERT_BAD_ROUTE_ADDRESS, arg);
+                        NlsPutMsg(STDOUT, TRACERT_BAD_ROUTE_ADDRESS, arg);
                         goto error_exit;
                     }
 
@@ -462,7 +470,7 @@ int WINAPI tracert(int argc, char ** argv)
                 }
 
                 if (!GetSource(Family, argv[++i], (LPSOCKADDR)&sourceAddress)) {
-                    //NlsPutMsg(STDOUT, TRACERT_BAD_ADDRESS, argv[i]);
+                    NlsPutMsg(STDOUT, TRACERT_BAD_ADDRESS, argv[i]);
                     goto error_exit;
                 }
                 break;
@@ -477,8 +485,8 @@ int WINAPI tracert(int argc, char ** argv)
                 }
                 break;
             default:
-                //NlsPutMsg(STDOUT, TRACERT_INVALID_SWITCH, argv[i]);
-                //NlsPutMsg(STDOUT, TRACERT_USAGE);
+                NlsPutMsg(STDOUT, TRACERT_INVALID_SWITCH, argv[i]);
+                NlsPutMsg(STDOUT, TRACERT_USAGE);
                 goto error_exit;
                 break;
             }
@@ -487,15 +495,15 @@ int WINAPI tracert(int argc, char ** argv)
             if (!ResolveTarget(Family, argv[i], (LPSOCKADDR)&address, 
                                &addressLen, hostname, sizeof(hostname),
                                doReverseLookup)) {
-                //NlsPutMsg(STDOUT, TRACERT_MESSAGE_1, argv[i]);
+                NlsPutMsg(STDOUT, TRACERT_MESSAGE_1, argv[i]);
                 goto error_exit;
             }
         }
     }
 
     if (!foundAddress) {
-        //NlsPutMsg(STDOUT, TRACERT_NO_ADDRESS);
-        //NlsPutMsg(STDOUT, TRACERT_USAGE);
+        NlsPutMsg(STDOUT, TRACERT_NO_ADDRESS);
+        NlsPutMsg(STDOUT, TRACERT_USAGE);
         goto error_exit;
     }
 
@@ -519,7 +527,7 @@ int WINAPI tracert(int argc, char ** argv)
 
             s = socket(address.ss_family, 0, 0);
             if (s == INVALID_SOCKET) {
-                //NlsPutMsg(STDOUT, TRACERT_SOCKET_FAILED, WSAGetLastError());
+                NlsPutMsg(STDOUT, TRACERT_SOCKET_FAILED, WSAGetLastError());
                 exit(1);
             }
 
@@ -536,20 +544,20 @@ int WINAPI tracert(int argc, char ** argv)
 
     if (IcmpHandle == INVALID_HANDLE_VALUE) {
         status = GetLastError();
-        //NlsPutMsg(STDOUT, TRACERT_MESSAGE_2, status);
+        NlsPutMsg(STDOUT, TRACERT_MESSAGE_2, status);
         goto error_exit;
     }
 
     getnameinfo((LPSOCKADDR)&address, addressLen, literal, sizeof(literal), NULL, 0, NI_NUMERICHOST);
 
     if (hostname[0]) {
-        //NlsPutMsg(STDOUT, TRACERT_HEADER1, hostname, literal, maximumHops);
+        NlsPutMsg(STDOUT, TRACERT_HEADER1, hostname, literal, maximumHops);
     } else {
-        //NlsPutMsg(STDOUT, TRACERT_HEADER2, literal, maximumHops);
+        NlsPutMsg(STDOUT, TRACERT_HEADER2, literal, maximumHops);
     }
 
     while ((options.Ttl <= maximumHops) && (options.Ttl != 0)) {
-        //NlsPutMsg(STDOUT, TRACERT_MESSAGE_4, (uint)options.Ttl);
+        NlsPutMsg(STDOUT, TRACERT_MESSAGE_4, (uint)options.Ttl);
 
         haveReply = FALSE;
 
@@ -577,13 +585,13 @@ int WINAPI tracert(int argc, char ** argv)
                     reply4 = NULL;
 
                     if (status == IP_REQ_TIMED_OUT) {
-                        //NlsPutMsg(STDOUT, TRACERT_NO_REPLY_TIME);
+                        NlsPutMsg(STDOUT, TRACERT_NO_REPLY_TIME);
                         if (i == 2) {
                             if (haveReply) {
                                 print_ip_addr(reply4Address, doReverseLookup);
-                                //NlsPutMsg(STDOUT, TRACERT_CR);
+                                NlsPutMsg(STDOUT, TRACERT_CR);
                             } else {
-                                //NlsPutMsg(STDOUT, TRACERT_REQ_TIMED_OUT);
+                                NlsPutMsg(STDOUT, TRACERT_REQ_TIMED_OUT);
                             }
                         }
                     } else {
@@ -601,7 +609,7 @@ int WINAPI tracert(int argc, char ** argv)
 
                         if (i == 2) {
                             print_ip_addr(reply4->Address, doReverseLookup);
-                            //NlsPutMsg(STDOUT, TRACERT_CR);
+                            NlsPutMsg(STDOUT, TRACERT_CR);
                             goto loop_end;
                         } else {
                             haveReply = TRUE;
@@ -612,7 +620,7 @@ int WINAPI tracert(int argc, char ** argv)
 
                         if (i == 2) {
                             print_ip_addr(reply4->Address, doReverseLookup);
-                            //NlsPutMsg(STDOUT, TRACERT_CR);
+                            NlsPutMsg(STDOUT, TRACERT_CR);
 
                             if (reply4->RoundTripTime < MIN_INTERVAL) {
                                 Sleep(MIN_INTERVAL - reply4->RoundTripTime);
@@ -631,19 +639,19 @@ int WINAPI tracert(int argc, char ** argv)
 
                 if (ErrorNotHandled) {
                     if (status < IP_STATUS_BASE) {
-                        //NlsPutMsg(STDOUT, TRACERT_MESSAGE_7, status);
+                        NlsPutMsg(STDOUT, TRACERT_MESSAGE_7, status);
                     } else {
                         if (reply4 != NULL) {
                             print_ip_addr(reply4->Address, doReverseLookup);
 
-                            //NlsPutMsg(STDOUT, TRACERT_MESSAGE_6);
+                            NlsPutMsg(STDOUT, TRACERT_MESSAGE_6);
                         }
 
-                        //for (i = 0;
-                        //     (ErrorTable[i].Error != status && ErrorTable[i].Error != IP_GENERAL_FAILURE);
-                        //     i++);
+                        for (i = 0;
+                             (ErrorTable[i].Error != status && ErrorTable[i].Error != IP_GENERAL_FAILURE);
+                             i++);
 
-                        //NlsPutMsg(STDOUT, ErrorTable[i].ErrorNlsID);
+                        NlsPutMsg(STDOUT, ErrorTable[i].ErrorNlsID);
                     }
 
                     goto loop_end;
@@ -669,13 +677,13 @@ int WINAPI tracert(int argc, char ** argv)
                     reply6 = NULL;
 
                     if (status == IP_REQ_TIMED_OUT) {
-                        //NlsPutMsg(STDOUT, TRACERT_NO_REPLY_TIME);
+                        NlsPutMsg(STDOUT, TRACERT_NO_REPLY_TIME);
                         if (i == 2) {
                             if (haveReply) {
                                 print_ipv6_addr(&reply6Address, doReverseLookup);
-                                //NlsPutMsg(STDOUT, TRACERT_CR);
+                                NlsPutMsg(STDOUT, TRACERT_CR);
                             } else {
-                                //NlsPutMsg(STDOUT, TRACERT_REQ_TIMED_OUT);
+                                NlsPutMsg(STDOUT, TRACERT_REQ_TIMED_OUT);
                             }
                         }
                     } else {
@@ -694,7 +702,7 @@ int WINAPI tracert(int argc, char ** argv)
 
                         if (i == 2) {
                             print_ipv6_addr((IN6_ADDR *)&reply6->Address.sin6_addr, doReverseLookup);
-                            //NlsPutMsg(STDOUT, TRACERT_CR);
+                            NlsPutMsg(STDOUT, TRACERT_CR);
                             goto loop_end;
                         } else {
                             haveReply = TRUE;
@@ -705,7 +713,7 @@ int WINAPI tracert(int argc, char ** argv)
 
                         if (i == 2) {
                             print_ipv6_addr((IN6_ADDR *)&reply6->Address.sin6_addr, doReverseLookup);
-                            //NlsPutMsg(STDOUT, TRACERT_CR);
+                            NlsPutMsg(STDOUT, TRACERT_CR);
 
                             if (reply6->RoundTripTime < MIN_INTERVAL) {
                                 Sleep(MIN_INTERVAL - reply6->RoundTripTime);
@@ -723,18 +731,18 @@ int WINAPI tracert(int argc, char ** argv)
                 // an unexpected fatal error and we'll now bail out.
                 if (ErrorNotHandled) {
                     if (status < IP_STATUS_BASE) {
-                        //NlsPutMsg(STDOUT, TRACERT_MESSAGE_7, status);
+                        NlsPutMsg(STDOUT, TRACERT_MESSAGE_7, status);
                     } else {
                         if (reply6 != NULL) {
                             print_ipv6_addr((IN6_ADDR *)&reply6->Address.sin6_addr, doReverseLookup);
-                            //NlsPutMsg(STDOUT, TRACERT_MESSAGE_6);
+                            NlsPutMsg(STDOUT, TRACERT_MESSAGE_6);
                         }
 
-                        //for (i = 0;
-                        //     (ErrorTable[i].Error != status && ErrorTable[i].Error != IP_GENERAL_FAILURE);
-                        //     i++);
+                        for (i = 0;
+                             (ErrorTable[i].Error != status && ErrorTable[i].Error != IP_GENERAL_FAILURE);
+                             i++);
 
-                        //NlsPutMsg(STDOUT, ErrorTable[i].ErrorNlsID);
+                        NlsPutMsg(STDOUT, ErrorTable[i].ErrorNlsID);
                     }
 
                     goto loop_end;
@@ -746,7 +754,7 @@ int WINAPI tracert(int argc, char ** argv)
     }
 
 loop_end:
-    //NlsPutMsg(STDOUT, TRACERT_MESSAGE_8);
+    NlsPutMsg(STDOUT, TRACERT_MESSAGE_8);
     IcmpCloseHandle(IcmpHandle);
     WSACleanup();
     return(0);

@@ -176,4 +176,9 @@
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="localmsg.mc">
+      <Filter>资源文件</Filter>
+    </CustomBuild>
+  </ItemGroup>
 </Project>
