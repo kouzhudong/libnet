@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #include "localmsg.rc"
-//#include "nlstxt.rc"
+//#include "nlstxt.rc" //与localmsg.rc的定义相冲。
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////

@@ -123,7 +123,7 @@ unsigned NlsPutMsg(unsigned Handle, unsigned usMsgNum, ...)
                                  (LPSTR)&vp,
                                  0,
                                  &arglist)) == 0) {
-        printf("LastError£º%d", GetLastError());//1813
+        //printf("LastError£º%d", GetLastError());//1813
         return(0);
     }
 
@@ -154,6 +154,7 @@ unsigned long str2ip(char * addr)
         temp = strtoul(addr, &endptr, 10);
         if (temp > 255)
             return 0L;
+
         if (endptr[0] != '.')
             if (i != 3)
                 return 0L;
@@ -232,15 +233,7 @@ void print_time(ulong Time)
 }
 
 
-BOOLEAN
-param(
-    ulong * parameter,
-    char ** argv,
-    int argc,
-    int current,
-    ulong min,
-    ulong max
-)
+BOOLEAN param(ulong * parameter, char ** argv, int argc, int current, ulong min, ulong max)
 {
     ulong   temp;
     char * dummy;
@@ -262,16 +255,13 @@ param(
 }
 
 
-BOOLEAN
-ResolveTarget(
-    int           Family,
-    char * TargetString,
-    SOCKADDR * TargetAddress,
-    socklen_t * TargetAddressLen,
-    char * TargetName,
-    int           TargetNameLen,
-    BOOLEAN       DoReverseLookup
-)
+BOOLEAN ResolveTarget(int           Family,
+                      char * TargetString,
+                      SOCKADDR * TargetAddress,
+                      socklen_t * TargetAddressLen,
+                      char * TargetName,
+                      int           TargetNameLen,
+                      BOOLEAN       DoReverseLookup)
 {
     int              i;
     struct addrinfo  hints, * ai;
@@ -304,7 +294,7 @@ ResolveTarget(
     }
 
     return(FALSE);
-} // ResolveTarget
+}
 
 
 int GetSource(int family, char * astr, struct sockaddr * address)
@@ -408,9 +398,8 @@ int WINAPI tracert(int argc, char ** argv)
                     goto error_exit;
                 }
                 break;
-            case 'j':   // Loose source routing
-                // Only implemented for IPv4 so far
-                if (!SetFamily(&Family, AF_INET, arg)) {
+            case 'j':   // Loose source routing                
+                if (!SetFamily(&Family, AF_INET, arg)) {// Only implemented for IPv4 so far
                     goto error_exit;
                 }
 
@@ -457,15 +446,13 @@ int WINAPI tracert(int argc, char ** argv)
                 }
                 break;
             case 'R':
-                // Only implemented for IPv6 so far
-                if (!SetFamily(&Family, AF_INET6, arg)) {
+                if (!SetFamily(&Family, AF_INET6, arg)) {// Only implemented for IPv6 so far
                     goto error_exit;
                 }
                 options.Flags |= ICMPV6_ECHO_REQUEST_FLAG_REVERSE;
                 break;
             case 'S':
-                // Only implemented for IPv6 so far
-                if (!SetFamily(&Family, AF_INET6, arg)) {
+                if (!SetFamily(&Family, AF_INET6, arg)) {// Only implemented for IPv6 so far
                     goto error_exit;
                 }
 
@@ -492,9 +479,8 @@ int WINAPI tracert(int argc, char ** argv)
             }
         } else {
             foundAddress = TRUE;
-            if (!ResolveTarget(Family, argv[i], (LPSOCKADDR)&address, 
-                               &addressLen, hostname, sizeof(hostname),
-                               doReverseLookup)) {
+            if (!ResolveTarget(Family, argv[i], (LPSOCKADDR)&address,
+                               &addressLen, hostname, sizeof(hostname), doReverseLookup)) {
                 NlsPutMsg(STDOUT, TRACERT_MESSAGE_1, argv[i]);
                 goto error_exit;
             }
@@ -531,10 +517,8 @@ int WINAPI tracert(int argc, char ** argv)
                 exit(1);
             }
 
-            (void)WSAIoctl(s, SIO_ROUTING_INTERFACE_QUERY,
-                           &address, sizeof address,
-                           &sourceAddress, sizeof sourceAddress,
-                           &BytesReturned, NULL, NULL);
+            (void)WSAIoctl(s, SIO_ROUTING_INTERFACE_QUERY, &address, sizeof address,
+                           &sourceAddress, sizeof sourceAddress, &BytesReturned, NULL, NULL);
 
             closesocket(s);
         }
@@ -565,21 +549,19 @@ int WINAPI tracert(int argc, char ** argv)
             BOOLEAN ErrorNotHandled = FALSE;
 
             if (Family == AF_INET) {
-                numberOfReplies = IcmpSendEcho2(
-                    IcmpHandle,
-                    0,
-                    NULL,
-                    NULL,
-                    ((LPSOCKADDR_IN)&address)->sin_addr.s_addr,
-                    SendBuffer,
-                    DEFAULT_SEND_SIZE,
-                    &options,
-                    RcvBuffer,
-                    DEFAULT_RECEIVE_SIZE,
-                    timeout);
+                numberOfReplies = IcmpSendEcho2(IcmpHandle,
+                                                0,
+                                                NULL,
+                                                NULL,
+                                                ((LPSOCKADDR_IN)&address)->sin_addr.s_addr,
+                                                SendBuffer,
+                                                DEFAULT_SEND_SIZE,
+                                                &options,
+                                                RcvBuffer,
+                                                DEFAULT_RECEIVE_SIZE,
+                                                timeout);
                 if (numberOfReplies == 0) {
-                    // We did not get any replies.  This is possibly a timeout,
-                    // or an internal error to IP.
+                    // We did not get any replies.  This is possibly a timeout, or an internal error to IP.
 
                     status = GetLastError();
                     reply4 = NULL;
@@ -598,9 +580,8 @@ int WINAPI tracert(int argc, char ** argv)
                         ErrorNotHandled = TRUE;
                     }
                 } else {
-                    // We got a reply.  It's either for the final destination
-                    // (IP_SUCCESS), or because the TTL expired at a node along
-                    // the way, or we got an unexpected error response.
+                    // We got a reply.  It's either for the final destination (IP_SUCCESS),
+                    // or because the TTL expired at a node along the way, or we got an unexpected error response.
 
                     reply4 = (PICMP_ECHO_REPLY)RcvBuffer;
                     status = reply4->Status;
@@ -634,8 +615,8 @@ int WINAPI tracert(int argc, char ** argv)
                     }
                 }
 
-                // If we've not handled the status code by now, it represents
-                // an unexpected fatal error and we'll now bail out.
+                // If we've not handled the status code by now, 
+                // it represents an unexpected fatal error and we'll now bail out.
 
                 if (ErrorNotHandled) {
                     if (status < IP_STATUS_BASE) {
@@ -657,19 +638,18 @@ int WINAPI tracert(int argc, char ** argv)
                     goto loop_end;
                 }
             } else { // AF_INET6
-                numberOfReplies = Icmp6SendEcho2(
-                    IcmpHandle,
-                    0,
-                    NULL,
-                    NULL,
-                    (LPSOCKADDR_IN6)&sourceAddress,
-                    (LPSOCKADDR_IN6)&address,
-                    SendBuffer,
-                    DEFAULT_SEND_SIZE,
-                    &options,
-                    RcvBuffer,
-                    DEFAULT_RECEIVE_SIZE,
-                    timeout);
+                numberOfReplies = Icmp6SendEcho2(IcmpHandle,
+                                                 0,
+                                                 NULL,
+                                                 NULL,
+                                                 (LPSOCKADDR_IN6)&sourceAddress,
+                                                 (LPSOCKADDR_IN6)&address,
+                                                 SendBuffer,
+                                                 DEFAULT_SEND_SIZE,
+                                                 &options,
+                                                 RcvBuffer,
+                                                 DEFAULT_RECEIVE_SIZE,
+                                                 timeout);
                 if (numberOfReplies == 0) {
                     // We did not get any replies.  This is possibly a timeout, or an internal error to IP.
 
@@ -690,9 +670,8 @@ int WINAPI tracert(int argc, char ** argv)
                         ErrorNotHandled = TRUE;
                     }
                 } else {
-                    // We got a reply.  It's either for the final destination
-                    // (IP_SUCCESS), or because the TTL expired at a node along
-                    // the way, or we got an unexpected error response.
+                    // We got a reply.  It's either for the final destination (IP_SUCCESS),
+                    // or because the TTL expired at a node along the way, or we got an unexpected error response.
 
                     reply6 = (PICMPV6_ECHO_REPLY)RcvBuffer;
                     status = reply6->Status;
