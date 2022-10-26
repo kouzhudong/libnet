@@ -179,6 +179,7 @@ void print_addr(SOCKADDR * sa, socklen_t salen, BOOLEAN DoReverseLookup)
         i = getnameinfo(sa, salen, hostname, sizeof(hostname), NULL, 0, NI_NAMEREQD);
         if (i == NO_ERROR) {
             didReverse = TRUE;
+            printf("%s ", hostname);
             NlsPutMsg(STDOUT, TRACERT_TARGET_NAME, hostname);
         }
     }
@@ -192,8 +193,10 @@ void print_addr(SOCKADDR * sa, socklen_t salen, BOOLEAN DoReverseLookup)
     }
 
     if (didReverse) {
+        printf("[%s]\r\n", hostname);
         NlsPutMsg(STDOUT, TRACERT_BRKT_IP_ADDRESS, hostname);
     } else {
+        printf("%s\r\n", hostname);
         NlsPutMsg(STDOUT, TRACERT_IP_ADDRESS, hostname);
     }
 }
@@ -226,8 +229,10 @@ void print_ipv6_addr(IN6_ADDR * ipv6Addr, BOOLEAN DoReverseLookup)
 void print_time(ulong Time)
 {
     if (Time) {
+        printf("% 3d ms\t", Time);
         NlsPutMsg(STDOUT, TRACERT_TIME, Time);
     } else {
+        printf(" * ms\t");
         NlsPutMsg(STDOUT, TRACERT_TIME_10MS);
     }
 }
@@ -535,12 +540,18 @@ int WINAPI tracert(int argc, char ** argv)
     getnameinfo((LPSOCKADDR)&address, addressLen, literal, sizeof(literal), NULL, 0, NI_NUMERICHOST);
 
     if (hostname[0]) {
+        printf("\r\n");
+        printf("通过最多 %d 个跃点跟踪\r\n", maximumHops);
+        printf("到 %s [%s] 的路由:\r\n", hostname, literal);
+        printf("\r\n");
         NlsPutMsg(STDOUT, TRACERT_HEADER1, hostname, literal, maximumHops);
     } else {
+        DebugBreak();
         NlsPutMsg(STDOUT, TRACERT_HEADER2, literal, maximumHops);
     }
 
     while ((options.Ttl <= maximumHops) && (options.Ttl != 0)) {
+        printf("% 3d\t", options.Ttl);
         NlsPutMsg(STDOUT, TRACERT_MESSAGE_4, (uint)options.Ttl);
 
         haveReply = FALSE;
@@ -567,12 +578,14 @@ int WINAPI tracert(int argc, char ** argv)
                     reply4 = NULL;
 
                     if (status == IP_REQ_TIMED_OUT) {
+                        printf(" %s\t", "<1 ms");//请求超时。 <1 毫秒
                         NlsPutMsg(STDOUT, TRACERT_NO_REPLY_TIME);
                         if (i == 2) {
                             if (haveReply) {
                                 print_ip_addr(reply4Address, doReverseLookup);
                                 NlsPutMsg(STDOUT, TRACERT_CR);
                             } else {
+                                printf("%s\r\n", "请求超时。"); 
                                 NlsPutMsg(STDOUT, TRACERT_REQ_TIMED_OUT);
                             }
                         }
@@ -733,6 +746,7 @@ int WINAPI tracert(int argc, char ** argv)
     }
 
 loop_end:
+    printf("\r\n%s\r\n", "跟踪完成。");
     NlsPutMsg(STDOUT, TRACERT_MESSAGE_8);
     IcmpCloseHandle(IcmpHandle);
     WSACleanup();
