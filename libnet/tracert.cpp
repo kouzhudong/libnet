@@ -336,6 +336,11 @@ BOOLEAN SetFamily(DWORD * Family, DWORD Value, char * arg)
 EXTERN_C
 __declspec(dllexport)
 int WINAPI tracert(int argc, char ** argv)
+/*
+
+关于输出的格式，可以根据mc文件，h文件，这里的打印格式，在资源里重新定义下。
+这里只定义了常用的输出信息，异常的信息格式，可参考此定义。
+*/
 {
     SOCKADDR_STORAGE      address, sourceAddress;
     socklen_t             addressLen;
@@ -546,7 +551,6 @@ int WINAPI tracert(int argc, char ** argv)
         printf("\r\n");
         NlsPutMsg(STDOUT, TRACERT_HEADER1, hostname, literal, maximumHops);
     } else {
-        DebugBreak();
         NlsPutMsg(STDOUT, TRACERT_HEADER2, literal, maximumHops);
     }
 
