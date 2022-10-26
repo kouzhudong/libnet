@@ -1,3 +1,7 @@
+#pragma once
+
+#include "pch.h"
+
 typedef struct in_addr IPV4_ADDRESS;
 typedef struct in6_addr IPV6_ADDRESS;
 
@@ -48,3 +52,13 @@ extern HOP    hop[MAX_HOPS];
 extern ULONG  g_ulTimeout;
 extern HANDLE g_hIcmp;
 extern ULONG g_ulRcvBufSize;
+
+
+EXTERN_C_START
+
+
+__declspec(dllexport)
+int __cdecl pathping(int argc, char ** argv);
+
+
+EXTERN_C_END

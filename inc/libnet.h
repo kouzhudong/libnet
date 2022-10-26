@@ -308,6 +308,9 @@ void WINAPI Icmp6Test();
 __declspec(dllimport)
 int WINAPI tracert(int argc, char ** argv);
 
+__declspec(dllimport)
+int __cdecl pathping(int argc, char ** argv);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -40,8 +40,8 @@ Notes:
 #include    "ipexport.h"
 #include    "icmpapi.h"
 #include    "nlstxt.h"
-#include    "pathping.h"
-#include    "pathpings.h"
+#include    "pathping.h" //MC生成的文件。
+#include    "pathpings.h" //本文件对应的头文件。
 
 #pragma warning(disable:28159)
 #pragma warning(disable:28183)
@@ -107,22 +107,17 @@ static void print_addr(SOCKADDR * sa, socklen_t salen, BOOLEAN DoReverseLookup)
     BOOLEAN          didReverse = FALSE;
 
     if (DoReverseLookup) {
-        i = getnameinfo(sa, salen, hostname, sizeof(hostname),
-                        NULL, 0, NI_NAMEREQD);
-
+        i = getnameinfo(sa, salen, hostname, sizeof(hostname), NULL, 0, NI_NAMEREQD);
         if (i == NO_ERROR) {
             didReverse = TRUE;
             NlsPutMsg(STDOUT, PATHPING_TARGET_NAME, hostname);
         }
     }
 
-    i = getnameinfo(sa, salen, hostname, sizeof(hostname),
-                    NULL, 0, NI_NUMERICHOST);
-
+    i = getnameinfo(sa, salen, hostname, sizeof(hostname), NULL, 0, NI_NUMERICHOST);
     if (i != NO_ERROR) {
         // This should never happen unless there is a memory problem,
-        // in which case the message associated with PATHPING_NO_RESOURCES
-        // is reasonable.
+        // in which case the message associated with PATHPING_NO_RESOURCES is reasonable.
         NlsPutMsg(STDOUT, PATHPING_NO_RESOURCES);
         exit(1);
     }
@@ -146,8 +141,8 @@ static void print_ip_addr(IPAddr ipv4Addr, BOOLEAN DoReverseLookup)
     print_addr((LPSOCKADDR)&sin, sizeof(sin), DoReverseLookup);
 }
 
-void
-print_ipv6_addr(USHORT ipv6Addr[8], BOOLEAN DoReverseLookup)
+
+void print_ipv6_addr(USHORT ipv6Addr[8], BOOLEAN DoReverseLookup)
 {
     SOCKADDR_IN6 sin;
 
@@ -220,9 +215,7 @@ ResolveTarget(
         memcpy(TargetAddress, ai->ai_addr, ai->ai_addrlen);
 
         if (DoReverseLookup) {
-            getnameinfo(ai->ai_addr, (socklen_t)ai->ai_addrlen,
-                        TargetName, TargetNameLen,
-                        NULL, 0, NI_NAMEREQD);
+            getnameinfo(ai->ai_addr, (socklen_t)ai->ai_addrlen, TargetName, TargetNameLen, NULL, 0, NI_NAMEREQD);
         }
 
         freeaddrinfo(ai);
@@ -242,15 +235,13 @@ ResolveTarget(
     }
 
     return(FALSE);
-
 }  // ResolveTarget
+
 
 ULONG g_ulSendsDone = 0;
 
-void
-SleepForTotal(
-    DWORD dwTotal
-)
+
+void SleepForTotal(DWORD dwTotal)
 {
     DWORD dwStopAt = GetTickCount() + dwTotal;
     int   iLeft = (int)dwTotal;
@@ -261,12 +252,8 @@ SleepForTotal(
     }
 }
 
-VOID
-EchoDone(
-    IN PVOID            pContext,
-    IN PIO_STATUS_BLOCK Ignored1,
-    IN ULONG            Ignored2
-)
+
+VOID EchoDone(IN PVOID pContext, IN PIO_STATUS_BLOCK Ignored1, IN ULONG Ignored2)
 {
     PAPC_CONTEXT pApc = (PAPC_CONTEXT)pContext;
     ULONG ulNumReplies;
@@ -290,24 +277,18 @@ EchoDone(
         ulNumReplies = Icmp6ParseReplies(pApc->pReply6, g_ulRcvBufSize);
 
         for (i = 0; i < ulNumReplies; i++) {
-            if (!memcmp(&pApc->sin6Addr.sin6_addr,
-                        &pApc->pReply6[i].Address.sin6_addr,
-                        sizeof(struct in6_addr))) {
+            if (!memcmp(&pApc->sin6Addr.sin6_addr, &pApc->pReply6[i].Address.sin6_addr, sizeof(struct in6_addr))) {
                 pApc->ulNumRcvd++;
                 pApc->ulRTTtotal += pApc->pReply6[i].RoundTripTime;
                 return;
             }
         }
     }
-
 }
 
-// now that the hop[] array is filled in, ping each one every g_ulInterval
-// seconds
-void
-ComputeStatistics(
-    PIP_OPTION_INFORMATION pOptions
-)
+
+void ComputeStatistics(PIP_OPTION_INFORMATION pOptions)
+// now that the hop[] array is filled in, ping each one every g_ulInterval seconds
 {
     ULONG h, q;
     ULONG ulHopCount = (ULONG)pOptions->Ttl;
@@ -364,10 +345,7 @@ ComputeStatistics(
 }
 
 
-VOID
-PrintResults(
-    ULONG ulHopCount
-)
+VOID PrintResults(ULONG ulHopCount)
 {
     ULONG h;
     int sent, rcvd, lost, linklost, nodelost;
@@ -392,8 +370,7 @@ PrintResults(
         // Display previous link stats
         // printf( "                             %4d/%4d =%3.0f%%   |\n", 
         //        linklost, sent, 100.0*linklost/sent);
-        NlsPutMsg(STDOUT, PATHPING_STAT_LINK,
-                  linklost, sent, 100 * linklost / sent);
+        NlsPutMsg(STDOUT, PATHPING_STAT_LINK, linklost, sent, 100 * linklost / sent);
 
         if (rcvd)
             NlsPutMsg(STDOUT, PATHPING_HOP_RTT, h, hop[h].ulRTTtotal / rcvd);
@@ -412,10 +389,8 @@ PrintResults(
 
             // printf("%4d/%4d =%3.0f%%  ", lost,     sent, 100.0*lost/sent);
             // printf("%4d/%4d =%3.0f%%  ", nodelost, sent, 100.0*nodelost/sent);
-        NlsPutMsg(STDOUT, PATHPING_STAT_LOSS,
-                  lost, sent, 100 * lost / sent);
-        NlsPutMsg(STDOUT, PATHPING_STAT_LOSS,
-                  nodelost, sent, 100 * nodelost / sent);
+        NlsPutMsg(STDOUT, PATHPING_STAT_LOSS, lost, sent, 100 * lost / sent);
+        NlsPutMsg(STDOUT, PATHPING_STAT_LOSS, nodelost, sent, 100 * nodelost / sent);
 
         if (!hop[h].saAddr.sa_family) {
             hop[h].saAddr.sa_family = g_ssMyAddr.ss_family;
@@ -429,8 +404,7 @@ PrintResults(
 static BOOLEAN SetFamily(DWORD * Family, DWORD Value, char * arg)
 {
     if ((*Family != AF_UNSPEC) && (*Family != Value)) {
-        NlsPutMsg(STDOUT, PATHPING_FAMILY, arg,
-                  (Value == AF_INET) ? "IPv4" : "IPv6");
+        NlsPutMsg(STDOUT, PATHPING_FAMILY, arg, (Value == AF_INET) ? "IPv4" : "IPv6");
         return FALSE;
     }
 
@@ -438,8 +412,8 @@ static BOOLEAN SetFamily(DWORD * Family, DWORD Value, char * arg)
     return TRUE;
 }
 
-int __cdecl
-main(int argc, char ** argv)
+
+int __cdecl pathping(int argc, char ** argv)
 {
     SOCKADDR_STORAGE      address;
     socklen_t             addressLen;
@@ -482,9 +456,7 @@ main(int argc, char ** argv)
         goto error_exit;
     }
 
-    //
     // process command line
-    //
     for (i = 1; i < argc; i++) {
         arg = argv[i];
 
@@ -493,23 +465,18 @@ main(int argc, char ** argv)
             case '?':
                 NlsPutMsg(STDOUT, PATHPING_USAGE, argv[0]);
                 goto error_exit;
-
             case '4':
                 if (!SetFamily(&Family, AF_INET, arg)) {
                     goto error_exit;
                 }
                 break;
-
             case '6':
                 if (!SetFamily(&Family, AF_INET6, arg)) {
                     goto error_exit;
                 }
                 break;
-
             case 'g':   // Loose source routing
-
-                // Only implemented for IPv4 so far
-                if (!SetFamily(&Family, AF_INET, arg)) {
+                if (!SetFamily(&Family, AF_INET, arg)) {// Only implemented for IPv4 so far
                     goto error_exit;
                 }
 
@@ -536,11 +503,7 @@ main(int argc, char ** argv)
                     tempAddr = inet_addr(arg);
 
                     if (tempAddr == INADDR_NONE) {
-                        NlsPutMsg(
-                            STDOUT,
-                            PATHPING_BAD_ROUTE_ADDRESS,
-                            arg
-                        );
+                        NlsPutMsg(STDOUT, PATHPING_BAD_ROUTE_ADDRESS, arg);
                         // printf("Bad route specified for loose source route");
                         goto error_exit;
                     }
@@ -555,65 +518,48 @@ main(int argc, char ** argv)
                 optionPtr[currentIndex + 1] += 4;   // Save space for dest. addr
                 options.OptionsSize += 4;
                 break;
-
             case 'h':
                 if (!param(&maximumHops, argv, argc, i, 1, 255)) {
                     goto error_exit;
                 }
                 i++;
                 break;
-
-
-
             case 'i':
             {
                 char tmphostname[NI_MAXHOST];
 
                 arg = argv[++i];
-                if (ResolveTarget(Family,
-                                  arg,
-                                  &g_ssMyAddr,
-                                  &g_slMyAddrLen,
-                                  tmphostname,
-                                  sizeof(tmphostname),
-                                  FALSE)) {
+                if (ResolveTarget(Family, arg, &g_ssMyAddr, &g_slMyAddrLen, tmphostname, sizeof(tmphostname), FALSE)) {
                     g_bSetAddr = TRUE;
                 }
             }
             break;
-
             case 'n':
                 g_bDoReverseLookup = FALSE;
                 break;
-
             case 'p':
                 if (!param(&g_ulInterval, argv, argc, i, 1, 0xffffffff)) {
                     goto error_exit;
                 }
                 i++;
                 break;
-
-
             case 'q':
                 if (!param(&g_ulNumQueries, argv, argc, i, 1, 255)) {
                     goto error_exit;
                 }
                 i++;
                 break;
-
             case 'w':
                 if (!param(&g_ulTimeout, argv, argc, i, 1, 0xffffffff)) {
                     goto error_exit;
                 }
                 i++;
                 break;
-
             default:
                 NlsPutMsg(STDOUT, PATHPING_INVALID_SWITCH, argv[i]);
                 NlsPutMsg(STDOUT, PATHPING_USAGE);
                 goto error_exit;
                 break;
-
             }
         } else {
             foundAddress = TRUE;
@@ -655,24 +601,12 @@ main(int argc, char ** argv)
         goto error_exit;
     }
 
-    getnameinfo((LPSOCKADDR)&address, addressLen, literal, sizeof(literal),
-                NULL, 0, NI_NUMERICHOST);
+    getnameinfo((LPSOCKADDR)&address, addressLen, literal, sizeof(literal), NULL, 0, NI_NUMERICHOST);
 
     if (hostname[0]) {
-        NlsPutMsg(
-            STDOUT,
-            PATHPING_HEADER1,
-            hostname,
-            literal,
-            maximumHops
-        );
+        NlsPutMsg(STDOUT, PATHPING_HEADER1, hostname, literal, maximumHops);
     } else {
-        NlsPutMsg(
-            STDOUT,
-            PATHPING_HEADER2,
-            literal,
-            maximumHops
-        );
+        NlsPutMsg(STDOUT, PATHPING_HEADER2, literal, maximumHops);
     }
 
     // Get local IP address
@@ -689,22 +623,18 @@ main(int argc, char ** argv)
         closesocket(s);
 
         NlsPutMsg(STDOUT, PATHPING_MESSAGE_4, 0);
-        print_addr((LPSOCKADDR)&g_ssMyAddr, g_slMyAddrLen,
-                   g_bDoReverseLookup);
+        print_addr((LPSOCKADDR)&g_ssMyAddr, g_slMyAddrLen, g_bDoReverseLookup);
         NlsPutMsg(STDOUT, PATHPING_CR);
     }
 
     // First we need to find out the path, so we 
-    // 
     while ((options.Ttl <= maximumHops) && (options.Ttl != 0)) {
-
         NlsPutMsg(STDOUT, PATHPING_MESSAGE_4, (UINT)options.Ttl);
         // printf("[%3lu]  ", (UINT)SendOpts.Ttl);
 
         haveReply = FALSE;
 
         for (i = 0; i < numRetries; i++) {
-
             if (Family == AF_INET) {
                 numberOfReplies = IcmpSendEcho2(g_hIcmp,
                                                 0,
@@ -717,7 +647,6 @@ main(int argc, char ** argv)
                                                 RcvBuffer,
                                                 DEFAULT_RECEIVE_SIZE,
                                                 g_ulTimeout);
-
                 if (numberOfReplies == 0) {
                     status = GetLastError();
                     reply4 = NULL;
@@ -727,10 +656,7 @@ main(int argc, char ** argv)
                 }
 
                 if (status == IP_SUCCESS) {
-                    print_ip_addr(
-                        reply4->Address,
-                        g_bDoReverseLookup
-                    );
+                    print_ip_addr(reply4->Address, g_bDoReverseLookup);
                     NlsPutMsg(STDOUT, PATHPING_CR);
 
                     ZeroMemory(&hop[options.Ttl], sizeof(HOP));
@@ -758,14 +684,8 @@ main(int argc, char ** argv)
                     continue;
                 }
 
-                //
-                // Fatal error.
-                //
-                if (reply4 != NULL) {
-                    print_ip_addr(
-                        reply4->Address,
-                        g_bDoReverseLookup
-                    );
+                if (reply4 != NULL) {// Fatal error.
+                    print_ip_addr(reply4->Address, g_bDoReverseLookup);
 
                     NlsPutMsg(STDOUT, PATHPING_MESSAGE_6);
                     // printf(" reports: ");
@@ -783,7 +703,6 @@ main(int argc, char ** argv)
                                                  RcvBuffer,
                                                  DEFAULT_RECEIVE_SIZE,
                                                  g_ulTimeout);
-
                 if (numberOfReplies == 0) {
                     status = GetLastError();
                     reply6 = NULL;
@@ -793,10 +712,7 @@ main(int argc, char ** argv)
                 }
 
                 if (status == IP_SUCCESS) {
-                    print_ipv6_addr(
-                        (USHORT *)reply6->Address.sin6_addr,
-                        g_bDoReverseLookup
-                    );
+                    print_ipv6_addr((USHORT *)reply6->Address.sin6_addr, g_bDoReverseLookup);
                     NlsPutMsg(STDOUT, PATHPING_CR);
 
                     ZeroMemory(&hop[options.Ttl], sizeof(HOP));
@@ -831,38 +747,26 @@ main(int argc, char ** argv)
                     continue;
                 }
 
-                //
-                // Fatal error.
-                //
-                if (reply6 != NULL) {
-                    print_ipv6_addr(
-                        (USHORT *)reply6->Address.sin6_addr,
-                        g_bDoReverseLookup
-                    );
+                if (reply6 != NULL) {// Fatal error.
+                    print_ipv6_addr((USHORT *)reply6->Address.sin6_addr, g_bDoReverseLookup);
 
                     NlsPutMsg(STDOUT, PATHPING_MESSAGE_6);
                     // printf(" reports: ");
                 }
             }
 
-            for (i = 0;
-                 (ErrorTable[i].Error != status &&
-                  ErrorTable[i].Error != IP_GENERAL_FAILURE
-                  );
-                 i++
-                 );
+            for (i = 0; (ErrorTable[i].Error != status && ErrorTable[i].Error != IP_GENERAL_FAILURE); i++);
 
             NlsPutMsg(STDOUT, ErrorTable[i].ErrorNlsID);
             // printf("%s.\n", ErrorTable[i].ErrorString);
 
             goto loop_end;
         }
+
         if (i == numRetries)
             break;
 
-        print_addr(&hop[options.Ttl].saAddr,
-                   g_slMyAddrLen,
-                   g_bDoReverseLookup);
+        print_addr(&hop[options.Ttl].saAddr, g_slMyAddrLen, g_bDoReverseLookup);
         NlsPutMsg(STDOUT, PATHPING_CR);
 
         options.Ttl++;
@@ -872,8 +776,7 @@ loop_end:
     NlsPutMsg(STDOUT, PATHPING_COMPUTING, options.Ttl * g_ulInterval * g_ulNumQueries / 1000);
 
     // Okay, now that we have the path, we want to go back and
-    // compute statistics over numQueries queries sent every intvl
-    // seconds.
+    // compute statistics over numQueries queries sent every intvl seconds.
 
     ComputeStatistics(&options);
 
