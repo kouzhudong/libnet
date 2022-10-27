@@ -111,6 +111,7 @@ static void print_addr(SOCKADDR * sa, socklen_t salen, BOOLEAN DoReverseLookup)
         if (i == NO_ERROR) {
             didReverse = TRUE;
             NlsPutMsg(STDOUT, PATHPING_TARGET_NAME, hostname);
+            printf("%s ", hostname);
         }
     }
 
@@ -124,8 +125,10 @@ static void print_addr(SOCKADDR * sa, socklen_t salen, BOOLEAN DoReverseLookup)
 
     if (didReverse) {
         NlsPutMsg(STDOUT, PATHPING_BRKT_IP_ADDRESS, hostname);
+        printf("[%s]\r\n", hostname);
     } else {
         NlsPutMsg(STDOUT, PATHPING_IP_ADDRESS, hostname);
+        printf("%s\r\n", hostname);
     }
 }
 
@@ -289,6 +292,7 @@ VOID EchoDone(IN PVOID pContext, IN PIO_STATUS_BLOCK Ignored1, IN ULONG Ignored2
 
 void ComputeStatistics(PIP_OPTION_INFORMATION pOptions)
 // now that the hop[] array is filled in, ping each one every g_ulInterval seconds
+// 这个函数是真费时啊！超过了getnameinfo。
 {
     ULONG h, q;
     ULONG ulHopCount = (ULONG)pOptions->Ttl;
@@ -326,15 +330,15 @@ void ComputeStatistics(PIP_OPTION_INFORMATION pOptions)
                                g_ulRcvBufSize,
                                g_ulTimeout);
             }
-
-            // Wait alertably for 'delay' ms
-            SleepForTotal(g_ulInterval);
+            
+            SleepForTotal(g_ulInterval);// Wait alertably for 'delay' ms
         }
     }
 
     // Wait alertably until Done count hits max
-    while (g_ulSendsDone < ulHopCount * g_ulNumQueries)
-        SleepEx(INFINITE, TRUE);
+    while (g_ulSendsDone < ulHopCount * g_ulNumQueries) {
+        SleepEx(INFINITE, TRUE);//感觉卡这里了，g_ulSendsDone也没有增长了。
+    }
 
     // Compute per-hop info
     //     hoprcvd is max rcvd of all hops >= h
@@ -346,18 +350,24 @@ void ComputeStatistics(PIP_OPTION_INFORMATION pOptions)
 
 
 VOID PrintResults(ULONG ulHopCount)
+/*
+
+这里的格式有待验证。
+*/
 {
     ULONG h;
     int sent, rcvd, lost, linklost, nodelost;
 
     // Now output results                            
     NlsPutMsg(STDOUT, PATHPING_STAT_HEADER, GetLastError());
-    // printf("            Source to Here   This Node/Link\n");
-    // printf("Hop  RTT    Lost/Sent = Pct  Lost/Sent = Pct  Address\n");
-    // printf("  0                                           ");
+    //printf("            Source to Here   This Node/Link\n");
+    printf("            指向此处的源   此节点/链接\n");
+    //printf("Hop  RTT    Lost/Sent = Pct  Lost/Sent = Pct  Address\n");
+    printf("跃点  RTT    已丢失/已发送 = Pct  已丢失/已发送 = Pct  地址\n");
+    printf("  0                                           ");
     print_addr((LPSOCKADDR)&g_ssMyAddr, g_slMyAddrLen, g_bDoReverseLookup);
     NlsPutMsg(STDOUT, PATHPING_CR);
-    // printf("\n");
+    printf("\n");
 
     for (h = 1; h <= ulHopCount; h++) {
         sent = g_ulNumQueries;
@@ -368,8 +378,7 @@ VOID PrintResults(ULONG ulHopCount)
         nodelost = hop[h].ulHopRcvd - hop[h].ulNumRcvd;
 
         // Display previous link stats
-        // printf( "                             %4d/%4d =%3.0f%%   |\n", 
-        //        linklost, sent, 100.0*linklost/sent);
+        printf( "                             %4d/%4d =%3.0f%%   |\n", linklost, sent, 100.0*linklost/sent);
         NlsPutMsg(STDOUT, PATHPING_STAT_LINK, linklost, sent, 100 * linklost / sent);
 
         if (rcvd)
@@ -377,18 +386,18 @@ VOID PrintResults(ULONG ulHopCount)
         else
             NlsPutMsg(STDOUT, PATHPING_HOP_NO_RTT, h);
 
-        // printf("%3d ", h);
-        // if (!rcvd)
-        //   printf(" ---    ");
+         printf("%3d ", h);
+         if (!rcvd)
+           printf(" ---    ");
     #if 0
-            // else if (hop[h].ulRTTtotal/rcvd == 0)
-            //   printf(" <10ms  ");
+             else if (hop[h].ulRTTtotal/rcvd == 0)
+               printf(" <10ms  ");
     #endif
-            // else
-            //   printf("%4dms  ", hop[h].ulRTTtotal/rcvd);
+             else
+               printf("%4dms  ", hop[h].ulRTTtotal/rcvd);
 
-            // printf("%4d/%4d =%3.0f%%  ", lost,     sent, 100.0*lost/sent);
-            // printf("%4d/%4d =%3.0f%%  ", nodelost, sent, 100.0*nodelost/sent);
+             printf("%4d/%4d =%3.0f%%  ", lost,     sent, 100.0*lost/sent);
+             printf("%4d/%4d =%3.0f%%  ", nodelost, sent, 100.0*nodelost/sent);
         NlsPutMsg(STDOUT, PATHPING_STAT_LOSS, lost, sent, 100 * lost / sent);
         NlsPutMsg(STDOUT, PATHPING_STAT_LOSS, nodelost, sent, 100 * nodelost / sent);
 
@@ -397,7 +406,7 @@ VOID PrintResults(ULONG ulHopCount)
         }
         print_addr(&hop[h].saAddr, g_slMyAddrLen, g_bDoReverseLookup);
         NlsPutMsg(STDOUT, PATHPING_CR);
-        // printf("\n");
+        printf("\n");
     }
 }
 
@@ -504,7 +513,7 @@ int __cdecl pathping(int argc, char ** argv)
 
                     if (tempAddr == INADDR_NONE) {
                         NlsPutMsg(STDOUT, PATHPING_BAD_ROUTE_ADDRESS, arg);
-                        // printf("Bad route specified for loose source route");
+                        printf("Bad route specified for loose source route");
                         goto error_exit;
                     }
 
@@ -571,7 +580,7 @@ int __cdecl pathping(int argc, char ** argv)
                                sizeof(hostname),
                                g_bDoReverseLookup)) {
                 NlsPutMsg(STDOUT, PATHPING_MESSAGE_1, argv[i]);
-                // printf( "Unable to resolve target name %s.\n", argv[i]);
+                printf( "Unable to resolve target name %s.\n", argv[i]);
                 goto error_exit;
             }
         }
@@ -597,7 +606,7 @@ int __cdecl pathping(int argc, char ** argv)
     if (g_hIcmp == INVALID_HANDLE_VALUE) {
         status = GetLastError();
         NlsPutMsg(STDOUT, PATHPING_MESSAGE_2, status);
-        // printf( "Unable to contact IP driver. Error code %d.\n", status);
+        printf( "Unable to contact IP driver. Error code %d.\n", status);
         goto error_exit;
     }
 
@@ -605,13 +614,16 @@ int __cdecl pathping(int argc, char ** argv)
 
     if (hostname[0]) {
         NlsPutMsg(STDOUT, PATHPING_HEADER1, hostname, literal, maximumHops);
+        printf("\r\n");
+        printf("通过最多 %d 个跃点跟踪\r\n", maximumHops);
+        printf("到 %s [%s] 的路由:\r\n", hostname, literal);
     } else {
         NlsPutMsg(STDOUT, PATHPING_HEADER2, literal, maximumHops);
     }
 
     // Get local IP address
     if (!g_bSetAddr) {
-        SOCKET           s = socket(address.ss_family, SOCK_RAW, 0);
+        SOCKET s = socket(address.ss_family, SOCK_RAW, 0);
         DWORD BytesReturned;
 
         WSAIoctl(s, SIO_ROUTING_INTERFACE_QUERY,
@@ -623,6 +635,7 @@ int __cdecl pathping(int argc, char ** argv)
         closesocket(s);
 
         NlsPutMsg(STDOUT, PATHPING_MESSAGE_4, 0);
+        printf("% 3d  ", 0);
         print_addr((LPSOCKADDR)&g_ssMyAddr, g_slMyAddrLen, g_bDoReverseLookup);
         NlsPutMsg(STDOUT, PATHPING_CR);
     }
@@ -631,6 +644,7 @@ int __cdecl pathping(int argc, char ** argv)
     while ((options.Ttl <= maximumHops) && (options.Ttl != 0)) {
         NlsPutMsg(STDOUT, PATHPING_MESSAGE_4, (UINT)options.Ttl);
         // printf("[%3lu]  ", (UINT)SendOpts.Ttl);
+        printf("% 3d  ", options.Ttl);
 
         haveReply = FALSE;
 
@@ -674,7 +688,8 @@ int __cdecl pathping(int argc, char ** argv)
 
                 if (status == IP_REQ_TIMED_OUT) {
                     NlsPutMsg(STDOUT, PATHPING_NO_REPLY_TIME);
-                    // printf(".");
+                    //printf(".");
+                    printf("\t*    ");
                     continue;
                 }
 
@@ -774,6 +789,7 @@ int __cdecl pathping(int argc, char ** argv)
 
 loop_end:
     NlsPutMsg(STDOUT, PATHPING_COMPUTING, options.Ttl * g_ulInterval * g_ulNumQueries / 1000);
+    printf("\n正在计算统计信息，已耗时 %d 秒...\n", options.Ttl * g_ulInterval * g_ulNumQueries / 1000);
 
     // Okay, now that we have the path, we want to go back and
     // compute statistics over numQueries queries sent every intvl seconds.
@@ -784,6 +800,7 @@ loop_end:
 
     NlsPutMsg(STDOUT, PATHPING_MESSAGE_8);
     // printf("\nTrace complete.\n");
+    printf("\n跟踪完成。\n");
 
     IcmpCloseHandle(g_hIcmp);
 
