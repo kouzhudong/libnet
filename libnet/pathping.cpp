@@ -753,6 +753,7 @@ int __cdecl pathping(int argc, char ** argv)
                 if (status == IP_REQ_TIMED_OUT) {
                     NlsPutMsg(STDOUT, PATHPING_NO_REPLY_TIME);
                     // printf(".");
+                    printf("\t*    ");
                     continue;
                 }
 
