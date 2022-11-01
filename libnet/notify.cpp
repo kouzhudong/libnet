@@ -69,27 +69,33 @@ VOID NETIOAPI_API_ IpInterfaceChange(_In_ PVOID CallerContext,
 如何触发？使这里被运行呢？
 1.关闭和开启网卡也不行。
 2.改变IP地址也不行。
+
+手动添加一个网络，如：连接手机的网络。可以收到信息。
+手动删除一个网络，如：禁用手机的连接。可以收到信息。
 */
 {
     UNREFERENCED_PARAMETER(CallerContext);
-    UNREFERENCED_PARAMETER(Row);
 
     switch (NotificationType) {
     case MibParameterNotification:
-
+        printf("A parameter was changed, Family:%d.\r\n", Row->Family);
         break;
     case MibAddInstance:
-
+        printf("A new MIB instance was added, Family:%d.\r\n", Row->Family);
         break;
     case MibDeleteInstance:
-
+        printf("An existing MIB instance was deleted, Family:%d.\r\n", Row->Family);
         break;
     case MibInitialNotification:
-
+        printf("MibInitialNotification.\r\n");
+        //此时：Row == NULL;
         break;
     default:
+        printf("NotificationType:%d.\r\n", NotificationType);
         break;
     }
+
+    printf("\r\n");
 }
 
 
@@ -320,7 +326,26 @@ VOID NETIOAPI_API_ UnicastIpAddressChange(_In_ PVOID CallerContext,
 {
     UNREFERENCED_PARAMETER(CallerContext);
     UNREFERENCED_PARAMETER(Row);
-    UNREFERENCED_PARAMETER(NotificationType);
+    
+    switch (NotificationType) {
+    case MibParameterNotification:
+        printf("A parameter was changed.\r\n");
+        break;
+    case MibAddInstance:
+        printf("A new MIB instance was added.\r\n");
+        break;
+    case MibDeleteInstance:
+        printf("An existing MIB instance was deleted.\r\n");
+        break;
+    case MibInitialNotification:
+        printf("MibInitialNotification.\r\n");
+        break;
+    default:
+        printf("NotificationType:%d.\r\n", NotificationType);
+        break;
+    }
+
+    printf("\r\n");
 }
 
 

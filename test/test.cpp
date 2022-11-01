@@ -36,12 +36,12 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //tracert(argc, argv);//单字符函数入口示例。
 
-    pathping(argc, argv);
+    //pathping(argc, argv);
 
     //BYTE MacAddr[6] = {0};
     //GetGatewayMacByIPv4("192.168.5.3", MacAddr);
 
-    //Sessions();
+    RegistersNotifyUnicastIpAddressChange();
 
     //ResolveIpNetEntry2Test("8.8.8.8");
 
