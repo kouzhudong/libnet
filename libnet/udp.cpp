@@ -9,14 +9,14 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumUdpTable()
 /*
-ÕâÐ©±¾µØ¶Ë¿ÚÓ¦¸ÃÈ«ÊÇÕìÌýµÄ£¬µ«Ò²ÓÐ¿ÉÄÜÊÇÁ¬½ÓµÄÍ¨Ñ¶µÄ¡£
-×¢Òâ£ºÓÐÐ©¶Ë¿ÚÊÇÖØ¸´µÄ£¬ËùÒÔÒªÈ¥ÖØ¡£°üÀ¨±¾µØµØÖ·¡£
+è¿™äº›æœ¬åœ°ç«¯å£åº”è¯¥å…¨æ˜¯ä¾¦å¬çš„ï¼Œä½†ä¹Ÿæœ‰å¯èƒ½æ˜¯è¿žæŽ¥çš„é€šè®¯çš„ã€‚
+æ³¨æ„ï¼šæœ‰äº›ç«¯å£æ˜¯é‡å¤çš„ï¼Œæ‰€ä»¥è¦åŽ»é‡ã€‚åŒ…æ‹¬æœ¬åœ°åœ°å€ã€‚
 
-Õâ¸ö½á¹¹ÀïÒ²Ã»ÓÐ½ø³ÌÐÅÏ¢¡£
+è¿™ä¸ªç»“æž„é‡Œä¹Ÿæ²¡æœ‰è¿›ç¨‹ä¿¡æ¯ã€‚
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getudptable
 
-MSDNÃ»ÓÐÀý×Ó¡£
+MSDNæ²¡æœ‰ä¾‹å­ã€‚
 */
 {
     PMIB_UDPTABLE pUdpTable = (MIB_UDPTABLE *)MALLOC(sizeof(MIB_UDPTABLE));
@@ -41,7 +41,7 @@ MSDNÃ»ÓÐÀý×Ó¡£
     // Make a second call to GetUdpTable to get the actual data we require
     if ((dwRetVal = GetUdpTable(pUdpTable, &dwSize, TRUE)) == NO_ERROR) {
 
-        printf("\tUdpV4µÄÕìÌý×ÜÊý:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
+        printf("\tUdpV4çš„ä¾¦å¬æ€»æ•°:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
 
         for (int i = 0; i < (int)pUdpTable->dwNumEntries; i++) {
             char szLocalAddr[128];
@@ -73,14 +73,14 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumUdp6Table()
 /*
-ÕâÐ©±¾µØ¶Ë¿ÚÓ¦¸ÃÈ«ÊÇÕìÌýµÄ£¬µ«Ò²ÓÐ¿ÉÄÜÊÇÁ¬½ÓµÄÍ¨Ñ¶µÄ¡£
-×¢Òâ£ºÓÐÐ©¶Ë¿ÚÊÇÖØ¸´µÄ£¬ËùÒÔÒªÈ¥ÖØ¡£°üÀ¨±¾µØµØÖ·¡£
+è¿™äº›æœ¬åœ°ç«¯å£åº”è¯¥å…¨æ˜¯ä¾¦å¬çš„ï¼Œä½†ä¹Ÿæœ‰å¯èƒ½æ˜¯è¿žæŽ¥çš„é€šè®¯çš„ã€‚
+æ³¨æ„ï¼šæœ‰äº›ç«¯å£æ˜¯é‡å¤çš„ï¼Œæ‰€ä»¥è¦åŽ»é‡ã€‚åŒ…æ‹¬æœ¬åœ°åœ°å€ã€‚
 
-Õâ¸ö½á¹¹ÀïÒ²Ã»ÓÐ½ø³ÌÐÅÏ¢¡£
+è¿™ä¸ªç»“æž„é‡Œä¹Ÿæ²¡æœ‰è¿›ç¨‹ä¿¡æ¯ã€‚
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getudp6table
 
-MSDNÃ»ÓÐÀý×Ó¡£
+MSDNæ²¡æœ‰ä¾‹å­ã€‚
 */
 {
     PMIB_UDP6TABLE  pUdp6Table = (MIB_UDP6TABLE *)MALLOC(sizeof(MIB_UDP6TABLE));
@@ -105,7 +105,7 @@ MSDNÃ»ÓÐÀý×Ó¡£
     // Make a second call to GetUdpTable to get the actual data we require
     if ((dwRetVal = GetUdp6Table(pUdp6Table, &dwSize, TRUE)) == NO_ERROR) {
 
-        printf("\tUdpV6µÄÕìÌý×ÜÊý:Number of entries: %d\n", (int)pUdp6Table->dwNumEntries);
+        printf("\tUdpV6çš„ä¾¦å¬æ€»æ•°:Number of entries: %d\n", (int)pUdp6Table->dwNumEntries);
 
         for (int i = 0; i < (int)pUdp6Table->dwNumEntries; i++) {
             wchar_t ipstringbuffer[46];
@@ -151,9 +151,9 @@ void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
     printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
 
     /*
-    pModulePathÊÇÈ«Â·¾¶£¬µ«²¢·ÇÊÇEXE£¬¶øÓÐ¿ÉÄÜÊÇDLL£¬Õâ¸ö¸ü¾«Ï¸¡£
-    ÆäÊµÍêÈ«¿É¸ù¾ÝdwOwningPid»ñÈ¡EXEµÄÈ«Â·¾¶¡£
-    GetOwnerModuleFromPidAndInfoÓëGetOwnerModuleFromUdpEntryµÄ¹¦ÄÜÀàËÆ¡£
+    pModulePathæ˜¯å…¨è·¯å¾„ï¼Œä½†å¹¶éžæ˜¯EXEï¼Œè€Œæœ‰å¯èƒ½æ˜¯DLLï¼Œè¿™ä¸ªæ›´ç²¾ç»†ã€‚
+    å…¶å®žå®Œå…¨å¯æ ¹æ®dwOwningPidèŽ·å–EXEçš„å…¨è·¯å¾„ã€‚
+    GetOwnerModuleFromPidAndInfoä¸ŽGetOwnerModuleFromUdpEntryçš„åŠŸèƒ½ç±»ä¼¼ã€‚
     */
 
     HeapFree(GetProcessHeap(), 0, ptombi);
@@ -167,7 +167,7 @@ int WINAPI EnumExtendedUdpTable4()
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedudptable
 
-Õâ¸öÊÇ×Ô¼ºÐ´µÄ£¬MSDNÃ»ÓÐÀý×Ó¡£
+è¿™ä¸ªæ˜¯è‡ªå·±å†™çš„ï¼ŒMSDNæ²¡æœ‰ä¾‹å­ã€‚
 */
 {
     PMIB_UDPTABLE_OWNER_MODULE pUdpTable = (PMIB_UDPTABLE_OWNER_MODULE)MALLOC(sizeof(MIB_UDPTABLE_OWNER_MODULE));
@@ -194,7 +194,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET, UDP_TABLE_OWNER_MODULE, 0);
     if (dwRetVal == NO_ERROR) {
 
-        printf("\tUdpV4µÄ×ÜÊý:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
+        printf("\tUdpV4çš„æ€»æ•°:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
         printf("\n");
 
         for (int i = 0; i < (int)pUdpTable->dwNumEntries; i++) {
@@ -250,9 +250,9 @@ void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
     printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
 
     /*
-    pModulePathÊÇÈ«Â·¾¶£¬µ«²¢·ÇÊÇEXE£¬¶øÓÐ¿ÉÄÜÊÇDLL£¬Õâ¸ö¸ü¾«Ï¸¡£
-    ÆäÊµÍêÈ«¿É¸ù¾ÝdwOwningPid»ñÈ¡EXEµÄÈ«Â·¾¶¡£
-    GetOwnerModuleFromPidAndInfoÓëGetOwnerModuleFromUdpEntryµÄ¹¦ÄÜÀàËÆ¡£
+    pModulePathæ˜¯å…¨è·¯å¾„ï¼Œä½†å¹¶éžæ˜¯EXEï¼Œè€Œæœ‰å¯èƒ½æ˜¯DLLï¼Œè¿™ä¸ªæ›´ç²¾ç»†ã€‚
+    å…¶å®žå®Œå…¨å¯æ ¹æ®dwOwningPidèŽ·å–EXEçš„å…¨è·¯å¾„ã€‚
+    GetOwnerModuleFromPidAndInfoä¸ŽGetOwnerModuleFromUdpEntryçš„åŠŸèƒ½ç±»ä¼¼ã€‚
     */
 
     HeapFree(GetProcessHeap(), 0, ptombi);
@@ -266,7 +266,7 @@ int WINAPI EnumExtendedUdpTable6()
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedudptable
 
-Õâ¸öÊÇ×Ô¼ºÐ´µÄ£¬MSDNÃ»ÓÐÀý×Ó¡£
+è¿™ä¸ªæ˜¯è‡ªå·±å†™çš„ï¼ŒMSDNæ²¡æœ‰ä¾‹å­ã€‚
 */
 {
     PMIB_UDP6TABLE_OWNER_MODULE pUdpTable = (PMIB_UDP6TABLE_OWNER_MODULE)MALLOC(sizeof(MIB_UDP6TABLE_OWNER_MODULE));
@@ -292,7 +292,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     // Make a second call to GetUdpTable to get the actual data we require
     dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET6, UDP_TABLE_OWNER_MODULE, 0);
     if (dwRetVal == NO_ERROR) {
-        printf("\tUdpV6µÄ×ÜÊý:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
+        printf("\tUdpV6çš„æ€»æ•°:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
         printf("\n");
 
         for (int i = 0; i < (int)pUdpTable->dwNumEntries; i++) {

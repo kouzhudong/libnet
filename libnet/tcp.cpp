@@ -225,7 +225,7 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumTcp6Table2()
 /*
-Õâ¸öÊÇ×Ô¼ºĞ´µÄ£¬MSDNÃ»ÓĞÀı×Ó¡£
+è¿™ä¸ªæ˜¯è‡ªå·±å†™çš„ï¼ŒMSDNæ²¡æœ‰ä¾‹å­ã€‚
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6table2
 */
@@ -294,7 +294,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
             n++;
         }
 
-        printf("IPV6µÄÕìÌı×ÜÊı:%d\n", n);
+        printf("IPV6çš„ä¾¦å¬æ€»æ•°:%d\n", n);
     } else {
         wprintf(L"\tGetTcp6Table failed with %d\n", dwRetVal);
         FREE(pTcpTable);
@@ -319,7 +319,7 @@ prints some values from the returned data.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpstatistics
 
-ÀàËÆµÄº¯Êı»¹ÓĞ£º
+ç±»ä¼¼çš„å‡½æ•°è¿˜æœ‰ï¼š
 GetTcpStatisticsEx
 GetTcpStatisticsEx2
 */
@@ -444,7 +444,7 @@ void DumpModuleExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_MODULE pTcpTable)
         GetTimeString(pTcpTable->table[i].liCreateTimestamp, TimeString);
         printf("\tTCP[%d] CreateTimestamp: %ls\n", i, TimeString);
 
-        //OwningModuleInfoÀïµÄTCPIP_OWNING_MODULE_SIZE¸öÊı£¬È«¶¼ÊÇ0.
+        //OwningModuleInfoé‡Œçš„TCPIP_OWNING_MODULE_SIZEä¸ªæ•°ï¼Œå…¨éƒ½æ˜¯0.
 
         GetOwnerModuleFromTcp4EntryEx(&pTcpTable->table[i]);
     }
@@ -576,7 +576,7 @@ void DumpPidExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_PID pTcpTable)
 
 void DumpExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass, _In_ PVOID pTcpTable)
 /*
-¹¦ÄÜ£º´òÓ¡¸÷ÖÖÇé¿öÏÂµÄĞÅÏ¢¡£
+åŠŸèƒ½ï¼šæ‰“å°å„ç§æƒ…å†µä¸‹çš„ä¿¡æ¯ã€‚
 
 When the ulAf parameter is set to AF_INET,
 the following table indicates the TCP table type to retrieve in the structure pointed to by the pTcpTable parameter for each possible TableClass value.
@@ -669,11 +669,11 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass)
 /*
-¹¦ÄÜ£º»ñÈ¡¸÷ÀàµÄExtendedTcpTableĞÅÏ¢¡£
+åŠŸèƒ½ï¼šè·å–å„ç±»çš„ExtendedTcpTableä¿¡æ¯ã€‚
 
-²ÎÊı£º
+å‚æ•°ï¼š
 [in] ulAf
-The version of IP used by the TCP endpoints.¿ÉÑ¡µÄÈ¡ÖµÓĞ£ºAF_INETºÍAF_INET6¡£
+The version of IP used by the TCP endpoints.å¯é€‰çš„å–å€¼æœ‰ï¼šAF_INETå’ŒAF_INET6ã€‚
 [in] TableClass
 This parameter can be one of the values from the TCP_TABLE_CLASS enumeration.
 
@@ -681,19 +681,19 @@ The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 
 the TableClass set to TCP_TABLE_BASIC_LISTENER, TCP_TABLE_BASIC_CONNECTIONS,
 or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
 
-µ÷ÓÃÊ¾Àı£º
+è°ƒç”¨ç¤ºä¾‹ï¼š
 EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_PID_ALL);
 ...
-µÈµÈ15ÖÖ×éºÏ¡£
+ç­‰ç­‰15ç§ç»„åˆã€‚
 
-²»Ö§³ÖÒ»ÏÂ3¸öµ÷ÓÃ£º
+ä¸æ”¯æŒä¸€ä¸‹3ä¸ªè°ƒç”¨ï¼š
 EnumExtendedTcpTable(AF_INET6, TCP_TABLE_BASIC_LISTENER);
 EnumExtendedTcpTable(AF_INET6, TCP_TABLE_BASIC_CONNECTIONS);
 EnumExtendedTcpTable(AF_INET6, TCP_TABLE_BASIC_ALL);
 
-ÆäÊµÕâ¿ÉÒÔÉèÖÃÒ»¸ö»Øµ÷º¯Êı¡£
+å…¶å®è¿™å¯ä»¥è®¾ç½®ä¸€ä¸ªå›è°ƒå‡½æ•°ã€‚
 
-×¢ÊÍ£ºĞŞ¸Ä×ÔMSDNµÄGetTcpTable2µÄÀı×Ó¡£
+æ³¨é‡Šï¼šä¿®æ”¹è‡ªMSDNçš„GetTcpTable2çš„ä¾‹å­ã€‚
 
 made in 2016.11.30
 
@@ -718,7 +718,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     }
 
 #pragma prefast( push )
-#pragma prefast( disable: 28020, "±í´ïÊ½¡°*_Param_(2)>=sizeof(MIB_TCPTABLE)¡±¶Ô´Ëµ÷ÓÃÎŞĞ§" )
+#pragma prefast( disable: 28020, "è¡¨è¾¾å¼â€œ*_Param_(2)>=sizeof(MIB_TCPTABLE)â€å¯¹æ­¤è°ƒç”¨æ— æ•ˆ" )
     dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, ulAf, TableClass, 0);
 #pragma prefast( pop )      
     if (dwRetVal == NO_ERROR) {

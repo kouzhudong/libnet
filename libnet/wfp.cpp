@@ -6,8 +6,8 @@
 
 
 /*
-¹¦ÄÜ£º²âÊÔWFPµÄÒ»Ğ©Enumº¯ÊıµÄÓÃ·¨¡£
-      ËäÈ»ÊÇÓ¦ÓÃ³ÌĞò£¬ÎÒÏëÔÚÄÚºËÇı¶¯Ò»ÑùÒ²¿ÉÊµÏÖ¡£
+åŠŸèƒ½ï¼šæµ‹è¯•WFPçš„ä¸€äº›Enumå‡½æ•°çš„ç”¨æ³•ã€‚
+      è™½ç„¶æ˜¯åº”ç”¨ç¨‹åºï¼Œæˆ‘æƒ³åœ¨å†…æ ¸é©±åŠ¨ä¸€æ ·ä¹Ÿå¯å®ç°ã€‚
 
 made by correy
 made at 2016.08.19
@@ -46,7 +46,7 @@ cleanup:
 
 const wchar_t * GUID2M(_In_ GUID * guid)
 /*
-¹¦ÄÜ£º¸ù¾İGUID»ñÈ¡±à³ÌÓïÑÔÓÃµ½µÄºê¶¨Òå¡£
+åŠŸèƒ½ï¼šæ ¹æ®GUIDè·å–ç¼–ç¨‹è¯­è¨€ç”¨åˆ°çš„å®å®šä¹‰ã€‚
 */
 {
     if (GUIDsAreEqual(&FWPM_LAYER_INBOUND_IPPACKET_V4, guid))
@@ -249,7 +249,7 @@ void EnumCallout(HANDLE engineHandle)
         }
 
         if (ppCallouts[calloutIndex]->providerData.size) {
-            printf("calloutKey:%ws.\n", (wchar_t *)ppCallouts[calloutIndex]->providerData.data);//²»ÒÔNULL½áÎ²£¬ÓĞ¿ÉÄÜ´òÓ¡·Ç·¨×Ö·û¡£
+            printf("calloutKey:%ws.\n", (wchar_t *)ppCallouts[calloutIndex]->providerData.data);//ä¸ä»¥NULLç»“å°¾ï¼Œæœ‰å¯èƒ½æ‰“å°éæ³•å­—ç¬¦ã€‚
         }
 
         RtlZeroMemory(GUID, sizeof(GUID));
@@ -418,7 +418,7 @@ Arguments:
     matchedEvents - Array of pointer to the events which are to be printed
     numMatchedEvents - Number of event pointers in the array.
 
-²Î¿¼£¬Õª×Ô£ºMicrosoft SDKs\Windows\v6.0\Samples\NetDs\WFP\DiagEvents
+å‚è€ƒï¼Œæ‘˜è‡ªï¼šMicrosoft SDKs\Windows\v6.0\Samples\NetDs\WFP\DiagEvents
 --*/
 {
     UINT32 num = 0;
@@ -523,7 +523,7 @@ void PRINT_FWP_MATCH_TYPE_STRUCTURE(FWP_MATCH_TYPE pfmt)
 
 void PRINT_FWP_CONDITION_VALUE0_STRUCTURE(FWP_CONDITION_VALUE0 * pfcv)
 /*
-ÆäÊµFWP_CONDITION_VALUE0±ÈFWP_VALUE0¶à¼¸¸öÀàĞÍ¶øÒÑ£¬¶¼ÊÇFWP_DATA_TYPEÃ¶¾ÙÀàĞÍ¡£
+å…¶å®FWP_CONDITION_VALUE0æ¯”FWP_VALUE0å¤šå‡ ä¸ªç±»å‹è€Œå·²ï¼Œéƒ½æ˜¯FWP_DATA_TYPEæšä¸¾ç±»å‹ã€‚
 */
 {
     assert(pfcv);
@@ -687,7 +687,7 @@ void EnumFilter(HANDLE engineHandle)
     FWPM_FILTER0 ** entries;
     UINT32 numEntriesReturned;
 
-    DWORD result = FwpmFilterCreateEnumHandle0(engineHandle, /*&enumTemplate*/ NULL, &enumHandle);//±ØĞëÌîĞ´£¬²»¿ÉÄÚÈİÎª¿Õ£¬»òÕßÌîĞ´µØÖ·NULL¡£
+    DWORD result = FwpmFilterCreateEnumHandle0(engineHandle, /*&enumTemplate*/ NULL, &enumHandle);//å¿…é¡»å¡«å†™ï¼Œä¸å¯å†…å®¹ä¸ºç©ºï¼Œæˆ–è€…å¡«å†™åœ°å€NULLã€‚
     assert(ERROR_SUCCESS == result);
 
     result = FwpmFilterEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
@@ -716,7 +716,7 @@ void EnumFilter(HANDLE engineHandle)
         }
 
         if (entries[calloutIndex]->providerData.size) {
-            printf("calloutKey:%ws.\n", (wchar_t *)entries[calloutIndex]->providerData.data);//²»ÒÔNULL½áÎ²£¬ÓĞ¿ÉÄÜ´òÓ¡·Ç·¨×Ö·û¡£
+            printf("calloutKey:%ws.\n", (wchar_t *)entries[calloutIndex]->providerData.data);//ä¸ä»¥NULLç»“å°¾ï¼Œæœ‰å¯èƒ½æ‰“å°éæ³•å­—ç¬¦ã€‚
         }
 
         RtlZeroMemory(GUID, sizeof(GUID));
@@ -734,7 +734,7 @@ void EnumFilter(HANDLE engineHandle)
         printf("numFilterConditions:%d.\n", entries[calloutIndex]->numFilterConditions);
         for (UINT32 x = 0; x < entries[calloutIndex]->numFilterConditions; x++) {
             RtlZeroMemory(GUID, sizeof(GUID));
-            //n = StringFromGUID2(entries[calloutIndex]->filterCondition->fieldKey, GUID, MAX_PATH);//²»±ä¡£ÊÇÒª±äµÄ¡£
+            //n = StringFromGUID2(entries[calloutIndex]->filterCondition->fieldKey, GUID, MAX_PATH);//ä¸å˜ã€‚æ˜¯è¦å˜çš„ã€‚
             n = StringFromGUID2(entries[calloutIndex]->filterCondition[x].fieldKey, GUID, MAX_PATH);
             assert(n);
             printf("filterCondition->fieldKey:%ws.\n", GUID);
@@ -811,7 +811,7 @@ void EnumLayer(HANDLE engineHandle)
 
         printf("numFields:0x%x.\n", entries[calloutIndex]->numFields);
         for (UINT32 x = 0; x < entries[calloutIndex]->numFields; x++) {
-            //int n = StringFromGUID2(*entries[calloutIndex]->field->fieldKey, GUID, MAX_PATH);//ÖØ¸´¡£
+            //int n = StringFromGUID2(*entries[calloutIndex]->field->fieldKey, GUID, MAX_PATH);//é‡å¤ã€‚
             n = StringFromGUID2(*entries[calloutIndex]->field[x].fieldKey, GUID, MAX_PATH);
             assert(n);
             printf("field->fieldKey:%ws.\n", GUID);
@@ -891,7 +891,7 @@ void EnumProviderContext(HANDLE engineHandle)
     FWPM_PROVIDER_CONTEXT0 ** entries;
     UINT32 numEntriesReturned;
 
-    DWORD result = FwpmProviderContextCreateEnumHandle0(engineHandle, /*&enumTemplate*/ NULL, &enumHandle);//±ØĞëÌîĞ´NULL£¬·ñÔò¼´Ê¹ÌØµ½¾ä±ú£¬ÏÂÃæµÄ»ñÈ¡Êı¾İÎª¿Õ¡£
+    DWORD result = FwpmProviderContextCreateEnumHandle0(engineHandle, /*&enumTemplate*/ NULL, &enumHandle);//å¿…é¡»å¡«å†™NULLï¼Œå¦åˆ™å³ä½¿ç‰¹åˆ°å¥æŸ„ï¼Œä¸‹é¢çš„è·å–æ•°æ®ä¸ºç©ºã€‚
     assert(ERROR_SUCCESS == result);
 
     result = FwpmProviderContextEnum0(engineHandle, enumHandle, INFINITE, &entries, &numEntriesReturned);
@@ -910,7 +910,7 @@ void EnumProviderContext(HANDLE engineHandle)
         printf("displayData.description:%ws.\n", entries[calloutIndex]->displayData.description);
         printf("flags:0x%x.\n", entries[calloutIndex]->flags);
 
-        printf("»¹ÓĞºÜ¶àµÄĞÅÏ¢£¬ÕâÀï¾ÍÔİÊ±²»´òÓ¡ÁË.\n");
+        printf("è¿˜æœ‰å¾ˆå¤šçš„ä¿¡æ¯ï¼Œè¿™é‡Œå°±æš‚æ—¶ä¸æ‰“å°äº†.\n");
 
         printf("\n");
     }
@@ -957,9 +957,9 @@ void EnumSession(HANDLE engineHandle)
 
         printf("txnWaitTimeoutInMSec:0x%x.\n", entries[calloutIndex]->txnWaitTimeoutInMSec);
         printf("processId:0x%x.\n", entries[calloutIndex]->processId);
-        printf("SIDµÄĞÅÏ¢²»´òÓ¡ÁË.\n");
+        printf("SIDçš„ä¿¡æ¯ä¸æ‰“å°äº†.\n");
         printf("username:%ws.\n", entries[calloutIndex]->username);
-        printf("kernelMode:0x%x.\n", entries[calloutIndex]->kernelMode);//0xffff8000£¬ÕâÊÇÉ¶ÒâË¼£¿
+        printf("kernelMode:0x%x.\n", entries[calloutIndex]->kernelMode);//0xffff8000ï¼Œè¿™æ˜¯å•¥æ„æ€ï¼Ÿ
 
         printf("\n");
     }
@@ -1068,30 +1068,30 @@ void EnumWfpInfo(int argc, _TCHAR * argv[])
     assert(ERROR_SUCCESS == result);
 
     if (argc == 2 && lstrcmpi(argv[1], TEXT("Callout")) == 0) {
-        EnumCallout(engineHandle);//ĞÅÏ¢²»ÉÙ¡£
+        EnumCallout(engineHandle);//ä¿¡æ¯ä¸å°‘ã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("NetEvent")) == 0) {
-        EnumNetEvent(engineHandle);//ĞÅÏ¢Ì«¶à¡£
+        EnumNetEvent(engineHandle);//ä¿¡æ¯å¤ªå¤šã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("Filter")) == 0) {
-        EnumFilter(engineHandle);//ĞÅÏ¢ºÜ¶àºÜ¶à¡£
+        EnumFilter(engineHandle);//ä¿¡æ¯å¾ˆå¤šå¾ˆå¤šã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("Layer")) == 0) {
-        EnumLayer(engineHandle);//ĞÅÏ¢²»ÉÙ¡£
+        EnumLayer(engineHandle);//ä¿¡æ¯ä¸å°‘ã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("Provider")) == 0) {
-        EnumProvider(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
+        EnumProvider(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("ProviderContext")) == 0) {
-        EnumProviderContext(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
+        EnumProviderContext(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("Session")) == 0) {
-        EnumSession(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
+        EnumSession(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("SubLayer")) == 0) {
-        EnumSubLayer(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
+        EnumSubLayer(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("all")) == 0) {
-        EnumCallout(engineHandle);//ĞÅÏ¢²»ÉÙ¡£
-        EnumNetEvent(engineHandle);//ĞÅÏ¢Ì«¶à¡£
-        EnumFilter(engineHandle);//ĞÅÏ¢ºÜ¶àºÜ¶à¡£
-        EnumLayer(engineHandle);//ĞÅÏ¢²»ÉÙ¡£
-        EnumProvider(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
-        EnumProviderContext(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
-        EnumSession(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
-        EnumSubLayer(engineHandle);//Õâ¸öĞÅÏ¢²»¶à¡£
+        EnumCallout(engineHandle);//ä¿¡æ¯ä¸å°‘ã€‚
+        EnumNetEvent(engineHandle);//ä¿¡æ¯å¤ªå¤šã€‚
+        EnumFilter(engineHandle);//ä¿¡æ¯å¾ˆå¤šå¾ˆå¤šã€‚
+        EnumLayer(engineHandle);//ä¿¡æ¯ä¸å°‘ã€‚
+        EnumProvider(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
+        EnumProviderContext(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
+        EnumSession(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
+        EnumSubLayer(engineHandle);//è¿™ä¸ªä¿¡æ¯ä¸å¤šã€‚
     } else {
         Usage(argv[0]);
     }

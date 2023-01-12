@@ -40,8 +40,8 @@ Notes:
 #include    "ipexport.h"
 #include    "icmpapi.h"
 #include    "nlstxt.h"
-#include    "pathping.h" //MCÉú³ÉµÄÎÄ¼þ¡£
-#include    "pathpings.h" //±¾ÎÄ¼þ¶ÔÓ¦µÄÍ·ÎÄ¼þ¡£
+#include    "pathping.h" //MCç”Ÿæˆçš„æ–‡ä»¶ã€‚
+#include    "pathpings.h" //æœ¬æ–‡ä»¶å¯¹åº”çš„å¤´æ–‡ä»¶ã€‚
 
 #pragma warning(disable:28159)
 #pragma warning(disable:28183)
@@ -229,7 +229,7 @@ ResolveTarget(
             *TargetAddressLen = (socklen_t)ai->ai_addrlen;
             memcpy(TargetAddress, ai->ai_addr, ai->ai_addrlen);
         #pragma warning(push)
-        #pragma warning(disable:4996)//"printf": ¸ñÊ½ËµÃ÷·ûÖÐµÄÀàÐÍ×Ö¶Î×Ö·û¡°)¡±Î´Öª
+        #pragma warning(disable:4996)//"printf": æ ¼å¼è¯´æ˜Žç¬¦ä¸­çš„ç±»åž‹å­—æ®µå­—ç¬¦â€œ)â€æœªçŸ¥
             strcpy(TargetName, (ai->ai_canonname) ? ai->ai_canonname : TargetString);
         #pragma warning(pop)            
             freeaddrinfo(ai);
@@ -292,7 +292,7 @@ VOID EchoDone(IN PVOID pContext, IN PIO_STATUS_BLOCK Ignored1, IN ULONG Ignored2
 
 void ComputeStatistics(PIP_OPTION_INFORMATION pOptions)
 // now that the hop[] array is filled in, ping each one every g_ulInterval seconds
-// Õâ¸öº¯ÊýÊÇÕæ·ÑÊ±°¡£¡³¬¹ýÁËgetnameinfo¡£
+// è¿™ä¸ªå‡½æ•°æ˜¯çœŸè´¹æ—¶å•Šï¼è¶…è¿‡äº†getnameinfoã€‚
 {
     ULONG h, q;
     ULONG ulHopCount = (ULONG)pOptions->Ttl;
@@ -337,7 +337,7 @@ void ComputeStatistics(PIP_OPTION_INFORMATION pOptions)
 
     // Wait alertably until Done count hits max
     while (g_ulSendsDone < ulHopCount * g_ulNumQueries) {
-        SleepEx(INFINITE, TRUE);//¸Ð¾õ¿¨ÕâÀïÁË£¬g_ulSendsDoneÒ²Ã»ÓÐÔö³¤ÁË¡£
+        SleepEx(INFINITE, TRUE);//æ„Ÿè§‰å¡è¿™é‡Œäº†ï¼Œg_ulSendsDoneä¹Ÿæ²¡æœ‰å¢žé•¿äº†ã€‚
     }
 
     // Compute per-hop info
@@ -352,7 +352,7 @@ void ComputeStatistics(PIP_OPTION_INFORMATION pOptions)
 VOID PrintResults(ULONG ulHopCount)
 /*
 
-ÕâÀïµÄ¸ñÊ½ÓÐ´ýÑéÖ¤¡£
+è¿™é‡Œçš„æ ¼å¼æœ‰å¾…éªŒè¯ã€‚
 */
 {
     ULONG h;
@@ -361,9 +361,9 @@ VOID PrintResults(ULONG ulHopCount)
     // Now output results                            
     NlsPutMsg(STDOUT, PATHPING_STAT_HEADER, GetLastError());
     //printf("            Source to Here   This Node/Link\n");
-    printf("            Ö¸Ïò´Ë´¦µÄÔ´   ´Ë½Úµã/Á´½Ó\n");
+    printf("            æŒ‡å‘æ­¤å¤„çš„æº   æ­¤èŠ‚ç‚¹/é“¾æŽ¥\n");
     //printf("Hop  RTT    Lost/Sent = Pct  Lost/Sent = Pct  Address\n");
-    printf("Ô¾µã  RTT    ÒÑ¶ªÊ§/ÒÑ·¢ËÍ = Pct  ÒÑ¶ªÊ§/ÒÑ·¢ËÍ = Pct  µØÖ·\n");
+    printf("è·ƒç‚¹  RTT    å·²ä¸¢å¤±/å·²å‘é€ = Pct  å·²ä¸¢å¤±/å·²å‘é€ = Pct  åœ°å€\n");
     printf("  0                                           ");
     print_addr((LPSOCKADDR)&g_ssMyAddr, g_slMyAddrLen, g_bDoReverseLookup);
     NlsPutMsg(STDOUT, PATHPING_CR);
@@ -615,8 +615,8 @@ int __cdecl pathping(int argc, char ** argv)
     if (hostname[0]) {
         NlsPutMsg(STDOUT, PATHPING_HEADER1, hostname, literal, maximumHops);
         printf("\r\n");
-        printf("Í¨¹ý×î¶à %d ¸öÔ¾µã¸ú×Ù\r\n", maximumHops);
-        printf("µ½ %s [%s] µÄÂ·ÓÉ:\r\n", hostname, literal);
+        printf("é€šè¿‡æœ€å¤š %d ä¸ªè·ƒç‚¹è·Ÿè¸ª\r\n", maximumHops);
+        printf("åˆ° %s [%s] çš„è·¯ç”±:\r\n", hostname, literal);
     } else {
         NlsPutMsg(STDOUT, PATHPING_HEADER2, literal, maximumHops);
     }
@@ -790,7 +790,7 @@ int __cdecl pathping(int argc, char ** argv)
 
 loop_end:
     NlsPutMsg(STDOUT, PATHPING_COMPUTING, options.Ttl * g_ulInterval * g_ulNumQueries / 1000);
-    printf("\nÕýÔÚ¼ÆËãÍ³¼ÆÐÅÏ¢£¬ÒÑºÄÊ± %d Ãë...\n", options.Ttl * g_ulInterval * g_ulNumQueries / 1000);
+    printf("\næ­£åœ¨è®¡ç®—ç»Ÿè®¡ä¿¡æ¯ï¼Œå·²è€—æ—¶ %d ç§’...\n", options.Ttl * g_ulInterval * g_ulNumQueries / 1000);
 
     // Okay, now that we have the path, we want to go back and
     // compute statistics over numQueries queries sent every intvl seconds.
@@ -801,7 +801,7 @@ loop_end:
 
     NlsPutMsg(STDOUT, PATHPING_MESSAGE_8);
     // printf("\nTrace complete.\n");
-    printf("\n¸ú×ÙÍê³É¡£\n");
+    printf("\nè·Ÿè¸ªå®Œæˆã€‚\n");
 
     IcmpCloseHandle(g_hIcmp);
 

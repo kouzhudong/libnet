@@ -7,8 +7,8 @@
 
 void UserEnum()
 /*
-//�����ܿ����г��������ϵ����е��û����൱��net user�Ĺ��ܣ�������������һЩ��Ϣ��
-//�����޸������Ĳ����Ա��ø������Ϣ��
+//本功能可以列出本电脑上的所有的用户，相当于net user的功能，但还有其他的一些信息。
+//可以修改其他的参数以便获得更多的信息。
 
 //made at 2011.12.07
 */
@@ -113,8 +113,8 @@ int UserEnum(int argc, wchar_t * argv[])
 
 void EnumLocalGroup()
 /*
-//������Ĺ�������ʾ��������ϵ����е��飬�����ڵĳ�Ա��һЩ��Ϣ��
-//���������ʵ��net localgroup�Ĺ��ܡ�
+//本程序的功能是显示本计算机上的所有的组，及其内的成员的一些信息。
+//本程序可以实现net localgroup的功能。
 
 //made at 2011.12.07
 */
@@ -135,7 +135,7 @@ void EnumLocalGroup()
         NetLocalGroupGetMembers(0, info[i].lgrpi1_name, 2, (unsigned char **)&buff, 1024, &read, &total, &resume);
         PLOCALGROUP_MEMBERS_INFO_2 info2 = (PLOCALGROUP_MEMBERS_INFO_2)buff;
         for (unsigned j = 0; j < read; j++) {
-            printf("\t��\\��:%S\n", info2[j].lgrmi2_domainandname);
+            printf("\t域\\名:%S\n", info2[j].lgrmi2_domainandname);
             //printf("\tSID:%d\n", info[i].lgrmi2_sid);
             if (info2[j].lgrmi2_sidusage == SidTypeUser) {
                 printf("\tSIDUSAGE:The account is a user account\n");
@@ -156,7 +156,7 @@ void EnumLocalGroup()
             } else if (info2[j].lgrmi2_sidusage == SidTypeLabel) {
                 printf("\tSIDUSAGE:SidTypeLabel\n");
             } else {
-                printf("\tSIDUSAGE:δ֪\n");
+                printf("\tSIDUSAGE:未知\n");
             }
             printf("\n");
         }
@@ -169,14 +169,14 @@ void EnumLocalGroup()
 
 void EnumShare()
 /*
-//�����ܿ����г��������ϵ����еĹ�����Դ���൱��net share�Ĺ��ܣ���Ȼ����������һЩ��Ϣû���оٳ�����
+//本功能可以列出本电脑上的所有的共享资源，相当于net share的功能，当然还有其他的一些信息没有列举出来。
 //made at 2011.12.08
 */
 {
     PSHARE_INFO_502 p, p1;
     DWORD er = 0, tr = 0, resume = 0;
 
-    printf("������:            ��Դ:                          ע��               \n");
+    printf("共享名:            资源:                          注释               \n");
     printf("---------------------------------------------------------------------\n");
 
     (void)NetShareEnum((LPWSTR)L".", 502, (LPBYTE *)&p, (DWORD)-1, &er, &tr, &resume);
@@ -192,7 +192,7 @@ void EnumShare()
     }
 
     NetApiBufferFree(p1);
-    printf("����ɹ���ɡ�\n\n");
+    printf("命令成功完成。\n\n");
 }
 
 
@@ -200,8 +200,8 @@ void EnumShare(int argc, TCHAR * lpszArgv[])
 /*
 https://docs.microsoft.com/en-us/windows/win32/api/lmshare/nf-lmshare-netshareenum
 
-����ʾ����EnumShare(argc, argv);
-���������һ���㼴�ɣ��磺network.exe  .
+调用示例：EnumShare(argc, argv);
+输入参数是一个点即可，如：network.exe  .
 */
 {
     PSHARE_INFO_502 BufPtr, p;
@@ -255,7 +255,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/lmshare/nf-lmshare-netshareen
 
 void EnumWkstaUser()
 /*
-//�����ܿ����г��Ѿ���¼���������ϵ����е��û�����һ�������ǣ���ɶ���岻̫�����
+//本功能可以列出已经登录到本电脑上的所有的用户。第一个好像不是，是啥具体不太清楚。
 //made at 2011.12.08
 */
 {
@@ -353,7 +353,7 @@ int EnumWkstaUser(int argc, wchar_t * argv[])
 
 
 int EnumSession(int argc, wchar_t * argv[])
-//NetSessionEnum ö�پͲ�д�ˣ��൱�� net session��
+//NetSessionEnum 枚举就不写了，相当于 net session。
 //https://docs.microsoft.com/en-us/windows/win32/api/lmshare/nf-lmshare-netsessionenum
 {
     LPSESSION_INFO_10 pBuf = NULL;
@@ -487,7 +487,7 @@ void EnumConnection(int argc, wchar_t * argv[])
 
 
 int EnumServer(int argc, wchar_t * argv[])
-//NetServerEnum �Ͳ�д�ˣ�����ʹ�� WNetEnumResource��
+//NetServerEnum 就不写了，可以使用 WNetEnumResource。
 //https://docs.microsoft.com/en-us/windows/win32/api/lmserver/nf-lmserver-netserverenum
 {
     LPSERVER_INFO_101 pBuf = NULL;
@@ -726,7 +726,7 @@ void DisplayStruct(int i, LPNETRESOURCE lpnrLocal)
 BOOL WINAPI EnumResource(LPNETRESOURCE lpnr)
 /*
 
-���ô���ʾ����
+调用代码示例：
     LPNETRESOURCE lpnr = NULL;
     if (EnumResource(lpnr) == FALSE) {
         printf("Call to EnumerateFunc failed\n");
@@ -807,7 +807,7 @@ https://docs.microsoft.com/en-us/windows/win32/wnet/enumerating-network-resource
 }
 
 
-//NetScheduleJobEnum������ƣ�����ľͲ�д�ˡ�
+//NetScheduleJobEnum与此类似，更多的就不写了。
 //NetGroupEnum
 //NetAccessEnum 
 //NetWkstaTransportEnum 

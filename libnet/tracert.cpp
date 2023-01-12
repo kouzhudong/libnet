@@ -123,7 +123,7 @@ unsigned NlsPutMsg(unsigned Handle, unsigned usMsgNum, ...)
                                  (LPSTR)&vp,
                                  0,
                                  &arglist)) == 0) {
-        //printf("LastError£º%d", GetLastError());//1813
+        //printf("LastErrorï¼š%d", GetLastError());//1813
         return(0);
     }
 
@@ -134,7 +134,7 @@ unsigned NlsPutMsg(unsigned Handle, unsigned usMsgNum, ...)
     //msglen = _write(Handle, vp, StrLen);
     DWORD NumberOfBytesWritten = 0;
 #pragma warning(push)
-#pragma warning(disable:4312)//¡°ÀàĞÍÇ¿ÖÆ×ª»»¡±: ´Ó¡°unsigned int¡±×ª»»µ½¸ü´óµÄ¡°HANDLE¡±
+#pragma warning(disable:4312)//â€œç±»å‹å¼ºåˆ¶è½¬æ¢â€: ä»â€œunsigned intâ€è½¬æ¢åˆ°æ›´å¤§çš„â€œHANDLEâ€
     msglen = WriteFile((HANDLE)Handle, vp, StrLen, &NumberOfBytesWritten, NULL);
 #pragma warning(pop)    
     LocalFree(vp);
@@ -338,8 +338,8 @@ __declspec(dllexport)
 int WINAPI tracert(int argc, char ** argv)
 /*
 
-¹ØÓÚÊä³öµÄ¸ñÊ½£¬¿ÉÒÔ¸ù¾İmcÎÄ¼ş£¬hÎÄ¼ş£¬ÕâÀïµÄ´òÓ¡¸ñÊ½£¬ÔÚ×ÊÔ´ÀïÖØĞÂ¶¨ÒåÏÂ¡£
-ÕâÀïÖ»¶¨ÒåÁË³£ÓÃµÄÊä³öĞÅÏ¢£¬Òì³£µÄĞÅÏ¢¸ñÊ½£¬¿É²Î¿¼´Ë¶¨Òå¡£
+å…³äºè¾“å‡ºçš„æ ¼å¼ï¼Œå¯ä»¥æ ¹æ®mcæ–‡ä»¶ï¼Œhæ–‡ä»¶ï¼Œè¿™é‡Œçš„æ‰“å°æ ¼å¼ï¼Œåœ¨èµ„æºé‡Œé‡æ–°å®šä¹‰ä¸‹ã€‚
+è¿™é‡Œåªå®šä¹‰äº†å¸¸ç”¨çš„è¾“å‡ºä¿¡æ¯ï¼Œå¼‚å¸¸çš„ä¿¡æ¯æ ¼å¼ï¼Œå¯å‚è€ƒæ­¤å®šä¹‰ã€‚
 */
 {
     SOCKADDR_STORAGE      address, sourceAddress;
@@ -546,8 +546,8 @@ int WINAPI tracert(int argc, char ** argv)
 
     if (hostname[0]) {
         printf("\r\n");
-        printf("Í¨¹ı×î¶à %d ¸öÔ¾µã¸ú×Ù\r\n", maximumHops);
-        printf("µ½ %s [%s] µÄÂ·ÓÉ:\r\n", hostname, literal);
+        printf("é€šè¿‡æœ€å¤š %d ä¸ªè·ƒç‚¹è·Ÿè¸ª\r\n", maximumHops);
+        printf("åˆ° %s [%s] çš„è·¯ç”±:\r\n", hostname, literal);
         printf("\r\n");
         NlsPutMsg(STDOUT, TRACERT_HEADER1, hostname, literal, maximumHops);
     } else {
@@ -582,14 +582,14 @@ int WINAPI tracert(int argc, char ** argv)
                     reply4 = NULL;
 
                     if (status == IP_REQ_TIMED_OUT) {
-                        printf(" %s\t", "<1 ms");//ÇëÇó³¬Ê±¡£ <1 ºÁÃë
+                        printf(" %s\t", "<1 ms");//è¯·æ±‚è¶…æ—¶ã€‚ <1 æ¯«ç§’
                         NlsPutMsg(STDOUT, TRACERT_NO_REPLY_TIME);
                         if (i == 2) {
                             if (haveReply) {
                                 print_ip_addr(reply4Address, doReverseLookup);
                                 NlsPutMsg(STDOUT, TRACERT_CR);
                             } else {
-                                printf("%s\r\n", "ÇëÇó³¬Ê±¡£"); 
+                                printf("%s\r\n", "è¯·æ±‚è¶…æ—¶ã€‚"); 
                                 NlsPutMsg(STDOUT, TRACERT_REQ_TIMED_OUT);
                             }
                         }
@@ -750,7 +750,7 @@ int WINAPI tracert(int argc, char ** argv)
     }
 
 loop_end:
-    printf("\r\n%s\r\n", "¸ú×ÙÍê³É¡£");
+    printf("\r\n%s\r\n", "è·Ÿè¸ªå®Œæˆã€‚");
     NlsPutMsg(STDOUT, TRACERT_MESSAGE_8);
     IcmpCloseHandle(IcmpHandle);
     WSACleanup();
