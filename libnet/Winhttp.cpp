@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Winhttp.h"
 
-#include <Winhttp.h> //Winhttp.hÓëWininet.h²»ÄÜ°üº¬ÔÚÍ¬Ò»¸öÎÄ¼şÖĞ±àÒë£¬ÇÒ½¨Òé²»ÒªÔÚÍ·ÎÄ¼şÀïÒıÓÃ¡£
+#include <Winhttp.h> //Winhttp.hä¸Wininet.hä¸èƒ½åŒ…å«åœ¨åŒä¸€ä¸ªæ–‡ä»¶ä¸­ç¼–è¯‘ï¼Œä¸”å»ºè®®ä¸è¦åœ¨å¤´æ–‡ä»¶é‡Œå¼•ç”¨ã€‚
 #pragma comment(lib, "Winhttp.lib")
 
 
@@ -12,29 +12,29 @@ EXTERN_C
 __declspec(dllexport)
 void WINAPI HttpReadData()
 /*
-ÒÔÇ°½Ó´¥ÍøÂçµÄÊ±ºò,ÈÏÎªÓÃ»§²ãÓÃsocket×ãÒÓ(ÆäÊµ»¹ÓĞ±Èsocket¸üµ×²ãµÄ),±ğµÄ¶¼²»ÓÃ,ÕâÑùÍ£Ö¹ÁË¼¸Äê.
-ºóÀ´·¢ÏÖÓĞÒ»Ğ©²Ù×÷,»¹ÊÇÓÃ¸ß¼¶µÄºÃ.
-Õâ¾ÍÖªµÀÁË.WinINetºÍWinHTTPµÈ.
-ºÃÏñWinHTTPÊÇWinINetµÄ×Ó¼¯(IWinHttpRequestÓÖÊÇWinHTTPµÄ×Ó¼¯),µ«±ÈWinINetĞ§ÂÊ¸ß,»¹¿ÉÒÔÓÃÓÚ·şÎñÆ÷.
-ÒÔÇ°Ò²ÖªµÀµã,µ«Ã»ÓĞ¾ßÌåÉîÈë.
-Ç°¼¸ÌìËãÊÇ¿ªÊ¼ÁË,·ÑÁËÒ»¸ö¶àÔÂµÄÊ±¼ä²Å°ÑÏÂÃæµÄĞ¡ÎÊÌâ¸ã¶¨.
+ä»¥å‰æ¥è§¦ç½‘ç»œçš„æ—¶å€™,è®¤ä¸ºç”¨æˆ·å±‚ç”¨socketè¶³çŸ£(å…¶å®è¿˜æœ‰æ¯”socketæ›´åº•å±‚çš„),åˆ«çš„éƒ½ä¸ç”¨,è¿™æ ·åœæ­¢äº†å‡ å¹´.
+åæ¥å‘ç°æœ‰ä¸€äº›æ“ä½œ,è¿˜æ˜¯ç”¨é«˜çº§çš„å¥½.
+è¿™å°±çŸ¥é“äº†.WinINetå’ŒWinHTTPç­‰.
+å¥½åƒWinHTTPæ˜¯WinINetçš„å­é›†(IWinHttpRequeståˆæ˜¯WinHTTPçš„å­é›†),ä½†æ¯”WinINetæ•ˆç‡é«˜,è¿˜å¯ä»¥ç”¨äºæœåŠ¡å™¨.
+ä»¥å‰ä¹ŸçŸ¥é“ç‚¹,ä½†æ²¡æœ‰å…·ä½“æ·±å…¥.
+å‰å‡ å¤©ç®—æ˜¯å¼€å§‹äº†,è´¹äº†ä¸€ä¸ªå¤šæœˆçš„æ—¶é—´æ‰æŠŠä¸‹é¢çš„å°é—®é¢˜æå®š.
 
-ÏÂÃæµÄ´úÂëÀ´×Ô:
+ä¸‹é¢çš„ä»£ç æ¥è‡ª:
 http://msdn.microsoft.com/en-us/library/windows/desktop/aa384104(v=vs.85).aspx
 https://docs.microsoft.com/zh-cn/windows/win32/api/winhttp/nf-winhttp-winhttpreaddata?redirectedfrom=MSDN
-µÈ.
-²¢¼ÓÒ»Ğ©×¢ÊÍ.Ã»ÓĞ¾«¼ò.
+ç­‰.
+å¹¶åŠ ä¸€äº›æ³¨é‡Š.æ²¡æœ‰ç²¾ç®€.
 
-ÔÙËµÒ»ÏÂ:
-¿´ËÆ¼òµ¥µÄ¼¸¸öº¯Êı,Èç¹û²»Éî¿ÌÀí½â×ÜÊÇ³ö´íµÄ.
-Ô­ÒòÔÚÓÚÊ¾Àı³ÌĞò¿ÉÒÔÔËĞĞ,ĞŞ¸Ä±ğµÄ¾Í²»ĞĞÁË.
+å†è¯´ä¸€ä¸‹:
+çœ‹ä¼¼ç®€å•çš„å‡ ä¸ªå‡½æ•°,å¦‚æœä¸æ·±åˆ»ç†è§£æ€»æ˜¯å‡ºé”™çš„.
+åŸå› åœ¨äºç¤ºä¾‹ç¨‹åºå¯ä»¥è¿è¡Œ,ä¿®æ”¹åˆ«çš„å°±ä¸è¡Œäº†.
 
-×¢Òâ²ÎÊıµÄÉèÖÃ:Èç¶Ë¿Ú,Ğ­ÒéµÈ.Ò»¶¨ÒªÅäºÏ.
+æ³¨æ„å‚æ•°çš„è®¾ç½®:å¦‚ç«¯å£,åè®®ç­‰.ä¸€å®šè¦é…åˆ.
 
-ÏÂÃæµÄ´úÂë¾­¹ı¼òµ¥µÄĞŞ¸Ä,¿ÉÒÔ³É¹¦µÄ·ÃÎÊ:
+ä¸‹é¢çš„ä»£ç ç»è¿‡ç®€å•çš„ä¿®æ”¹,å¯ä»¥æˆåŠŸçš„è®¿é—®:
 www.microsoft.com
 www.baidu.com
-www.google.com.hk ×¢ÊÍ:·ÃÎÊwww.google.com,µÃµ½µÄÊı¾İ²»ÊÇÎÒÃÇÏëÒªµÄ,¿ÉÄÜÓÖ×ªµ½ÁË:www.google.com.hk
+www.google.com.hk æ³¨é‡Š:è®¿é—®www.google.com,å¾—åˆ°çš„æ•°æ®ä¸æ˜¯æˆ‘ä»¬æƒ³è¦çš„,å¯èƒ½åˆè½¬åˆ°äº†:www.google.com.hk
 www.126.com
 */
 {
@@ -54,7 +54,7 @@ www.126.com
         DWORD data;
         dwSize = sizeof(DWORD);
 
-        //ÎÒÕâÌ¨µçÄÔÉÏµÄÔ­Ê¼ÖµÊÇ:60000ms,ÉèÖÃ´óµã,·ÀÖ¹ÒòÎªÕâ¸ö¶ø³öÏÖ´íÎó.
+        //æˆ‘è¿™å°ç”µè„‘ä¸Šçš„åŸå§‹å€¼æ˜¯:60000ms,è®¾ç½®å¤§ç‚¹,é˜²æ­¢å› ä¸ºè¿™ä¸ªè€Œå‡ºç°é”™è¯¯.
         WinHttpSetTimeouts(hSession, 60000000, 60000000, 60000000, 60000000);
 
         // Use WinHttpQueryOption to retrieve internet options.
@@ -66,35 +66,35 @@ www.126.com
 
         // When finished, release the HINTERNET handle.
         // WinHttpCloseHandle(hSession);
-        //ÒÔÉÏÕâ¼¸ĞĞ´úÂëÒ²Õª³­×Ômsdn .
+        //ä»¥ä¸Šè¿™å‡ è¡Œä»£ç ä¹Ÿæ‘˜æŠ„è‡ªmsdn .
 
         hConnect = WinHttpConnect(hSession,
-                                  L"correy.webs.com", //www.microsoft.com www.baidu.com www.google.com.hk Ö§³ÖL"220.181.112.143"¸ñÊ½.²»Òª¼Óhttp://ºÍhttps://
+                                  L"correy.webs.com", //www.microsoft.com www.baidu.com www.google.com.hk æ”¯æŒL"220.181.112.143"æ ¼å¼.ä¸è¦åŠ http://å’Œhttps://
                                   INTERNET_DEFAULT_HTTP_PORT,
-                                  0); //INTERNET_DEFAULT_HTTP_PORT INTERNET_DEFAULT_HTTPS_PORT  //ÉèÖÃ¶Ë¿Ú,×¢ÒâÒªºÍĞ­ÒéÆ¥Åä.
+                                  0); //INTERNET_DEFAULT_HTTP_PORT INTERNET_DEFAULT_HTTPS_PORT  //è®¾ç½®ç«¯å£,æ³¨æ„è¦å’Œåè®®åŒ¹é….
     }
 
     // Create an HTTP request handle.
     if (hConnect)
         hRequest = WinHttpOpenRequest(hConnect,
                                       L"GET",
-                                      NULL,//¿ÉÒÔ¸ÄÎª"POST","HEAD".µÈ.
+                                      NULL,//å¯ä»¥æ”¹ä¸º"POST","HEAD".ç­‰.
                                       NULL, //Pointer to a string that contains the HTTP version. If this parameter is NULL, the function uses HTTP/1.1.
-                                      WINHTTP_NO_REFERER, //»¹¿ÉÒÔĞ´¾ßÌåµÄÏà¶ÔÎ»ÖÃ.Èç¹ûÃ»ÓĞ£¬¿ÉÒÔÉèÖÃÎªWINHTTP_NO_REFERER
+                                      WINHTTP_NO_REFERER, //è¿˜å¯ä»¥å†™å…·ä½“çš„ç›¸å¯¹ä½ç½®.å¦‚æœæ²¡æœ‰ï¼Œå¯ä»¥è®¾ç½®ä¸ºWINHTTP_NO_REFERER
                                       WINHTTP_DEFAULT_ACCEPT_TYPES, //see Media Types defined by IANA at http://www.iana.org/assignments/media-types/.
-                                      WINHTTP_FLAG_REFRESH);//WINHTTP_FLAG_REFRESH  WINHTTP_FLAG_SECURE ÉèÖÃĞ­Òé, ×¢ÒâÒªºÍ¶Ë¿ÚÆ¥Åä.
+                                      WINHTTP_FLAG_REFRESH);//WINHTTP_FLAG_REFRESH  WINHTTP_FLAG_SECURE è®¾ç½®åè®®, æ³¨æ„è¦å’Œç«¯å£åŒ¹é….
 
                                   // Send a request.
     if (hRequest)
-        bResults = WinHttpSendRequest(hRequest,//Õâ¸öºÜ·ÑÊ±¼ä.
+        bResults = WinHttpSendRequest(hRequest,//è¿™ä¸ªå¾ˆè´¹æ—¶é—´.
                                       WINHTTP_NO_ADDITIONAL_HEADERS,
                                       0,
                                       WINHTTP_NO_REQUEST_DATA,
                                       0,
                                       0,
-                                      0); //ÓÃGetLastError·µ»ØµÄ´íÎóÂë,½áºÏº¯ÊıËµÃ÷ÔÚÍ·ÎÄ¼şÀïÃæ²é,msdnÉÏÒ²ÓĞµÄ.
+                                      0); //ç”¨GetLastErrorè¿”å›çš„é”™è¯¯ç ,ç»“åˆå‡½æ•°è¯´æ˜åœ¨å¤´æ–‡ä»¶é‡Œé¢æŸ¥,msdnä¸Šä¹Ÿæœ‰çš„.
 
-    //¾ßÌåµÄ²é¿´ĞÅÏ¢ÊÇ:http://msdn.microsoft.com/en-us/library/windows/desktop/aa383770(v=vs.85).aspx
+    //å…·ä½“çš„æŸ¥çœ‹ä¿¡æ¯æ˜¯:http://msdn.microsoft.com/en-us/library/windows/desktop/aa383770(v=vs.85).aspx
 
     // End the request.
     if (bResults)
@@ -157,10 +157,10 @@ www.126.com
 #import "C:\\Windows\\SysWOW64\\winhttpcom.dll"  no_namespace //OK
 #pragma prefast(pop)
 
-/*¹ØÓÚÕâ¸öÎÄ¼şÓĞÈıÖÖÊµÏÖµÄ°ì·¨£º
-1¡£ÍøÉÏËÑË÷ÏàÓ¦µÄÎÄ¼ş£¬http://www.koders.comÉÏÃæÓĞ¡£
-2¡£µ¼ÈëÏàÓ¦µÄdll,Èç£º#import <winhttp.dll>
-3¡£±àÒëÏàÓ¦µÄidlÎÄ¼ş¡£ÏÈµ¼Èëidl,±àÒë£¬ÔÙµ¼Èë.hÎÄ¼ş¡£
+/*å…³äºè¿™ä¸ªæ–‡ä»¶æœ‰ä¸‰ç§å®ç°çš„åŠæ³•ï¼š
+1ã€‚ç½‘ä¸Šæœç´¢ç›¸åº”çš„æ–‡ä»¶ï¼Œhttp://www.koders.comä¸Šé¢æœ‰ã€‚
+2ã€‚å¯¼å…¥ç›¸åº”çš„dll,å¦‚ï¼š#import <winhttp.dll>
+3ã€‚ç¼–è¯‘ç›¸åº”çš„idlæ–‡ä»¶ã€‚å…ˆå¯¼å…¥idl,ç¼–è¯‘ï¼Œå†å¯¼å…¥.hæ–‡ä»¶ã€‚
 */
 //#include "httprequest.h"
 
@@ -171,16 +171,16 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI IWinHttpRequestSend()
 /*
-±¾ÎÄ¸Ä±à×Ô:
+æœ¬æ–‡æ”¹ç¼–è‡ª:
 http://msdn.microsoft.com/en-us/library/aa384045(VS.85).aspx
 https://docs.microsoft.com/zh-cn/windows/win32/winhttp/iwinhttprequest-send?redirectedfrom=MSDN
 
-¡®vbs´úÂëÈçÏÂ£º
+â€˜vbsä»£ç å¦‚ä¸‹ï¼š
 Set WinHttpReq = CreateObject("WinHttp.WinHttpRequest.5.1")
 WinHttpReq.open "get", "http://correy.webs.com", false
 WinHttpReq.Send
 WScript.Echo WinHttpReq.ResponseText
-'»¹ÓĞPUT£¬post¹¦ÄÜ£¬ÔİÎ´¼ÓÉÏ¡£
+'è¿˜æœ‰PUTï¼ŒpoståŠŸèƒ½ï¼Œæš‚æœªåŠ ä¸Šã€‚
 
 made at 2012.04.16
 */
@@ -214,7 +214,7 @@ made at 2012.04.16
         SysFreeString(bstrUrl);
     }
     if (SUCCEEDED(hr)) {    // Send Request.
-        hr = pIWinHttpRequest->Send(varEmpty);//Õâ¸öºÜ·ÑÊ±¼ä.
+        hr = pIWinHttpRequest->Send(varEmpty);//è¿™ä¸ªå¾ˆè´¹æ—¶é—´.
     }
     if (SUCCEEDED(hr)) {    // Get Response text.
         hr = pIWinHttpRequest->get_ResponseText(&bstrResponse);
@@ -244,7 +244,7 @@ The WinHttpGetDefaultProxyConfiguration function retrieves the default WinHTTP p
 
 https://docs.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpgetdefaultproxyconfiguration
 
-ÔÚ¿ªÆô·­Ç½µÄÇé¿öÏÂ£¬Õâ¸öº¯ÊıµÄ²âÊÔ¾¹È»Êä³öÎª¿Õ¡£
+åœ¨å¼€å¯ç¿»å¢™çš„æƒ…å†µä¸‹ï¼Œè¿™ä¸ªå‡½æ•°çš„æµ‹è¯•ç«Ÿç„¶è¾“å‡ºä¸ºç©ºã€‚
 */
 {
     WINHTTP_PROXY_INFO proxyInfo;
@@ -293,13 +293,13 @@ Use GlobalFree to free the strings.
 
 https://docs.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpgetieproxyconfigforcurrentuser
 
-Êä³öÈçÏÂ£º
+è¾“å‡ºå¦‚ä¸‹ï¼š
 AutoDetect:false.
 AutoConfigUrl:(null).
 Proxy:http=127.0.0.1:19394;https=127.0.0.1:19394;socks=127.0.0.1:19393.
 ProxyBypass:<local>.
 
-¿´À´£¬Õâ¸ö´úÂë»¹ÓĞµãÓÃ´¦£¬²»¹ı£¬Êä³öĞÅÏ¢ĞèÒª½âÎö¡£
+çœ‹æ¥ï¼Œè¿™ä¸ªä»£ç è¿˜æœ‰ç‚¹ç”¨å¤„ï¼Œä¸è¿‡ï¼Œè¾“å‡ºä¿¡æ¯éœ€è¦è§£æã€‚
 */
 {
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG pProxyConfig;
@@ -332,7 +332,7 @@ EXTERN_C
 __declspec(dllexport)
 void WINAPI DetectAutoProxyConfigUrl()
 /*
-¾­²âÊÔ£º´Ë´úÂëÊä³ö´íÎó¡£
+ç»æµ‹è¯•ï¼šæ­¤ä»£ç è¾“å‡ºé”™è¯¯ã€‚
 */
 {
     LPWSTR ppwstrAutoConfigUrl = NULL;
@@ -482,7 +482,7 @@ void WINAPI Sessions()
 /*
 * WinHTTP Sessions Overview
 *
-* ÕâÆäÊµ¾ÍÊÇ´ò¿ªÒ»¸öÍøÒ³¡£
+* è¿™å…¶å®å°±æ˜¯æ‰“å¼€ä¸€ä¸ªç½‘é¡µã€‚
 *
 The following sample code shows how to download a resource with secure transaction semantics.
 The sample code initializes the WinHTTP application programming interface (API), selects a target HTTPS server,

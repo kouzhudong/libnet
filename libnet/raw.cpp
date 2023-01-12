@@ -2,7 +2,7 @@
 #include "raw.h"
 
 
-#pragma warning(disable:4366) //Ò»Ôª¡°&¡±ÔËËã·ûµÄ½á¹û¿ÉÄÜÊÇÎ´¶ÔÆëµÄ
+#pragma warning(disable:4366) //ä¸€å…ƒâ€œ&â€è¿ç®—ç¬¦çš„ç»“æžœå¯èƒ½æ˜¯æœªå¯¹é½çš„
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10,15 +10,15 @@
 
 void InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
 /*
-¹¦ÄÜ£ºÌîÐ´ÒÔÌ«Í·¡£
+åŠŸèƒ½ï¼šå¡«å†™ä»¥å¤ªå¤´ã€‚
 
-²ÎÊý£º
-Type£¬È¡Öµ£¬Èç£ºETHERNET_TYPE_IPV4£¬ETHERNET_TYPE_IPV6£¬ ETHERNET_TYPE_ARPµÈ¡£
+å‚æ•°ï¼š
+Typeï¼Œå–å€¼ï¼Œå¦‚ï¼šETHERNET_TYPE_IPV4ï¼ŒETHERNET_TYPE_IPV6ï¼Œ ETHERNET_TYPE_ARPç­‰ã€‚
 
-×¢ÊÍ£º
-1.ÌîÐ´Ðé¼ÙµÄÄ¿µÄMAC£¬Ò²¿É·¢ËÍ³öÈ¥¡£
-2.Èç¹ûÊÇÏë½ÓÊÕ°ü£¬»¹ÊÇ½¨ÒéÌîÐ´ÕýÈ·µÄÄ¿±êµÄMAC£¨¾ÖÓòÍøµÄ£©.
-3.Õâ¸öMACÐèÒª¼ÆËã£¬ÈçÍø¹ØµÄMAC¡£
+æ³¨é‡Šï¼š
+1.å¡«å†™è™šå‡çš„ç›®çš„MACï¼Œä¹Ÿå¯å‘é€å‡ºåŽ»ã€‚
+2.å¦‚æžœæ˜¯æƒ³æŽ¥æ”¶åŒ…ï¼Œè¿˜æ˜¯å»ºè®®å¡«å†™æ­£ç¡®çš„ç›®æ ‡çš„MACï¼ˆå±€åŸŸç½‘çš„ï¼‰.
+3.è¿™ä¸ªMACéœ€è¦è®¡ç®—ï¼Œå¦‚ç½‘å…³çš„MACã€‚
 */
 {
     eth_hdr->Destination.Byte[0] = DesMac[0];
@@ -41,12 +41,12 @@ Type£¬È¡Öµ£¬Èç£ºETHERNET_TYPE_IPV4£¬ETHERNET_TYPE_IPV6£¬ ETHERNET_TYPE_ARPµÈ¡£
 
 void InitIpv4Header(IN PIN_ADDR SourceAddress,
                     IN PIN_ADDR DestinationAddress,
-                    IN UINT8 Protocol, //È¡Öµ£¬Èç£ºIPPROTO_TCPµÈ¡£
-                    IN UINT16 TotalLength,//ÑÏ¸ñ¼ÆËãÊý¾ÝµÄ´óÐ¡¡£
+                    IN UINT8 Protocol, //å–å€¼ï¼Œå¦‚ï¼šIPPROTO_TCPç­‰ã€‚
+                    IN UINT16 TotalLength,//ä¸¥æ ¼è®¡ç®—æ•°æ®çš„å¤§å°ã€‚
                     OUT PIPV4_HEADER IPv4Header
 )
 /*
-¹¦ÄÜ£º×é×°IPv4Í·¡£
+åŠŸèƒ½ï¼šç»„è£…IPv4å¤´ã€‚
 */
 {
     _ASSERTE(TotalLength >= sizeof(IPV4_HEADER) + sizeof(TCP_HDR));
@@ -69,14 +69,14 @@ void InitIpv4Header(IN PIPV4_HEADER InIPv4Header,
                     OUT PIPV4_HEADER OutIPv4Header
 )
 /*
-¹¦ÄÜ£º°Ñin_ipv4µÄSYN°üÀïµÄipv4ÐÅÏ¢×é×°ÎªbufferµÄÒª·¢ÉúµÄACKµÄipv4¡£
+åŠŸèƒ½ï¼šæŠŠin_ipv4çš„SYNåŒ…é‡Œçš„ipv4ä¿¡æ¯ç»„è£…ä¸ºbufferçš„è¦å‘ç”Ÿçš„ACKçš„ipv4ã€‚
 
-ÓÃÍ¾£ºÆÛÆ­£¨É¨Ãè£©£¬¶ø²»ÊÇÉ¨ÃèºÍ¹¥»÷¡£
+ç”¨é€”ï¼šæ¬ºéª—ï¼ˆæ‰«æï¼‰ï¼Œè€Œä¸æ˜¯æ‰«æå’Œæ”»å‡»ã€‚
 
-²ÎÊý£º
-IsCopy£ºÊÇ¸´ÖÆ»¹ÊÇ»Ø¸´¡£
+å‚æ•°ï¼š
+IsCopyï¼šæ˜¯å¤åˆ¶è¿˜æ˜¯å›žå¤ã€‚
 
-×¢Òâ£ºÈç¹ûÊÇ»Ø¸´µÄ°ü£¬Òª°ÑÔ´ºÍÄ¿µÄ»»Ò»ÏÂ¡£
+æ³¨æ„ï¼šå¦‚æžœæ˜¯å›žå¤çš„åŒ…ï¼Œè¦æŠŠæºå’Œç›®çš„æ¢ä¸€ä¸‹ã€‚
 */
 {
     if (IsCopy) {
@@ -95,20 +95,20 @@ IsCopy£ºÊÇ¸´ÖÆ»¹ÊÇ»Ø¸´¡£
 }
 
 
-void InitTcpHeader(IN UINT16 th_sport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                   IN UINT16 th_dport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                   IN SEQ_NUM th_ack,  //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtonl×ª»»ÏÂ¡£
-                   IN UINT8 th_flags,  //TH_ACK, TH_SYNµÈÖµµÄ×éºÏ¡£
+void InitTcpHeader(IN UINT16 th_sport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                   IN UINT16 th_dport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                   IN SEQ_NUM th_ack,  //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonlè½¬æ¢ä¸‹ã€‚
+                   IN UINT8 th_flags,  //TH_ACK, TH_SYNç­‰å€¼çš„ç»„åˆã€‚
                    IN UINT8 OptLen,
                    OUT PTCP_HDR tcp_hdr
 )
 /*
-¹¦ÄÜ£º×é×°TCPÍ·£¨×Ü¹²Ê®¸ö³ÉÔ±£©¡£
+åŠŸèƒ½ï¼šç»„è£…TCPå¤´ï¼ˆæ€»å…±åä¸ªæˆå‘˜ï¼‰ã€‚
 
-×¢Òâ£º
-1.²»ÖØÒªµÄÖµ£¬Ä¬ÈÏÎª0.
-2.Ä³Ð©ÖµÎª×Ô¼ºÉè¶¨µÄ¹Ì¶¨µÄÖµ¡£
-3.Ð£ÑéºÍÎª0£¬ºóÃæÔÙ¼ÆËã¡£
+æ³¨æ„ï¼š
+1.ä¸é‡è¦çš„å€¼ï¼Œé»˜è®¤ä¸º0.
+2.æŸäº›å€¼ä¸ºè‡ªå·±è®¾å®šçš„å›ºå®šçš„å€¼ã€‚
+3.æ ¡éªŒå’Œä¸º0ï¼ŒåŽé¢å†è®¡ç®—ã€‚
 */
 {
     RtlZeroMemory(tcp_hdr, sizeof(TCP_HDR));
@@ -120,7 +120,7 @@ void InitTcpHeader(IN UINT16 th_sport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
     tcp_hdr->th_ack = th_ack;
 
     UINT8 x = (sizeof(TCP_HDR) + OptLen) / 4;
-    ASSERT(x <= 0xf);//´óÓÚÕâ¸öÊý»á·¢ÉúÒç³ö£¬ÓÐÏë²»µ½µÄ½á¹û¡£    
+    ASSERT(x <= 0xf);//å¤§äºŽè¿™ä¸ªæ•°ä¼šå‘ç”Ÿæº¢å‡ºï¼Œæœ‰æƒ³ä¸åˆ°çš„ç»“æžœã€‚    
     tcp_hdr->th_len = x;
 
     tcp_hdr->th_flags = th_flags;
@@ -132,8 +132,8 @@ void InitTcpHeader(IN UINT16 th_sport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
 }
 
 
-void InitTcpHeaderBySyn(IN UINT16 th_sport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                        IN UINT16 th_dport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
+void InitTcpHeaderBySyn(IN UINT16 th_sport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                        IN UINT16 th_dport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
                         IN UINT8 OptLen,
                         OUT PTCP_HDR tcp_hdr
 )
@@ -146,20 +146,20 @@ void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
 /*
 
 
-ÓÃÍ¾£ºÆÛÆ­£¨É¨Ãè£©£¬¶ø²»ÊÇÉ¨ÃèºÍ¹¥»÷¡£
+ç”¨é€”ï¼šæ¬ºéª—ï¼ˆæ‰«æï¼‰ï¼Œè€Œä¸æ˜¯æ‰«æå’Œæ”»å‡»ã€‚
 */
 {
     if (IsCopy) {
         InitTcpHeader(tcp->th_sport,
                       tcp->th_dport,
-                      tcp->th_seq + 1,//ÊÕµ½µÄºÅ¼ÓÒ»¡£
+                      tcp->th_seq + 1,//æ”¶åˆ°çš„å·åŠ ä¸€ã€‚
                       TH_ACK | TH_SYN,
                       0,
                       tcp_hdr);
     } else {
         InitTcpHeader(tcp->th_dport,
                       tcp->th_sport,
-                      tcp->th_seq + 1,//ÊÕµ½µÄºÅ¼ÓÒ»¡£
+                      tcp->th_seq + 1,//æ”¶åˆ°çš„å·åŠ ä¸€ã€‚
                       TH_ACK | TH_SYN,
                       0,
                       tcp_hdr);
@@ -201,11 +201,11 @@ void InitTcpSp(OUT TCP_OPT_SACK_PERMITTED * sp)
 
 void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
 /*
-¹¦ÄÜ£º¼ÆËã²¢ÉèÖÃtcpµÄÐ£ÑéºÍ¡£
+åŠŸèƒ½ï¼šè®¡ç®—å¹¶è®¾ç½®tcpçš„æ ¡éªŒå’Œã€‚
 
-²ÎÊý£º
-OptLen£¬ÊÇtcpµÄÀ©Õ¹Ñ¡Ïî£¨TCP_OPT£©»òÕß¶îÍâ¸½´øµÄÊý¾Ý£¨ÈçhttpµÄhtmlµÈ)£¬
-        ²»°üÀ¨ETHERNET_HEADER£¬IPV4_HEADER£¬TCP_HDR¡£
+å‚æ•°ï¼š
+OptLenï¼Œæ˜¯tcpçš„æ‰©å±•é€‰é¡¹ï¼ˆTCP_OPTï¼‰æˆ–è€…é¢å¤–é™„å¸¦çš„æ•°æ®ï¼ˆå¦‚httpçš„htmlç­‰)ï¼Œ
+        ä¸åŒ…æ‹¬ETHERNET_HEADERï¼ŒIPV4_HEADERï¼ŒTCP_HDRã€‚
 */
 {
     PRAW_TCP tcp4 = (PRAW_TCP)buffer;
@@ -263,13 +263,13 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE 
 
 EXTERN_C
 __declspec(dllexport)
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac,    //6×Ö½Ú³¤µÄ±¾µØµÄMAC¡£
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,    //6å­—èŠ‚é•¿çš„æœ¬åœ°çš„MACã€‚
                           IN PBYTE DesMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
-                          IN UINT16 th_sport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          IN UINT16 th_dport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          OUT PBYTE buffer    //³¤¶ÈÊÇsizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)¡£
+                          IN UINT16 th_sport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          IN UINT16 th_dport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          OUT PBYTE buffer    //é•¿åº¦æ˜¯sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)ã€‚
 )
 {
     PRAW_TCP tcp4 = (PRAW_TCP)buffer;
@@ -296,12 +296,12 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac,    //6×Ö½Ú³¤µÄ±¾µØµÄMAC¡£
 
 void InitIpv6Header(IN PIN6_ADDR SourceAddress,
                     IN PIN6_ADDR DestinationAddress,
-                    IN UINT8 NextHeader, //È¡Öµ£¬Èç£ºIPPROTO_TCPµÈ¡£
+                    IN UINT8 NextHeader, //å–å€¼ï¼Œå¦‚ï¼šIPPROTO_TCPç­‰ã€‚
                     IN UINT16 OptLen,
                     OUT PIPV6_HEADER IPv6Header
 )
 /*
-¹¦ÄÜ£º×é×°IPv6Ð­ÒéµÄTCPÍ·¡£
+åŠŸèƒ½ï¼šç»„è£…IPv6åè®®çš„TCPå¤´ã€‚
 */
 {
     IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0);// IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
@@ -316,14 +316,14 @@ void InitIpv6Header(IN PIN6_ADDR SourceAddress,
 
 void InitIpv6Header(IN PIPV6_HEADER InIPv6Header, IN bool IsCopy, IN UINT16 OptLen, OUT PIPV6_HEADER OutIPv6Header)
 /*
-¹¦ÄÜ£º°Ñin_ipv6µÄSYN°üÀïµÄipv6ÐÅÏ¢×é×°ÎªbufferµÄÒª·¢ÉúµÄACKµÄipv6¡£
+åŠŸèƒ½ï¼šæŠŠin_ipv6çš„SYNåŒ…é‡Œçš„ipv6ä¿¡æ¯ç»„è£…ä¸ºbufferçš„è¦å‘ç”Ÿçš„ACKçš„ipv6ã€‚
 
-ÓÃÍ¾£ºÆÛÆ­£¨É¨Ãè£©£¬¶ø²»ÊÇÉ¨ÃèºÍ¹¥»÷¡£
+ç”¨é€”ï¼šæ¬ºéª—ï¼ˆæ‰«æï¼‰ï¼Œè€Œä¸æ˜¯æ‰«æå’Œæ”»å‡»ã€‚
 
-²ÎÊý£º
-IsCopy£ºÊÇ¸´ÖÆ»¹ÊÇ»Ø¸´¡£
+å‚æ•°ï¼š
+IsCopyï¼šæ˜¯å¤åˆ¶è¿˜æ˜¯å›žå¤ã€‚
 
-×¢Òâ£ºÈç¹ûÊÇ»Ø¸´µÄ°ü£¬Òª°ÑÔ´ºÍÄ¿µÄ»»Ò»ÏÂ¡£
+æ³¨æ„ï¼šå¦‚æžœæ˜¯å›žå¤çš„åŒ…ï¼Œè¦æŠŠæºå’Œç›®çš„æ¢ä¸€ä¸‹ã€‚
 */
 {
     if (IsCopy) {
@@ -402,9 +402,9 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PBYTE DesMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
-                          IN UINT16 th_sport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          IN UINT16 th_dport, //ÍøÂçÐò¡£Èç¹ûÊÇÖ÷»úÐò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          OUT PBYTE buffer    //³¤¶ÈÊÇsizeof(RAW6_TCP)¡£
+                          IN UINT16 th_sport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          IN UINT16 th_dport, //ç½‘ç»œåºã€‚å¦‚æžœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          OUT PBYTE buffer    //é•¿åº¦æ˜¯sizeof(RAW6_TCP)ã€‚
 )
 {
     PRAW6_TCP tcp6 = (PRAW6_TCP)buffer;

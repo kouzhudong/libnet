@@ -7,7 +7,7 @@
 
 
 //https://msdn.microsoft.com/en-us/library/windows/desktop/ms738518%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
-//其实：IPV4的只需This buffer should be large enough to hold at least 16 characters.
+//鍏跺疄锛欼PV4鐨勫彧闇�This buffer should be large enough to hold at least 16 characters.
 #define MAX_ADDRESS_STRING_LENGTH   64
 
 

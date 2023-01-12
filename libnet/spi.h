@@ -1,5 +1,5 @@
 /*
-´ËÎÄÖ÷ÒªÑİÊ¾£º
+æ­¤æ–‡ä¸»è¦æ¼”ç¤ºï¼š
 WSCEnumProtocols
 WSCEnumProtocols32
 WSCEnumNameSpaceProviders
@@ -11,18 +11,18 @@ WSAEnumNetworkEvents
 WSAEnumProtocols
 WSAEnumNameSpaceProviders
 WSAEnumNameSpaceProvidersEx
-µÈº¯ÊıµÄÓÃ·¨¡£
+ç­‰å‡½æ•°çš„ç”¨æ³•ã€‚
 
-Ò»Ğ©Ãû×Ö½âÊÍ£º
-SPI£ºService Provider Interface
-WOSA£ºWindows Open System Architecture
+ä¸€äº›åå­—è§£é‡Šï¼š
+SPIï¼šService Provider Interface
+WOSAï¼šWindows Open System Architecture
 
-WSA£ºWindows Sockets API, ¼ò¶Ì¼ÇÎªWinsock
-WSP£ºWinsock Service Provider
-WPU£ºWinsock Provider Upcall
-WSC£ºWinSock Configuration
-NSP£ºNameSpace Provider
-LSP£ºLayered Service Provider
+WSAï¼šWindows Sockets API, ç®€çŸ­è®°ä¸ºWinsock
+WSPï¼šWinsock Service Provider
+WPUï¼šWinsock Provider Upcall
+WSCï¼šWinSock Configuration
+NSPï¼šNameSpace Provider
+LSPï¼šLayered Service Provider
 */
 
 

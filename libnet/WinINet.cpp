@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "WinINet.h"
 
-#include <Wininet.h>//Winhttp.hÓëWininet.h²»ÄÜ°üº¬ÔÚÍ¬Ò»¸öÎÄ¼şÖĞ±àÒë£¬ÇÒ½¨Òé²»ÒªÔÚÍ·ÎÄ¼şÀïÒıÓÃ¡£
+#include <Wininet.h>//Winhttp.hä¸Wininet.hä¸èƒ½åŒ…å«åœ¨åŒä¸€ä¸ªæ–‡ä»¶ä¸­ç¼–è¯‘ï¼Œä¸”å»ºè®®ä¸è¦åœ¨å¤´æ–‡ä»¶é‡Œå¼•ç”¨ã€‚
 #pragma comment(lib, "Wininet.lib")
 
 
@@ -10,36 +10,36 @@
 
 int _cdecl GetCookie()
 /*
-»ñÈ¡cookieµÄº¯ÊıÀ§ÈÅÁËÎÒ¼¸¸öĞÇÆÚ£¬ÍøÉÏºÜÉÙÕÒµ½Ê¾Àı¡£
-Î¢ÈíµÄÊ¾ÀıÈÃÈËºÜÄÑÀí½â£¬ºÜ·±Ëö¡£
+è·å–cookieçš„å‡½æ•°å›°æ‰°äº†æˆ‘å‡ ä¸ªæ˜ŸæœŸï¼Œç½‘ä¸Šå¾ˆå°‘æ‰¾åˆ°ç¤ºä¾‹ã€‚
+å¾®è½¯çš„ç¤ºä¾‹è®©äººå¾ˆéš¾ç†è§£ï¼Œå¾ˆç¹çã€‚
 
-×îÖÕ»¹ÊÇ¿¿×Ô¼º´óµ¨µÄÊµÑéÀ´Ö¤Ã÷£¬ÓÃ×Ô¼ºµÄ·½·¨£¬ËùÒÔ£º
+æœ€ç»ˆè¿˜æ˜¯é è‡ªå·±å¤§èƒ†çš„å®éªŒæ¥è¯æ˜ï¼Œç”¨è‡ªå·±çš„æ–¹æ³•ï¼Œæ‰€ä»¥ï¼š
 made by correy
 made at 2012.10.20
 homepage:http://correy.webs.com
-ÒÔÇ°Ò²ĞíÖªµÀÕâ£¬ÈÏÎªĞ¡ÊÂÒ»×®£¬²»Ï÷Ò»¹Ë£¬
-¿ÉÕæÕıÊµÏÖµÄÊ±ºò£¬·¢ÏÖ»¹ÊÇÓĞµãÂé·³¡£
-½Å±¾µÄ¾Í²»ËµÁË¡£ºÜ¼òµ¥¡£
+ä»¥å‰ä¹Ÿè®¸çŸ¥é“è¿™ï¼Œè®¤ä¸ºå°äº‹ä¸€æ¡©ï¼Œä¸å‰Šä¸€é¡¾ï¼Œ
+å¯çœŸæ­£å®ç°çš„æ—¶å€™ï¼Œå‘ç°è¿˜æ˜¯æœ‰ç‚¹éº»çƒ¦ã€‚
+è„šæœ¬çš„å°±ä¸è¯´äº†ã€‚å¾ˆç®€å•ã€‚
 */
 {
     //////////////////////////////////////////////////////////////////////////////////////////////
-    //Õâ¸öÎÒ¾Í²»ÔÙĞ´º¯ÊıÁË£¬º¯ÊıµÄÉùÃ÷¿ÉÒÔ¶¨ÒåÎª£ºbool get_cookie(IN TCHAR wsz_url, OUT TCHAR wsz_cookie);
+    //è¿™ä¸ªæˆ‘å°±ä¸å†å†™å‡½æ•°äº†ï¼Œå‡½æ•°çš„å£°æ˜å¯ä»¥å®šä¹‰ä¸ºï¼šbool get_cookie(IN TCHAR wsz_url, OUT TCHAR wsz_cookie);
 
-    TCHAR szURL[256] = L"http://www.163.com";//×¢Òâ£ºhttp://²»¿ÉÈ´¡£
-    LPTSTR lpszData = 0;//Õâ¸öÒ²¿ÉÒÔÔ¤ÏÈ¶¨Òå´óĞ¡£¬µ«×îºÃÊÇ¶¯Ì¬»ñÈ¡¡£
+    TCHAR szURL[256] = L"http://www.163.com";//æ³¨æ„ï¼šhttp://ä¸å¯å´ã€‚
+    LPTSTR lpszData = 0;//è¿™ä¸ªä¹Ÿå¯ä»¥é¢„å…ˆå®šä¹‰å¤§å°ï¼Œä½†æœ€å¥½æ˜¯åŠ¨æ€è·å–ã€‚
     DWORD dwSize = 0;
 
-    //»ñÈ¡´óĞ¡¡£
+    //è·å–å¤§å°ã€‚
     bool b = InternetGetCookie(szURL, NULL, lpszData, &dwSize);
     if (!dwSize && b == false) {
-        MessageBox(0, L"Ã»ÓĞCookie", szURL, 0);//²¢·Ç¶¼ÓĞ£¬ÓĞµÄÃ»ÓĞ¡£
+        MessageBox(0, L"æ²¡æœ‰Cookie", szURL, 0);//å¹¶ééƒ½æœ‰ï¼Œæœ‰çš„æ²¡æœ‰ã€‚
         return 0;
     }
 
     lpszData = new TCHAR[dwSize];
 
     b = InternetGetCookie(szURL, NULL, lpszData, &dwSize);
-    if (b && dwSize) //´ËÊ±µÄdwSizeµÄÖµÊÇÉÏÃæ»ñÈ¡µÄÒ»°ë¡£
+    if (b && dwSize) //æ­¤æ—¶çš„dwSizeçš„å€¼æ˜¯ä¸Šé¢è·å–çš„ä¸€åŠã€‚
     {
         MessageBox(0, lpszData, szURL, 0);
     }
@@ -47,14 +47,14 @@ homepage:http://correy.webs.com
     delete[]lpszData;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    //Ò»ÏÂÊÇÉèÖÃ»òÕß¸Ä±äCookie,¿ÉÒÔÓĞÁ½ÖÖĞÎÊ½£¬µ«±ØĞëÅä¶ÔÊ¹ÓÃ·½¿É³É¹¦¡£²»ÄÜ»ìºÏÊ¹ÓÃ¡£
-    //Õâ¸öÒ²¿ÉÒÔĞ´Îªº¯Êı£¬ÀïÃæ¶àÒ»¸öÈÕÆÚµÄÉèÖÃ¡£
-    //º¯ÊıÔ­ĞÍ½¨ÒéÎª£ºbool set_cookie(IN TCHAR wsz_url, IN TCHAR wsz_cookie);
+    //ä¸€ä¸‹æ˜¯è®¾ç½®æˆ–è€…æ”¹å˜Cookie,å¯ä»¥æœ‰ä¸¤ç§å½¢å¼ï¼Œä½†å¿…é¡»é…å¯¹ä½¿ç”¨æ–¹å¯æˆåŠŸã€‚ä¸èƒ½æ··åˆä½¿ç”¨ã€‚
+    //è¿™ä¸ªä¹Ÿå¯ä»¥å†™ä¸ºå‡½æ•°ï¼Œé‡Œé¢å¤šä¸€ä¸ªæ—¥æœŸçš„è®¾ç½®ã€‚
+    //å‡½æ•°åŸå‹å»ºè®®ä¸ºï¼šbool set_cookie(IN TCHAR wsz_url, IN TCHAR wsz_cookie);
 
-    b = InternetSetCookie(szURL, NULL, TEXT("TestData = Test"));//Õâ¸ö·½Ê½£¬×îºóÒ»¸ö²ÎÊıÀïÃæ±ØĞëÓĞµÈºÅ¡£
-    b = InternetSetCookie(szURL, NULL, TEXT("TestData = Test; expires = Sat,01-Jan-2015 00:00:00 GMT"));//ÏÔÊ¾ÓÃµÄ¡£
+    b = InternetSetCookie(szURL, NULL, TEXT("TestData = Test"));//è¿™ä¸ªæ–¹å¼ï¼Œæœ€åä¸€ä¸ªå‚æ•°é‡Œé¢å¿…é¡»æœ‰ç­‰å·ã€‚
+    b = InternetSetCookie(szURL, NULL, TEXT("TestData = Test; expires = Sat,01-Jan-2015 00:00:00 GMT"));//æ˜¾ç¤ºç”¨çš„ã€‚
 
-    b = InternetSetCookie(szURL, L"QQ", TEXT("112426112"));  //Õâ¸ö»á×Ô¶¯¼ÓµÈºÅ¡£  
+    b = InternetSetCookie(szURL, L"QQ", TEXT("112426112"));  //è¿™ä¸ªä¼šè‡ªåŠ¨åŠ ç­‰å·ã€‚  
     //b = InternetSetCookie(szURL, NULL, TEXT("QQ = 112426112"));
     b = InternetSetCookie(szURL, NULL, TEXT("QQ = 112426112; expires = Sat,01-Jan-2015 00:00:00 GMT"));
 
@@ -64,25 +64,25 @@ homepage:http://correy.webs.com
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     /*
-    ¹ØÓÚcookieµÄÎ»ÖÃ£¬
+    å…³äºcookieçš„ä½ç½®ï¼Œ
 
-    1.SHGetSpecialFolderPathº¯ÊıµÄCSIDL_COOKIES²ÎÊıÓ¦¸ÃÄÜ»ñÈ¡¡£
-      ÀıÈç£ºÔÚwin 7 32ÀïÃæÊÇ£ºC:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Cookies
-      Õâ¸öCookiesÎÄ¼ş¼ĞÄ¬ÈÏÊÇÒş²ØµÄ¡£
-      ÕâÀïµÄÃû×Ö´øºó×º.txt,µ«Ãû×ÖºÃÏñ¼ÓÃÜÁË¡£
-      ÀïÃæÓĞ¸öLowÄ¿Â¼¡£
+    1.SHGetSpecialFolderPathå‡½æ•°çš„CSIDL_COOKIESå‚æ•°åº”è¯¥èƒ½è·å–ã€‚
+      ä¾‹å¦‚ï¼šåœ¨win 7 32é‡Œé¢æ˜¯ï¼šC:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Cookies
+      è¿™ä¸ªCookiesæ–‡ä»¶å¤¹é»˜è®¤æ˜¯éšè—çš„ã€‚
+      è¿™é‡Œçš„åå­—å¸¦åç¼€.txt,ä½†åå­—å¥½åƒåŠ å¯†äº†ã€‚
+      é‡Œé¢æœ‰ä¸ªLowç›®å½•ã€‚
 
-    2.internetÑ¡Ïî->³£¹æÑ¡Ïî¿¨µÄä¯ÀÀÀúÊ·¼ÇÂ¼µÄÉèÖÃ°´Å¥->internetÁÙÊ±ÎÄ¼şµÄµ±Ç°Î»ÖÃ¡£
-      ÀıÈç£ºÔÚwin 7 32ÀïÃæÊÇ£ºC:\Users\Administrator\AppData\Local\Microsoft\Windows\Temporary Internet Files¡£
-      Õâ¸öÎÄ¼ş¼ĞTemporary Internet Files£¬Ä¬ÈÏÒ³Ê½Òş²ØµÄ¡£
-      ÕâÀïµÄÃû×ÖÀıÈç£ºCookie:administrator@163.com/
-      ÆäÊµÕâÀïµÄÎÄ¼şÖ¸ÏòÉÏÃæ¡£Ò²ĞíÊÇÒòÎªÉÏÃæµÄ²»ºÃÕÒ£¬¼ÓÃÜÁË¡£
+    2.interneté€‰é¡¹->å¸¸è§„é€‰é¡¹å¡çš„æµè§ˆå†å²è®°å½•çš„è®¾ç½®æŒ‰é’®->internetä¸´æ—¶æ–‡ä»¶çš„å½“å‰ä½ç½®ã€‚
+      ä¾‹å¦‚ï¼šåœ¨win 7 32é‡Œé¢æ˜¯ï¼šC:\Users\Administrator\AppData\Local\Microsoft\Windows\Temporary Internet Filesã€‚
+      è¿™ä¸ªæ–‡ä»¶å¤¹Temporary Internet Filesï¼Œé»˜è®¤é¡µå¼éšè—çš„ã€‚
+      è¿™é‡Œçš„åå­—ä¾‹å¦‚ï¼šCookie:administrator@163.com/
+      å…¶å®è¿™é‡Œçš„æ–‡ä»¶æŒ‡å‘ä¸Šé¢ã€‚ä¹Ÿè®¸æ˜¯å› ä¸ºä¸Šé¢çš„ä¸å¥½æ‰¾ï¼ŒåŠ å¯†äº†ã€‚
     */
 
     TCHAR sz_cookie[MAX_PATH] = {0};
     b = SHGetSpecialFolderPath(0, sz_cookie, CSIDL_COOKIES, 0);
     if (b) {
-        MessageBox(0, sz_cookie, L"cookieµÄÄ¿Â¼ÊÇ£º", 0);//»òÕßÖ±½Ó´ò¿ªÄ¿Â¼¡£
+        MessageBox(0, sz_cookie, L"cookieçš„ç›®å½•æ˜¯ï¼š", 0);//æˆ–è€…ç›´æ¥æ‰“å¼€ç›®å½•ã€‚
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

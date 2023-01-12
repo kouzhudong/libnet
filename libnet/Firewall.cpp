@@ -681,7 +681,7 @@ Disabling Windows Firewall
 
 https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-disabling-windows-firewall
 
-¾­²âÊÔOK¡£
+ç»æµ‹è¯•OKã€‚
 
 This example disables Windows Firewall using the Windows Firewall with Advanced Security APIs.
 */
@@ -3096,7 +3096,7 @@ Exercising the Firewall using C++
 The following code example exercises the Windows Firewall profile;
 displays the current profile, turns off the firewall, turns on the firewall, and adds an application.
 
-¹Ø±ÕºÍ¿ªÆô·À»ğÇ½ÓĞĞ§£¬Í¨É±XPºÍwin10/7.
+å…³é—­å’Œå¼€å¯é˜²ç«å¢™æœ‰æ•ˆï¼Œé€šæ€XPå’Œwin10/7.
 
 https://docs.microsoft.com/en-us/previous-versions//aa364726(v=vs.85)?redirectedfrom=MSDN
 */

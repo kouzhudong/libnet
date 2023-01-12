@@ -1,16 +1,16 @@
 /*
-Ô­Ê¼Ì×½Ó×Ö£¬Ò»¸öºÜÓĞÓÃµÄ¶«Î÷£¬
-µ«ÊÇWindows²Ù×÷ÏµÍ³¶ÔËü£¨°üÀ¨TDIºÍWSK£©½øĞĞÁËºÜ¶àµÄÏŞÖÆ£¨³ı·ÇÆÆ½âTCPIP.SYS£©£¬Èç£º
-1.²»Ö§³Ötcp raw sockets.
-2.¶Ôicmp£¬udpµÈraw socketsÓĞÏŞÖÆ£¬Èç£º½ûÖ¹Î±×°£¨ĞŞ¸ÄÔ´µØÖ·£©¡£
-3.¹ÜÀíÔ±È¨ÏŞ¡£
+åŸå§‹å¥—æ¥å­—ï¼Œä¸€ä¸ªå¾ˆæœ‰ç”¨çš„ä¸œè¥¿ï¼Œ
+ä½†æ˜¯Windowsæ“ä½œç³»ç»Ÿå¯¹å®ƒï¼ˆåŒ…æ‹¬TDIå’ŒWSKï¼‰è¿›è¡Œäº†å¾ˆå¤šçš„é™åˆ¶ï¼ˆé™¤éç ´è§£TCPIP.SYSï¼‰ï¼Œå¦‚ï¼š
+1.ä¸æ”¯æŒtcp raw sockets.
+2.å¯¹icmpï¼Œudpç­‰raw socketsæœ‰é™åˆ¶ï¼Œå¦‚ï¼šç¦æ­¢ä¼ªè£…ï¼ˆä¿®æ”¹æºåœ°å€ï¼‰ã€‚
+3.ç®¡ç†å‘˜æƒé™ã€‚
 
-SDKÖĞµÄÀı×ÓÓĞ£º
+SDKä¸­çš„ä¾‹å­æœ‰ï¼š
 1.Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
 2.Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
 3.Windows-classic-samples\Samples\Win7Samples\netds\winsock\rcvall\rcvall.c
 
-ËùÒÔ±¾ÎÄÒ²²»Ğ´raw socketsµÄ¾ßÌåÓÃ·¨£¬¶øÊÇĞ´raw sockets¹ı³ÌÖĞ±Ø²»¿ÉÉÙµÄÊı¾İ/Ğ­ÒéµÄ·â×°/×é×°¡£
+æ‰€ä»¥æœ¬æ–‡ä¹Ÿä¸å†™raw socketsçš„å…·ä½“ç”¨æ³•ï¼Œè€Œæ˜¯å†™raw socketsè¿‡ç¨‹ä¸­å¿…ä¸å¯å°‘çš„æ•°æ®/åè®®çš„å°è£…/ç»„è£…ã€‚
 */
 
 /*
@@ -54,7 +54,7 @@ There are two basic types of such raw sockets:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-Determining if Raw Sockets are Supported£¨È·¶¨ÊÇ·ñÖ§³ÖÔ­Ê¼Ì×½Ó×Ö£©
+Determining if Raw Sockets are Supportedï¼ˆç¡®å®šæ˜¯å¦æ”¯æŒåŸå§‹å¥—æ¥å­—ï¼‰
 
 If a Winsock service provider supports SOCK_RAW sockets for the AF_INET or AF_INET6 address families,
 the socket type of SOCK_RAW should be included in the WSAPROTOCOL_INFO structure returned by WSAEnumProtocols function for one or more of the available transport providers.
@@ -185,17 +185,17 @@ Limitations on Raw Sockets
 
 On Windows 7, Windows Vista, Windows XP with Service Pack 2 (SP2), and Windows XP with Service Pack 3 (SP3),
 the ability to send traffic over raw sockets has been restricted in several ways:
-1.TCP data cannot be sent over raw sockets.(²»Ö§³Ötcp raw socketsµÄÖ¤¾İ)
+1.TCP data cannot be sent over raw sockets.(ä¸æ”¯æŒtcp raw socketsçš„è¯æ®)
 2.UDP datagrams with an invalid source address cannot be sent over raw sockets.
   The IP source address for any outgoing UDP datagram must exist on a network interface or the datagram is dropped.
   This change was made to limit the ability of malicious code to create distributed denial-of-service attacks and
   limits the ability to send spoofed packets (TCP/IP packets with a forged source IP address).
 3.A call to the bind function with a raw socket for the IPPROTO_TCP protocol is not allowed.
-  (²»Ö§³Ötcp raw socketsµÄÖ¤¾İ)
+  (ä¸æ”¯æŒtcp raw socketsçš„è¯æ®)
 
  Note
 The bind function with a raw socket is allowed for other protocols (IPPROTO_IP, IPPROTO_UDP, or IPPROTO_SCTP, for example).
-(²»Ö§³Ötcp raw socketsµÄÖ¤¾İ)
+(ä¸æ”¯æŒtcp raw socketsçš„è¯æ®)
 
 These above restrictions do not apply to Windows Server 2008 R2, Windows Server 2008 ,
 Windows Server 2003, or to versions of the operating system earlier than Windows XP with SP2.
@@ -230,7 +230,7 @@ https://docs.microsoft.com/en-us/windows/win32/winsock/tcp-ip-raw-sockets-2
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /*
-¿É¸´ÖÆ»ò²Î¿¼
+å¯å¤åˆ¶æˆ–å‚è€ƒ
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\rcvall\iphdr.h
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\iphdr.h
 */
@@ -249,37 +249,37 @@ typedef struct tsd_hdr {
 
 
 //typedef __declspec(align(4)) struct _tcp_opt {
-//    TCP_OPT_MSS mss;//4×Ö½Ú¶ÔÆë
-//    TCP_OPT_WS ws;//4×Ö½Ú¶ÔÆë
-//    TCP_OPT_SACK_PERMITTED sp;//4×Ö½Ú¶ÔÆë
+//    TCP_OPT_MSS mss;//4å­—èŠ‚å¯¹é½
+//    TCP_OPT_WS ws;//4å­—èŠ‚å¯¹é½
+//    TCP_OPT_SACK_PERMITTED sp;//4å­—èŠ‚å¯¹é½
 //
-//    //»¹¿É¿¼ÂÇÔÙÌí¼Ó±ğµÄ¡£
+//    //è¿˜å¯è€ƒè™‘å†æ·»åŠ åˆ«çš„ã€‚
 //} TCP_OPT, * PTCP_OPT;
 
 
-//´Ë½á¹¹Îª»Ø¸´ACK¶ø·şÎñ£¬°üº¬Èı¸öÏµÍ³µÄ½á¹¹£¬mss+ws+sp¡£
+//æ­¤ç»“æ„ä¸ºå›å¤ACKè€ŒæœåŠ¡ï¼ŒåŒ…å«ä¸‰ä¸ªç³»ç»Ÿçš„ç»“æ„ï¼Œmss+ws+spã€‚
 typedef struct _tcp_opt {
-    TCP_OPT_MSS mss;//4×Ö½Ú¶ÔÆë
+    TCP_OPT_MSS mss;//4å­—èŠ‚å¯¹é½
     BYTE unuse1;
-    TCP_OPT_WS ws;//4×Ö½Ú¶ÔÆë
+    TCP_OPT_WS ws;//4å­—èŠ‚å¯¹é½
     WORD unuse2;
-    TCP_OPT_SACK_PERMITTED sp;//4×Ö½Ú¶ÔÆë
+    TCP_OPT_SACK_PERMITTED sp;//4å­—èŠ‚å¯¹é½
 } TCP_OPT, * PTCP_OPT;
 
 
 #pragma warning(push)
-#pragma warning(disable : 4200) //Ê¹ÓÃÁË·Ç±ê×¼À©Õ¹: ½á¹¹/ÁªºÏÖĞµÄÁã´óĞ¡Êı×é
+#pragma warning(disable : 4200) //ä½¿ç”¨äº†éæ ‡å‡†æ‰©å±•: ç»“æ„/è”åˆä¸­çš„é›¶å¤§å°æ•°ç»„
 typedef struct raw_tcp {
     ETHERNET_HEADER eth_hdr;
     IPV4_HEADER ip_hdr;
     TCP_HDR tcp_hdr;
 
-    //Î¢ÈíµÄtcp opt µÄ¶ÔÆëÎª4×Ö½Ú£¬ºÍÕâÀïµÄ¶ÔÆë´óĞ¡²»Ò»ÖÂ¡£
-    //²»¹ı£¬²»ÊÇ4×Ö½ÚÒ²ĞĞ£¨²âÊÔÍ¨¹ı£©£¬µ«ÊÇ×îºÃ4×Ö½Ú£¬ÒòÎª£ºTCPµÄth_lenÊÇ4µÄ±¶Êı¡£
+    //å¾®è½¯çš„tcp opt çš„å¯¹é½ä¸º4å­—èŠ‚ï¼Œå’Œè¿™é‡Œçš„å¯¹é½å¤§å°ä¸ä¸€è‡´ã€‚
+    //ä¸è¿‡ï¼Œä¸æ˜¯4å­—èŠ‚ä¹Ÿè¡Œï¼ˆæµ‹è¯•é€šè¿‡ï¼‰ï¼Œä½†æ˜¯æœ€å¥½4å­—èŠ‚ï¼Œå› ä¸ºï¼šTCPçš„th_lenæ˜¯4çš„å€æ•°ã€‚
 
-    //TCP_OPT_MSS mss;//4×Ö½Ú¶ÔÆë
-    //TCP_OPT_WS ws;//4×Ö½Ú¶ÔÆë
-    //TCP_OPT_SACK_PERMITTED sp;//4×Ö½Ú¶ÔÆë
+    //TCP_OPT_MSS mss;//4å­—èŠ‚å¯¹é½
+    //TCP_OPT_WS ws;//4å­—èŠ‚å¯¹é½
+    //TCP_OPT_SACK_PERMITTED sp;//4å­—èŠ‚å¯¹é½
     //BYTE data[0];
 } RAW_TCP, * PRAW_TCP;
 #pragma warning(pop)  
@@ -290,13 +290,13 @@ the TCP and UDP "pseudo-header" for IPv6
 
 https://www.ietf.org/rfc/rfc2460.txt
 https://www.microsoftpressstore.com/articles/article.aspx?p=2225063&seqNum=6
-ÉîÈë½âÎöIPv6(µÚÈı°æ)µÄ4.6ÕÂ½Ú¡£
+æ·±å…¥è§£æIPv6(ç¬¬ä¸‰ç‰ˆ)çš„4.6ç« èŠ‚ã€‚
 
-Òà¿É²Î¿¼£º
+äº¦å¯å‚è€ƒï¼š
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
-µÄComputeUdpPseudoHeaderChecksumV6º¯Êı¡£
-»òÕß\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
-µÄComputeIcmp6PseudoHeaderChecksumº¯Êı¡£
+çš„ComputeUdpPseudoHeaderChecksumV6å‡½æ•°ã€‚
+æˆ–è€…\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
+çš„ComputeIcmp6PseudoHeaderChecksumå‡½æ•°ã€‚
 */
 typedef struct tsd6_hdr {
     IN6_ADDR      saddr;//Source Address
@@ -310,13 +310,13 @@ typedef struct tsd6_hdr {
 
 
 #pragma warning(push)
-#pragma warning(disable : 4200) //Ê¹ÓÃÁË·Ç±ê×¼À©Õ¹: ½á¹¹/ÁªºÏÖĞµÄÁã´óĞ¡Êı×é
+#pragma warning(disable : 4200) //ä½¿ç”¨äº†éæ ‡å‡†æ‰©å±•: ç»“æ„/è”åˆä¸­çš„é›¶å¤§å°æ•°ç»„
 typedef struct raw6_tcp {
     ETHERNET_HEADER eth_hdr;
     IPV6_HEADER ip_hdr;
     TCP_HDR tcp_hdr;
 
-    //tcp opt µÄ¶ÔÆëÎª4×Ö½Ú£¬ºÍÕâÀïµÄ²»Ò»ÖÂ¡£
+    //tcp opt çš„å¯¹é½ä¸º4å­—èŠ‚ï¼Œå’Œè¿™é‡Œçš„ä¸ä¸€è‡´ã€‚
     //BYTE data[0];
 } RAW6_TCP, * PRAW6_TCP;
 #pragma warning(pop)  
@@ -338,13 +338,13 @@ __declspec(dllexport)
 void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer);
 
 __declspec(dllexport)
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac,   //6×Ö½Ú³¤µÄ±¾µØµÄMAC¡£
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,   //6å­—èŠ‚é•¿çš„æœ¬åœ°çš„MACã€‚
                           IN PBYTE DesMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
-                          IN UINT16 th_sport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          IN UINT16 th_dport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          OUT PBYTE buffer   //³¤¶ÈÊÇsizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)¡£
+                          IN UINT16 th_sport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          IN UINT16 th_dport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          OUT PBYTE buffer   //é•¿åº¦æ˜¯sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)ã€‚
 );
 
 __declspec(dllexport)
@@ -352,9 +352,9 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PBYTE DesMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
-                          IN UINT16 th_sport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          IN UINT16 th_dport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          OUT PBYTE buffer    //³¤¶ÈÊÇsizeof(RAW_TCP)¡£
+                          IN UINT16 th_sport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          IN UINT16 th_dport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          OUT PBYTE buffer    //é•¿åº¦æ˜¯sizeof(RAW_TCP)ã€‚
 );
 
 

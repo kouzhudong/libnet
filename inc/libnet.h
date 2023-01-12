@@ -5,7 +5,7 @@
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-//Ò»Ğ©ÏµÍ³µÄÍ·ÎÄ¼şºÍ¿âµÄ°üº¬¡£
+//ä¸€äº›ç³»ç»Ÿçš„å¤´æ–‡ä»¶å’Œåº“çš„åŒ…å«ã€‚
 
 
 //#define _WIN32_WINNT 0x0501
@@ -72,7 +72,7 @@
 #include <ws2spi.h>
 #include <comdef.h>
 
-#include <initguid.h> //×¢ÒâÇ°ºóË³Ğò¡£¾²Ì¬¶¨ÒåUUIDÓÃµÄ£¬·ñÔò£ºerror LNK2001¡£
+#include <initguid.h> //æ³¨æ„å‰åé¡ºåºã€‚é™æ€å®šä¹‰UUIDç”¨çš„ï¼Œå¦åˆ™ï¼šerror LNK2001ã€‚
 #include <usbioctl.h>
 #include <usbiodef.h>
 //#include <usbctypes.h>
@@ -156,7 +156,7 @@ using namespace std;
 
 
 /*
-¿É¸´ÖÆ»ò²Î¿¼
+å¯å¤åˆ¶æˆ–å‚è€ƒ
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\rcvall\iphdr.h
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\iphdr.h
 */
@@ -175,36 +175,36 @@ typedef struct tsd_hdr {
 
 
 //typedef __declspec(align(4)) struct _tcp_opt {
-//    TCP_OPT_MSS mss;//4×Ö½Ú¶ÔÆë
-//    TCP_OPT_WS ws;//4×Ö½Ú¶ÔÆë
-//    TCP_OPT_SACK_PERMITTED sp;//4×Ö½Ú¶ÔÆë
+//    TCP_OPT_MSS mss;//4å­—èŠ‚å¯¹é½
+//    TCP_OPT_WS ws;//4å­—èŠ‚å¯¹é½
+//    TCP_OPT_SACK_PERMITTED sp;//4å­—èŠ‚å¯¹é½
 //
-//    //»¹¿É¿¼ÂÇÔÙÌí¼Ó±ğµÄ¡£
+//    //è¿˜å¯è€ƒè™‘å†æ·»åŠ åˆ«çš„ã€‚
 //} TCP_OPT, * PTCP_OPT;
 
 
 typedef struct _tcp_opt {
-    TCP_OPT_MSS mss;//4×Ö½Ú¶ÔÆë
+    TCP_OPT_MSS mss;//4å­—èŠ‚å¯¹é½
     BYTE unuse1;
-    TCP_OPT_WS ws;//4×Ö½Ú¶ÔÆë
+    TCP_OPT_WS ws;//4å­—èŠ‚å¯¹é½
     WORD unuse2;
-    TCP_OPT_SACK_PERMITTED sp;//4×Ö½Ú¶ÔÆë
+    TCP_OPT_SACK_PERMITTED sp;//4å­—èŠ‚å¯¹é½
 } TCP_OPT, * PTCP_OPT;
 
 
 #pragma warning(push)
-#pragma warning(disable : 4200) //Ê¹ÓÃÁË·Ç±ê×¼À©Õ¹: ½á¹¹/ÁªºÏÖĞµÄÁã´óĞ¡Êı×é
+#pragma warning(disable : 4200) //ä½¿ç”¨äº†éæ ‡å‡†æ‰©å±•: ç»“æ„/è”åˆä¸­çš„é›¶å¤§å°æ•°ç»„
 typedef struct raw_tcp {
     ETHERNET_HEADER eth_hdr;
     IPV4_HEADER ip_hdr;
     TCP_HDR tcp_hdr;
 
-    //Î¢ÈíµÄtcp opt µÄ¶ÔÆëÎª4×Ö½Ú£¬ºÍÕâÀïµÄ¶ÔÆë´óĞ¡²»Ò»ÖÂ¡£
-    //²»¹ı£¬²»ÊÇ4×Ö½ÚÒ²ĞĞ£¨²âÊÔÍ¨¹ı£©£¬µ«ÊÇ×îºÃ4×Ö½Ú£¬ÒòÎª£ºTCPµÄth_lenÊÇ4µÄ±¶Êı¡£
+    //å¾®è½¯çš„tcp opt çš„å¯¹é½ä¸º4å­—èŠ‚ï¼Œå’Œè¿™é‡Œçš„å¯¹é½å¤§å°ä¸ä¸€è‡´ã€‚
+    //ä¸è¿‡ï¼Œä¸æ˜¯4å­—èŠ‚ä¹Ÿè¡Œï¼ˆæµ‹è¯•é€šè¿‡ï¼‰ï¼Œä½†æ˜¯æœ€å¥½4å­—èŠ‚ï¼Œå› ä¸ºï¼šTCPçš„th_lenæ˜¯4çš„å€æ•°ã€‚
 
-    //TCP_OPT_MSS mss;//4×Ö½Ú¶ÔÆë
-    //TCP_OPT_WS ws;//4×Ö½Ú¶ÔÆë
-    //TCP_OPT_SACK_PERMITTED sp;//4×Ö½Ú¶ÔÆë
+    //TCP_OPT_MSS mss;//4å­—èŠ‚å¯¹é½
+    //TCP_OPT_WS ws;//4å­—èŠ‚å¯¹é½
+    //TCP_OPT_SACK_PERMITTED sp;//4å­—èŠ‚å¯¹é½
     //BYTE data[0];
 } RAW_TCP, * PRAW_TCP;
 #pragma warning(pop)  
@@ -215,13 +215,13 @@ the TCP and UDP "pseudo-header" for IPv6
 
 https://www.ietf.org/rfc/rfc2460.txt
 https://www.microsoftpressstore.com/articles/article.aspx?p=2225063&seqNum=6
-ÉîÈë½âÎöIPv6(µÚÈı°æ)µÄ4.6ÕÂ½Ú¡£
+æ·±å…¥è§£æIPv6(ç¬¬ä¸‰ç‰ˆ)çš„4.6ç« èŠ‚ã€‚
 
-Òà¿É²Î¿¼£º
+äº¦å¯å‚è€ƒï¼š
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
-µÄComputeUdpPseudoHeaderChecksumV6º¯Êı¡£
-»òÕß\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
-µÄComputeIcmp6PseudoHeaderChecksumº¯Êı¡£
+çš„ComputeUdpPseudoHeaderChecksumV6å‡½æ•°ã€‚
+æˆ–è€…\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
+çš„ComputeIcmp6PseudoHeaderChecksumå‡½æ•°ã€‚
 */
 typedef struct tsd6_hdr {
     IN6_ADDR      saddr;//Source Address
@@ -235,13 +235,13 @@ typedef struct tsd6_hdr {
 
 
 #pragma warning(push)
-#pragma warning(disable : 4200) //Ê¹ÓÃÁË·Ç±ê×¼À©Õ¹: ½á¹¹/ÁªºÏÖĞµÄÁã´óĞ¡Êı×é
+#pragma warning(disable : 4200) //ä½¿ç”¨äº†éæ ‡å‡†æ‰©å±•: ç»“æ„/è”åˆä¸­çš„é›¶å¤§å°æ•°ç»„
 typedef struct raw6_tcp {
     ETHERNET_HEADER eth_hdr;
     IPV6_HEADER ip_hdr;
     TCP_HDR tcp_hdr;
 
-    //tcp opt µÄ¶ÔÆëÎª4×Ö½Ú£¬ºÍÕâÀïµÄ²»Ò»ÖÂ¡£
+    //tcp opt çš„å¯¹é½ä¸º4å­—èŠ‚ï¼Œå’Œè¿™é‡Œçš„ä¸ä¸€è‡´ã€‚
     //BYTE data[0];
 } RAW6_TCP, * PRAW6_TCP;
 #pragma warning(pop)  
@@ -365,7 +365,7 @@ void WINAPI Sessions();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//TCPÏà¹ØµÄ¡£
+//TCPç›¸å…³çš„ã€‚
 
 
 __declspec(dllimport)
@@ -391,7 +391,7 @@ int WINAPI RunEstats();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//UDPÏà¹ØµÄ¡£
+//UDPç›¸å…³çš„ã€‚
 
 
 __declspec(dllimport)
@@ -442,7 +442,7 @@ int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//RAWÏà¹ØµÄ¡£
+//RAWç›¸å…³çš„ã€‚
 
 
 __declspec(dllimport)
@@ -452,13 +452,13 @@ __declspec(dllimport)
 void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer);
 
 __declspec(dllimport)
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac,   //6×Ö½Ú³¤µÄ±¾µØµÄMAC¡£
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,   //6å­—èŠ‚é•¿çš„æœ¬åœ°çš„MACã€‚
                           IN PBYTE DesMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
-                          IN UINT16 th_sport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          IN UINT16 th_dport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          OUT PBYTE buffer   //³¤¶ÈÊÇsizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)¡£
+                          IN UINT16 th_sport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          IN UINT16 th_dport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          OUT PBYTE buffer   //é•¿åº¦æ˜¯sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)ã€‚
 );
 
 __declspec(dllimport)
@@ -466,9 +466,9 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PBYTE DesMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
-                          IN UINT16 th_sport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          IN UINT16 th_dport,//ÍøÂçĞò¡£Èç¹ûÊÇÖ÷»úĞò£¬ÇëÓÃhtons×ª»»ÏÂ¡£
-                          OUT PBYTE buffer    //³¤¶ÈÊÇsizeof(RAW6_TCP)¡£
+                          IN UINT16 th_sport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          IN UINT16 th_dport,//ç½‘ç»œåºã€‚å¦‚æœæ˜¯ä¸»æœºåºï¼Œè¯·ç”¨htonsè½¬æ¢ä¸‹ã€‚
+                          OUT PBYTE buffer    //é•¿åº¦æ˜¯sizeof(RAW6_TCP)ã€‚
 );
 
 

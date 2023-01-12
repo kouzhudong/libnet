@@ -7,7 +7,7 @@
 
 
 /*
-ÓĞ´ıÊµÏÖµÄº¯ÊıÓĞ£º
+æœ‰å¾…å®ç°çš„å‡½æ•°æœ‰ï¼š
 GetAnycastIpAddressTable
 GetIfStackTable
 GetInvertedIfStackTable
@@ -25,9 +25,9 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumIpAddrTable()
 /*
-interface¨Cto¨CIPv4 address mapping table
+interfaceâ€“toâ€“IPv4 address mapping table
 
-The GetIpAddrTable function retrieves the interface¨Cto¨CIPv4 address mapping table.
+The GetIpAddrTable function retrieves the interfaceâ€“toâ€“IPv4 address mapping table.
 The following example retrieves the IP address table,
 then prints some members of the IP address entries in the table.
 
@@ -86,7 +86,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwBCastAddr;
 
 #pragma warning(push)
-#pragma warning(disable:4476)//"printf": ¸ñÊ½ËµÃ÷·ûÖĞµÄÀàĞÍ×Ö¶Î×Ö·û¡°)¡±Î´Öª
+#pragma warning(disable:4476)//"printf": æ ¼å¼è¯´æ˜ç¬¦ä¸­çš„ç±»å‹å­—æ®µå­—ç¬¦â€œ)â€æœªçŸ¥
         printf("\tBroadCast[%d]:      \t%s (%ld%)\n", i, inet_ntoa(IPAddr), pIPAddrTable->table[i].dwBCastAddr);
 #pragma warning(pop)
 
@@ -120,14 +120,14 @@ int WINAPI EnumIpNetTable()
 /*
 IPv4 to physical address mapping table
 
-´Ë´úÂëÊµÏÖÀàËÆÓÚarp -a¼´arp»º´æ¡£
+æ­¤ä»£ç å®ç°ç±»ä¼¼äºarp -aå³arpç¼“å­˜ã€‚
 
 The GetIpNetTable function retrieves the IPv4 to physical address mapping table.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipnettable
 https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolution-protocol
 
-Õâ¸öÎ¢ÈíÃ»ÓĞÀı×Ó£¬ÊÇ×Ô¼ºĞ´µÄ¡£
+è¿™ä¸ªå¾®è½¯æ²¡æœ‰ä¾‹å­ï¼Œæ˜¯è‡ªå·±å†™çš„ã€‚
 */
 {
     ULONG SizePointer = 0;
@@ -143,7 +143,7 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
     printf("Number of IPv4 table entries: %d\n\n", IpNetTable->dwNumEntries);
 
     for (DWORD i = 0; i < IpNetTable->dwNumEntries; i++) {
-        printf("Index: %02d\t", IpNetTable->table[i].dwIndex);//ÀàËÆÓÚarp -aµÄ½Ó¿Ú¡£
+        printf("Index: %02d\t", IpNetTable->table[i].dwIndex);//ç±»ä¼¼äºarp -açš„æ¥å£ã€‚
 
         in_addr in;
         in.S_un.S_addr = IpNetTable->table[i].dwAddr;
@@ -170,11 +170,11 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family)
 /*
-¹¦ÄÜ£ºÃ¶¾ÙIPv4µÄÂ·ÓÉ±í»ò£¨ºÍ£©IPv6µÄÁÚ¾Ó±í¡£
+åŠŸèƒ½ï¼šæšä¸¾IPv4çš„è·¯ç”±è¡¨æˆ–ï¼ˆå’Œï¼‰IPv6çš„é‚»å±…è¡¨ã€‚
 
-¿´À´ÍøÂç±í£¨NetTable£©°üº¬IPv4µÄÂ·ÓÉ±í£¨route table£©ºÍIPv6µÄÁÚ¾Ó±í£¨neighbor table£©¡£
+çœ‹æ¥ç½‘ç»œè¡¨ï¼ˆNetTableï¼‰åŒ…å«IPv4çš„è·¯ç”±è¡¨ï¼ˆroute tableï¼‰å’ŒIPv6çš„é‚»å±…è¡¨ï¼ˆneighbor tableï¼‰ã€‚
 
-Parameters£º
+Parametersï¼š
 [in] Family
 The values currently supported are AF_INET, AF_INET6, and AF_UNSPEC.
 
@@ -244,7 +244,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
                pipTable->Table[i].ReachabilityTime.LastReachable,
                pipTable->Table[i].ReachabilityTime.LastUnreachable);
 
-        status = ResolveIpNetEntry2(&pipTable->Table[i], NULL);//´Ëº¯Êı»á¸Ä±äLastUnreachableµÄÖµ¡£
+        status = ResolveIpNetEntry2(&pipTable->Table[i], NULL);//æ­¤å‡½æ•°ä¼šæ”¹å˜LastUnreachableçš„å€¼ã€‚
     }
 
     FreeMibTable(pipTable);
@@ -276,22 +276,22 @@ EXTERN_C
 __declspec(dllexport)
 void WINAPI ResolveIpNetEntry2Test(const char * ip)
 /*
-¹¦ÄÜ£º»ñÈ¡IPµØÖ·µÄÒ»Ğ©ĞÅÏ¢£¨Ö÷ÒªÊÇMAC£©¡£
+åŠŸèƒ½ï¼šè·å–IPåœ°å€çš„ä¸€äº›ä¿¡æ¯ï¼ˆä¸»è¦æ˜¯MACï¼‰ã€‚
 
-²ÎÊı£º
-ipµÄÈ¡Öµ¿ÉÒÔÊÇ£º
-   1.IPv6 µØÖ· . . . . . . . . . . . . : 240e:473:800:3d64:bdd2:6c5:62e5:c423
-   2.ÁÙÊ± IPv6 µØÖ·. . . . . . . . . . : 240e:473:800:3d64:6957:b225:3185:1f75
-   3.±¾µØÁ´½Ó IPv6 µØÖ·. . . . . . . . : fe80::bdd2:6c5:62e5:c423%10
-   4.IPv4 µØÖ· . . . . . . . . . . . . : 192.168.42.21
-   5.Ä¬ÈÏÍø¹Ø. . . . . . . . . . . . . : fe80::ac72:b0ff:fe68:99b%10
+å‚æ•°ï¼š
+ipçš„å–å€¼å¯ä»¥æ˜¯ï¼š
+   1.IPv6 åœ°å€ . . . . . . . . . . . . : 240e:473:800:3d64:bdd2:6c5:62e5:c423
+   2.ä¸´æ—¶ IPv6 åœ°å€. . . . . . . . . . : 240e:473:800:3d64:6957:b225:3185:1f75
+   3.æœ¬åœ°é“¾æ¥ IPv6 åœ°å€. . . . . . . . : fe80::bdd2:6c5:62e5:c423%10
+   4.IPv4 åœ°å€ . . . . . . . . . . . . : 192.168.42.21
+   5.é»˜è®¤ç½‘å…³. . . . . . . . . . . . . : fe80::ac72:b0ff:fe68:99b%10
                                          192.168.42.129
-µ«²»¿ÉÒÔÊÇ2001:4860:4860::6464ºÍ8.8.8.8Ö®ÀàµÄ»¥ÁªÍøµØÖ·£¨ÀíÂÛÉÏÒ²²»Ó¦¸ÃÊÇ£©£¬·ñÕß·µ»Ø0x43£¬¶øÇÒÊ±¼ä»¹³¬Âı.
+ä½†ä¸å¯ä»¥æ˜¯2001:4860:4860::6464å’Œ8.8.8.8ä¹‹ç±»çš„äº’è”ç½‘åœ°å€ï¼ˆç†è®ºä¸Šä¹Ÿä¸åº”è¯¥æ˜¯ï¼‰ï¼Œå¦è€…è¿”å›0x43ï¼Œè€Œä¸”æ—¶é—´è¿˜è¶…æ…¢.
 
-×¢Òâ£º
-1.¶ÔÓÚIPv6µÄÍø¹ØµØÖ·²»Òª´ø%·ûºÅ¡£·ñÔò£¬·µ»Ø0x57£¨²ÎÊı´íÎó£©£¬¿ÉÄÜÊÇÄ³¸ö³ÉÔ±Ã»ÓĞÉèÖÃ¡£
-2.¶ÔÓÚIPv6µÄÍø¹ØµØÖ·£¬²Ù×÷Ö®Ç°×îºÃÏÈpingÒ»ÏÂ¡£
-3.±¾µØÁ´½Ó IPv6 µØÖ·²»Òª´ø%·ûºÅ¡£·ñÔò£¬·µ»Ø0x57£¨²ÎÊı´íÎó£©£¬¿ÉÄÜÊÇÄ³¸ö³ÉÔ±Ã»ÓĞÉèÖÃ¡£
+æ³¨æ„ï¼š
+1.å¯¹äºIPv6çš„ç½‘å…³åœ°å€ä¸è¦å¸¦%ç¬¦å·ã€‚å¦åˆ™ï¼Œè¿”å›0x57ï¼ˆå‚æ•°é”™è¯¯ï¼‰ï¼Œå¯èƒ½æ˜¯æŸä¸ªæˆå‘˜æ²¡æœ‰è®¾ç½®ã€‚
+2.å¯¹äºIPv6çš„ç½‘å…³åœ°å€ï¼Œæ“ä½œä¹‹å‰æœ€å¥½å…ˆpingä¸€ä¸‹ã€‚
+3.æœ¬åœ°é“¾æ¥ IPv6 åœ°å€ä¸è¦å¸¦%ç¬¦å·ã€‚å¦åˆ™ï¼Œè¿”å›0x57ï¼ˆå‚æ•°é”™è¯¯ï¼‰ï¼Œå¯èƒ½æ˜¯æŸä¸ªæˆå‘˜æ²¡æœ‰è®¾ç½®ã€‚
 
 The ResolveIpNetEntry2 function resolves the physical address for a neighbor IP address entry on the local computer.
 
@@ -344,15 +344,15 @@ EXTERN_C
 __declspec(dllexport)
 bool WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
 /*
-¹¦ÄÜ£º»ñÈ¡Ò»¸ö(±¾µØµÄ)IPv6µØÖ·(Ä¬ÈÏÍø¹Ø)µÄMACµØÖ·¡£
+åŠŸèƒ½ï¼šè·å–ä¸€ä¸ª(æœ¬åœ°çš„)IPv6åœ°å€(é»˜è®¤ç½‘å…³)çš„MACåœ°å€ã€‚
 
-²ÎÊı£º
-1.ipv6ÊÇÒ»¸öÍø¹ØµÄ£¨IPv6£©µØÖ·£¬¼æÈİ%·ûºÅ¡£
-2.macÈ·±£ÈİÄÉ6×Ö½Ú¡£
+å‚æ•°ï¼š
+1.ipv6æ˜¯ä¸€ä¸ªç½‘å…³çš„ï¼ˆIPv6ï¼‰åœ°å€ï¼Œå…¼å®¹%ç¬¦å·ã€‚
+2.macç¡®ä¿å®¹çº³6å­—èŠ‚ã€‚
 
-Ë¼Â·£ºÒ»¸öÍø¹ØµÄMAC×ÜÊÇÔÚIPv6µÄÁÚ¾Ó±í£¨neighbor table£©ÖĞµÄ¡£
+æ€è·¯ï¼šä¸€ä¸ªç½‘å…³çš„MACæ€»æ˜¯åœ¨IPv6çš„é‚»å±…è¡¨ï¼ˆneighbor tableï¼‰ä¸­çš„ã€‚
 
-×¢Òâ£ºÕâ¸ö¹¦ÄÜ²»ÄÜ½Ğ »ñÈ¡Ò»¸öIPv6µØÖ·µÄÄ¬ÈÏÍø¹ØµÄMACµØÖ·£¬ÒòÎª²»ÊÇËùÓĞµÄIPv6¶¼ÓĞMACÔÚÁÚ¾Ó±íÖĞ¡£
+æ³¨æ„ï¼šè¿™ä¸ªåŠŸèƒ½ä¸èƒ½å« è·å–ä¸€ä¸ªIPv6åœ°å€çš„é»˜è®¤ç½‘å…³çš„MACåœ°å€ï¼Œå› ä¸ºä¸æ˜¯æ‰€æœ‰çš„IPv6éƒ½æœ‰MACåœ¨é‚»å±…è¡¨ä¸­ã€‚
 */
 {
     bool ret = false;
@@ -395,7 +395,7 @@ The following example retrieves the IP routing table then prints some fields for
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipforwardtable
 
-³ÌĞò´òÓ¡ÈçÏÂ£¬ÀàËÆroute PRINTµÄÊä³ö£¬µ«ÊÇÃ»ÓĞIPv6µÄ¡£
+ç¨‹åºæ‰“å°å¦‚ä¸‹ï¼Œç±»ä¼¼route PRINTçš„è¾“å‡ºï¼Œä½†æ˜¯æ²¡æœ‰IPv6çš„ã€‚
 */
 {
     // Declare and initialize variables.
@@ -472,7 +472,7 @@ The GetIpForwardTable2 function retrieves the IP route entries on the local comp
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipforwardtable2
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipforwardtable
 
-Î¢ÈíÃ»ÓĞÀı×Ó£¬Õâ¸öÊÇ×Ô¼ºĞ´µÄ¡£
+å¾®è½¯æ²¡æœ‰ä¾‹å­ï¼Œè¿™ä¸ªæ˜¯è‡ªå·±å†™çš„ã€‚
 */
 {
     PMIB_IPFORWARD_TABLE2  pIpForwardTable;
@@ -571,7 +571,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
             printf("\n");
         }
     } else {
-        printf("GetIfTable failed with error:%d \n", dwRetVal);//MSDNÉÙĞ´%ÁË¡£
+        printf("GetIfTable failed with error:%d \n", dwRetVal);//MSDNå°‘å†™%äº†ã€‚
         if (pIfTable != NULL) {
             FREE(pIfTable);
             pIfTable = NULL;
@@ -593,7 +593,7 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumIfTable2()
 /*
-Î¢ÈíÃ»ÓĞÀı×Ó£¬Õâ¸öÊÇ×Ô¼ºĞ´µÄ¡£
+å¾®è½¯æ²¡æœ‰ä¾‹å­ï¼Œè¿™ä¸ªæ˜¯è‡ªå·±å†™çš„ã€‚
 */
 {
     PMIB_IF_TABLE2 table;
@@ -629,7 +629,7 @@ __declspec(dllexport)
 int WINAPI EnumIfTable2Ex()
 /*
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftable2ex
-´ËÎÄÊÇ×Ô¼º±àĞ´£¬Î¢ÈíÃ»ÓĞÀı×Ó¡£
+æ­¤æ–‡æ˜¯è‡ªå·±ç¼–å†™ï¼Œå¾®è½¯æ²¡æœ‰ä¾‹å­ã€‚
 */
 {
     PMIB_IF_TABLE2 table;
@@ -677,7 +677,7 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI GetMacByIPv4Test(int argc, char ** argv)
 /*
-¹¦ÄÜ£º»ñÈ¡(¾ÖÓòÍø£¬²»ÄÜÊÇ»¥ÁªÍø)IPv4¶ÔÓ¦µÄMACµØÖ·¡£
+åŠŸèƒ½ï¼šè·å–(å±€åŸŸç½‘ï¼Œä¸èƒ½æ˜¯äº’è”ç½‘)IPv4å¯¹åº”çš„MACåœ°å€ã€‚
 
 The SendARP function sends an Address Resolution Protocol (ARP) request to
 obtain the physical address that corresponds to the specified destination IPv4 address.
@@ -781,9 +781,9 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr)
 /*
-¹¦ÄÜ£º»ñÈ¡(¾ÖÓòÍø£¬²»ÄÜÊÇ»¥ÁªÍø)IPv4¶ÔÓ¦µÄMACµØÖ·¡£
+åŠŸèƒ½ï¼šè·å–(å±€åŸŸç½‘ï¼Œä¸èƒ½æ˜¯äº’è”ç½‘)IPv4å¯¹åº”çš„MACåœ°å€ã€‚
 
-ÓÃ·¨ÊµÀı£º
+ç”¨æ³•å®ä¾‹ï¼š
 BYTE MacAddr[6] = {0};
 GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
 */
@@ -985,23 +985,23 @@ EXTERN_C
 __declspec(dllexport)
 void WINAPI Icmp6Test()
 /*
-¹¦ÄÜ£ºÑİÊ¾Icmp6CreateFile+Icmp6SendEcho2+Icmp6ParseRepliesµÄÓÃ·¨¡£
+åŠŸèƒ½ï¼šæ¼”ç¤ºIcmp6CreateFile+Icmp6SendEcho2+Icmp6ParseRepliesçš„ç”¨æ³•ã€‚
 
-²Î¿¼£º
+å‚è€ƒï¼š
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6sendecho2
 https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parsereplies
 
-¸ü¶à²Î¿¼£º
+æ›´å¤šå‚è€ƒï¼š
 \Win2K3\NT\net\tcpip\commands\pathping\pathping.c
 \Win2K3\NT\net\tcpip\commands\ping\ping.c
 \Win2K3\NT\net\tcpip\commands\tracert\tracert.c
 
-×¢Òâ£ºÒª²âÊÔ»¥ÁªÍø£¬²»ÒªÄãËùÔÚµÄÍøÂçÖ§³ÖIPv6.
+æ³¨æ„ï¼šè¦æµ‹è¯•äº’è”ç½‘ï¼Œä¸è¦ä½ æ‰€åœ¨çš„ç½‘ç»œæ”¯æŒIPv6.
 
-À©Õ¹¹¦ÄÜ£º¸ù¾İIPv6»ñÈ¡MAC£¬ÊµÏÖÀàËÆSendArpµÄÀàËÆ¹¦ÄÜ¡£
-Ë¼Â·£º×é×°·¢ËÍND_NEIGHBOR_SOLICITÀàĞÍµÄnd_neighbor_solicit½á¹¹£¬
-      ½âÎö·µ»ØµÄND_NEIGHBOR_ADVERTÀàĞÍµÄnd_neighbor_advert½á¹¹¡£
+æ‰©å±•åŠŸèƒ½ï¼šæ ¹æ®IPv6è·å–MACï¼Œå®ç°ç±»ä¼¼SendArpçš„ç±»ä¼¼åŠŸèƒ½ã€‚
+æ€è·¯ï¼šç»„è£…å‘é€ND_NEIGHBOR_SOLICITç±»å‹çš„nd_neighbor_solicitç»“æ„ï¼Œ
+      è§£æè¿”å›çš„ND_NEIGHBOR_ADVERTç±»å‹çš„nd_neighbor_advertç»“æ„ã€‚
 */
 {
     HANDLE hIcmpFile = Icmp6CreateFile();
@@ -1014,7 +1014,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     struct sockaddr_in6 SourceAddress = {0};
     InetPtonA(AF_INET6, "fe80::10bb:f0a9:744b:aac2", &SourceAddress.sin6_addr);
 
-    //SourceAddress.sin6_addr = in6addr_any;//Õâ¸ö¸üÍ¨ÓÃ¡£
+    //SourceAddress.sin6_addr = in6addr_any;//è¿™ä¸ªæ›´é€šç”¨ã€‚
     SourceAddress.sin6_family = AF_INET6;
 
     struct sockaddr_in6 DestinationAddress = {0};
@@ -1050,10 +1050,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     The time, in milliseconds, to wait for replies.
     This parameter is only used if the Icmp6SendEcho2 function is called synchronously.
     So this parameter is not used if either the ApcRoutine or Event parameter are not NULL.
-    £¨¹È¸è·­Òë£ºÒò´Ë£¬Èç¹û ApcRoutine »ò Event ²ÎÊı²»Îª NULL£¬Ôò²»Ê¹ÓÃ´Ë²ÎÊı¡££©
-    ·´¹ıÀ´£¬ApcRoutine ºÍ Event ²ÎÊıÎª NULL£¬ÔòÊ¹ÓÃ´Ë²ÎÊı¡£
+    ï¼ˆè°·æ­Œç¿»è¯‘ï¼šå› æ­¤ï¼Œå¦‚æœ ApcRoutine æˆ– Event å‚æ•°ä¸ä¸º NULLï¼Œåˆ™ä¸ä½¿ç”¨æ­¤å‚æ•°ã€‚ï¼‰
+    åè¿‡æ¥ï¼ŒApcRoutine å’Œ Event å‚æ•°ä¸º NULLï¼Œåˆ™ä½¿ç”¨æ­¤å‚æ•°ã€‚
 
-    Õâ¸ö±ØĞëÉèÖÃ£¬²»ÊÇ¿ÉÑ¡µÄ£¬ÇÒ²»ÄÜÎª0£¬Äã¿´ÊÇ_In_£¬·ñÔò£¬·µ»ØERROR_INVALID_PARAMETER¡£
+    è¿™ä¸ªå¿…é¡»è®¾ç½®ï¼Œä¸æ˜¯å¯é€‰çš„ï¼Œä¸”ä¸èƒ½ä¸º0ï¼Œä½ çœ‹æ˜¯_In_ï¼Œå¦åˆ™ï¼Œè¿”å›ERROR_INVALID_PARAMETERã€‚
     */
     DWORD                    Timeout = 1000;
 
@@ -1079,7 +1079,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     }
 
 #pragma prefast( push )
-#pragma prefast( disable: 28020, "±í´ïÊ½¡°_Param_(2)>sizeof(struct icmpv6_echo_reply_lh ICMPV6_ECHO_REPLY)+8¡±¶Ô´Ëµ÷ÓÃÎŞĞ§¡£" )
+#pragma prefast( disable: 28020, "è¡¨è¾¾å¼â€œ_Param_(2)>sizeof(struct icmpv6_echo_reply_lh ICMPV6_ECHO_REPLY)+8â€å¯¹æ­¤è°ƒç”¨æ— æ•ˆã€‚" )
     ret = Icmp6ParseReplies(ReplyBuffer, ReplySize);
 #pragma prefast( pop )     
     if (0 == ret) {

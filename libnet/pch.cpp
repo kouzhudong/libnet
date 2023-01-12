@@ -5,7 +5,7 @@
 
 
 USHORT checksum(USHORT * buffer, int size)
-//Õª×ÔWindows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
+//æ‘˜è‡ªWindows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
 // Description:
 //    This function calculates the 16-bit one's complement sum for the supplied buffer.
 {
@@ -32,7 +32,7 @@ USHORT checksum(USHORT * buffer, int size)
 
 void GetTimeString(LARGE_INTEGER UtcTime, _Out_ LPWSTR TimeString)
 /*
-¹¦ÄÜ£º°ÑUTCÊ±¼ä×ª»»Îª±¾µØÊ±¼äµÄ×Ö·û´®ĞÎÊ½¡£
+åŠŸèƒ½ï¼šæŠŠUTCæ—¶é—´è½¬æ¢ä¸ºæœ¬åœ°æ—¶é—´çš„å­—ç¬¦ä¸²å½¢å¼ã€‚
 */
 {
     FILETIME ft;
@@ -50,7 +50,7 @@ void GetTimeString(LARGE_INTEGER UtcTime, _Out_ LPWSTR TimeString)
 
     //SystemTimeToTzSpecificLocalTime
 
-    //¸ñÊ½£º2016-07-11 17:35:54 
+    //æ ¼å¼ï¼š2016-07-11 17:35:54 
     wsprintfW(TimeString, L"%04d-%02d-%02d %02d:%02d:%02d.\r\n",
               st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 }
@@ -1277,7 +1277,7 @@ void PrintAdapterType(INT Type)
 /*
 
 
-×¢ÊÍ£ºÕâ¸öÊÇ¾«¼ò°æ£¬È«ÃæµÄÓ¦¸ÃÓÃPrintInterfaceType¡£
+æ³¨é‡Šï¼šè¿™ä¸ªæ˜¯ç²¾ç®€ç‰ˆï¼Œå…¨é¢çš„åº”è¯¥ç”¨PrintInterfaceTypeã€‚
 */
 {
     switch (Type) {

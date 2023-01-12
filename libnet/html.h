@@ -1,12 +1,12 @@
 /*
-ÏÔÊ¾Ò»¸öÍøÒ³µÄË¼Â·£º
-1.API£ºMSHTML!ShowHTMLDialog¡£IEÄÚºË£¨Trident£©¡£
-2.COM:IHostDialogHelper->ShowHTMLDialog¡£IEÄÚºË£¨Trident£©¡£
-3.WebView£¬°üÀ¨CppºÍc#µÄÊµÏÖ¡£
-4.Webkit£¬Chromium Embedded Framework (CEF)¡£
-5.GeckoÄÚºË¡£
-6.Î¢ÈíµÄÄÇ¸öØ²ÕÛµÄÇÒ¿ªÔ´µÄÊÊÓÃÓÚedgeµÄÄÚºËÒıÇæ£¨ChakraCore£©¡£
-7.MFC/QTµÈÆäËûµÄ·â×°¡£
+æ˜¾ç¤ºä¸€ä¸ªç½‘é¡µçš„æ€è·¯ï¼š
+1.APIï¼šMSHTML!ShowHTMLDialogã€‚IEå†…æ ¸ï¼ˆTridentï¼‰ã€‚
+2.COM:IHostDialogHelper->ShowHTMLDialogã€‚IEå†…æ ¸ï¼ˆTridentï¼‰ã€‚
+3.WebViewï¼ŒåŒ…æ‹¬Cppå’Œc#çš„å®ç°ã€‚
+4.Webkitï¼ŒChromium Embedded Framework (CEF)ã€‚
+5.Geckoå†…æ ¸ã€‚
+6.å¾®è½¯çš„é‚£ä¸ªå¤­æŠ˜çš„ä¸”å¼€æºçš„é€‚ç”¨äºedgeçš„å†…æ ¸å¼•æ“ï¼ˆChakraCoreï¼‰ã€‚
+7.MFC/QTç­‰å…¶ä»–çš„å°è£…ã€‚
 */
 
 

@@ -2,7 +2,7 @@
 #include "notify.h"
 
 
-#pragma warning(disable:4189) //¾Ö²¿±äÁ¿ÒÑ³õÊ¼»¯µ«²»ÒıÓÃ
+#pragma warning(disable:4189) //å±€éƒ¨å˜é‡å·²åˆå§‹åŒ–ä½†ä¸å¼•ç”¨
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12,11 +12,11 @@ VOID NETIOAPI_API_ NetworkConnectivityHintChange(_In_ PVOID CallerContext,
                                                  _In_ NL_NETWORK_CONNECTIVITY_HINT ConnectivityHint
 )
 /*
-×¢²áµÄ¹ı³ÌÖĞ»á±»µ÷ÓÃ1´Î¡£
+æ³¨å†Œçš„è¿‡ç¨‹ä¸­ä¼šè¢«è°ƒç”¨1æ¬¡ã€‚
 
-ÈçºÎ´¥·¢£¿Ê¹ÕâÀï±»ÔËĞĞÄØ£¿
-1.¹Ø±ÕºÍ¿ªÆôÍø¿¨Ò²²»ĞĞ¡£
-2.¸Ä±äIPµØÖ·Ò²²»ĞĞ¡£
+å¦‚ä½•è§¦å‘ï¼Ÿä½¿è¿™é‡Œè¢«è¿è¡Œå‘¢ï¼Ÿ
+1.å…³é—­å’Œå¼€å¯ç½‘å¡ä¹Ÿä¸è¡Œã€‚
+2.æ”¹å˜IPåœ°å€ä¹Ÿä¸è¡Œã€‚
 */
 {
     UNREFERENCED_PARAMETER(CallerContext);
@@ -31,7 +31,7 @@ void WINAPI RegistersNotifyNetworkConnectivityHintChange()
 Registers an application-defined callback function,
 to be called when the aggregate network connectivity level and cost hints change.
 
-Õâ¸öÒ²Ã»ÓĞ·´×¢²áµÄº¯Êı£¿Ã»ÕÒµ½¡£
+è¿™ä¸ªä¹Ÿæ²¡æœ‰åæ³¨å†Œçš„å‡½æ•°ï¼Ÿæ²¡æ‰¾åˆ°ã€‚
 
 Minimum supported client	Windows 10, version 2004 (10.0; Build 19041)
 Minimum supported server	Windows Server, version 2004 (10.0; Build 19041)
@@ -64,14 +64,14 @@ VOID NETIOAPI_API_ IpInterfaceChange(_In_ PVOID CallerContext,
                                      _In_ MIB_NOTIFICATION_TYPE NotificationType
 )
 /*
-×¢²áµÄ¹ı³ÌÖĞ»á±»µ÷ÓÃ¼¸´Î£¬NotificationType == MibInitialNotification¡£
+æ³¨å†Œçš„è¿‡ç¨‹ä¸­ä¼šè¢«è°ƒç”¨å‡ æ¬¡ï¼ŒNotificationType == MibInitialNotificationã€‚
 
-ÈçºÎ´¥·¢£¿Ê¹ÕâÀï±»ÔËĞĞÄØ£¿
-1.¹Ø±ÕºÍ¿ªÆôÍø¿¨Ò²²»ĞĞ¡£
-2.¸Ä±äIPµØÖ·Ò²²»ĞĞ¡£
+å¦‚ä½•è§¦å‘ï¼Ÿä½¿è¿™é‡Œè¢«è¿è¡Œå‘¢ï¼Ÿ
+1.å…³é—­å’Œå¼€å¯ç½‘å¡ä¹Ÿä¸è¡Œã€‚
+2.æ”¹å˜IPåœ°å€ä¹Ÿä¸è¡Œã€‚
 
-ÊÖ¶¯Ìí¼ÓÒ»¸öÍøÂç£¬Èç£ºÁ¬½ÓÊÖ»úµÄÍøÂç¡£¿ÉÒÔÊÕµ½ĞÅÏ¢¡£
-ÊÖ¶¯É¾³ıÒ»¸öÍøÂç£¬Èç£º½ûÓÃÊÖ»úµÄÁ¬½Ó¡£¿ÉÒÔÊÕµ½ĞÅÏ¢¡£
+æ‰‹åŠ¨æ·»åŠ ä¸€ä¸ªç½‘ç»œï¼Œå¦‚ï¼šè¿æ¥æ‰‹æœºçš„ç½‘ç»œã€‚å¯ä»¥æ”¶åˆ°ä¿¡æ¯ã€‚
+æ‰‹åŠ¨åˆ é™¤ä¸€ä¸ªç½‘ç»œï¼Œå¦‚ï¼šç¦ç”¨æ‰‹æœºçš„è¿æ¥ã€‚å¯ä»¥æ”¶åˆ°ä¿¡æ¯ã€‚
 */
 {
     UNREFERENCED_PARAMETER(CallerContext);
@@ -88,7 +88,7 @@ VOID NETIOAPI_API_ IpInterfaceChange(_In_ PVOID CallerContext,
         break;
     case MibInitialNotification:
         printf("MibInitialNotification.\r\n");
-        //´ËÊ±£ºRow == NULL;
+        //æ­¤æ—¶ï¼šRow == NULL;
         break;
     default:
         printf("NotificationType:%d.\r\n", NotificationType);
@@ -144,9 +144,9 @@ VOID NETIOAPI_API_ RouteChange2(_In_ PVOID CallerContext,
                                 _In_ MIB_NOTIFICATION_TYPE NotificationType
 )
 /*
-×¢²áµÄ¹ı³ÌÖĞ»á±»µ÷ÓÃ¼¸´Î¡£
+æ³¨å†Œçš„è¿‡ç¨‹ä¸­ä¼šè¢«è°ƒç”¨å‡ æ¬¡ã€‚
 
-route  -fÃüÁî»á×ßÕâÀï¡£
+route  -få‘½ä»¤ä¼šèµ°è¿™é‡Œã€‚
 */
 {
     UNREFERENCED_PARAMETER(CallerContext);
@@ -193,7 +193,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyro
     BOOLEAN InitialNotification = TRUE;
 
 #pragma prefast(push)
-#pragma prefast(disable: 6387, "¡°_Param_(3)¡±¿ÉÄÜÊÇ¡°0¡±: Õâ²»·ûºÏº¯Êı¡°NotifyRouteChange2¡±µÄ¹æ·¶")
+#pragma prefast(disable: 6387, "â€œ_Param_(3)â€å¯èƒ½æ˜¯â€œ0â€: è¿™ä¸ç¬¦åˆå‡½æ•°â€œNotifyRouteChange2â€çš„è§„èŒƒ")
     NTSTATUS Status = NotifyRouteChange2(Family,
                                          RouteChange2,
                                          CallerContext,
@@ -245,7 +245,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyst
     PVOID CallerContext = NULL;
 
 #pragma prefast(push)
-#pragma prefast(disable: 6387, "¡°Table¡±¿ÉÄÜÊÇ¡°0¡±: Õâ²»·ûºÏº¯Êı¡°NotifyStableUnicastIpAddressTable¡±µÄ¹æ·¶")
+#pragma prefast(disable: 6387, "â€œTableâ€å¯èƒ½æ˜¯â€œ0â€: è¿™ä¸ç¬¦åˆå‡½æ•°â€œNotifyStableUnicastIpAddressTableâ€çš„è§„èŒƒ")
     NTSTATUS Status = NotifyStableUnicastIpAddressTable(Family,
                                                         Table,
                                                         StableUnicastIpAddressTableCallerCallback,
@@ -268,7 +268,7 @@ VOID NETIOAPI_API_ TeredoPortChange(_In_ PVOID CallerContext,
                                     _Inout_ MIB_NOTIFICATION_TYPE NotificationType
 )
 /*
-×¢²áÊ±£¬ÕâÀï±»µ÷ÓÃÁË¡£
+æ³¨å†Œæ—¶ï¼Œè¿™é‡Œè¢«è°ƒç”¨äº†ã€‚
 */
 {
     UNREFERENCED_PARAMETER(CallerContext);
@@ -298,7 +298,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-notifyte
     BOOLEAN InitialNotification = TRUE;
 
 #pragma prefast(push)
-#pragma prefast(disable: 6387, "¡°CallerContext¡±¿ÉÄÜÊÇ¡°0¡±: Õâ²»·ûºÏº¯Êı¡°NotifyTeredoPortChange¡±µÄ¹æ·¶")
+#pragma prefast(disable: 6387, "â€œCallerContextâ€å¯èƒ½æ˜¯â€œ0â€: è¿™ä¸ç¬¦åˆå‡½æ•°â€œNotifyTeredoPortChangeâ€çš„è§„èŒƒ")
 #pragma warning(disable:4995)
     NTSTATUS Status = NotifyTeredoPortChange(TeredoPortChange,
                                              CallerContext,

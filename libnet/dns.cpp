@@ -111,7 +111,7 @@ SUPPORTED PLATFORMS:
                         break;
                     }
 
-                    break;//ÉÙÁËÕâ¸ö£¿
+                    break;//å°‘äº†è¿™ä¸ªï¼Ÿ
                 default:
                     Usage(argv[0]);
                     break;
@@ -218,9 +218,9 @@ SUPPORTED PLATFORMS:
   Windows 2000
 */
 /*
-±¾¹¤³ÌÕª×Ô£ºWindows-classic-samples\Samples\Win7Samples\netds\dns\modifyrecords\ModifyRecords.cpp
+æœ¬å·¥ç¨‹æ‘˜è‡ªï¼šWindows-classic-samples\Samples\Win7Samples\netds\dns\modifyrecords\ModifyRecords.cpp
 
-±¾¹¤³ÌÔ­À´ÊÇµ¥×Ö·û°æ±¾£¬ÕâÀïĞèÒª¸ÄÎª¿í×Ö·û°æ±¾¡£
+æœ¬å·¥ç¨‹åŸæ¥æ˜¯å•å­—ç¬¦ç‰ˆæœ¬ï¼Œè¿™é‡Œéœ€è¦æ”¹ä¸ºå®½å­—ç¬¦ç‰ˆæœ¬ã€‚
 */
 {
     USES_CONVERSION;
@@ -298,7 +298,7 @@ SUPPORTED PLATFORMS:
                         break;
                     }
 
-                    break;//ÉÙÁËÕâ¸ö£¿
+                    break;//å°‘äº†è¿™ä¸ªï¼Ÿ
                 default:
                     Usage(argv[0]);
                     break;

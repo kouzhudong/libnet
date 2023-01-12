@@ -164,8 +164,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
 
 void getsockopt3()
 /*
-¹¦ÄÜ£º»ñÈ¡Ì×½Ó×ÖµÄÒ»Ğ©ĞÅÏ¢¡£
-²Î¿¼£ºhttps://msdn.microsoft.com/en-us/library/windows/desktop/ms738544(v=vs.85).aspx
+åŠŸèƒ½ï¼šè·å–å¥—æ¥å­—çš„ä¸€äº›ä¿¡æ¯ã€‚
+å‚è€ƒï¼šhttps://msdn.microsoft.com/en-us/library/windows/desktop/ms738544(v=vs.85).aspx
 */
 {
     WSADATA wsaData;

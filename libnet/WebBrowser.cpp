@@ -3,24 +3,24 @@
 
 
 /*
-����ȡ��Ϊ��IWebBrowserApp.Cpp
+本文取名为：IWebBrowserApp.Cpp
 
-���������кܶ��ְ취���磺
-1.URLDownloadToFile����URLDownloadToCacheFile
+下载数据有很多种办法，如：
+1.URLDownloadToFile或者URLDownloadToCacheFile
 2.HttpOpenRequest
 3.WinHttpReadData
 4.IWinHttpRequest
-5.�ű���"WinHttp.WinHttpRequest.5.1"
-6.SOCKET���Լ�дhttpͷ��
-7.�����ӿ�(XMLHttpRequest)���籾�ĵģ����п��ܡ�
-8.����
-9.������������������ؽӿڡ�
+5.脚本的"WinHttp.WinHttpRequest.5.1"
+6.SOCKET，自己写http头。
+7.其他接口(XMLHttpRequest)，如本文的，就有可能。
+8.驱动
+9.其他。如浏览器的下载接口。
 
-���Ƶ��ϴ�����Ҳ������Ĵ�ͬС��
+类似的上传数据也和上面的大同小异
 
-���ȴ�����������ҳɹ���
+首先搭建服务器，并且成功。
 
-��Σ�����һ��asp�ļ������ڴ������յ������ݣ�����Ϊdata.asp,�������£�
+其次，建立一个asp文件，用于处理接收到的数据，命名为data.asp,内容如下：
 
 <%
 Dim vntPostedData, lngCount
@@ -34,15 +34,15 @@ Response.BinaryWrite vntPostedData
 end if
 %>
 
-���ϴ���ժ�ԣ�Microsoft SDKs\Windows\v7.1\Samples\web\winhttp\winhttppostsample\data.asp��
+以上代码摘自：Microsoft SDKs\Windows\v7.1\Samples\web\winhttp\winhttppostsample\data.asp。
 
-���Ѵ��ļ��ŵ�iis�������У����磺C:\inetpub\wwwroot\data.asp.
-���ļ����ط���������������Ĵ򿪣���Ϊ�������Ĵ��ǿ�����ɶ�ġ�
+并把此文件放到iis服务器中，例如：C:\inetpub\wwwroot\data.asp.
+此文件不必放在浏览器中主动的打开，因为你主动的打开是看不到啥的。
 
-��������Ĵ��룬�ȿ��Կ����㷢�͵����ݡ�
+运行下面的代码，既可以看到你发送的数据。
 
-����Ĵ����޸��ԣ�
-����Զ����ͱ������ݵ� Internet Explorer
+下面的代码修改自：
+如何自动发送表单数据到 Internet Explorer
 http://support.microsoft.com/kb/q167658
 */
 
@@ -113,7 +113,7 @@ void WebBrowserApp()
 
     hr = GetPostData(&vPostData);
     hr = pWBApp->Navigate(bstrURL, &vFlags, &vTargetFrameName, &vPostData, &vHeaders);
-    pWBApp->put_Visible(VARIANT_TRUE);//��ʾ��
+    pWBApp->put_Visible(VARIANT_TRUE);//显示。
 
 Error:
     if (bstrURL) SysFreeString(bstrURL);

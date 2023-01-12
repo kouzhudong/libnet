@@ -536,8 +536,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2spi/nf-ws2spi-wscenumproto
         wprintf(L"Entry type:\t\t\t ");
 
 #pragma prefast( push )
-#pragma prefast( disable: 6385, "´Ó¡°lpProtocolInfo¡±ÖĞ¶ÁÈ¡µÄÊı¾İÎŞĞ§: ¿É¶Á´óĞ¡Îª¡°dwBufferLen¡±¸ö×Ö½Ú£¬µ«¿ÉÄÜ¶ÁÈ¡ÁË¡°1256¡±¸ö×Ö½Ú¡£" )
-        if (lpProtocolInfo[i].ProtocolChain.ChainLen == 1) //MSDNĞ´´íÁË£¬ÉÙĞ´¸ö=¡£
+#pragma prefast( disable: 6385, "ä»â€œlpProtocolInfoâ€ä¸­è¯»å–çš„æ•°æ®æ— æ•ˆ: å¯è¯»å¤§å°ä¸ºâ€œdwBufferLenâ€ä¸ªå­—èŠ‚ï¼Œä½†å¯èƒ½è¯»å–äº†â€œ1256â€ä¸ªå­—èŠ‚ã€‚" )
+        if (lpProtocolInfo[i].ProtocolChain.ChainLen == 1) //MSDNå†™é”™äº†ï¼Œå°‘å†™ä¸ª=ã€‚
             wprintf(L"Base Service Provider\n");
         else
             wprintf(L"Layered Chain Entry\n");

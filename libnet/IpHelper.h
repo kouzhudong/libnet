@@ -1,7 +1,7 @@
 /*
-������Ҫʵ��iphelapi.h��netioapi.h���һЩ��Ϣ��ȡ��ö�ٵĺ����Ĺ������ӡ�
+此文主要实现iphelapi.h和netioapi.h里的一些信息获取和枚举的函数的功能例子。
 
-���ĵ�����̫�࣬�Ѿ������notify.h��Adapter.h��tcp.h��udp.h���ݡ�
+此文的内容太多，已经分离出notify.h，Adapter.h，tcp.h，udp.h内容。
 */
 
 #pragma once

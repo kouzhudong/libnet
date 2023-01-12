@@ -123,8 +123,8 @@ The following code example shows how to use the getaddrinfo function to convert 
 https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo
 
 1.gethostbyaddr is no longer recommended for use as of Windows Sockets 2. Instead, use getnameinfo.
-2.unix/linuxÉÏµÄÊéÉÏÒ²ÊÇÕâÃ´ËµµÄ¡£
-ËùÒÔ...
+2.unix/linuxä¸Šçš„ä¹¦ä¸Šä¹Ÿæ˜¯è¿™ä¹ˆè¯´çš„ã€‚
+æ‰€ä»¥...
 
 made by correy
 made at 2016.12.16
@@ -162,10 +162,10 @@ http://correy.webs.com
 
     // Call getaddrinfo().
     // If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
-    dwRetval = getaddrinfo(//¸Ğ¾õÕâ¸öº¯ÊıÃ»É¶´óµÄÒâÒå¡£
-                           argv[1],//Ö»ÄÜÊÇÊı×Ö£¬²»ÄÜÊÇÃû×Ö¡£ÕâÒ²·ûºÏÁËº¯ÊıµÄÃû×Ö¡£
-                           NULL,   //¿ÉÓĞ¿ÉÎŞ£¬Êı×ÖºÍÃû×ÖÎŞËùÎ½¡£
-                           &hints, //±ØĞëÓĞ£¬¶øÇÒ4¸ö³ÉÔ±±ØĞëÎª0.
+    dwRetval = getaddrinfo(//æ„Ÿè§‰è¿™ä¸ªå‡½æ•°æ²¡å•¥å¤§çš„æ„ä¹‰ã€‚
+                           argv[1],//åªèƒ½æ˜¯æ•°å­—ï¼Œä¸èƒ½æ˜¯åå­—ã€‚è¿™ä¹Ÿç¬¦åˆäº†å‡½æ•°çš„åå­—ã€‚
+                           NULL,   //å¯æœ‰å¯æ— ï¼Œæ•°å­—å’Œåå­—æ— æ‰€è°“ã€‚
+                           &hints, //å¿…é¡»æœ‰ï¼Œè€Œä¸”4ä¸ªæˆå‘˜å¿…é¡»ä¸º0.
                            &result);
     if (dwRetval != 0) {
         printf("getaddrinfo failed with error: %d\n", dwRetval);
@@ -341,7 +341,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         wprintf(L"   from a host name to an IP address\n");
         wprintf(L"%ws example usage\n", argv[0]);
         wprintf(L"   %ws www.contoso.com 0 12\n", argv[0]);
-        wprintf(L"   looks up the www.contoso.com in the NS_DNS namespace\n");//, argv[0] Õâ¸öÔ­Ê¼µÄĞ´´íÁË¡£
+        wprintf(L"   looks up the www.contoso.com in the NS_DNS namespace\n");//, argv[0] è¿™ä¸ªåŸå§‹çš„å†™é”™äº†ã€‚
         return 1;
     }
 
@@ -643,7 +643,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         wprintf(L"   from a host name to an IP address\n");
         wprintf(L"%ws example usage\n", argv[0]);
         wprintf(L"   %ws www.contoso.com 0 12\n", argv[0]);
-        wprintf(L"   %ws looks up the www.contoso.com in the NS_DNS namespace\n", argv[0]);//Ô­Ê¼´úÂë´íÎó¡£
+        wprintf(L"   %ws looks up the www.contoso.com in the NS_DNS namespace\n", argv[0]);//åŸå§‹ä»£ç é”™è¯¯ã€‚
         return 1;
     }
 
@@ -914,9 +914,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getnamei
 
 1.Note  The gethostbyname function has been deprecated by the introduction of the getaddrinfo function.
 Developers creating Windows Sockets 2 applications are urged to use the getaddrinfo function instead of gethostbyname.
-2.unix/linuxÉÏµÄÊéÉÏÒ²ÊÇÕâÃ´ËµµÄ¡£
-ËùÒÔ...
-3.×¢Òâ£º²»ÊÇÃ¿¸öIP¶¼ÓĞÓòÃûµÄ¡£
+2.unix/linuxä¸Šçš„ä¹¦ä¸Šä¹Ÿæ˜¯è¿™ä¹ˆè¯´çš„ã€‚
+æ‰€ä»¥...
+3.æ³¨æ„ï¼šä¸æ˜¯æ¯ä¸ªIPéƒ½æœ‰åŸŸåçš„ã€‚
 
 made by correy
 made at 2016.12.16
@@ -949,14 +949,14 @@ http://correy.webs.com
     saGNI.sin_family = AF_INET;
     saGNI.sin_addr.s_addr = inet_addr(argv[1]);
     saGNI.sin_port = htons(port);
-    dwRetval = getnameinfo(//Õâ¸öº¯ÊıÔËĞĞºÜÂı£¬ÒÔ·ÖÖÓÀ´¼ÆÊ±µ¥Î»¡£
+    dwRetval = getnameinfo(//è¿™ä¸ªå‡½æ•°è¿è¡Œå¾ˆæ…¢ï¼Œä»¥åˆ†é’Ÿæ¥è®¡æ—¶å•ä½ã€‚
                            (struct sockaddr *)&saGNI,
                            sizeof(struct sockaddr),
-                           hostname,//Õâ¸ö²»»á±ä¡£
+                           hostname,//è¿™ä¸ªä¸ä¼šå˜ã€‚
                            NI_MAXHOST,
-                           servInfo,//Õâ¸ö¿ÉÒÔ±ä¡£²Î¼û£º%WINDIR%\system32\drivers\etc\services£¬¸Ğ¾õÃ»É¶´óµÄÒâÒå¡£
+                           servInfo,//è¿™ä¸ªå¯ä»¥å˜ã€‚å‚è§ï¼š%WINDIR%\system32\drivers\etc\servicesï¼Œæ„Ÿè§‰æ²¡å•¥å¤§çš„æ„ä¹‰ã€‚
                            NI_MAXSERV,
-                           NI_NOFQDN//È¡Õâ¸öÖµ£¬·½ÏÔº¯ÊıµÄÒâÒå¡£
+                           NI_NOFQDN//å–è¿™ä¸ªå€¼ï¼Œæ–¹æ˜¾å‡½æ•°çš„æ„ä¹‰ã€‚
     );
     if (dwRetval != 0) {
         printf("getnameinfo failed with error # %ld\n", WSAGetLastError());
@@ -1020,11 +1020,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getnamei
 
 int gethostbyaddr(int argc, char ** argv)
 /*
-ËµÃ÷£º¸ù¾İIP»ñÈ¡Ãû×Ö¡£
+è¯´æ˜ï¼šæ ¹æ®IPè·å–åå­—ã€‚
 
-¾¡¹Ü£º[gethostbyaddr is no longer recommended for use as of Windows Sockets 2. Instead, use getnameinfo.]
+å°½ç®¡ï¼š[gethostbyaddr is no longer recommended for use as of Windows Sockets 2. Instead, use getnameinfo.]
 
-ËµÃ÷£º²»ÊÇÃ¿¸öIP¶¼ÓĞÖ÷»úÃûµÄ¡£
+è¯´æ˜ï¼šä¸æ˜¯æ¯ä¸ªIPéƒ½æœ‰ä¸»æœºåçš„ã€‚
 
 made at 2017.02.23
 

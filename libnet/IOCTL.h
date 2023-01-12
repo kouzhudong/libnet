@@ -1,15 +1,15 @@
 /*
-±¾ÎÄÖ÷ÒªµÄÄ¿µÄÊÇÑİÊ¾£º
-1.getsockopt and setsockopt functions¡£WSPSetSockOpt, WSPGetSockOpt.
-2.WSAIoctl or WSPIoctl function, »¹ÓĞioctlsocket¡£
-3.NtDeviceIoControlFile or DeviceIoControl function¡£
-µÄÓÃ·¨ºÍ¹¦ÄÜ¡£
+æœ¬æ–‡ä¸»è¦çš„ç›®çš„æ˜¯æ¼”ç¤ºï¼š
+1.getsockopt and setsockopt functionsã€‚WSPSetSockOpt, WSPGetSockOpt.
+2.WSAIoctl or WSPIoctl function, è¿˜æœ‰ioctlsocketã€‚
+3.NtDeviceIoControlFile or DeviceIoControl functionã€‚
+çš„ç”¨æ³•å’ŒåŠŸèƒ½ã€‚
 */
 
 /*
 Socket Options
 2018/05/31
-2 ·ÖÖÓ¿É¿´Íê
+2 åˆ†é’Ÿå¯çœ‹å®Œ
 
 This section describes Winsock Socket Options for various editions of Windows operating systems. 
 Use the getsockopt and setsockopt functions for more getting and setting socket options. 

@@ -10,20 +10,20 @@ SHOWHTMLDIALOGFN * pfnShowHTMLDialog;
 
 void ShowHTMLDialogByApi(void)
 /*
-��ʾ��ҳ����򵥵İ취.
-�ٸ���һ����ǵ��ýӿڡ�
+显示网页的最简单的办法.
+再复杂一点的是调用接口。
 
-������и��������ȥ�������磺�鿴Դ���롣
-��ʵֻ��һ��SYSLINK�����Ǹ��ؼ���
-���๦�ܺ���ȱ���д����롣
+这个还有更多的属性去开发，如：查看源代码。
+其实只有一个SYSLINK可用那个控件。
+更多功能和优缺点有待深入。
 
-�����޸���MSDN��
-������ϸ���ǣ�ShowHTMLDialog Sample Source Page��
-��ַ�ǣ�http://www.microsoft.com/en-us/download/details.aspx?id=944
-�����ǣ�htmldlg.exe���ɽ�ѹ�ͷš�
-���������ʾ���Ǳ��ص�(PE�ļ���һ����Դ)�Լ�����ҳ�������Ի�ȡѡ��/�����Ľ����
+本文修改自MSDN。
+更加详细的是：ShowHTMLDialog Sample Source Page，
+地址是：http://www.microsoft.com/en-us/download/details.aspx?id=944
+名字是：htmldlg.exe，可解压释放。
+这个好像显示的是本地的(PE文件的一个资源)自己的网页。还可以获取选择/操作的结果。
 
-��������Ƶĺ������У�
+更多的类似的函数还有：
 ShowHTMLDialogEx
 ShowModelessHTMLDialog
 
@@ -51,7 +51,7 @@ made at 2014.07.22
 
     FreeLibrary(hinstMSHTML);
 
-    //����Ҳ��ժ��MSDN��
+    //以下也是摘自MSDN。
     //IHostDialogHelper* pHDH;
     //IMoniker* pUrlMoniker;
     //BSTR bstrOptions = SysAllocString(L"dialogHeight:30;dialogWidth:40");
@@ -98,7 +98,7 @@ void show_my_website(HWND hWnd)
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
-    case WM_CREATE://���Կ���ˢ�µ���Ϣ��
+    case WM_CREATE://可以考虑刷新的消息。
         show_my_website(hWnd);
         break;
     case WM_DESTROY:
@@ -113,8 +113,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void Entry()
 /*
-�Ľ�������£�
-���Լ��Ĵ�������ʾһ����ҳ����ʵ���ǵģ������ýӿڣ���
+改进版的如下：
+在自己的窗口中显示一个网页（其实不是的，还得用接口）。
 
 made by correy
 made at 2014.07.23

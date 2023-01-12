@@ -7,13 +7,13 @@
 
 
 /*
-¸½ÉÏÎÒºÜ¾ÃÒÔÇ°Ğ´µÄ»ã±à´úÂë¡£
-±£Áô¼ÍÄî°É£¡
+é™„ä¸Šæˆ‘å¾ˆä¹…ä»¥å‰å†™çš„æ±‡ç¼–ä»£ç ã€‚
+ä¿ç•™çºªå¿µå§ï¼
 
 ;made by correy
 ;rc me.rc
 ;ml /coff test.asm /link /subsystem:windows me.res
-;ĞÄµÃ£º²»Òª¸ßÌ¸À«ÂÛ£¬Î¨ĞĞÖ®Ö®ÄÑÒÓ£¡
+;å¿ƒå¾—ï¼šä¸è¦é«˜è°ˆé˜”è®ºï¼Œå”¯è¡Œä¹‹ä¹‹éš¾çŸ£ï¼
 .386
 .model flat,stdcall
 option casemap:none
@@ -26,7 +26,7 @@ includelib kernel32.lib
 includelib iphlpapi.lib
 
 .data?
-buffer db 9*280h dup (?);×î¶àÏÔÊ¾9¸ö£¬ÈçÏëµÃµ½Ç¡µ±µÄ´óĞ¡ÇëÏÈÒ»´íÎóÔËĞĞÒ»ÏÂGetAdaptersInfo¡£
+buffer db 9*280h dup (?);æœ€å¤šæ˜¾ç¤º9ä¸ªï¼Œå¦‚æƒ³å¾—åˆ°æ°å½“çš„å¤§å°è¯·å…ˆä¸€é”™è¯¯è¿è¡Œä¸€ä¸‹GetAdaptersInfoã€‚
 buffer2 db 256 dup (?)
 
 .data
@@ -48,7 +48,7 @@ start:
 invoke GetAdaptersInfo,addr buffer,addr x
 ;198h=408
 
-lea esi,buffer;bufferµÄÖµ²»¿ÉÒÔ¸Ä±ä¡£
+lea esi,buffer;bufferçš„å€¼ä¸å¯ä»¥æ”¹å˜ã€‚
 
 again:
 mov eax,0
@@ -75,12 +75,12 @@ mov eax,0
 mov al,byte ptr [esi+409]
 mov x6,eax
 
-mov eax,dword ptr [esi+8];macµÄÃèÊö¡£
-.if  eax!=0;±ØĞëÓÃ¼Ä´æÆ÷µÈ£¬²»ÄÜÓÃ±äÁ¿Ãû»òÄÚ´æ¡£
-;Ò²¿ÉÒÔ±æ±ğx1==0 &&  x2==0 && x3==0 && x4==0 && x5==0 && x6==0µÈ¡£
-;ÒªÏÔÊ¾±ğµÄÒ²¿ÉÒÔÑ½£¡ÈçÃû×Ö£¬ip£¬Íø¹ØµÈ¡£
+mov eax,dword ptr [esi+8];macçš„æè¿°ã€‚
+.if  eax!=0;å¿…é¡»ç”¨å¯„å­˜å™¨ç­‰ï¼Œä¸èƒ½ç”¨å˜é‡åæˆ–å†…å­˜ã€‚
+;ä¹Ÿå¯ä»¥è¾¨åˆ«x1==0 &&  x2==0 && x3==0 && x4==0 && x5==0 && x6==0ç­‰ã€‚
+;è¦æ˜¾ç¤ºåˆ«çš„ä¹Ÿå¯ä»¥å‘€ï¼å¦‚åå­—ï¼Œipï¼Œç½‘å…³ç­‰ã€‚
 invoke   wsprintf,addr buffer2,addr formatmac,x1,x2,x3,x4,x5,x6
-invoke MessageBox,0,addr buffer2,addr correy,0;ÎÒÏÔÊ¾µÄºÃÏñÉÙÒ»¸ö¡£
+invoke MessageBox,0,addr buffer2,addr correy,0;æˆ‘æ˜¾ç¤ºçš„å¥½åƒå°‘ä¸€ä¸ªã€‚
 
 add esi,280h
 
@@ -130,10 +130,10 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family)
 /*
-¹¦ÄÜ£ºÃ¶¾ÙÃ¿¸öÍø¿¨µÄĞÅÏ¢(IPv4 or/and IPv6)¡£
-      ÆäÊµ£¬ÕâÀïºÃ¶àĞÅÏ¢¶¼Ã»´òÓ¡¡£
+åŠŸèƒ½ï¼šæšä¸¾æ¯ä¸ªç½‘å¡çš„ä¿¡æ¯(IPv4 or/and IPv6)ã€‚
+      å…¶å®ï¼Œè¿™é‡Œå¥½å¤šä¿¡æ¯éƒ½æ²¡æ‰“å°ã€‚
 
-Parameters£º
+Parametersï¼š
 [in] Family
 The values currently supported are AF_INET, AF_INET6, and AF_UNSPEC.
 
@@ -209,7 +209,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             pUnicast = pCurrAddresses->FirstUnicastAddress;
             if (pUnicast != NULL) {
                 for (i = 0; pUnicast != NULL; i++) {
-                    /*ÕâÀï¿ÉÒÔ´òÓ¡IPµØÖ·ĞÅÏ¢*/
+                    /*è¿™é‡Œå¯ä»¥æ‰“å°IPåœ°å€ä¿¡æ¯*/
                     DumpAddress("ip(Unicast)", &pUnicast->Address);
 
                     pUnicast = pUnicast->Next;
@@ -296,7 +296,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             PIP_ADAPTER_WINS_SERVER_ADDRESS_LH FirstWinsServerAddress = pCurrAddresses->FirstWinsServerAddress;
             if (FirstWinsServerAddress) {
                 for (i = 0; FirstWinsServerAddress != NULL; i++) {
-                    //´òÓ¡ Wins Server Address¡£
+                    //æ‰“å° Wins Server Addressã€‚
                     DumpAddress("WinsServerAddress", &FirstWinsServerAddress->Address);
 
                     FirstWinsServerAddress = FirstWinsServerAddress->Next;
@@ -309,7 +309,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress = pCurrAddresses->FirstGatewayAddress;
             if (FirstGatewayAddress) {
                 for (i = 0; FirstGatewayAddress != NULL; i++) {
-                    //´òÓ¡ Gateway Address¡£
+                    //æ‰“å° Gateway Addressã€‚
                     DumpAddress("GatewayAddress", &FirstGatewayAddress->Address);
 
                     FirstGatewayAddress = FirstGatewayAddress->Next;
@@ -371,7 +371,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getperad
     ret = GetPerAdapterInfo(IfIndex, pPerAdapterInfo, &OutBufLen);
     _ASSERTE(ERROR_SUCCESS == ret);
 
-    //ÕâÀïÒ²Ã»É¶¶«Î÷£¬ÄÚÈİ´ó¶àÎªNULL¡£
+    //è¿™é‡Œä¹Ÿæ²¡å•¥ä¸œè¥¿ï¼Œå†…å®¹å¤§å¤šä¸ºNULLã€‚
 
     HeapFree(GetProcessHeap(), 0, pPerAdapterInfo);
 }
@@ -391,7 +391,7 @@ Remarks
 1.The GetAdaptersInfo function can retrieve information only for IPv4 addresses.
 2.The GetAdaptersInfo and GetInterfaceInfo functions do not return information about the IPv4 loopback interface. 
   Information on the loopback interface is returned by the GetIpAddrTable function.
-3.½÷¼ÇÉÏÃæµÄÁ½¸ö¾ÖÏŞ¡£
+3.è°¨è®°ä¸Šé¢çš„ä¸¤ä¸ªå±€é™ã€‚
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadaptersinfo
 */
@@ -518,7 +518,7 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
 /*
-¹¦ÄÜ£º»ñÈ¡±¾µØIPv4µØÖ·µÄÄ¬ÈÏÍø¹ØµØÖ·£¨Ò²ÊÇIPv4£¬²»°üÀ¨IPv6£©¡£
+åŠŸèƒ½ï¼šè·å–æœ¬åœ°IPv4åœ°å€çš„é»˜è®¤ç½‘å…³åœ°å€ï¼ˆä¹Ÿæ˜¯IPv4ï¼Œä¸åŒ…æ‹¬IPv6ï¼‰ã€‚
 */
 {
     PIP_ADAPTER_INFO pAdapterInfo;
@@ -567,14 +567,14 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
 /*
-¹¦ÄÜ£º»ñÈ¡±¾µØIPv6µØÖ·µÄ(ÈÎÒâÒ»¸ö)Ä¬ÈÏÍø¹ØµØÖ·£¨Ò²ÊÇIPv6£¬²»°üÀ¨IPv4£©¡£
+åŠŸèƒ½ï¼šè·å–æœ¬åœ°IPv6åœ°å€çš„(ä»»æ„ä¸€ä¸ª)é»˜è®¤ç½‘å…³åœ°å€ï¼ˆä¹Ÿæ˜¯IPv6ï¼Œä¸åŒ…æ‹¬IPv4ï¼‰ã€‚
 
-²ÎÊı£º
-1.IPv6ÊÇ±¾µØµÄIPv6µØÖ·£¨¼æÈİ%·ûºÅ£©£¬¿ÉÒÔÈ¡ÈçÏÂÖµ£º
-  IPv6 µØÖ· . . . . . . . . . . . . : 240e:471:810:2006:189e:961c:bcb0:246b(Ê×Ñ¡)
-  ÁÙÊ± IPv6 µØÖ·. . . . . . . . . . : 240e:471:810:2006:89b7:f4a2:9406:a776(Ê×Ñ¡)
-  ±¾µØÁ´½Ó IPv6 µØÖ·. . . . . . . . : fe80::189e:961c:bcb0:246b%10(Ê×Ñ¡)
-2.GatewayÈİÄÉÏÂÒ»¸öIPv6µØÖ·µÄ×Ö·û´®¡£
+å‚æ•°ï¼š
+1.IPv6æ˜¯æœ¬åœ°çš„IPv6åœ°å€ï¼ˆå…¼å®¹%ç¬¦å·ï¼‰ï¼Œå¯ä»¥å–å¦‚ä¸‹å€¼ï¼š
+  IPv6 åœ°å€ . . . . . . . . . . . . : 240e:471:810:2006:189e:961c:bcb0:246b(é¦–é€‰)
+  ä¸´æ—¶ IPv6 åœ°å€. . . . . . . . . . : 240e:471:810:2006:89b7:f4a2:9406:a776(é¦–é€‰)
+  æœ¬åœ°é“¾æ¥ IPv6 åœ°å€. . . . . . . . : fe80::189e:961c:bcb0:246b%10(é¦–é€‰)
+2.Gatewayå®¹çº³ä¸‹ä¸€ä¸ªIPv6åœ°å€çš„å­—ç¬¦ä¸²ã€‚
 */
 {
     /* Declare and initialize variables */
@@ -643,7 +643,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
                                         PSOCKADDR_IN6_LH temp = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
                                         inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, ipbufferlength);
 
-                                        lstrcpyA(Gateway, ipstringbuffer);//»áÓĞ¶à¸ö£¬È¡×îºóÒ»¸ö¡£
+                                        lstrcpyA(Gateway, ipstringbuffer);//ä¼šæœ‰å¤šä¸ªï¼Œå–æœ€åä¸€ä¸ªã€‚
 
                                         break;
                                     }
@@ -703,19 +703,19 @@ EXTERN_C
 __declspec(dllexport)
 int WINAPI GetGatewayMacByIPv6(const char * IPv6, PBYTE GatewayMac)
 /*
-¹¦ÄÜ£º»ñÈ¡Ò»¸ö±¾µØIPv6µÄÒ»¸öÄ¬ÈÏÍø¹ØµÄMAC.
+åŠŸèƒ½ï¼šè·å–ä¸€ä¸ªæœ¬åœ°IPv6çš„ä¸€ä¸ªé»˜è®¤ç½‘å…³çš„MAC.
 
-²ÎÊı£º
-1.IPv6ÊÇ±¾µØµÄIPv6µØÖ·£¨¼æÈİ%·ûºÅ£©£¬¿ÉÒÔÈ¡ÈçÏÂÖµ£º
-  IPv6 µØÖ· . . . . . . . . . . . . : 240e:471:810:2006:189e:961c:bcb0:246b(Ê×Ñ¡)
-  ÁÙÊ± IPv6 µØÖ·. . . . . . . . . . : 240e:471:810:2006:89b7:f4a2:9406:a776(Ê×Ñ¡)
-  ±¾µØÁ´½Ó IPv6 µØÖ·. . . . . . . . : fe80::189e:961c:bcb0:246b%10(Ê×Ñ¡)
-2.GatewayMacÈİÄÉÏÂÒ»¸öMACµØÖ·¡£
+å‚æ•°ï¼š
+1.IPv6æ˜¯æœ¬åœ°çš„IPv6åœ°å€ï¼ˆå…¼å®¹%ç¬¦å·ï¼‰ï¼Œå¯ä»¥å–å¦‚ä¸‹å€¼ï¼š
+  IPv6 åœ°å€ . . . . . . . . . . . . : 240e:471:810:2006:189e:961c:bcb0:246b(é¦–é€‰)
+  ä¸´æ—¶ IPv6 åœ°å€. . . . . . . . . . : 240e:471:810:2006:89b7:f4a2:9406:a776(é¦–é€‰)
+  æœ¬åœ°é“¾æ¥ IPv6 åœ°å€. . . . . . . . : fe80::189e:961c:bcb0:246b%10(é¦–é€‰)
+2.GatewayMacå®¹çº³ä¸‹ä¸€ä¸ªMACåœ°å€ã€‚
 
-×¢Òâ£º
-1.ÓĞµÄinterface/NIC/ipv6Ã»ÓĞ¶ÔÓ¦µÄÍø¹Ø¡£
-2.¸Ä½øµÄË¼Â·ÊÇÓÃIcmp6SendEcho2·¢ËÍÁÚ¾Ó±¨ÎÄ¡£
-3.×îºÃµÄË¼Â·ÊÇÓÃResolveIpNetEntry2ÊµÏÖ¡£
+æ³¨æ„ï¼š
+1.æœ‰çš„interface/NIC/ipv6æ²¡æœ‰å¯¹åº”çš„ç½‘å…³ã€‚
+2.æ”¹è¿›çš„æ€è·¯æ˜¯ç”¨Icmp6SendEcho2å‘é€é‚»å±…æŠ¥æ–‡ã€‚
+3.æœ€å¥½çš„æ€è·¯æ˜¯ç”¨ResolveIpNetEntry2å®ç°ã€‚
 */
 {
     char Gateway[128];
