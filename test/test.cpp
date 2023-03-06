@@ -41,7 +41,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //BYTE MacAddr[6] = {0};
     //GetGatewayMacByIPv4("192.168.5.3", MacAddr);
 
-    EnumProtocols_WSC();
+    EnumProtocols32_WSC();
 
     //ResolveIpNetEntry2Test("8.8.8.8");
 
