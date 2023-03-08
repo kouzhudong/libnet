@@ -2,6 +2,8 @@
 //
 
 #include "..\inc\libnet.h"
+#include "init.h"
+#include "IpHelper.h"
 
 
 #ifdef _WIN64  
@@ -32,6 +34,8 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         return 0;
     }
 
+    init();
+
     //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
 
     //tracert(argc, argv);//单字符函数入口示例。
@@ -41,7 +45,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //BYTE MacAddr[6] = {0};
     //GetGatewayMacByIPv4("192.168.5.3", MacAddr);
 
-    EnumProtocols32_WSC();
+    TestGetIPv4ByMac();
 
     //ResolveIpNetEntry2Test("8.8.8.8");
 
