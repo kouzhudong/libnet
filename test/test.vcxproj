@@ -152,12 +152,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="c.c" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="IpHelper.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\inc\libnet.h" />
+    <ClInclude Include="c.h" />
     <ClInclude Include="init.h" />
     <ClInclude Include="IpHelper.h" />
   </ItemGroup>

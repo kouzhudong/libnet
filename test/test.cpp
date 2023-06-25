@@ -4,6 +4,7 @@
 #include "..\inc\libnet.h"
 #include "init.h"
 #include "IpHelper.h"
+#include "c.h"
 
 
 #ifdef _WIN64  
@@ -46,6 +47,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //GetGatewayMacByIPv4("192.168.5.3", MacAddr);
 
     EnumInterfaceInfo();
+    test_c();
 
     //ResolveIpNetEntry2Test("8.8.8.8");
 
