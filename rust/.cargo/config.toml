@@ -1,0 +1,5 @@
+[target.'cfg(target_os = "windows")']
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[env]
+RUST_BACKTRACE = "full"

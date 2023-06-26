@@ -1,0 +1,13 @@
+[package]
+name = "c2rs"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.65.1" #禁止使用0.66.1 https://github.com/rust-lang/rust-bindgen/issues/2565
+cxx-build = "1.0"
