@@ -3,3 +3,11 @@ rustflags = ["-C", "target-feature=+crt-static"]
 
 [env]
 RUST_BACKTRACE = "full"
+
+#目的链接到：libnet.lib.
+#此办法失败：
+#总是链接失败：error: linking with `link.exe` failed: exit code: 1120
+#用x86_64-pc-windows-msvc也失败，用net也失败。
+#[target.stable-x86_64-pc-windows-msvc.libnet]
+#rustc-link-lib = ["libnet"]
+#rustc-link-search = ["../x64/Debug"]

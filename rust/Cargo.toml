@@ -3,6 +3,7 @@ name = "c2rs"
 version = "0.1.0"
 edition = "2021"
 build = "build.rs"
+#links = "libnet.lib"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,3 +12,10 @@ build = "build.rs"
 [build-dependencies]
 bindgen = "0.65.1" #禁止使用0.66.1 https://github.com/rust-lang/rust-bindgen/issues/2565
 cxx-build = "1.0"
+
+#目的链接到：libnet.lib.
+#此办法失败：stable-x86_64-pc-windows-msvc也失败。
+#填写libnet也失败。
+#[target.x86_64-pc-windows-msvc.libnet.lib]
+#rustc-link-lib = ["libnet.lib"]
+#rustc-link-search = ["../x64/Debug"]
