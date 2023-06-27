@@ -44,4 +44,4 @@ jobs:
       run: |
         msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
         cd ./rust
-        run: cargo build --verbose
+        cargo build --verbose
