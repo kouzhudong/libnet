@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\inc\libnet.h"
+#include "pch.h"
 
 class init
 {

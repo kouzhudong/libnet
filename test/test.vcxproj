@@ -159,6 +159,7 @@
     <ClCompile Include="c.c" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="IpHelper.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
     <ClInclude Include="c.h" />
     <ClInclude Include="init.h" />
     <ClInclude Include="IpHelper.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

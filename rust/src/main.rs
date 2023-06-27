@@ -1,6 +1,7 @@
 /*
 如果由c转的rs文件在编译是出现：error[E0588]: packed type cannot transitively contain a `#[repr(align)]` type
 直接注释掉#[repr(align)]这一行即可，但是相关的测试可能错误：内存对齐问题。
+另一个思路是改为：#[repr(align(1))]
 */
 
 // Suppress the flurry of warnings caused by using "C" naming conventions
