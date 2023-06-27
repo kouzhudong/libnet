@@ -151,6 +151,9 @@
       </Version>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) /B /V /Y $(ProjectDir)..\rust\target\debug</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
