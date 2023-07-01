@@ -250,6 +250,12 @@ void WINAPI GetProxyForUrl();
 __declspec(dllimport)
 void WINAPI Sessions();
 
+//__declspec(dllimport)
+//DWORD WINAPI RegisterProxyChangeNotification();
+
+//__declspec(dllimport)
+//DWORD WINAPI UnregisterProxyChangeNotification();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //TCP相关的。

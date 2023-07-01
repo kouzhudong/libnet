@@ -6,6 +6,7 @@
 #include "IpHelper.h"
 #include "c.h"
 #include "pch.h"
+#include "WinHttp.h"
 
 
 #ifdef _WIN64  
@@ -42,18 +43,9 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //tracert(argc, argv);//单字符函数入口示例。
 
-    //pathping(argc, argv);
+    //test_c();
 
-    //BYTE MacAddr[6] = {0};
-    //GetGatewayMacByIPv4("192.168.5.3", MacAddr);
-
-    EnumInterfaceInfo();
-    test_c();
-
-    //ResolveIpNetEntry2Test("8.8.8.8");
-
-    //BYTE mac[6];
-    //GetMacByIPv6("fe80::95c9:6378:91c0:d5b2", mac);
+    TestWinHttp();    
 
     LocalFree(Arglist);
 }
