@@ -4,5 +4,8 @@
 void TestWinHttp()
 {
     //RegisterProxyChangeNotification();
-
+    GetDefaultProxyConfiguration();
+    GetIEProxyConfigForCurrentUser();
+    DetectAutoProxyConfigUrl();
+    GetProxyForUrl();
 }
