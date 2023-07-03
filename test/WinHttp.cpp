@@ -9,5 +9,6 @@ void TestWinHttp()
     DetectAutoProxyConfigUrl();
     //GetProxyForUrl();
     SetDefaultProxyConfiguration();
-    SetProxy();
+    //SetProxy();
+    WriteProxySettings();
 }

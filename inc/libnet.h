@@ -262,6 +262,9 @@ void WINAPI SetDefaultProxyConfiguration();
 __declspec(dllexport)
 int WINAPI SetProxy();
 
+__declspec(dllexport)
+int WINAPI WriteProxySettings();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //TCP相关的。
