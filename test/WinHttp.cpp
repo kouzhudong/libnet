@@ -7,5 +7,6 @@ void TestWinHttp()
     GetDefaultProxyConfiguration();
     GetIEProxyConfigForCurrentUser();
     DetectAutoProxyConfigUrl();
-    GetProxyForUrl();
+    //GetProxyForUrl();
+    SetDefaultProxyConfiguration();
 }

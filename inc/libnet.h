@@ -256,6 +256,9 @@ void WINAPI Sessions();
 //__declspec(dllimport)
 //DWORD WINAPI UnregisterProxyChangeNotification();
 
+__declspec(dllexport)
+void WINAPI SetDefaultProxyConfiguration();
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //TCP相关的。
