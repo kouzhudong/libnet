@@ -99,6 +99,9 @@
     <ClInclude Include="pathpings.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkListManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -174,6 +177,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="pathping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkListManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

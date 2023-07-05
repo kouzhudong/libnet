@@ -192,6 +192,7 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="NetApi.h" />
     <ClInclude Include="NetBIOS.h" />
+    <ClInclude Include="NetworkListManager.h" />
     <ClInclude Include="notify.h" />
     <ClInclude Include="pathping.h" />
     <ClInclude Include="pathpings.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="NetApi.cpp" />
     <ClCompile Include="NetBIOS.cpp" />
+    <ClCompile Include="NetworkListManager.cpp" />
     <ClCompile Include="notify.cpp" />
     <ClCompile Include="pathping.cpp" />
     <ClCompile Include="pch.cpp">

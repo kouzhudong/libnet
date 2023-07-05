@@ -82,6 +82,8 @@
 #include <IPExport.h>
 #include <icmpapi.h> //前面需先包含IPExport.h。
 #include <ipmib.h>
+#include <netlistmgr.h>
+#include <ondemandconnroutehelper.h>
 
 #ifndef INITGUID
 #define INITGUID
