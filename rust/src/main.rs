@@ -19,10 +19,11 @@
 
 include!(concat!(env!("OUT_DIR"), "\\bindings.rs"));
 
-fn main() {//测试的时候，要把dll复制到exe的目录下。
+fn main() {
+    //测试的时候，要把dll复制到exe的目录下。
     println!("Hello, world!");
 
-    unsafe{
+    unsafe {
         EnumTcpTable();
     }
 }
