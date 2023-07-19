@@ -18,6 +18,9 @@
 iNetworkConnectionEvents 
 iNetworkEvents 
 iNetworkListManagerEvents
+
+https://review.jami.net/plugins/gitiles/jami-client-qt/+/a4787e2a45bd4c6abbfe08849f7bcd5ad50a9b8c/src/connectivitymonitor.cpp
+https://review.jami.net/plugins/gitiles/jami-client-qt/+/8cb4e442d95df6d65a26e592844769002c0add1b/src/connectivitymonitor.cpp
 */
 
 #pragma once
