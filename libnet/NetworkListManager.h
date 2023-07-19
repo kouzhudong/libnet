@@ -12,6 +12,14 @@
 核心实现文件应该在：netprofm.dll里。
 */
 
+
+/*
+监控网络变动的三个类：
+iNetworkConnectionEvents 
+iNetworkEvents 
+iNetworkListManagerEvents
+*/
+
 #pragma once
 
 

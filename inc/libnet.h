@@ -409,6 +409,12 @@ USHORT WINAPI checksum(USHORT * buffer, int size);
 __declspec(dllimport)
 void WINAPI TestNetworkListManager();
 
+__declspec(dllimport)
+void WINAPI TestNetworkListManagerEvents();
+
+__declspec(dllimport)
+void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
