@@ -39,7 +39,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     init();
 
-    //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
+    TestPersistentTcpPortReservation(Args, Arglist);//宽字符函数入口示例。
 
     //tracert(argc, argv);//单字符函数入口示例。
 
@@ -48,7 +48,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //TestWinHttp();  
     //TestNetworkListManager();
     //TestNetworkListManagerEvents();
-    ListenToNetworkConnectivityChangesSample(false);
+    //ListenToNetworkConnectivityChangesSample(false);
 
     LocalFree(Arglist);
 }

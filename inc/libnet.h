@@ -316,6 +316,9 @@ __declspec(dllimport)
 void WINAPI EnumEntityArray();
 
 __declspec(dllimport)
+int WINAPI TestPersistentTcpPortReservation(int argc, WCHAR ** argv);
+
+__declspec(dllimport)
 int WINAPI EnumAdaptersInfo();
 
 __declspec(dllimport)
