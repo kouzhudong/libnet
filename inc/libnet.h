@@ -319,6 +319,9 @@ __declspec(dllimport)
 int WINAPI TestPersistentTcpPortReservation(int argc, WCHAR ** argv);
 
 __declspec(dllimport)
+int WINAPI GetPortReservation(int argc, WCHAR ** argv);
+
+__declspec(dllimport)
 int WINAPI EnumAdaptersInfo();
 
 __declspec(dllimport)
