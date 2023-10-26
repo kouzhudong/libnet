@@ -161,7 +161,7 @@ BOOL NBListNames(int nLana, LPCSTR szName)
     // Allocate the largest buffer that might be needed. 
     cbBuffer = sizeof(ADAPTER_STATUS) + 255 * sizeof(NAME_BUFFER);
     pStatus = (ADAPTER_STATUS *)HeapAlloc(hHeap, 0, cbBuffer);
-    if (NULL == pStatus)
+    if (nullptr == pStatus)
         return FALSE;
 
     if (!NBAdapterStatus(nLana, (PVOID)pStatus, cbBuffer, szName)) {

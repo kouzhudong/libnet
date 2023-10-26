@@ -129,14 +129,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
 {
     HRESULT hr = S_OK;
 
-    hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     if (FAILED(hr)) {//COM initialize failed        
         wprintf(L"CoInitialize failed: 0x%08lx\n", hr);
         return;
     }
 
-    INetworkListManager * pNetworkListManager = NULL;
-    hr = CoCreateInstance(CLSID_NetworkListManager, NULL,
+    INetworkListManager * pNetworkListManager = nullptr;
+    hr = CoCreateInstance(CLSID_NetworkListManager, nullptr,
                           CLSCTX_ALL, IID_INetworkListManager,
                           (LPVOID *)&pNetworkListManager);
 
@@ -249,11 +249,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
 https://www.cxyzjd.com/article/chouhuan1877/100808606
 */
 {
-    (void)CoInitialize(NULL);
+    (void)CoInitialize(nullptr);
 
-    INetworkListManager * pNetworkListManager = NULL;
+    INetworkListManager * pNetworkListManager = nullptr;
     HRESULT hr = CoCreateInstance(CLSID_NetworkListManager,
-                                  NULL,
+                                  nullptr,
                                   CLSCTX_ALL,
                                   IID_INetworkListManager,
                                   (LPVOID *)&pNetworkListManager);
@@ -261,9 +261,9 @@ https://www.cxyzjd.com/article/chouhuan1877/100808606
     VARIANT_BOOL bConnected = VARIANT_FALSE;
     hr = pNetworkListManager->get_IsConnected(&bConnected);
 
-    IConnectionPointContainer * pCPContainer = NULL;
+    IConnectionPointContainer * pCPContainer = nullptr;
     hr = pNetworkListManager->QueryInterface(IID_IConnectionPointContainer, (void **)&pCPContainer);
-    IConnectionPoint * pConnectPoint = NULL;
+    IConnectionPoint * pConnectPoint = nullptr;
     hr = pCPContainer->FindConnectionPoint(IID_INetworkListManagerEvents, &pConnectPoint);
 
     DWORD Cookie = 0;
@@ -272,7 +272,7 @@ https://www.cxyzjd.com/article/chouhuan1877/100808606
 
     // 必须有下面这个消息循环
     MSG msg;
-    while (GetMessage(&msg, NULL, 0, 0)) {
+    while (GetMessage(&msg, nullptr, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
         if (msg.message == WM_QUIT) {
@@ -470,7 +470,7 @@ void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn)
 有待改进。
 */
 {
-    (void)CoInitialize(NULL);
+    (void)CoInitialize(nullptr);
 
     std::wcout << "Listening to network connectivity changes." << std::endl;
     if (optedIn) {

@@ -17,7 +17,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
 */
 {
     // Declare and initialize variables.
-    HANDLE hClient = NULL;
+    HANDLE hClient = nullptr;
     DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
     DWORD dwResult = 0;
@@ -26,17 +26,17 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
     int i;
 
     /* variables used for WlanEnumInterfaces  */
-    PWLAN_INTERFACE_INFO_LIST pIfList = NULL;
-    PWLAN_INTERFACE_INFO pIfInfo = NULL;
+    PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
+    PWLAN_INTERFACE_INFO pIfInfo = nullptr;
 
-    dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
+    dwResult = WlanOpenHandle(dwMaxClient, nullptr, &dwCurVersion, &hClient);
     if (dwResult != ERROR_SUCCESS) {
         wprintf(L"WlanOpenHandle failed with error: %u\n", dwResult);
         // FormatMessage can be used to find out why the function failed
         return 1;
     }
 
-    dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
+    dwResult = WlanEnumInterfaces(hClient, nullptr, &pIfList);
     if (dwResult != ERROR_SUCCESS) {
         wprintf(L"WlanEnumInterfaces failed with error: %u\n", dwResult);
         // FormatMessage can be used to find out why the function failed
@@ -91,9 +91,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
         }
     }
 
-    if (pIfList != NULL) {
+    if (pIfList != nullptr) {
         WlanFreeMemory(pIfList);
-        pIfList = NULL;
+        pIfList = nullptr;
     }
     return 0;
 }
@@ -112,7 +112,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
 */
 {
     // Declare and initialize variables.
-    HANDLE hClient = NULL;
+    HANDLE hClient = nullptr;
     DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
     DWORD dwResult = 0;
@@ -123,22 +123,22 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
 
     /* variables used for WlanEnumInterfaces  */
 
-    PWLAN_INTERFACE_INFO_LIST pIfList = NULL;
-    PWLAN_INTERFACE_INFO pIfInfo = NULL;
+    PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
+    PWLAN_INTERFACE_INFO pIfInfo = nullptr;
 
-    PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;
-    PWLAN_AVAILABLE_NETWORK pBssEntry = NULL;
+    PWLAN_AVAILABLE_NETWORK_LIST pBssList = nullptr;
+    PWLAN_AVAILABLE_NETWORK pBssEntry = nullptr;
 
     int iRSSI = 0;
 
-    dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
+    dwResult = WlanOpenHandle(dwMaxClient, nullptr, &dwCurVersion, &hClient);
     if (dwResult != ERROR_SUCCESS) {
         wprintf(L"WlanOpenHandle failed with error: %u\n", dwResult);
         return 1;
         // You can use FormatMessage here to find out why the function failed
     }
 
-    dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
+    dwResult = WlanEnumInterfaces(hClient, nullptr, &pIfList);
     if (dwResult != ERROR_SUCCESS) {
         wprintf(L"WlanEnumInterfaces failed with error: %u\n", dwResult);
         return 1;
@@ -196,7 +196,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
             dwResult = WlanGetAvailableNetworkList(hClient,
                                                    &pIfInfo->InterfaceGuid,
                                                    0,
-                                                   NULL,
+                                                   nullptr,
                                                    &pBssList);
             if (dwResult != ERROR_SUCCESS) {
                 wprintf(L"WlanGetAvailableNetworkList failed with error: %u\n", dwResult);
@@ -331,14 +331,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
         }
 
     }
-    if (pBssList != NULL) {
+    if (pBssList != nullptr) {
         WlanFreeMemory(pBssList);
-        pBssList = NULL;
+        pBssList = nullptr;
     }
 
-    if (pIfList != NULL) {
+    if (pIfList != nullptr) {
         WlanFreeMemory(pIfList);
-        pIfList = NULL;
+        pIfList = nullptr;
     }
 
     return dwRetVal;
