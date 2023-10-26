@@ -46,7 +46,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
         wprintf(L"Current Index: %lu\n", pIfList->dwIndex);
         for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
             pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
-            wprintf(L"  Interface Index[%d]:\t %lu\n", i, i);
+            wprintf(L"  Interface Index[%d]:\t %ld\n", i, i);
             iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, 39);
             // For c rather than C++ source code, the above line needs to be
             // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 39); 
@@ -157,11 +157,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
-                wprintf(L"  InterfaceGUID[%d]: %ws\n", i, GuidString);
+                wprintf(L"  InterfaceGUID[%u]: %ws\n", i, GuidString);
             }
-            wprintf(L"  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription);
+            wprintf(L"  Interface Description[%u]: %ws", i, pIfInfo->strInterfaceDescription);
             wprintf(L"\n");
-            wprintf(L"  Interface State[%d]:\t ", i);
+            wprintf(L"  Interface State[%u]:\t ", i);
             switch (pIfInfo->isState) {
             case wlan_interface_state_not_ready:
                 wprintf(L"Not ready\n");
@@ -224,13 +224,13 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                     wprintf(L"  BSS Network type[%u]:\t ", j);
                     switch (pBssEntry->dot11BssType) {
                     case dot11_BSS_type_infrastructure:
-                        wprintf(L"Infrastructure (%u)\n", pBssEntry->dot11BssType);
+                        wprintf(L"Infrastructure (%d)\n", pBssEntry->dot11BssType);
                         break;
                     case dot11_BSS_type_independent:
-                        wprintf(L"Infrastructure (%u)\n", pBssEntry->dot11BssType);
+                        wprintf(L"Infrastructure (%d)\n", pBssEntry->dot11BssType);
                         break;
                     default:
-                        wprintf(L"Other (%lu)\n", pBssEntry->dot11BssType);
+                        wprintf(L"Other (%d)\n", pBssEntry->dot11BssType);
                         break;
                     }
 
@@ -266,28 +266,28 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                     wprintf(L"  Default AuthAlgorithm[%u]: ", j);
                     switch (pBssEntry->dot11DefaultAuthAlgorithm) {
                     case DOT11_AUTH_ALGO_80211_OPEN:
-                        wprintf(L"802.11 Open (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"802.11 Open (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     case DOT11_AUTH_ALGO_80211_SHARED_KEY:
-                        wprintf(L"802.11 Shared (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"802.11 Shared (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     case DOT11_AUTH_ALGO_WPA:
-                        wprintf(L"WPA (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"WPA (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     case DOT11_AUTH_ALGO_WPA_PSK:
-                        wprintf(L"WPA-PSK (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"WPA-PSK (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     case DOT11_AUTH_ALGO_WPA_NONE:
-                        wprintf(L"WPA-None (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"WPA-None (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     case DOT11_AUTH_ALGO_RSNA:
-                        wprintf(L"RSNA (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"RSNA (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     case DOT11_AUTH_ALGO_RSNA_PSK:
-                        wprintf(L"RSNA with PSK(%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"RSNA with PSK(%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     default:
-                        wprintf(L"Other (%lu)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+                        wprintf(L"Other (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
                         break;
                     }
 
