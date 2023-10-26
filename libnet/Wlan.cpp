@@ -23,7 +23,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
     DWORD dwResult = 0;
     int iRet = 0;
     WCHAR GuidString[40] = {0};
-    int i;
+    int i{};
 
     /* variables used for WlanEnumInterfaces  */
     PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
@@ -119,7 +119,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
     DWORD dwRetVal = 0;
     int iRet = 0;
     WCHAR GuidString[39] = {0};
-    unsigned int i, j, k;
+    unsigned int i{}, j{}, k{};
 
     /* variables used for WlanEnumInterfaces  */
 

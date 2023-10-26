@@ -27,8 +27,8 @@ ASTAT Adapter;
 
 void ncbastat(void)
 {
-    NCB ncb;
-    UCHAR uRetCode;
+    NCB ncb{};
+    UCHAR uRetCode{};
 
     memset(&ncb, 0, sizeof(ncb));
     ncb.ncb_command = NCBRESET;
@@ -150,11 +150,11 @@ void MakeNetbiosName(char * achDest, LPCSTR szSrc)
 
 BOOL NBListNames(int nLana, LPCSTR szName)
 {
-    int cbBuffer;
-    ADAPTER_STATUS * pStatus;
-    NAME_BUFFER * pNames;
-    int i;
-    HANDLE hHeap;
+    int cbBuffer{};
+    ADAPTER_STATUS * pStatus{};
+    NAME_BUFFER * pNames{};
+    int i{};
+    HANDLE hHeap{};
 
     hHeap = GetProcessHeap();
 

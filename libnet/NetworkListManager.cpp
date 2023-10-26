@@ -49,7 +49,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ien
     HRESULT hr = S_OK;
 
     for (;;) {
-        INetworkConnection * rgelt;
+        INetworkConnection * rgelt{};
         ULONG  pceltFetched = 0;
         hr = EnumNetworkConnection.Next(1, &rgelt, &pceltFetched);
         if (hr != S_OK) {
@@ -172,7 +172,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
     建议使用 INetwork 接口来检索网络的当前连接状态。
     */
     for (;;) {
-        INetwork * rgelt;
+        INetwork * rgelt{};
         ULONG  pceltFetched = 0;
         hr = pEnumNetwork->Next(1, &rgelt, &pceltFetched);
         if (hr != S_OK) {
