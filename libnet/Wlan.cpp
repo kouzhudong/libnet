@@ -23,7 +23,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
     DWORD dwResult = 0;
     int iRet = 0;
     WCHAR GuidString[40] = {0};
-    int i{};
 
     /* variables used for WlanEnumInterfaces  */
     PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
@@ -44,10 +43,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
     } else {
         wprintf(L"Num Entries: %lu\n", pIfList->dwNumberOfItems);
         wprintf(L"Current Index: %lu\n", pIfList->dwIndex);
-        for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
-            pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
+        for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
+            pIfInfo = reinterpret_cast<WLAN_INTERFACE_INFO *>(&pIfList->InterfaceInfo[i]);
             wprintf(L"  Interface Index[%d]:\t %ld\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, 39);
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString), 39);
             // For c rather than C++ source code, the above line needs to be
             // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 39); 
             if (iRet == 0)
@@ -146,10 +145,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
     } else {
         wprintf(L"Num Entries: %lu\n", pIfList->dwNumberOfItems);
         wprintf(L"Current Index: %lu\n", pIfList->dwIndex);
-        for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
-            pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
+        for (i = 0; i < pIfList->dwNumberOfItems; i++) {
+            pIfInfo = reinterpret_cast<WLAN_INTERFACE_INFO *>(&pIfList->InterfaceInfo[i]);
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString,
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString),
                                    sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
             // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
@@ -207,7 +206,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
 
                 wprintf(L"  Num Entries: %lu\n\n", pBssList->dwNumberOfItems);
                 for (j = 0; j < pBssList->dwNumberOfItems; j++) {
-                    pBssEntry = (WLAN_AVAILABLE_NETWORK *)&pBssList->Network[j];
+                    pBssEntry = reinterpret_cast<WLAN_AVAILABLE_NETWORK *>(&pBssList->Network[j]);
 
                     wprintf(L"  Profile Name[%u]:  %ws\n", j, pBssEntry->strProfileName);
 
@@ -216,7 +215,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                         wprintf(L"\n");
                     else {
                         for (k = 0; k < pBssEntry->dot11Ssid.uSSIDLength; k++) {
-                            wprintf(L"%c", (int)pBssEntry->dot11Ssid.ucSSID[k]);
+                            wprintf(L"%c", pBssEntry->dot11Ssid.ucSSID[k]);
                         }
                         wprintf(L"\n");
                     }

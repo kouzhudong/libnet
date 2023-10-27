@@ -42,7 +42,7 @@ void ncbastat(void)
     ncb.ncb_lana_num = 0;
 
     memcpy(&ncb.ncb_callname, "*               ", 16);
-    ncb.ncb_buffer = (UCHAR *)&Adapter;
+    ncb.ncb_buffer = reinterpret_cast<UCHAR *>(&Adapter);
     ncb.ncb_length = sizeof(Adapter);
 
     uRetCode = Netbios(&ncb);
@@ -160,17 +160,17 @@ BOOL NBListNames(int nLana, LPCSTR szName)
 
     // Allocate the largest buffer that might be needed. 
     cbBuffer = sizeof(ADAPTER_STATUS) + 255 * sizeof(NAME_BUFFER);
-    pStatus = (ADAPTER_STATUS *)HeapAlloc(hHeap, 0, cbBuffer);
+    pStatus = reinterpret_cast<ADAPTER_STATUS *>(HeapAlloc(hHeap, 0, cbBuffer));
     if (nullptr == pStatus)
         return FALSE;
 
-    if (!NBAdapterStatus(nLana, (PVOID)pStatus, cbBuffer, szName)) {
+    if (!NBAdapterStatus(nLana, reinterpret_cast<PVOID>(pStatus), cbBuffer, szName)) {
         HeapFree(hHeap, 0, pStatus);
         return FALSE;
     }
 
     // The list of names follows the adapter status structure.
-    pNames = (NAME_BUFFER *)(pStatus + 1);
+    pNames = reinterpret_cast<NAME_BUFFER *>(pStatus + 1);
 
     for (i = 0; i < pStatus->name_count; i++)
         printf("\t%.*s\n", NCBNAMSZ, pNames[i].name);
@@ -187,12 +187,12 @@ BOOL NBAdapterStatus(int nLana, PVOID pBuffer, int cbBuffer, LPCSTR szName)
 
     memset(&ncb, 0, sizeof(ncb));
     ncb.ncb_command = NCBASTAT;
-    ncb.ncb_lana_num = (UCHAR)nLana;
+    ncb.ncb_lana_num = static_cast<UCHAR>(nLana);
 
-    ncb.ncb_buffer = (PUCHAR)pBuffer;
-    ncb.ncb_length = (WORD)cbBuffer;
+    ncb.ncb_buffer = static_cast<PUCHAR>(pBuffer);
+    ncb.ncb_length = static_cast<WORD>(cbBuffer);
 
-    MakeNetbiosName((char *)ncb.ncb_callname, szName);
+    MakeNetbiosName(reinterpret_cast<char *>(ncb.ncb_callname), szName);
 
     Netbios(&ncb);
     NBCheck(ncb);

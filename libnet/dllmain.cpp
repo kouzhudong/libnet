@@ -9,32 +9,32 @@ void init()
 {
     HMODULE hNtDLL = GetModuleHandle(TEXT("ntdll.dll"));
     if (nullptr != hNtDLL) {
-        pNtCreateFile = (P_NT_CREATE_FILE)GetProcAddress(hNtDLL, "NtCreateFile");
+        pNtCreateFile = reinterpret_cast<P_NT_CREATE_FILE>(GetProcAddress(hNtDLL, "NtCreateFile"));
         if (nullptr == pNtCreateFile) {
             printf("没有找到NtCreateFile函数\n");
         }
 
-        Ipv4AddressToStringW = (PRtlIpv4AddressToString)GetProcAddress(hNtDLL, "RtlIpv4AddressToStringW");
+        Ipv4AddressToStringW = reinterpret_cast<PRtlIpv4AddressToString>(GetProcAddress(hNtDLL, "RtlIpv4AddressToStringW"));
         if (nullptr == Ipv4AddressToStringW) {
             printf("没有找到RtlIpv4AddressToStringW函数\n");
         }
 
-        Ipv4StringToAddressW = (RtlIpv4StringToAddressRoutine)GetProcAddress(hNtDLL, "RtlIpv4StringToAddressW");
+        Ipv4StringToAddressW = reinterpret_cast<RtlIpv4StringToAddressRoutine>(GetProcAddress(hNtDLL, "RtlIpv4StringToAddressW"));
         if (nullptr == Ipv4StringToAddressW) {
             printf("没有找到RtlIpv4StringToAddressW函数\n");
         }
 
-        Ipv6AddressToStringW = (PRtlIpv6AddressToString)GetProcAddress(hNtDLL, "RtlIpv6AddressToStringW");
+        Ipv6AddressToStringW = reinterpret_cast<PRtlIpv6AddressToString>(GetProcAddress(hNtDLL, "RtlIpv6AddressToStringW"));
         if (nullptr == Ipv6AddressToStringW) {
             printf("没有找到RtlIpv6AddressToStringW函数\n");
         }
 
-        Ipv6StringToAddressW = (RtlIpv6StringToAddressRoutine)GetProcAddress(hNtDLL, "RtlIpv6StringToAddressW");
+        Ipv6StringToAddressW = reinterpret_cast<RtlIpv6StringToAddressRoutine>(GetProcAddress(hNtDLL, "RtlIpv6StringToAddressW"));
         if (nullptr == Ipv6StringToAddressW) {
             printf("没有找到RtlIpv6StringToAddressW函数\n");
         }
 
-        Ipv6AddressToStringA = (PRtlIpv6AddressToStringA)GetProcAddress(hNtDLL, "RtlIpv6AddressToStringA");
+        Ipv6AddressToStringA = reinterpret_cast<PRtlIpv6AddressToStringA>(GetProcAddress(hNtDLL, "RtlIpv6AddressToStringA"));
         if (nullptr == Ipv6AddressToStringA) {
             printf("没有找到RtlIpv6AddressToStringA函数\n");
         }

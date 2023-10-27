@@ -211,9 +211,9 @@ public:
     {
         HRESULT Result = S_OK;
         if (IsEqualIID(riid, IID_IUnknown)) {
-            *ppvObject = (IUnknown *)this;
+            *ppvObject = dynamic_cast<IUnknown *>(this);
         } else if (IsEqualIID(riid, IID_INetworkListManagerEvents)) {
-            *ppvObject = (INetworkListManagerEvents *)this;
+            *ppvObject = dynamic_cast<INetworkListManagerEvents *>(this);
         } else {
             Result = E_NOINTERFACE;
         }
@@ -223,7 +223,7 @@ public:
 
     virtual ULONG STDMETHODCALLTYPE AddRef(void)
     {
-        return (ULONG)InterlockedIncrement(&m_ref);
+        return InterlockedIncrement(&m_ref);
     }
 
     virtual ULONG STDMETHODCALLTYPE Release(void)
@@ -231,7 +231,7 @@ public:
         LONG Result = InterlockedDecrement(&m_ref);
         if (Result == 0)
             delete this;
-        return (ULONG)Result;
+        return Result;
     }
 
 private:
