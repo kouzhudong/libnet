@@ -26,7 +26,7 @@
 
 int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 {
-    //__debugbreak();
+    __debugbreak();
 
     setlocale(LC_CTYPE, ".936");
 
