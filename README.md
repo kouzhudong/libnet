@@ -1,9 +1,9 @@
 # libnet
 windows network library
 
-建立本工程的目的。
-这是一个应用层的收集各种网路操作的集合，主要是API的用法，主要是枚举和信息的收集。
-详细的有：socket(raw),Spi(lsp),wfp,wlan(wifi),winhttp(proxy),wininet,netblos,IpHelper,html,firewall,Netapi等。
+建立本工程的目的。  
+这是一个应用层的收集各种网路操作的集合，主要是API的用法，主要是枚举和信息的收集。  
+详细的有：socket(raw),Spi(lsp),wfp,wlan(wifi),winhttp(proxy),wininet,netblos,IpHelper,html,firewall,Netapi等。  
 
 命名管道和邮件槽算不算网络?有的说他们是属于文件。
 
@@ -57,5 +57,5 @@ The Security Support Provider Interface (SSPI) 算不算网络，微软把它列
 1. 利用本程序库的功能而制作一个程序。
 2. 这个程序主要是显示网络信息，但还有别的功能。
 3. 这个程序没有利用驱动。
-
-这个程序的名字叫：NetTool.exe吧！叫NetInfo.exe的格局有点小。  
+4. 这个程序的名字叫：NetTool.exe吧！叫NetInfo.exe的格局有点小。
+5. 重写操作系统自带的网络工具，添加或扩展功能，修改BUG，至少显示给改进下（对齐，错位）。
