@@ -2,23 +2,33 @@
 windows network library
 
 建立本工程的目的。  
-这是一个应用层的收集各种网路操作的集合，主要是API的用法，主要是枚举和信息的收集。  
-详细的有：socket(raw),Spi(lsp),wfp,wlan(wifi),winhttp(proxy),wininet,netblos,IpHelper,html,firewall,Netapi等。  
+这是一个应用层的收集（本地/本机）各种网路操作的集合，主要是API的用法，枚举和信息的收集。  
+注意：这不是一个扫描器，可以说是本地（本机）网络信息查看器。  
 
-命名管道和邮件槽算不算网络?有的说他们是属于文件。
+本仓库办包含的内容：
+1. socket(raw)
+2. Spi(lsp)
+3. wfp 应用层，不包含驱动层。
+4. wlan(wifi)
+5. winhttp(proxy)
+6. wininet
+7. netblos 不包含驱动层。
+8. IpHelper 不包含驱动层。
+9. html
+10. firewall
+11. Netapi 
+12. netsh 有待添加。
 
-The Security Support Provider Interface (SSPI) 算不算网络，微软把它列为Authentication (Authentication)。
-
-还有无线和代理以及netsh的接口。
-
+本仓库不包含的内容：
+1. 命名管道
+2. 邮件槽
+3. TDI
+4. WSK
+5. WFP 的 驱动层
+6. NDIS
+7. SSPI 驱动层和应用层都不包含。
 
 ---
-
-
-本库说明：  
-本库主要包含进程相关的内容，  
-如：Sock，WFP，NetBIOS，FireWall，SPI，WinHttp，WinINet等。  
-因为本工程是应用层，所以不包含TDI，WSK，WFP，NDIS等的驱动层的内容。  
 
 本库的设计的几个规则：  
 1.尽量不调用日志函数。  
