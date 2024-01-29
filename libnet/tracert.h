@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <netiodef.h>
 
 
 EXTERN_C_START
@@ -11,9 +12,3 @@ int WINAPI tracert(int argc, char ** argv);
 
 
 EXTERN_C_END
-
-
-class tracert
-{
-
-};

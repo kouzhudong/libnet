@@ -2,6 +2,7 @@
 
 #pragma warning(disable:28251)
 #pragma warning(disable:28301)
+#pragma warning(disable:26812) //相比于 "enum"，首选 "enum class" (Enum.3)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +65,7 @@
 //#include <ntdef.h>
 //#include <netioapi.h>
 //#include <LsaLookup.h>
-#include <netiodef.h>
+//#include <netiodef.h>
 #include <comutil.h>
 #include <wbemidl.h>
 #include <dbt.h>
