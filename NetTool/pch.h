@@ -99,6 +99,7 @@
 #pragma comment(lib, "Version.lib") 
 //#pragma comment (lib,"Url.lib")
 #pragma comment(lib, "wbemuuid.lib")
+#pragma comment(lib, "ntdll.lib")
 
 #include <bcrypt.h>
 #pragma comment (lib, "Bcrypt.lib")

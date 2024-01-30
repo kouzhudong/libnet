@@ -564,8 +564,9 @@ int SetTtl(SOCKET s, int ttl)
 //    response in case the endpoint is not responding. When we
 //    receive a packet decode it.
 //
-
-int __cdecl ping(int argc, char **argv)
+EXTERN_C
+__declspec(dllexport)
+int WINAPI ping(int argc, char **argv)
 /*
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
 */

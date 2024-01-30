@@ -1,20 +1,101 @@
 ﻿// NetTool.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
 
-#include <iostream>
+#include "..\inc\libnet.h"
+#include "pch.h"
 
-int main()
+
+#ifdef _WIN64  
+#ifdef _DEBUG
+#pragma comment(lib, "..\\x64\\Debug\\libnet.lib")
+#else
+#pragma comment(lib, "..\\x64\\Release\\libnet.lib")
+#endif
+#else 
+#ifdef _DEBUG
+#pragma comment(lib, "..\\Debug\\libnet.lib")
+#else
+#pragma comment(lib, "..\\Release\\libnet.lib")
+#endif
+#endif
+
+
+void banner()
 {
-    std::cout << "Hello World!\n";
+    printf("made by correy.\r\n");
+    printf("https://github.com/kouzhudong.\r\n");
+    printf("Copyright (C) Correy Studio. All rights reserved.\r\n");
+    printf("\r\n");
 }
 
-// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
-// 调试程序: F5 或调试 >“开始调试”菜单
 
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
+void Usage(_In_ LPCWSTR programName)
+{
+    banner();
+
+    printf("Usage:\r\n");                            //printf("%s.\r\n", __FUNCTION__);
+    //printf("%ls install.\r\n", programName);         // 这是第一个要运行的命令
+
+
+
+}
+
+
+void help()
+{
+    banner();
+
+ 
+}
+
+
+void init()
+{
+ 
+}
+
+
+int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
+{
+    //__debugbreak();
+
+    int ret = ERROR_SUCCESS;
+
+    setlocale(LC_CTYPE, ".936");
+
+    int Args;
+    LPWSTR * Arglist = CommandLineToArgvW(GetCommandLineW(), &Args);
+    if (nullptr == Arglist) {
+        printf("LastError：%d", GetLastError());
+        return 0;
+    }
+
+    //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
+    //tracert(argc, argv);//单字符函数入口示例。
+
+    if (1 == argc) {
+        Usage(Arglist[0]);
+        return ret;
+    }
+
+    if (_wcsicmp(Arglist[1], L"ping") == 0) {
+        ping(argc--, argv++);
+    }
+
+    //else if (_wcsicmp(Arglist[1], L"pathping") == 0) {
+    //    pathping(argc--, argv++);
+    //}
+
+    //else if (_wcsicmp(Arglist[1], L"tracert") == 0) {
+    //    tracert(argc--, argv++);
+    //}
+
+    else {
+        Usage(Arglist[0]);
+    }
+
+    LocalFree(Arglist);
+
+    return ret;
+}
+
