@@ -79,16 +79,16 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     if (_wcsicmp(Arglist[1], L"ping") == 0) {
-        ping(argc--, argv++);
+        ping(--argc, ++argv);
     }
 
-    //else if (_wcsicmp(Arglist[1], L"pathping") == 0) {
-    //    pathping(argc--, argv++);
-    //}
+    else if (_wcsicmp(Arglist[1], L"pathping") == 0) {
+        pathping(--argc, ++argv);
+    }
 
-    //else if (_wcsicmp(Arglist[1], L"tracert") == 0) {
-    //    tracert(argc--, argv++);
-    //}
+    else if (_wcsicmp(Arglist[1], L"tracert") == 0) {
+        tracert(--argc, ++argv);
+    }
 
     else {
         Usage(Arglist[0]);
