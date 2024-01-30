@@ -33,8 +33,10 @@ void Usage(_In_ LPCWSTR programName)
 {
     banner();
 
-    printf("Usage:\r\n");                            //printf("%s.\r\n", __FUNCTION__);
-    //printf("%ls install.\r\n", programName);         // 这是第一个要运行的命令
+    printf("Usage:\r\n");                 //printf("%s.\r\n", __FUNCTION__);
+    printf("%ls ping.\r\n", programName); 
+    printf("%ls pathping.\r\n", programName);
+    printf("%ls tracert.\r\n", programName);
 
 
 
@@ -71,7 +73,6 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
-    //tracert(argc, argv);//单字符函数入口示例。
 
     if (1 == argc) {
         Usage(Arglist[0]);
