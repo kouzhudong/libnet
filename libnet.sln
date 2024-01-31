@@ -11,6 +11,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnet", "libnet\libnet.vcxproj", "{77427D08-54F8-46F4-80E4-A147B852E1BF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetTool", "NetTool\NetTool.vcxproj", "{08366C20-CB1B-4B79-BE74-ED450AEFBCD3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77427D08-54F8-46F4-80E4-A147B852E1BF} = {77427D08-54F8-46F4-80E4-A147B852E1BF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -198,6 +198,9 @@ int WINAPI pathping(int argc, char ** argv);
 __declspec(dllimport)
 int WINAPI ping(int argc, char ** argv);
 
+__declspec(dllimport)
+int WINAPI whois(int argc, char ** argv);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

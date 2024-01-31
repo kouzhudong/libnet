@@ -91,6 +91,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         tracert(--argc, ++argv);
     }
 
+    else if (_wcsicmp(Arglist[1], L"whois") == 0) {
+        whois(--argc, ++argv);
+    }
+
     else {
         Usage(Arglist[0]);
     }
