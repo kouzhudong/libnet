@@ -6,6 +6,8 @@
 #include "IPArp.h"
 #include "whois.h"
 #include "ping.h"
+#include "pathpings.h"
+#include "tracert.h"
 
 
 #ifdef _WIN64  

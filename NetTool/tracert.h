@@ -2,13 +2,6 @@
 
 #include "pch.h"
 #include <netiodef.h>
+#include <tdiinfo.h>
 
-
-EXTERN_C_START
-
-
-__declspec(dllexport)
 int WINAPI tracert(int argc, char ** argv);
-
-
-EXTERN_C_END

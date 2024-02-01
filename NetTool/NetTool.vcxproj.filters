@@ -30,6 +30,12 @@
     <ClCompile Include="resolve.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="tracert.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="pathping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -50,5 +56,25 @@
     <ClInclude Include="ping.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tracert.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pathping.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pathpings.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="localmsg.mc">
+      <Filter>资源文件</Filter>
+    </CustomBuild>
+    <CustomBuild Include="nlstxt.mc">
+      <Filter>资源文件</Filter>
+    </CustomBuild>
+    <CustomBuild Include="pathping.mc">
+      <Filter>资源文件</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

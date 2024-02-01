@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <winternl.h>
 
 typedef struct in_addr IPV4_ADDRESS;
 typedef struct in6_addr IPV6_ADDRESS;
@@ -54,11 +55,4 @@ extern HANDLE g_hIcmp;
 extern ULONG g_ulRcvBufSize;
 
 
-EXTERN_C_START
-
-
-__declspec(dllexport)
 int __cdecl pathping(int argc, char ** argv);
-
-
-EXTERN_C_END

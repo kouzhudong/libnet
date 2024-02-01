@@ -90,22 +90,10 @@
     <ClInclude Include="dns.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="tracert.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="pathping.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="pathpings.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="NetworkListManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="iphdr.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="resolve.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -179,12 +167,6 @@
     <ClCompile Include="dns.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="tracert.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="pathping.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkListManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -196,17 +178,6 @@
     <ResourceCompile Include="libnet.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="localmsg.mc">
-      <Filter>资源文件</Filter>
-    </CustomBuild>
-    <CustomBuild Include="nlstxt.mc">
-      <Filter>资源文件</Filter>
-    </CustomBuild>
-    <CustomBuild Include="pathping.mc">
-      <Filter>资源文件</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />

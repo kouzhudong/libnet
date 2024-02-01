@@ -191,23 +191,19 @@
     <ClInclude Include="html.h" />
     <ClInclude Include="IOCTL.h" />
     <ClInclude Include="IpAddr.h" />
-    <ClInclude Include="iphdr.h" />
     <ClInclude Include="IpHelper.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="NetApi.h" />
     <ClInclude Include="NetBIOS.h" />
     <ClInclude Include="NetworkListManager.h" />
     <ClInclude Include="notify.h" />
-    <ClInclude Include="pathping.h" />
     <ClInclude Include="pathpings.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="raw.h" />
-    <ClInclude Include="resolve.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sock.h" />
     <ClInclude Include="spi.h" />
     <ClInclude Include="tcp.h" />
-    <ClInclude Include="tracert.h" />
     <ClInclude Include="udp.h" />
     <ClInclude Include="WebBrowser.h" />
     <ClInclude Include="wfp.h" />
@@ -229,7 +225,6 @@
     <ClCompile Include="NetBIOS.cpp" />
     <ClCompile Include="NetworkListManager.cpp" />
     <ClCompile Include="notify.cpp" />
-    <ClCompile Include="pathping.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -240,7 +235,6 @@
     <ClCompile Include="Sock.cpp" />
     <ClCompile Include="spi.cpp" />
     <ClCompile Include="tcp.cpp" />
-    <ClCompile Include="tracert.cpp" />
     <ClCompile Include="udp.cpp" />
     <ClCompile Include="WebBrowser.cpp" />
     <ClCompile Include="wfp.cpp" />
@@ -253,33 +247,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libnet.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="localmsg.mc">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">mc %(FullPath)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">localmsg.rc; localmsg.h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">mc %(FullPath)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">localmsg.rc; localmsg.h;%(Outputs)</Outputs>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="nlstxt.mc">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">mc %(FullPath)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nlstxt.rc; nlstxt.h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">mc %(FullPath)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nlstxt.rc; nlstxt.h;%(Outputs)</Outputs>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="pathping.mc">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">mc %(FullPath)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pathping.rc; pathping.h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">mc %(FullPath)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pathping.rc; pathping.h;%(Outputs)</Outputs>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
