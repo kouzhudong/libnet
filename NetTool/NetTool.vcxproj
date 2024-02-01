@@ -147,9 +147,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IPArp.Cpp" />
     <ClCompile Include="NetTool.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IPArp.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

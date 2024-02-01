@@ -3,6 +3,7 @@
 
 #include "..\inc\libnet.h"
 #include "pch.h"
+#include "IPArp.h"
 
 
 #ifdef _WIN64  
@@ -93,6 +94,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     else if (_wcsicmp(Arglist[1], L"whois") == 0) {
         whois(--argc, ++argv);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"Arp") == 0) {
+        IpArp(--argc, ++argv);
     }
 
     else {
