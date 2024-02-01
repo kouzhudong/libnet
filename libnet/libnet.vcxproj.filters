@@ -194,9 +194,6 @@
     <ClCompile Include="resolve.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="whois.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />

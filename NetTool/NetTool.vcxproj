@@ -149,10 +149,12 @@
   <ItemGroup>
     <ClCompile Include="IPArp.Cpp" />
     <ClCompile Include="NetTool.cpp" />
+    <ClCompile Include="whois.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IPArp.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="whois.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

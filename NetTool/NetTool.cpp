@@ -4,6 +4,7 @@
 #include "..\inc\libnet.h"
 #include "pch.h"
 #include "IPArp.h"
+#include "whois.h"
 
 
 #ifdef _WIN64  

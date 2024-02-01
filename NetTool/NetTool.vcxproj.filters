@@ -21,12 +21,18 @@
     <ClCompile Include="IPArp.Cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="whois.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="IPArp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="whois.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

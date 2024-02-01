@@ -246,7 +246,6 @@
     <ClCompile Include="udp.cpp" />
     <ClCompile Include="WebBrowser.cpp" />
     <ClCompile Include="wfp.cpp" />
-    <ClCompile Include="whois.cpp" />
     <ClCompile Include="Winhttp.cpp" />
     <ClCompile Include="WinINet.cpp" />
     <ClCompile Include="Wlan.cpp" />
