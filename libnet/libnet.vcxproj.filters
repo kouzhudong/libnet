@@ -188,12 +188,6 @@
     <ClCompile Include="NetworkListManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Ping.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="resolve.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />

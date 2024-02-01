@@ -24,6 +24,12 @@
     <ClCompile Include="whois.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Ping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="resolve.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -33,6 +39,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="whois.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resolve.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iphdr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ping.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

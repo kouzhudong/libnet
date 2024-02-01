@@ -5,6 +5,7 @@
 #include "pch.h"
 #include "IPArp.h"
 #include "whois.h"
+#include "ping.h"
 
 
 #ifdef _WIN64  

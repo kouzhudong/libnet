@@ -59,7 +59,7 @@
 //#include <ntdef.h>
 //#include <netioapi.h>
 //#include <LsaLookup.h>
-#include <netiodef.h>
+//#include <netiodef.h>
 //#include <wbemidl.h>
 #include <dbt.h>
 #include <lm.h>
