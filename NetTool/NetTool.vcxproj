@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="IPArp.Cpp" />
+    <ClCompile Include="IPRoute.Cpp" />
     <ClCompile Include="NetTool.cpp" />
     <ClCompile Include="pathping.cpp" />
     <ClCompile Include="Ping.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="IPArp.h" />
     <ClInclude Include="iphdr.h" />
+    <ClInclude Include="IPRoute.h" />
     <ClInclude Include="pathping.h" />
     <ClInclude Include="pathpings.h" />
     <ClInclude Include="pch.h" />
