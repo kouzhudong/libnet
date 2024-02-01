@@ -9,6 +9,7 @@
 #include "pathpings.h"
 #include "tracert.h"
 #include "IPRoute.h"
+#include "IPConfig.h"
 
 
 #ifdef _WIN64  
@@ -107,6 +108,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     else if (_wcsicmp(Arglist[1], L"Route") == 0) {
         IpRoute(--argc, ++argv);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"Ipconfig") == 0) {
+        Ipconfig();
     }
 
     else {
