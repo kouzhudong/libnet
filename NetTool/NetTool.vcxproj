@@ -153,6 +153,7 @@
     <ClCompile Include="NetApi.cpp" />
     <ClCompile Include="NetBIOS.cpp" />
     <ClCompile Include="NetTool.cpp" />
+    <ClCompile Include="nslookup.cpp" />
     <ClCompile Include="pathping.cpp" />
     <ClCompile Include="Ping.cpp" />
     <ClCompile Include="resolve.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="IPRoute.h" />
     <ClInclude Include="NetApi.h" />
     <ClInclude Include="NetBIOS.h" />
+    <ClInclude Include="nslookup.h" />
     <ClInclude Include="pathping.h" />
     <ClInclude Include="pathpings.h" />
     <ClInclude Include="pch.h" />

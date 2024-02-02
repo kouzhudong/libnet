@@ -13,6 +13,7 @@
 #include "wfp.h"
 #include "spi.h"
 #include "NetBIOS.h"
+#include "nslookup.h"
 
 
 #ifdef _WIN64  
@@ -140,7 +141,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     else if (_wcsicmp(Arglist[1], L"nslookup") == 0) {
-        //nslookup(--argc, ++Arglist);
+        nslookup(--argc, ++argv);
     }
 
     else if (_wcsicmp(Arglist[1], L"wlan") == 0) {
