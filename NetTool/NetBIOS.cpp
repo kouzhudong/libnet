@@ -1,5 +1,7 @@
-#include "pch.h"
+
 #include "NetBIOS.h"
+
+ASTAT Adapter;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,14 +18,6 @@ You can use the Netbios function to get the Media Access Control(MAC) address fo
 The following example uses the NCBASTAT command, providing an asterisk(*) as the name in the ncb_callname member of the NCB structure.
 */
 
-
-typedef struct _ASTAT_
-{
-    ADAPTER_STATUS adapt;
-    NAME_BUFFER NameBuff[30];
-}ASTAT, * PASTAT;
-
-ASTAT Adapter;
 
 void ncbastat(void)
 {
@@ -63,6 +57,7 @@ void ncbastat(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 /*
 Listing all NetBIOS Names on a LANA
 
@@ -71,20 +66,6 @@ You can use the Netbios function to list all the NetBIOS names on a LANA.
 The following example uses a unique name as the name in the ncb_callname member of the NCB structure.
 This causes the adapter status to be treated as a remote call, which enables you to retrieve names added by other processes.
 */
-
-// Set LANANUM and LOCALNAME as appropriate for your system
-#define LANANUM     0
-#define LOCALNAME   "MAKEUNIQUE"
-#define NBCheck(x)  if (NRC_GOODRET != x.ncb_retcode) { \
-                        printf("Line %d: Got 0x%x from NetBios()\n", \
-                               __LINE__, x.ncb_retcode); \
-                    }
-
-void MakeNetbiosName(char *, LPCSTR);
-BOOL NBAddName(UCHAR nLana, LPCSTR szName);
-BOOL NBReset(UCHAR nLana, UCHAR nSessions, UCHAR nNames);
-BOOL NBListNames(int, LPCSTR);
-BOOL NBAdapterStatus(int nLana, PVOID pBuffer, int cbBuffer, LPCSTR szName);
 
 
 void NBListNames()
