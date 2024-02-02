@@ -119,7 +119,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     else if (_wcsicmp(Arglist[1], L"spi") == 0) {
-        //spi(--argc, ++Arglist);
+        EnumSpiInfo(--argc, ++Arglist);
     }
 
     else {
@@ -130,4 +130,3 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     return ret;
 }
-
