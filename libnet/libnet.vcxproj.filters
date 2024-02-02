@@ -45,12 +45,6 @@
     <ClInclude Include="NetApi.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\inc\libnet.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Wlan.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="IOCTL.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -79,9 +73,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="dns.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="pathpings.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="NetworkListManager.h">
@@ -117,9 +108,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="NetApi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Wlan.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="IOCTL.cpp">

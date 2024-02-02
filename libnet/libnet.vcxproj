@@ -183,7 +183,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\inc\libnet.h" />
     <ClInclude Include="Adapter.h" />
     <ClInclude Include="dns.h" />
     <ClInclude Include="Firewall.h" />
@@ -196,7 +195,6 @@
     <ClInclude Include="NetApi.h" />
     <ClInclude Include="NetworkListManager.h" />
     <ClInclude Include="notify.h" />
-    <ClInclude Include="pathpings.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="raw.h" />
     <ClInclude Include="resource.h" />
@@ -206,7 +204,6 @@
     <ClInclude Include="WebBrowser.h" />
     <ClInclude Include="Winhttp.h" />
     <ClInclude Include="WinINet.h" />
-    <ClInclude Include="Wlan.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Adapter.cpp" />
@@ -234,7 +231,6 @@
     <ClCompile Include="WebBrowser.cpp" />
     <ClCompile Include="Winhttp.cpp" />
     <ClCompile Include="WinINet.cpp" />
-    <ClCompile Include="Wlan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />

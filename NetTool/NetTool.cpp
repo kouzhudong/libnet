@@ -143,8 +143,8 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         //nslookup(--argc, ++Arglist);
     }
 
-    else if (_wcsicmp(Arglist[1], L"wlanconf") == 0) {
-        //wlanconf(--argc, ++Arglist);
+    else if (_wcsicmp(Arglist[1], L"wlan") == 0) {
+        //wlan(--argc, ++Arglist);
     }
 
     else if (_wcsicmp(Arglist[1], L"net") == 0) {

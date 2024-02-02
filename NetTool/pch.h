@@ -148,6 +148,9 @@
 #include <windns.h>   //DNS api's
 #pragma comment (lib,"Dnsapi.lib")
 
+#include <Wlanapi.h>
+#pragma comment (lib, "Wlanapi.lib")
+
 #include <iostream>
 #include <string>
 #include <list>
