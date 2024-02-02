@@ -192,7 +192,6 @@
     <ClInclude Include="IpAddr.h" />
     <ClInclude Include="IpHelper.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="NetApi.h" />
     <ClInclude Include="NetworkListManager.h" />
     <ClInclude Include="notify.h" />
     <ClInclude Include="pch.h" />
@@ -215,7 +214,6 @@
     <ClCompile Include="IpAddr.cpp" />
     <ClCompile Include="IpHelper.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="NetApi.cpp" />
     <ClCompile Include="NetworkListManager.cpp" />
     <ClCompile Include="notify.cpp" />
     <ClCompile Include="pch.cpp">

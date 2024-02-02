@@ -150,6 +150,7 @@
     <ClCompile Include="IPArp.Cpp" />
     <ClCompile Include="IPConfig.cpp" />
     <ClCompile Include="IPRoute.Cpp" />
+    <ClCompile Include="NetApi.cpp" />
     <ClCompile Include="NetBIOS.cpp" />
     <ClCompile Include="NetTool.cpp" />
     <ClCompile Include="pathping.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="IPConfig.h" />
     <ClInclude Include="iphdr.h" />
     <ClInclude Include="IPRoute.h" />
+    <ClInclude Include="NetApi.h" />
     <ClInclude Include="NetBIOS.h" />
     <ClInclude Include="pathping.h" />
     <ClInclude Include="pathpings.h" />
