@@ -155,6 +155,7 @@
     <ClCompile Include="Ping.cpp" />
     <ClCompile Include="resolve.cpp" />
     <ClCompile Include="tracert.cpp" />
+    <ClCompile Include="wfp.cpp" />
     <ClCompile Include="whois.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +169,7 @@
     <ClInclude Include="ping.h" />
     <ClInclude Include="resolve.h" />
     <ClInclude Include="tracert.h" />
+    <ClInclude Include="wfp.h" />
     <ClInclude Include="whois.h" />
   </ItemGroup>
   <ItemGroup>

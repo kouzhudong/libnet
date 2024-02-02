@@ -84,7 +84,7 @@
 
 #include <wincon.h> 
 #include <time.h> 
-//#include <fwpmu.h>
+#include <fwpmu.h>
 #include <conio.h>
 #include <nb30.h>
 

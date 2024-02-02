@@ -27,9 +27,6 @@
     <ClInclude Include="spi.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="wfp.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Winhttp.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -108,9 +105,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="spi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="wfp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Winhttp.cpp">

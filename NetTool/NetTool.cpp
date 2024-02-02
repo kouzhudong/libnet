@@ -10,6 +10,7 @@
 #include "tracert.h"
 #include "IPRoute.h"
 #include "IPConfig.h"
+#include "wfp.h"
 
 
 #ifdef _WIN64  
@@ -79,8 +80,6 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         return 0;
     }
 
-    //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
-
     if (1 == argc) {
         Usage(Arglist[0]);
         return ret;
@@ -112,6 +111,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     else if (_wcsicmp(Arglist[1], L"Ipconfig") == 0) {
         Ipconfig();
+    }
+
+    else if (_wcsicmp(Arglist[1], L"wfp") == 0) {
+        EnumWfpInfo(--argc, ++Arglist);
     }
 
     else {

@@ -203,13 +203,6 @@ VOID WINAPI PrintDnsRecordList(PDNS_RECORD DnsRecord);
 
 
 __declspec(dllimport)
-void EnumWfpInfo(int argc, wchar_t * argv[]);
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-__declspec(dllimport)
 void WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask);
 
 __declspec(dllimport)
