@@ -11,6 +11,7 @@
 #include "IPRoute.h"
 #include "IPConfig.h"
 #include "wfp.h"
+#include "spi.h"
 
 
 #ifdef _WIN64  
@@ -115,6 +116,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     else if (_wcsicmp(Arglist[1], L"wfp") == 0) {
         EnumWfpInfo(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"spi") == 0) {
+        //spi(--argc, ++Arglist);
     }
 
     else {

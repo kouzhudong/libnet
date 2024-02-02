@@ -202,7 +202,6 @@
     <ClInclude Include="raw.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sock.h" />
-    <ClInclude Include="spi.h" />
     <ClInclude Include="tcp.h" />
     <ClInclude Include="udp.h" />
     <ClInclude Include="WebBrowser.h" />
@@ -232,7 +231,6 @@
     </ClCompile>
     <ClCompile Include="raw.cpp" />
     <ClCompile Include="Sock.cpp" />
-    <ClCompile Include="spi.cpp" />
     <ClCompile Include="tcp.cpp" />
     <ClCompile Include="udp.cpp" />
     <ClCompile Include="WebBrowser.cpp" />

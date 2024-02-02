@@ -24,9 +24,6 @@
     <ClInclude Include="Sock.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="spi.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Winhttp.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -102,9 +99,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Sock.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="spi.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Winhttp.cpp">
