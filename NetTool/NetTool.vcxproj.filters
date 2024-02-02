@@ -48,6 +48,9 @@
     <ClCompile Include="spi.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="NetBIOS.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -87,6 +90,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="spi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NetBIOS.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -45,9 +45,6 @@
     <ClInclude Include="NetApi.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="NetBIOS.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\inc\libnet.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -120,9 +117,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="NetApi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="NetBIOS.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Wlan.cpp">

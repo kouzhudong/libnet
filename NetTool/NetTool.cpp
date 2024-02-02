@@ -12,6 +12,7 @@
 #include "IPConfig.h"
 #include "wfp.h"
 #include "spi.h"
+#include "NetBIOS.h"
 
 
 #ifdef _WIN64  
@@ -120,6 +121,34 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     else if (_wcsicmp(Arglist[1], L"spi") == 0) {
         EnumSpiInfo(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"nbtstat") == 0) {
+        //nbtstat(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"netstat") == 0) {
+        //netstat(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"netsh") == 0) {
+        //netsh(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"finger") == 0) {
+        //finger(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"nslookup") == 0) {
+        //nslookup(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"wlanconf") == 0) {
+        //wlanconf(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"net") == 0) {
+        //net(--argc, ++Arglist);
     }
 
     else {
