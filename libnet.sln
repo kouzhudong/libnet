@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetTool", "NetTool\NetTool.
 		{77427D08-54F8-46F4-80E4-A147B852E1BF} = {77427D08-54F8-46F4-80E4-A147B852E1BF}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetMon", "NetMon\NetMon.vcxproj", "{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -47,6 +49,14 @@ Global
 		{08366C20-CB1B-4B79-BE74-ED450AEFBCD3}.Release|x64.Build.0 = Release|x64
 		{08366C20-CB1B-4B79-BE74-ED450AEFBCD3}.Release|x86.ActiveCfg = Release|Win32
 		{08366C20-CB1B-4B79-BE74-ED450AEFBCD3}.Release|x86.Build.0 = Release|Win32
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Debug|x64.ActiveCfg = Debug|x64
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Debug|x64.Build.0 = Debug|x64
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Debug|x86.ActiveCfg = Debug|Win32
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Debug|x86.Build.0 = Debug|Win32
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Release|x64.ActiveCfg = Release|x64
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Release|x64.Build.0 = Release|x64
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Release|x86.ActiveCfg = Release|Win32
+		{BAD719D9-0C18-4DB7-9BFE-E032E2C07FE0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
