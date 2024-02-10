@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <IncludePath>$(SolutionDir)wil\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -195,8 +195,6 @@
     <ClInclude Include="IpAddr.h" />
     <ClInclude Include="IpHelper.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="NetworkListManager.h" />
-    <ClInclude Include="notify.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="raw.h" />
     <ClInclude Include="resource.h" />
@@ -217,8 +215,6 @@
     <ClCompile Include="IpAddr.cpp" />
     <ClCompile Include="IpHelper.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="NetworkListManager.cpp" />
-    <ClCompile Include="notify.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

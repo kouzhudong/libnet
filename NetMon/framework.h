@@ -192,5 +192,11 @@
 
 using namespace std;
 
+#include <wil/result_macros.h>
+#include <wil/stl.h>
+#include <wil/resource.h>
+#include <wil/com.h>
+#include <wrl.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
