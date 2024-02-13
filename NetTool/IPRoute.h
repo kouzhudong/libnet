@@ -1,16 +1,6 @@
-#ifndef _IPROUTE_H
-#define _IPROUTE_H
+#pragma once
 
-#include <windows.h>
-#include <winsock.h>
-#include <iphlpapi.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include <iptypes.h>
+#include "pch.h"
 
 void DoGetIpForwardTable();
 void DoSetIpForwardEntry(char* pszDest, char* pszNetMask, char* pszGateway, char* pszInterface, DWORD dwMetric = 1);
@@ -22,5 +12,3 @@ DWORD MyGetIpForwardTable(PMIB_IPFORWARDTABLE& pIpRouteTab, BOOL fOrder = FALSE)
 void PrintIpForwardTable(PMIB_IPFORWARDTABLE pIpRouteTable);
 
 void _cdecl IpRoute(int argc, char ** argv);
-
-#endif

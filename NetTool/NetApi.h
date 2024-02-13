@@ -1,8 +1,6 @@
 #pragma once
 
-class NetApi
-{
-};
+#include "pch.h"
 
 
 void UserEnum();

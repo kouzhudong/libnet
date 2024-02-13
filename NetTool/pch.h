@@ -67,6 +67,9 @@
 #include <ws2spi.h>
 #include <comdef.h>
 #include <comutil.h>
+#include <ws2ipdef.h>
+#include <limits.h>
+#include <iptypes.h>
 
 #include <atlstr.h>
 #include <atlconv.h>

@@ -1,30 +1,20 @@
-//+-------------------------------------------------------------------------
-//
 //  Microsoft Windows
-//
 //  Copyright (C) Microsoft Corporation, 2008-2009
-//
 //  File:       iparp.h
-//
-//--------------------------------------------------------------------------
 
-#ifndef HEADER_IPARP
-#define HEADER_IPARP
+#pragma once
 
-#include <winsock2.h>
-#include <ws2ipdef.h>
-#include <iphlpapi.h>
-#include <mstcpip.h>
-#include <stdio.h>
-#include <assert.h>
+#include "pch.h"
 
 #ifndef WIN_SUCCESS
 #define WIN_SUCCESS(x) ((x) == NO_ERROR)
 #endif //WIN_SUCCESS
 
-//
+#define IPADDR_BUF_SIZE 128
+#define IPTYPE_BUF_SIZE 128
+#define PHYSADDR_BUF_SIZE 256
+
 // Forward declarations
-//
 void DoGetIpNetTable();
 void DoSetIpNetEntry(char* pszDottedInetAddr, char* pszPhysAddr, char* pszInterface = NULL);
 void DoDeleteIpNetEntry(char* pszDottedInetAddr, char* pszInterface = NULL);
@@ -34,5 +24,3 @@ int StringToPhysAddr(char* szInEther,  char* szOutEther);
 DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE& pIpAddrTable, bool fOrder = TRUE);
 
 void _cdecl IpArp(int argc, char ** argv);
-
-#endif

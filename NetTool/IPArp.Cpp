@@ -14,10 +14,6 @@
 
 #include "IpArp.h"
 
-#define IPADDR_BUF_SIZE 128
-#define IPTYPE_BUF_SIZE 128
-#define PHYSADDR_BUF_SIZE 256
-
 #pragma warning(disable:4996)
 
 void Usage(const char * pszProgramName)
