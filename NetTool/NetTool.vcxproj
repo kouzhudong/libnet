@@ -156,7 +156,6 @@
     <ClCompile Include="nslookup.cpp" />
     <ClCompile Include="pathping.cpp" />
     <ClCompile Include="Ping.cpp" />
-    <ClCompile Include="resolve.cpp" />
     <ClCompile Include="spi.cpp" />
     <ClCompile Include="tracert.cpp" />
     <ClCompile Include="wfp.cpp" />
@@ -175,7 +174,6 @@
     <ClInclude Include="pathpings.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ping.h" />
-    <ClInclude Include="resolve.h" />
     <ClInclude Include="spi.h" />
     <ClInclude Include="tracert.h" />
     <ClInclude Include="wfp.h" />

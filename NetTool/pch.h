@@ -70,6 +70,7 @@
 #include <ws2ipdef.h>
 #include <limits.h>
 #include <iptypes.h>
+#include <strsafe.h>
 
 #include <atlstr.h>
 #include <atlconv.h>

@@ -27,9 +27,6 @@
     <ClCompile Include="Ping.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="resolve.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="tracert.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -71,12 +68,6 @@
     <ClInclude Include="whois.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="resolve.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="iphdr.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ping.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -111,6 +102,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="nslookup.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iphdr.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
