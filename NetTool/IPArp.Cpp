@@ -48,9 +48,8 @@ void _cdecl IpArp(int argc, char ** argv)
 {
     WORD wVersionRequested = MAKEWORD(1, 1);
     WSADATA wsaData;
-    int nRet;
 
-    nRet = WSAStartup(wVersionRequested, &wsaData);
+    int nRet = WSAStartup(wVersionRequested, &wsaData);
     if (wsaData.wVersion != wVersionRequested) {
         fprintf(stderr, "\n Wrong version\n");
         return;
@@ -63,9 +62,8 @@ void _cdecl IpArp(int argc, char ** argv)
         Usage("IpArp");
 
     switch (argv[1][1]) {
-    case 'a':
-        // Print arp table
-        DoGetIpNetTable();
+    case 'a':        
+        DoGetIpNetTable();// Print arp table
         break;
     case 's':
         //Update or add an ARP Internet/Ethernet Address entry 
@@ -85,9 +83,8 @@ void _cdecl IpArp(int argc, char ** argv)
         else
             Usage("IpArp");
         break;
-    default:
-        // help
-        Usage("IpArp");
+    default:        
+        Usage("IpArp");// help
         break;
     }
 
@@ -142,6 +139,7 @@ void DoSetIpNetEntry(char * pszDottedInetAddr, char * pszPhysAddr, char * pszInt
         printf("IpArp: Bad Argument %s\n", pszPhysAddr);
         return;
     }
+
     MIB_IPNETROW arpEntry; // an arp entry
     if (pszInterface) {
         // User provides a interface index number
@@ -156,6 +154,7 @@ void DoSetIpNetEntry(char * pszDottedInetAddr, char * pszPhysAddr, char * pszInt
         arpEntry.dwIndex = pIpAddrTable->table[0].dwIndex;
         free(pIpAddrTable);
     }
+
     arpEntry.dwPhysAddrLen = 6;
     memcpy(arpEntry.bPhysAddr, bPhysAddr, 6);
     arpEntry.dwAddr = dwInetAddr;
@@ -214,7 +213,6 @@ bool InterfaceIdxToInterfaceIp(PMIB_IPADDRTABLE pIpAddrTable, DWORD dwIndex, cha
 // Output: If it returns TRUE, str contains the ip address of the interface
 {
     struct in_addr inadTmp;
-    char * szIpAddr;
 
     if (pIpAddrTable == NULL || str == NULL)
         return FALSE;
@@ -224,7 +222,7 @@ bool InterfaceIdxToInterfaceIp(PMIB_IPADDRTABLE pIpAddrTable, DWORD dwIndex, cha
     for (DWORD dwIdx = 0; dwIdx < pIpAddrTable->dwNumEntries; dwIdx++) {
         if (dwIndex == pIpAddrTable->table[dwIdx].dwIndex) {
             inadTmp.s_addr = pIpAddrTable->table[dwIdx].dwAddr;
-            szIpAddr = inet_ntoa(inadTmp);
+            char * szIpAddr = inet_ntoa(inadTmp);
             if (szIpAddr) {
                 strcpy_s(str, IPADDR_BUF_SIZE, szIpAddr);
                 return TRUE;
@@ -311,7 +309,7 @@ void PrintIpNetTable(PMIB_IPNETTABLE pIpNetTable)
 //   159.54.170.1          00-10-54-42-c0-88     dynamic
 //   159.54.170.113        00-aa-00-c0-80-2e     dynamic
 {
-    DWORD i, dwStatus, dwCurrIndex;
+    DWORD dwStatus;
     struct in_addr inadTmp;
     char szPrintablePhysAddr[PHYSADDR_BUF_SIZE];
     char szType[IPTYPE_BUF_SIZE];
@@ -322,6 +320,7 @@ void PrintIpNetTable(PMIB_IPNETTABLE pIpNetTable)
         printf("pIpNetTable == NULL in line %d\n", __LINE__);
         return;
     }
+
     // get IP Address Table for mapping interface index number to ip address
     if ((dwStatus = MyGetIpAddrTable(pIpAddrTable)) != NO_ERROR) {
         printf("GetIpAddrTable returned 0x%x\n", dwStatus);
@@ -330,8 +329,9 @@ void PrintIpNetTable(PMIB_IPNETTABLE pIpNetTable)
         return;
     }
     assert(pIpAddrTable);
+
     // Note: the ARP table should be sorted in interface index
-    dwCurrIndex = pIpNetTable->table[0].dwIndex;
+    DWORD dwCurrIndex = pIpNetTable->table[0].dwIndex;
     if (InterfaceIdxToInterfaceIp(pIpAddrTable, dwCurrIndex, szIpAddr)) {
         printf("\nInterface: %s on Interface 0x%X\n", szIpAddr, dwCurrIndex);
         printf("  Internet Address      Physical Address      Type\n");
@@ -340,7 +340,7 @@ void PrintIpNetTable(PMIB_IPNETTABLE pIpNetTable)
         return;
     }
 
-    for (i = 0; i < pIpNetTable->dwNumEntries; ++i) {
+    for (DWORD i = 0; i < pIpNetTable->dwNumEntries; ++i) {
         if (pIpNetTable->table[i].dwIndex != dwCurrIndex) {
             dwCurrIndex = pIpNetTable->table[i].dwIndex;
             if (InterfaceIdxToInterfaceIp(pIpAddrTable, dwCurrIndex, szIpAddr)) {
@@ -384,7 +384,6 @@ void PrintIpAddrTable(PMIB_IPADDRTABLE pIpAddrTable)
 //  Format of IP Address Table:
 //  ipAdEntAddr   ifAdEntIfIndex  ipAdEntNetMask   ipAdEntBcastAddr  ipAdEntReasmMaxSize
 {
-    DWORD i;
     struct in_addr inadTmp1;
     struct in_addr inadTmp2;
     char szAddr[IPADDR_BUF_SIZE];
@@ -396,7 +395,7 @@ void PrintIpAddrTable(PMIB_IPADDRTABLE pIpAddrTable)
     }
 
     printf("ipAdEntAddr\t ifAdEntIfIndex\t ipAdEntNetMask\t ipAdEntBcastAddr\t ipAdEntReasmMaxSize\n");
-    for (i = 0; i < pIpAddrTable->dwNumEntries; ++i) {
+    for (DWORD i = 0; i < pIpAddrTable->dwNumEntries; ++i) {
         inadTmp1.s_addr = pIpAddrTable->table[i].dwAddr;
         strcpy_s(szAddr, IPADDR_BUF_SIZE, inet_ntoa(inadTmp1));
         inadTmp2.s_addr = pIpAddrTable->table[i].dwMask;
@@ -445,7 +444,6 @@ DWORD MyGetIpNetTable(PMIB_IPNETTABLE & pIpNetTable, bool fOrder)
     DWORD dwActualSize = 0;
 
     // query for buffer size needed
-    dwActualSize = 0;
     status = GetIpNetTable(pIpNetTable, &dwActualSize, fOrder);
     if (status == NO_ERROR) {
         return status;

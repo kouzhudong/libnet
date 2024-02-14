@@ -1227,8 +1227,8 @@ void PerformLookup(PCHAR pAddr)
         } else {
         }
     } else if (!strcmp(State.type, TypeA)
-             || !strcmp(State.type, TypeAAAA)
-             || !strcmp(State.type, TypeBoth)) {
+               || !strcmp(State.type, TypeAAAA)
+               || !strcmp(State.type, TypeBoth)) {
         if ((TYPE_A == Type) /*|| (TYPE_AAAA == Type)*/) {
             if (0 == NumAuthority)
                 _tprintf(_T("Non-authoritative answer:\n"));
@@ -1516,7 +1516,6 @@ int nslookup(int argc, char * argv[])
     case 0:
         /* This means that it was a /? parameter. */
         break;
-
     default:
         /* Anything else means we enter interactive mode. The only exception
            to this is when the host to resolve was provided on the command

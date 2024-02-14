@@ -36,38 +36,24 @@
 //    converts it to a string representation. This string is printed
 //    to the console via stdout.
 //
-int PrintAddress(SOCKADDR *sa, int salen)
+int PrintAddress(SOCKADDR * sa, int salen)
 {
-    char    host[NI_MAXHOST],
-            serv[NI_MAXSERV];
-    int     hostlen = NI_MAXHOST,
-            servlen = NI_MAXSERV,
-            rc;
+    char    host[NI_MAXHOST], serv[NI_MAXSERV];
+    int     hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
 
-    rc = getnameinfo(
-            sa,
-            salen,
-            host,
-            hostlen,
-            serv,
-            servlen,
-            NI_NUMERICHOST | NI_NUMERICSERV
-            );
-    if (rc != 0)
-    {
+    rc = getnameinfo(sa, salen, host, hostlen, serv, servlen, NI_NUMERICHOST | NI_NUMERICSERV);
+    if (rc != 0) {
         fprintf(stderr, "%s: getnameinfo failed: %d\n", __FILE__, rc);
         return rc;
     }
 
     // If the port is zero then don't print it
-    if (strcmp(serv, "0") != 0)
-    {
+    if (strcmp(serv, "0") != 0) {
         if (sa->sa_family == AF_INET)
             printf("[%s]:%s", host, serv);
         else
             printf("%s:%s", host, serv);
-    }
-    else
+    } else
         printf("%s", host);
 
     return NO_ERROR;
@@ -81,53 +67,37 @@ int PrintAddress(SOCKADDR *sa, int salen)
 //    printing the string address to the console, it is formatted into
 //    the supplied string buffer.
 //
-int FormatAddress(SOCKADDR *sa, int salen, char *addrbuf, int addrbuflen)
+int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 {
     char    host[NI_MAXHOST],
-            serv[NI_MAXSERV];
+        serv[NI_MAXSERV];
     int     hostlen = NI_MAXHOST,
-            servlen = NI_MAXSERV,
-            rc;
+        servlen = NI_MAXSERV,
+        rc;
     HRESULT hRet;
 
-    rc = getnameinfo(
-            sa,
-            salen,
-            host,
-            hostlen,
-            serv,
-            servlen,
-            NI_NUMERICHOST | NI_NUMERICSERV
-            );
-    if (rc != 0)
-    {
+    rc = getnameinfo(sa, salen, host, hostlen, serv, servlen, NI_NUMERICHOST | NI_NUMERICSERV);
+    if (rc != 0) {
         fprintf(stderr, "%s: getnameinfo failed: %d\n", __FILE__, rc);
         return rc;
     }
 
-    if ( (strlen(host) + strlen(serv) + 1) > (unsigned)addrbuflen)
+    if ((strlen(host) + strlen(serv) + 1) > (unsigned)addrbuflen)
         return WSAEFAULT;
 
     addrbuf[0] = '\0';
 
-    if (sa->sa_family == AF_INET)
-    {
-        if(FAILED(hRet = StringCchPrintfA(addrbuf, addrbuflen, "%s:%s", host, serv)))
-        {
-            fprintf(stderr,"%s StringCchPrintf failed: 0x%x\n",__FILE__,hRet);
+    if (sa->sa_family == AF_INET) {
+        if (FAILED(hRet = StringCchPrintfA(addrbuf, addrbuflen, "%s:%s", host, serv))) {
+            fprintf(stderr, "%s StringCchPrintf failed: 0x%x\n", __FILE__, hRet);
+            return (int)hRet;
+        }
+    } else if (sa->sa_family == AF_INET6) {
+        if (FAILED(hRet = StringCchPrintfA(addrbuf, addrbuflen, "[%s]:%s", host, serv))) {
+            fprintf(stderr, "%s StringCchPrintf failed: 0x%x\n", __FILE__, hRet);
             return (int)hRet;
         }
     }
-    else if (sa->sa_family == AF_INET6)
-    {
-        if(FAILED(hRet = StringCchPrintfA(addrbuf, addrbuflen, "[%s]:%s", host, serv)))
-        {
-            fprintf(stderr,"%s StringCchPrintf failed: 0x%x\n",__FILE__,hRet);
-            return (int)hRet;
-        }
-    }
-
-
 
     return NO_ERROR;
 }
@@ -141,26 +111,20 @@ int FormatAddress(SOCKADDR *sa, int salen, char *addrbuf, int addrbuflen)
 //    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether
 //    it is a string listeral address or a hostname.
 //
-struct addrinfo *ResolveAddress(char *addr, char *port, int af, int type, int proto)
+struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int proto)
 {
     struct addrinfo hints,
-    *res = NULL;
+        * res = NULL;
     int             rc;
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_flags  = ((addr) ? 0 : AI_PASSIVE);
+    hints.ai_flags = ((addr) ? 0 : AI_PASSIVE);
     hints.ai_family = af;
     hints.ai_socktype = type;
     hints.ai_protocol = proto;
 
-    rc = getaddrinfo(
-            addr,
-            port,
-           &hints,
-           &res
-            );
-    if (rc != 0)
-    {
+    rc = getaddrinfo(addr, port, &hints, &res);
+    if (rc != 0) {
         fprintf(stderr, "Invalid address %s, getaddrinfo failed: %d\n", addr, rc);
         return NULL;
     }
@@ -174,32 +138,22 @@ struct addrinfo *ResolveAddress(char *addr, char *port, int af, int type, int pr
 //    This routine takes a SOCKADDR and does a reverse lookup for the name
 //    corresponding to that address.
 //
-int ReverseLookup(SOCKADDR *sa, int salen, char *buf, int buflen)
+int ReverseLookup(SOCKADDR * sa, int salen, char * buf, int buflen)
 {
     char    host[NI_MAXHOST];
-    int     hostlen=NI_MAXHOST,
-            rc;
+    int     hostlen = NI_MAXHOST,
+        rc;
     HRESULT hRet;
-    
-    rc = getnameinfo(
-            sa,
-            salen,
-            host,
-            hostlen,
-            NULL,
-            0,
-            0
-            );
-    if (rc != 0)
-    {
+
+    rc = getnameinfo(sa, salen, host, hostlen, NULL, 0, 0);
+    if (rc != 0) {
         fprintf(stderr, "getnameinfo failed: %d\n", rc);
         return rc;
     }
 
     buf[0] = '\0';
-    if(FAILED(hRet = StringCchCopyA(buf, buflen, host)))
-    {
-        fprintf(stderr,"StringCchCopy failed: 0x%x\n",hRet);
+    if (FAILED(hRet = StringCchCopyA(buf, buflen, host))) {
+        fprintf(stderr, "StringCchCopy failed: 0x%x\n", hRet);
         return (int)hRet;
     }
 
