@@ -53,13 +53,9 @@
 #include "iphdr.h"
 
 #define DEFAULT_DATA_SIZE      32       // default data size
-
 #define DEFAULT_SEND_COUNT     4        // number of ICMP requests to send
-
 #define DEFAULT_RECV_TIMEOUT   6000     // six second
-
 #define DEFAULT_TTL            128
-
 #define MAX_RECV_BUF_LEN       0xFFFF   // Max incoming packet size.
 
 int   gAddressFamily = AF_UNSPEC,         // Address family to use
@@ -75,13 +71,9 @@ int   recvbuflen = MAX_RECV_BUF_LEN;    // Length of received packets.
 #pragma warning(disable:28159) //考虑使用“GetTickCount64”而不是“GetTickCount”
 
 
-//
-// Function: usage
-//
+static void usage(char * progname)
 // Description:
 //    Print usage information.
-//
-static void usage(char * progname)
 {
     printf("usage: %s [options] <host> \n", progname);
     printf("        host        Remote machine to ping\n");
@@ -90,17 +82,12 @@ static void usage(char * progname)
     printf("            -i ttl       Time to live (default: 128) \n");
     printf("            -l bytes     Amount of data to send (default: 32) \n");
     printf("            -r           Record route (IPv4 only)\n");
-
-    return;
 }
 
-// 
-// Function: InitIcmpHeader
-//
+
+void InitIcmpHeader(char * buf, int datasize)
 // Description:
 //    Helper function to fill in various stuff in our ICMP request.
-//
-void InitIcmpHeader(char * buf, int datasize)
 {
     ICMP_HDR * icmp_hdr = NULL;
     char * datapart = NULL;
@@ -113,19 +100,14 @@ void InitIcmpHeader(char * buf, int datasize)
     icmp_hdr->icmp_sequence = 0;
 
     datapart = buf + sizeof(ICMP_HDR);
-    //
-    // Place some data in the buffer.
-    //
-    memset(datapart, 'E', datasize);
+
+    memset(datapart, 'E', datasize);// Place some data in the buffer.
 }
 
-//
-// Function: InitIcmp6Header
-//
+
+int InitIcmp6Header(char * buf, int datasize)
 // Description:
 //    Initialize the ICMP6 header as well as the echo request header.
-//
-int InitIcmp6Header(char * buf, int datasize)
 {
     ICMPV6_HDR * icmp6_hdr = NULL;
     ICMPV6_ECHO_REQUEST * icmp6_req = NULL;
@@ -149,14 +131,10 @@ int InitIcmp6Header(char * buf, int datasize)
     return (sizeof(ICMPV6_HDR) + sizeof(ICMPV6_ECHO_REQUEST));
 }
 
-// 
-// Function: checksum
-//
-// Description:
-//    This function calculates the 16-bit one's complement sum
-//    of the supplied buffer (ICMP) header.
-//
+
 USHORT checksum(USHORT * buffer, int size)
+// Description:
+//    This function calculates the 16-bit one's complement sum of the supplied buffer (ICMP) header.
 {
     unsigned long cksum = 0;
 
@@ -164,21 +142,20 @@ USHORT checksum(USHORT * buffer, int size)
         cksum += *buffer++;
         size -= sizeof(USHORT);
     }
+
     if (size) {
         cksum += *(UCHAR *)buffer;
     }
+
     cksum = (cksum >> 16) + (cksum & 0xffff);
     cksum += (cksum >> 16);
     return (USHORT)(~cksum);
 }
 
-//
-// Function: ValidateArgs
-//
+
+BOOL ValidateArgs(int argc, char ** argv)
 // Description:
 //    Parse the command line arguments.
-//
-BOOL ValidateArgs(int argc, char ** argv)
 {
     int                i;
     BOOL               isValid = FALSE;
@@ -236,13 +213,10 @@ CLEANUP:
     return isValid;
 }
 
-//
-// Function: SetIcmpSequence
-//
+
+void SetIcmpSequence(char * buf)
 // Description:
 //    This routine sets the sequence number of the ICMP request packet.
-//
-void SetIcmpSequence(char * buf)
 {
     ULONG    sequence = 0;
 
@@ -264,9 +238,9 @@ void SetIcmpSequence(char * buf)
     }
 }
 
-//
-// Function: ComputeIcmp6PseudoHeaderChecksum
-//
+
+char             tmp[MAX_RECV_BUF_LEN] = {'\0'};
+USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen, struct addrinfo * dest)
 // Description:
 //    This routine computes the ICMP6 checksum which includes the pseudo
 //    header of the IPv6 header (see RFC2460 and RFC2463). The one difficulty
@@ -274,9 +248,6 @@ void SetIcmpSequence(char * buf)
 //    will be contained in the IPv6 header in order to compute the checksum.
 //    To do this we call the SIO_ROUTING_INTERFACE_QUERY ioctl to find which
 //    local interface for the outgoing packet.
-//
-char             tmp[MAX_RECV_BUF_LEN] = {'\0'};
-USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen, struct addrinfo * dest)
 {
     SOCKADDR_STORAGE localif;
     DWORD            bytes;
@@ -293,8 +264,7 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
         (DWORD)sizeof(localif),
         &bytes,
         NULL,
-        NULL
-    );
+        NULL);
     if (rc == SOCKET_ERROR) {
         fprintf(stderr, "WSAIoctl failed: %d\n", WSAGetLastError());
         return 0xFFFF;
@@ -313,8 +283,7 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
            ((SOCKADDR_IN6 *)&localif)->sin6_addr.u.Byte[0],
            ((SOCKADDR_IN6 *)&localif)->sin6_addr.u.Byte[1],
            ((SOCKADDR_IN6 *)&localif)->sin6_addr.u.Byte[2],
-           ((SOCKADDR_IN6 *)&localif)->sin6_addr.u.Byte[3]
-    );
+           ((SOCKADDR_IN6 *)&localif)->sin6_addr.u.Byte[3]);
 
     // Copy destination address
     memcpy(ptr, &((SOCKADDR_IN6 *)dest->ai_addr)->sin6_addr, sizeof(struct in6_addr));
@@ -328,12 +297,7 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
     ptr += sizeof(length);
     total += sizeof(length);
 
-    printf("%x%x%x%x\n",
-           (char)*(ptr - 4),
-           (char)*(ptr - 3),
-           (char)*(ptr - 2),
-           (char)*(ptr - 1)
-    );
+    printf("%x%x%x%x\n", (char)*(ptr - 4), (char)*(ptr - 3), (char)*(ptr - 2), (char)*(ptr - 1));
 
     // Zero the 3 bytes
     memset(ptr, 0, 3);
@@ -358,22 +322,17 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
         total++;
     }
 
-
     return checksum((USHORT *)tmp, total);
 }
 
-//
-// Function: ComputeIcmpChecksum
-//
+
+void ComputeIcmpChecksum(SOCKET s, char * buf, int packetlen, struct addrinfo * dest)
 // Description:
 //    This routine computes the checksum for the ICMP request. For IPv4 its
 //    easy, just compute the checksum for the ICMP packet and data. For IPv6,
 //    its more complicated. The pseudo checksum has to be computed for IPv6
 //    which includes the ICMP6 packet and data plus portions of the IPv6
-//    header which is difficult since we aren't building our own IPv6
-//    header.
-//
-void ComputeIcmpChecksum(SOCKET s, char * buf, int packetlen, struct addrinfo * dest)
+//    header which is difficult since we aren't building our own IPv6 header.
 {
     if (gAddressFamily == AF_INET) {
         ICMP_HDR * icmpv4 = NULL;
@@ -386,22 +345,14 @@ void ComputeIcmpChecksum(SOCKET s, char * buf, int packetlen, struct addrinfo * 
 
         icmpv6 = (ICMPV6_HDR *)buf;
         icmpv6->icmp6_checksum = 0;
-        icmpv6->icmp6_checksum = ComputeIcmp6PseudoHeaderChecksum(
-            s,
-            buf,
-            packetlen,
-            dest
-        );
+        icmpv6->icmp6_checksum = ComputeIcmp6PseudoHeaderChecksum(s, buf, packetlen, dest);
     }
 }
 
-//
-// Function: PostRecvfrom
-//
+
+int PostRecvfrom(SOCKET s, char * buf, int buflen, SOCKADDR * from, int * fromlen, WSAOVERLAPPED * ol)
 // Description:
 //    This routine posts an overlapped WSARecvFrom on the raw socket.
-//
-int PostRecvfrom(SOCKET s, char * buf, int buflen, SOCKADDR * from, int * fromlen, WSAOVERLAPPED * ol)
 {
     WSABUF  wbuf;
     DWORD   flags, bytes;
@@ -419,18 +370,16 @@ int PostRecvfrom(SOCKET s, char * buf, int buflen, SOCKADDR * from, int * fromle
             return SOCKET_ERROR;
         }
     }
+
     return NO_ERROR;
 }
 
-//
-// Function: PrintPayload
-// 
+
+void PrintPayload(char * buf, int bytes)
 // Description:
 //    This routine is for IPv4 only. It determines if there are any IP options
 //    present (by seeing if the IP header length is greater than 20 bytes) and
 //    if so it prints the IP record route options.
-//
-void PrintPayload(char * buf, int bytes)
 {
     int     hdrlen = 0, routes = 0, i;
 
@@ -469,20 +418,14 @@ void PrintPayload(char * buf, int bytes)
             }
         }
     }
-    return;
 }
 
-//
-// Function: SetTtl
-//
+
+int SetTtl(SOCKET s, int ttl)
 // Description:
 //    Sets the TTL on the socket.
-//
-int SetTtl(SOCKET s, int ttl)
 {
-    int     optlevel = 0,
-        option = 0,
-        rc;
+    int     optlevel = 0, option = 0, rc;
 
     rc = NO_ERROR;
     if (gAddressFamily == AF_INET) {
@@ -494,28 +437,29 @@ int SetTtl(SOCKET s, int ttl)
     } else {
         rc = SOCKET_ERROR;
     }
+
     if (rc == NO_ERROR) {
         rc = setsockopt(s, optlevel, option, (char *)&ttl, sizeof(ttl));
     }
+
     if (rc == SOCKET_ERROR) {
         fprintf(stderr, "SetTtl: setsockopt failed: %d\n", WSAGetLastError());
     }
+
     return rc;
 }
 
-//
-// Function: main
-//
+
+int ping(int argc, char ** argv)
+/*
 // Description:
 //    Setup the ICMP raw socket and create the ICMP header. Add
 //    the appropriate IP option header and start sending ICMP
 //    echo requests to the endpoint. For each send and receive we
-//    set a timeout value so that we don't wait forever for a 
+//    set a timeout value so that we don't wait forever for a
 //    response in case the endpoint is not responding. When we
 //    receive a packet decode it.
-//
-int ping(int argc, char ** argv)
-/*
+
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
 */
 {
@@ -524,18 +468,11 @@ int ping(int argc, char ** argv)
     WSAOVERLAPPED      recvol;
     SOCKET             s = INVALID_SOCKET;
     char * icmpbuf = NULL;
-    struct addrinfo * dest = NULL,
-        * local = NULL;
+    struct addrinfo * dest = NULL, * local = NULL;
     IPV4_OPTION_HDR    ipopt;
     SOCKADDR_STORAGE   from;
-    DWORD              bytes,
-        flags;
-    int                packetlen = 0,
-        fromlen,
-        time = 0,
-        rc,
-        i,
-        status = 0;
+    DWORD              bytes, flags;
+    int                packetlen = 0, fromlen, time = 0, rc, i, status = 0;
 
     recvol.hEvent = WSA_INVALID_EVENT;
 
@@ -611,8 +548,7 @@ int ping(int argc, char ** argv)
             ipopt.opt_ptr = 4;               // point to the first addr offset
             ipopt.opt_len = 39;              // length of option header
 
-            rc = setsockopt(s, IPPROTO_IP, IP_OPTIONS,
-                            (char *)&ipopt, sizeof(ipopt));
+            rc = setsockopt(s, IPPROTO_IP, IP_OPTIONS, (char *)&ipopt, sizeof(ipopt));
             if (rc == SOCKET_ERROR) {
                 fprintf(stderr, "setsockopt(IP_OPTIONS) failed: %d\n", WSAGetLastError());
                 status = -1;
@@ -699,10 +635,7 @@ int ping(int argc, char ** argv)
     }
 
 CLEANUP:
-
-    //
     // Cleanup
-    //
     if (dest)
         freeaddrinfo(dest);
     if (local)

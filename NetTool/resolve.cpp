@@ -28,15 +28,11 @@
 #include <stdlib.h>
 #include "resolve.h"
 
-//
-// Function: PrintAddress
-//
+
+int PrintAddress(SOCKADDR * sa, int salen)
 // Description:
 //    This routine takes a SOCKADDR structure and its length and prints
-//    converts it to a string representation. This string is printed
-//    to the console via stdout.
-//
-int PrintAddress(SOCKADDR * sa, int salen)
+//    converts it to a string representation. This string is printed to the console via stdout.
 {
     char    host[NI_MAXHOST], serv[NI_MAXSERV];
     int     hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
@@ -59,21 +55,15 @@ int PrintAddress(SOCKADDR * sa, int salen)
     return NO_ERROR;
 }
 
-//
-// Function: FormatAddress
-//
+
+int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 // Description:
 //    This is similar to the PrintAddress function except that instead of
 //    printing the string address to the console, it is formatted into
 //    the supplied string buffer.
-//
-int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 {
-    char    host[NI_MAXHOST],
-        serv[NI_MAXSERV];
-    int     hostlen = NI_MAXHOST,
-        servlen = NI_MAXSERV,
-        rc;
+    char    host[NI_MAXHOST], serv[NI_MAXSERV];
+    int     hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
     HRESULT hRet;
 
     rc = getnameinfo(sa, salen, host, hostlen, serv, servlen, NI_NUMERICHOST | NI_NUMERICSERV);
@@ -102,19 +92,15 @@ int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
     return NO_ERROR;
 }
 
-//
-// Function: ResolveAddress
-//
-// Description:
-//    This routine resolves the specified address and returns a list of addrinfo
-//    structure containing SOCKADDR structures representing the resolved addresses.
-//    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether
-//    it is a string listeral address or a hostname.
-//
+
 struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int proto)
+    // Description:
+    //    This routine resolves the specified address and returns a list of addrinfo
+    //    structure containing SOCKADDR structures representing the resolved addresses.
+    //    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether
+    //    it is a string listeral address or a hostname.
 {
-    struct addrinfo hints,
-        * res = NULL;
+    struct addrinfo hints, * res = NULL;
     int             rc;
 
     memset(&hints, 0, sizeof(hints));
@@ -128,21 +114,17 @@ struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int
         fprintf(stderr, "Invalid address %s, getaddrinfo failed: %d\n", addr, rc);
         return NULL;
     }
+
     return res;
 }
 
-//
-// Function: ReverseLookup
-//
-// Description:
-//    This routine takes a SOCKADDR and does a reverse lookup for the name
-//    corresponding to that address.
-//
+
 int ReverseLookup(SOCKADDR * sa, int salen, char * buf, int buflen)
+// Description:
+//    This routine takes a SOCKADDR and does a reverse lookup for the name corresponding to that address.
 {
     char    host[NI_MAXHOST];
-    int     hostlen = NI_MAXHOST,
-        rc;
+    int     hostlen = NI_MAXHOST, rc;
     HRESULT hRet;
 
     rc = getnameinfo(sa, salen, host, hostlen, NULL, 0, 0);

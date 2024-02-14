@@ -76,12 +76,7 @@ BOOL SendRequest(PCHAR pInBuffer,
     bind(s, (SOCKADDR *)&RecAddr2, sizeof(RecAddr2));
 
     /* Send the datagram to the DNS server. */
-    j = sendto(s,
-               pInBuffer,
-               InBufferLength,
-               0,
-               (SOCKADDR *)&RecAddr,
-               sizeof(RecAddr));
+    j = sendto(s, pInBuffer, InBufferLength, 0, (SOCKADDR *)&RecAddr, sizeof(RecAddr));
     if (j == SOCKET_ERROR) {
         switch (WSAGetLastError()) {
         case WSANOTINITIALISED:
@@ -165,12 +160,7 @@ BOOL SendRequest(PCHAR pInBuffer,
 
     while (bWait) {
         /* Wait for the DNS reply. */
-        j = recvfrom(s,
-                     pOutBuffer,
-                     *pOutBufferLength,
-                     0,
-                     (SOCKADDR *)&SendAddr,
-                     &SendAddrLen);
+        j = recvfrom(s, pOutBuffer, *pOutBufferLength, 0, (SOCKADDR *)&SendAddr, &SendAddrLen);
         if (j == SOCKET_ERROR) {
             switch (WSAGetLastError()) {
             case WSANOTINITIALISED:
@@ -507,9 +497,7 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
             Class = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            _tprintf(_T(", type = %s, class = %s\n"),
-                     TypeIDtoTypeName(Type),
-                     ClassIDtoClassName(Class));
+            _tprintf(_T(", type = %s, class = %s\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class));
         }
     }
 
@@ -581,9 +569,7 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             Class = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            _tprintf(_T(", type = %s, class = %s\n"),
-                     TypeIDtoTypeName(Type),
-                     ClassIDtoClassName(Class));
+            _tprintf(_T(", type = %s, class = %s\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class));
         }
     }
 
@@ -723,7 +709,6 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
                 i += ExtractIP(pBuffer, pName, i);
 
                 _tprintf(_T("        internet address = %s\n"), pName);
-
                 _tprintf(_T("        ttl = %d ()\n"), (int)TTL);
             }
         }
@@ -737,13 +722,10 @@ PCHAR OpcodeIDtoOpcodeName(UCHAR Opcode)
     switch (Opcode & 0x0F) {
     case OPCODE_QUERY:
         return (PCHAR)OpcodeQuery;
-
     case OPCODE_IQUERY:
         return (PCHAR)OpcodeIQuery;
-
     case OPCODE_STATUS:
         return (PCHAR)OpcodeStatus;
-
     default:
         return (PCHAR)OpcodeReserved;
     }
@@ -754,22 +736,16 @@ PCHAR RCodeIDtoRCodeName(UCHAR RCode)
     switch (RCode & 0x0F) {
     case RCODE_NOERROR:
         return (PCHAR)RCodeNOERROR;
-
     case RCODE_FORMERR:
         return (PCHAR)RCodeFORMERR;
-
     case RCODE_FAILURE:
         return (PCHAR)RCodeFAILURE;
-
     case RCODE_NXDOMAIN:
         return (PCHAR)RCodeNXDOMAIN;
-
     case RCODE_NOTIMP:
         return (PCHAR)RCodeNOTIMP;
-
     case RCODE_REFUSED:
         return (PCHAR)RCodeREFUSED;
-
     default:
         return (PCHAR)RCodeReserved;
     }
@@ -780,28 +756,20 @@ PCHAR TypeIDtoTypeName(USHORT TypeID)
     switch (TypeID) {
     case TYPE_A:
         return (PCHAR)TypeA;
-
     case TYPE_NS:
         return (PCHAR)TypeNS;
-
     case TYPE_CNAME:
         return (PCHAR)TypeCNAME;
-
     case TYPE_SOA:
         return (PCHAR)TypeSOA;
-
     case TYPE_WKS:
         return (PCHAR)TypeSRV;
-
     case TYPE_PTR:
         return (PCHAR)TypePTR;
-
     case TYPE_MX:
         return (PCHAR)TypeMX;
-
     case TYPE_ANY:
         return (PCHAR)TypeAny;
-
     default:
         return (PCHAR)"Unknown";
     }
@@ -1006,10 +974,7 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
     ((PSHORT)&Buffer[i])[0] = htons(CLASS_IN);
 
     /* Ship the request off to the DNS server. */
-    bOk = SendRequest(Buffer,
-                      BufferLength,
-                      RecBuffer,
-                      &RecBufferLength);
+    bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
     if (!bOk) goto cleanup;
 
     /* Start parsing the received packet. */
@@ -1073,9 +1038,7 @@ void PerformLookup(PCHAR pAddr)
     printf("Server:  %s\n", State.DefaultServer);
     printf("Address:  %s\n\n", State.DefaultServerAddress);
 
-    if (!strcmp(TypeA, State.type)
-        || !strcmp(TypeAAAA, State.type)
-        || !strcmp(TypeBoth, State.type)) {
+    if (!strcmp(TypeA, State.type) || !strcmp(TypeAAAA, State.type) || !strcmp(TypeBoth, State.type)) {
         Type = TYPE_A;
         if (IsValidIP(pAddr)) Type = TYPE_PTR;
     } else
@@ -1161,10 +1124,7 @@ void PerformLookup(PCHAR pAddr)
     ((PSHORT)&Buffer[i])[0] = htons(ClassNametoClassID(State.Class));
 
     /* Ship off the request to the DNS server. */
-    bOk = SendRequest(Buffer,
-                      BufferLength,
-                      RecBuffer,
-                      &RecBufferLength);
+    bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
     if (!bOk) goto cleanup;
 
     /* Start parsing the received packet. */
@@ -1181,11 +1141,9 @@ void PerformLookup(PCHAR pAddr)
         case RCODE_NXDOMAIN:
             _tprintf(_T("*** %s can't find %s: Non-existant domain\n"), State.DefaultServer, pAddr);
             break;
-
         case RCODE_REFUSED:
             _tprintf(_T("*** %s can't find %s: Query refused\n"), State.DefaultServer, pAddr);
             break;
-
         default:
             _tprintf(_T("*** %s can't find %s: Unknown RCODE\n"), State.DefaultServer, pAddr);
         }
@@ -1226,9 +1184,7 @@ void PerformLookup(PCHAR pAddr)
             _tprintf(_T("%s     name = %s\n"), pResolve, pResult);
         } else {
         }
-    } else if (!strcmp(State.type, TypeA)
-               || !strcmp(State.type, TypeAAAA)
-               || !strcmp(State.type, TypeBoth)) {
+    } else if (!strcmp(State.type, TypeA) || !strcmp(State.type, TypeAAAA) || !strcmp(State.type, TypeBoth)) {
         if ((TYPE_A == Type) /*|| (TYPE_AAAA == Type)*/) {
             if (0 == NumAuthority)
                 _tprintf(_T("Non-authoritative answer:\n"));
@@ -1279,13 +1235,11 @@ BOOL ParseCommandLine(int argc, char * argv[])
                 if (IsValidIP(Server)) {
                     strncpy(State.DefaultServerAddress, Server, 16);
 
-                    PerformInternalLookup(State.DefaultServerAddress,
-                                          State.DefaultServer);
+                    PerformInternalLookup(State.DefaultServerAddress, State.DefaultServer);
                 } else {
                     strncpy(State.DefaultServer, Server, 255);
 
-                    PerformInternalLookup(State.DefaultServer,
-                                          State.DefaultServerAddress);
+                    PerformInternalLookup(State.DefaultServer, State.DefaultServerAddress);
                 }
 
                 if (Interactive) return 1;
@@ -1394,13 +1348,11 @@ BOOL ParseCommandLine(int argc, char * argv[])
                     State.MSxfr = FALSE;
                 } else if (!strncmp("-", argv[i], 1) && (strlen(argv[i]) == 1)) {
                     /* Since we received just the plain - switch, we are going
-                       to be entering interactive mode. We also will not be
-                       parsing any more options. */
+                       to be entering interactive mode. We also will not be parsing any more options. */
                     NoMoreOptions = TRUE;
                     Interactive = TRUE;
                 } else {
-                    /* Grab the address to resolve. No more options accepted
-                       past this point. */
+                    /* Grab the address to resolve. No more options accepted past this point. */
                     strncpy(AddrToResolve, argv[i], 255);
                     NoMoreOptions = TRUE;
                 }
@@ -1409,18 +1361,14 @@ BOOL ParseCommandLine(int argc, char * argv[])
 
         if (NoMoreOptions && !Interactive) {
             /* Get the FQDN of the DNS server. */
-            PerformInternalLookup(State.DefaultServerAddress,
-                                  State.DefaultServer);
-
+            PerformInternalLookup(State.DefaultServerAddress, State.DefaultServer);
             PerformLookup(AddrToResolve);
-
             return 0;
         }
     }
 
     /* Get the FQDN of the DNS server. */
-    PerformInternalLookup(State.DefaultServerAddress,
-                          State.DefaultServer);
+    PerformInternalLookup(State.DefaultServerAddress, State.DefaultServer);
 
     return 1;
 }
@@ -1477,14 +1425,12 @@ int nslookup(int argc, char * argv[])
 
     if (Status != ERROR_BUFFER_OVERFLOW) {
         _tprintf(_T("Error in GetNetworkParams call\n"));
-
         return -2;
     }
 
     pNetInfo = (PFIXED_INFO)HeapAlloc(ProcessHeap, 0, NetBufLen);
     if (pNetInfo == NULL) {
         _tprintf(_T("ERROR: Out of memory\n"));
-
         return -1;
     }
 
@@ -1492,17 +1438,13 @@ int nslookup(int argc, char * argv[])
     Status = GetNetworkParams(pNetInfo, &NetBufLen);
     if (Status != NO_ERROR) {
         _tprintf(_T("Error in GetNetworkParams call\n"));
-
         HeapFree(ProcessHeap, 0, pNetInfo);
-
         return -2;
     }
 
     strncpy(State.domain, pNetInfo->DomainName, 255);
     strncpy(State.srchlist[0], pNetInfo->DomainName, 255);
-    strncpy(State.DefaultServerAddress,
-            pNetInfo->DnsServerList.IpAddress.String,
-            15);
+    strncpy(State.DefaultServerAddress, pNetInfo->DnsServerList.IpAddress.String, 15);
 
     HeapFree(ProcessHeap, 0, pNetInfo);
 
