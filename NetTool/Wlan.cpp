@@ -342,7 +342,51 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetav
 }
 
 
-int _cdecl GetWlanProfile(LPCWSTR pProfileName) //int argc, WCHAR ** argv
+void ParseProfileXml(LPWSTR pProfileXml)
+/*
+功能解析XML，主要是解密密码。
+
+如果 WlanGetProfile 函数成功，则会在 pstrProfileXml 参数指向的缓冲区中返回无线配置文件。 
+缓冲区包含一个字符串，该字符串是查询的配置文件的 XML 表示形式。 
+有关无线配置文件的 XML 表示形式的说明，请参阅 WLAN_profile 架构。
+
+调用方负责调用 WlanFreeMemory 函数，以便在不再需要缓冲区时释放 pstrProfileXml 参数为缓冲区指针分配的内存。
+
+如果 pstrProfileXml 指定了一个全用户配置文件， 则 WlanGetProfile 调用方必须对该配置文件具有读取访问权限。 
+否则， WlanGetProfile 调用将失败，返回值为 ERROR_ACCESS_DENIED。 
+使用 WlanSetProfile 或 WlanSaveTemporaryProfile 创建或保存配置文件时，将建立对所有用户配置文件的权限。
+
+Windows 7：
+
+如果在输入时 pdwFlags 参数指向的值中设置WLAN_PROFILE_GET_PLAINTEXT_KEY标志来调用 WlanGetProfile 函数，
+则以纯文本形式请求 pstrProfileXml 指向的配置文件架构中返回的 keyMaterial 元素。
+
+如果调用线程缺少所需的权限，WlanGetProfile 函数将在 pstrProfileXml 参数指向的缓冲区中返回的配置文件的 keyMaterial 元素中返回加密密钥。
+如果调用线程缺少所需的权限，则不会返回错误。
+
+默认情况下，pstrProfileXml 指向的配置文件中返回的 keyMaterial 元素是加密的。 
+如果进程在同一计算机上的 LocalSystem 帐户上下文中运行，则可以通过调用 CryptUnprotectData 函数来取消加密密钥材料。
+
+Windows Server 2008 和 Windows Vista： 始终加密 pstrProfileXml 指向的配置文件架构中返回的 keyMaterial 元素。 
+如果进程在 LocalSystem 帐户的上下文中运行，则可以通过调用 CryptUnprotectData 函数来取消加密密钥材料。
+
+具有 SP3 的 Windows XP 和适用于 SP2 的 Windows XP 的无线 LAN API： 密钥材料永远不会加密。
+
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofile
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofilecustomuserdata
+https://learn.microsoft.com/zh-cn/windows/win32/seccrypto/example-c-program-using-cryptprotectdata
+*/
+{
+    UNREFERENCED_PARAMETER(pProfileXml);
+
+
+
+
+
+}
+
+
+int GetWlanProfile(LPCWSTR pProfileName) 
 /*
 以下示例枚举本地计算机上的无线 LAN 接口，检索每个无线 LAN 接口上特定无线配置文件的信息，并打印检索到的值。 
 还会打印查询配置文件的 XML 表示形式的字符串。
@@ -371,7 +415,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
 
     //LPCWSTR pProfileName = NULL;
     LPWSTR pProfileXml = NULL;
-    DWORD dwFlags = 0;
+    DWORD dwFlags = 0;//WLAN_PROFILE_GET_PLAINTEXT_KEY
     DWORD dwGrantedAccess = 0;
 
     // Validate the parameters
@@ -437,6 +481,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
 
                 wprintf(L"  Profile XML string:\n");
                 wprintf(L"%ws\n\n", pProfileXml);//可解密出密码。
+                ParseProfileXml(pProfileXml);
 
                 wprintf(L"  dwFlags:\t    0x%x", dwFlags);
                 //                    if (dwFlags & WLAN_PROFILE_GET_PLAINTEXT_KEY)
