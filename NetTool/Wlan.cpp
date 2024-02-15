@@ -98,6 +98,9 @@ void Dumpdot11CipherAlgorithm(PWLAN_AVAILABLE_NETWORK pBssEntry)
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 int WlanEnum()
 /*
 The following example enumerates the wireless LAN interfaces on the local computer and
@@ -341,6 +344,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+//\reactos\base\applications\network\wlanconf\wlanconf.c
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 static int Usage(__in const wchar_t * name)
 /*++
 Routine Description:
@@ -349,8 +358,8 @@ Arguments:
     progName - NULL terminated string representing the name of the executable
 --*/
 {
-    wprintf(L"查看连接的WIFI %s: WlanEnum.\n", name);
-    wprintf(L"查看发现的WIFI %s: WlanEnumEx.\n", name);
+    wprintf(L"查看连接的WIFI: %s WlanEnum.\n", name);
+    wprintf(L"查看发现的WIFI: %s WlanEnumEx.\n", name);
 
     return ERROR_SUCCESS;
 }
