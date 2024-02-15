@@ -584,6 +584,107 @@ https://learn.microsoft.com/zh-CN/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
 }
 
 
+int EnumWlanNetworkBss()
+/*
+WlanGetNetworkBssList 函数检索 (BSS) 给定无线 LAN 接口上无线网络或网络的条目的基本服务集的列表。
+
+The WlanGetNetworkBssList function retrieves a list of the basic service set (BSS) entries of the wireless network or networks on a given wireless LAN interface.
+
+WLAN_BSS_LIST 结构包含基本服务集的列表 (BSS) 条目。
+
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetnetworkbsslist
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/ns-wlanapi-wlan_bss_list
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/ns-wlanapi-wlan_bss_entry
+*/
+{
+    // Declare and initialize variables.
+    HANDLE hClient = NULL;
+    DWORD dwMaxClient = 2;
+    DWORD dwCurVersion = 0;
+    DWORD dwResult = 0;
+    DWORD dwRetVal = 0;
+    int iRet = 0;
+
+    WCHAR GuidString[39] = {0};
+
+    unsigned int i, j;
+
+    /* variables used for WlanEnumInterfaces  */
+
+    PWLAN_INTERFACE_INFO_LIST pIfList = NULL;
+    PWLAN_INTERFACE_INFO pIfInfo = NULL;
+
+    dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanOpenHandle failed with error: %u\n", dwResult);
+        return 1;
+        // You can use FormatMessage here to find out why the function failed
+    }
+
+    dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanEnumInterfaces failed with error: %u\n", dwResult);
+        return 1;
+        // You can use FormatMessage here to find out why the function failed
+    } else {
+        wprintf(L"WLAN_INTERFACE_INFO_LIST for this system\n");
+
+        wprintf(L"Num Entries: %lu\n", pIfList->dwNumberOfItems);
+        wprintf(L"Current Index: %lu\n", pIfList->dwIndex);
+        for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
+            pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
+            wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString,
+                                   sizeof(GuidString) / sizeof(*GuidString));
+            // For c rather than C++ source code, the above line needs to be
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
+            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            if (iRet == 0)
+                wprintf(L"StringFromGUID2 failed\n");
+            else {
+                wprintf(L"  Interface GUID[%d]: %ws\n", i, GuidString);
+            }
+            wprintf(L"  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription);
+            wprintf(L"\n");
+            wprintf(L"  Interface State[%d]:\t ", i);
+            DumpWlanInterfaceState(pIfInfo->isState);
+            wprintf(L"\n");
+
+            PWLAN_BSS_LIST WlanBssList = NULL;
+            dwResult = WlanGetNetworkBssList(hClient, &pIfInfo->InterfaceGuid, NULL, (DOT11_BSS_TYPE)0, FALSE, NULL, &WlanBssList);
+            if (dwResult != ERROR_SUCCESS) {
+                wprintf(L"WlanGetNetworkBssList failed with error: %u\n", dwResult);
+                dwRetVal = 1;
+                // You can use FormatMessage to find out why the function failed
+            } else {
+                wprintf(L"  WLAN_BSS_LIST for this interface\n");
+                wprintf(L"  Num Entries: %lu\n\n", WlanBssList->dwNumberOfItems);
+
+                for (j = 0; j < WlanBssList->dwNumberOfItems; j++) {
+                    wprintf(L"  PhyId: %lu\n\n", WlanBssList->wlanBssEntries[j].uPhyId);
+
+                    //以后闲的时候补充打印输出。
+
+                    wprintf(L"\n");
+                }
+
+                if (WlanBssList != NULL) {
+                    WlanFreeMemory(WlanBssList);
+                    WlanBssList = NULL;
+                }
+            }
+        }
+    }
+
+    if (pIfList != NULL) {
+        WlanFreeMemory(pIfList);
+        pIfList = NULL;
+    }
+
+    return dwRetVal;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -604,6 +705,7 @@ Arguments:
     wprintf(L"查看连接的WIFI: %s EnumWlanInterfaces.\n", name);
     wprintf(L"查看发现的WIFI: %s EnumWlanAvailableNetwork.\n", name);
     wprintf(L"查看用过的WlanProfile: %s EnumWlanProfile.\n", name);
+    wprintf(L"GetWlanNetworkBssList: %s EnumWlanNetworkBss.\n", name);
 
     return ERROR_SUCCESS;
 }
@@ -623,6 +725,8 @@ int wlan(int argc, wchar_t * argv[])
         ret = EnumWlanAvailableNetwork();
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanProfile")) == 0) {
         ret = EnumWlanProfile();
+    } else if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanNetworkBss")) == 0) {
+        ret = EnumWlanNetworkBss();
     } else {
         ret = Usage(argv[0]);
     }
