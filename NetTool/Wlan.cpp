@@ -101,7 +101,7 @@ void Dumpdot11CipherAlgorithm(PWLAN_AVAILABLE_NETWORK pBssEntry)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int WlanEnum()
+int EnumWlanInterfaces()
 /*
 The following example enumerates the wireless LAN interfaces on the local computer and
 prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and 
@@ -166,7 +166,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
 }
 
 
-int WlanEnumEx()
+int EnumWlanAvailableNetwork()
 /*
 Examples
 The following example enumerates the wireless LAN interfaces on the local computer,
@@ -178,6 +178,7 @@ Note  This example will fail to load on Windows Server 2008 and Windows Server 2
 经测试：这是显示所有的发现的WIFI。
 
 https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetavailablenetworklist
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetavailablenetworklist
 */
 {
     // Declare and initialize variables.
@@ -600,8 +601,8 @@ Arguments:
     progName - NULL terminated string representing the name of the executable
 --*/
 {
-    wprintf(L"查看连接的WIFI: %s WlanEnum.\n", name);
-    wprintf(L"查看发现的WIFI: %s WlanEnumEx.\n", name);
+    wprintf(L"查看连接的WIFI: %s EnumWlanInterfaces.\n", name);
+    wprintf(L"查看发现的WIFI: %s EnumWlanAvailableNetwork.\n", name);
     wprintf(L"查看用过的WlanProfile: %s EnumWlanProfile.\n", name);
 
     return ERROR_SUCCESS;
@@ -616,10 +617,10 @@ int wlan(int argc, wchar_t * argv[])
         return Usage(argv[0]);
     }
 
-    if (argc == 2 && lstrcmpi(argv[1], TEXT("WlanEnum")) == 0) {
-        ret = WlanEnum();
-    } else if (argc == 2 && lstrcmpi(argv[1], TEXT("WlanEnumEx")) == 0) {
-        ret = WlanEnumEx();
+    if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanInterfaces")) == 0) {
+        ret = EnumWlanInterfaces();
+    } else if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanAvailableNetwork")) == 0) {
+        ret = EnumWlanAvailableNetwork();
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanProfile")) == 0) {
         ret = EnumWlanProfile();
     } else {
