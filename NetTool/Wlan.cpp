@@ -249,9 +249,15 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                     if (pBssEntry->dot11Ssid.uSSIDLength == 0)
                         wprintf(L"\n");
                     else {
-                        for (k = 0; k < pBssEntry->dot11Ssid.uSSIDLength; k++) {
-                            wprintf(L"%c", pBssEntry->dot11Ssid.ucSSID[k]);//这个有乱码，估计是UTF8.
-                        }
+                        //for (k = 0; k < pBssEntry->dot11Ssid.uSSIDLength; k++) {
+                        //    wprintf(L"%c", pBssEntry->dot11Ssid.ucSSID[k]);//这个有乱码，估计是UTF8.
+                        //}
+
+                        _ASSERTE(pBssEntry->dot11Ssid.uSSIDLength < _ARRAYSIZE(pBssEntry->dot11Ssid.ucSSID));
+                        LPWSTR ucSSID = UTF8ToWideChar((PCHAR)pBssEntry->dot11Ssid.ucSSID);
+                        wprintf(L"%s", ucSSID);
+                        HeapFree(GetProcessHeap(), 0, ucSSID);
+
                         wprintf(L"\n");
                     }
 

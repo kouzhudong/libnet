@@ -155,6 +155,7 @@
     <ClCompile Include="NetTool.cpp" />
     <ClCompile Include="nslookup.cpp" />
     <ClCompile Include="pathping.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="Ping.cpp" />
     <ClCompile Include="spi.cpp" />
     <ClCompile Include="tracert.cpp" />
