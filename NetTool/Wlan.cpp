@@ -341,6 +341,248 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
 }
 
 
+int _cdecl GetWlanProfile(LPCWSTR pProfileName) //int argc, WCHAR ** argv
+/*
+以下示例枚举本地计算机上的无线 LAN 接口，检索每个无线 LAN 接口上特定无线配置文件的信息，并打印检索到的值。 
+还会打印查询配置文件的 XML 表示形式的字符串。
+
+注意 如果未安装并启动无线 LAN 服务，本示例将无法在 Windows Server 2008 和 Windows Server 2008 R2 上加载。
+
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofile
+*/
+{
+    // Declare and initialize variables.
+    HANDLE hClient = NULL;
+    DWORD dwMaxClient = 2;      //    
+    DWORD dwCurVersion = 0;
+    DWORD dwResult = 0;
+    DWORD dwRetVal = 0;
+    int iRet = 0;
+
+    WCHAR GuidString[39] = {0};
+
+    unsigned int i;
+
+    /* variables used for WlanEnumInterfaces  */
+
+    PWLAN_INTERFACE_INFO_LIST pIfList = NULL;
+    PWLAN_INTERFACE_INFO pIfInfo = NULL;
+
+    //LPCWSTR pProfileName = NULL;
+    LPWSTR pProfileXml = NULL;
+    DWORD dwFlags = 0;
+    DWORD dwGrantedAccess = 0;
+
+    // Validate the parameters
+    //if (argc < 2) {
+    //    wprintf(L"usage: %s <profile>\n", argv[0]);
+    //    wprintf(L"   Gets a wireless profile\n");
+    //    wprintf(L"   Example\n");
+    //    wprintf(L"       %s \"Default Wireless\"\n", argv[0]);
+    //    exit(1);
+    //}
+    //pProfileName = argv[1];
+
+    wprintf(L"Information for profile: %ws\n\n", pProfileName);
+
+    dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanOpenHandle failed with error: %u\n", dwResult);
+        return 1;
+        // You can use FormatMessage here to find out why the function failed
+    }
+
+    dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanEnumInterfaces failed with error: %u\n", dwResult);
+        return 1;
+        // You can use FormatMessage here to find out why the function failed
+    } else {
+        wprintf(L"WLAN_INTERFACE_INFO_LIST for this system\n");
+
+        wprintf(L"Num Entries: %lu\n", pIfList->dwNumberOfItems);
+        wprintf(L"Current Index: %lu\n\n", pIfList->dwIndex);
+        for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
+            pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
+            wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, 
+                                   sizeof(GuidString) / sizeof(*GuidString));
+            // For c rather than C++ source code, the above line needs to be
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
+            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            if (iRet == 0)
+                wprintf(L"StringFromGUID2 failed\n");
+            else {
+                wprintf(L"  InterfaceGUID[%d]: %ws\n", i, GuidString);
+            }
+            wprintf(L"  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription);
+            wprintf(L"\n");
+            wprintf(L"  Interface State[%d]:\t ", i);
+            DumpWlanInterfaceState(pIfInfo->isState);
+            wprintf(L"\n\n");
+
+            dwResult = WlanGetProfile(hClient,
+                                      &pIfInfo->InterfaceGuid,
+                                      pProfileName,
+                                      NULL,
+                                      &pProfileXml,
+                                      &dwFlags,
+                                      &dwGrantedAccess);
+            if (dwResult != ERROR_SUCCESS) {
+                wprintf(L"WlanGetProfile failed with error: %u\n", dwResult);
+                // You can use FormatMessage to find out why the function failed
+            } else {
+                wprintf(L"  Profile Name:  %ws\n", pProfileName);
+
+                wprintf(L"  Profile XML string:\n");
+                wprintf(L"%ws\n\n", pProfileXml);//可解密出密码。
+
+                wprintf(L"  dwFlags:\t    0x%x", dwFlags);
+                //                    if (dwFlags & WLAN_PROFILE_GET_PLAINTEXT_KEY)
+                //                        wprintf(L"   Get Plain Text Key");
+                if (dwFlags & WLAN_PROFILE_GROUP_POLICY)
+                    wprintf(L"  Group Policy");
+                if (dwFlags & WLAN_PROFILE_USER)
+                    wprintf(L"  Per User Profile");
+                wprintf(L"\n");
+
+                wprintf(L"  dwGrantedAccess:  0x%x", dwGrantedAccess);
+                if (dwGrantedAccess & WLAN_READ_ACCESS)
+                    wprintf(L"  Read access");
+                if (dwGrantedAccess & WLAN_EXECUTE_ACCESS)
+                    wprintf(L"  Execute access");
+                if (dwGrantedAccess & WLAN_WRITE_ACCESS)
+                    wprintf(L"  Write access");
+                wprintf(L"\n");
+
+                wprintf(L"\n");
+            }
+        }
+    }
+
+    if (pProfileXml != NULL) {
+        WlanFreeMemory(pProfileXml);
+        pProfileXml = NULL;
+    }
+
+    if (pIfList != NULL) {
+        WlanFreeMemory(pIfList);
+        pIfList = NULL;
+    }
+
+    return dwRetVal;
+}
+
+
+int EnumWlanProfile()
+/*
+以下示例枚举本地计算机上的无线 LAN 接口，检索每个无线 LAN 接口上的配置文件列表，
+并从包含WLAN_PROFILE_INFO条目的检索WLAN_PROFILE_INFO_LIST打印值。
+
+注意 如果未安装并启动无线 LAN 服务，此示例将无法在 Windows Server 2008 和 Windows Server 2008 R2 上加载。
+
+https://learn.microsoft.com/zh-CN/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofilelist
+*/
+{
+    // Declare and initialize variables.
+    HANDLE hClient = NULL;
+    DWORD dwMaxClient = 2; 
+    DWORD dwCurVersion = 0;
+    DWORD dwResult = 0;
+    DWORD dwRetVal = 0;
+    int iRet = 0;
+
+    WCHAR GuidString[39] = {0};
+
+    unsigned int i, j;
+
+    /* variables used for WlanEnumInterfaces  */
+
+    PWLAN_INTERFACE_INFO_LIST pIfList = NULL;
+    PWLAN_INTERFACE_INFO pIfInfo = NULL;
+
+    PWLAN_PROFILE_INFO_LIST pProfileList = NULL;
+    PWLAN_PROFILE_INFO pProfile = NULL;
+
+    dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanOpenHandle failed with error: %u\n", dwResult);
+        return 1;
+        // You can use FormatMessage here to find out why the function failed
+    }
+
+    dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanEnumInterfaces failed with error: %u\n", dwResult);
+        return 1;
+        // You can use FormatMessage here to find out why the function failed
+    } else {
+        wprintf(L"WLAN_INTERFACE_INFO_LIST for this system\n");
+
+        wprintf(L"Num Entries: %lu\n", pIfList->dwNumberOfItems);
+        wprintf(L"Current Index: %lu\n", pIfList->dwIndex);
+        for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
+            pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
+            wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString,
+                                   sizeof(GuidString) / sizeof(*GuidString));
+            // For c rather than C++ source code, the above line needs to be
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
+            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            if (iRet == 0)
+                wprintf(L"StringFromGUID2 failed\n");
+            else {
+                wprintf(L"  Interface GUID[%d]: %ws\n", i, GuidString);
+            }
+            wprintf(L"  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription);
+            wprintf(L"\n");
+            wprintf(L"  Interface State[%d]:\t ", i);
+            DumpWlanInterfaceState(pIfInfo->isState);
+            wprintf(L"\n");
+
+            dwResult = WlanGetProfileList(hClient, &pIfInfo->InterfaceGuid, NULL, &pProfileList);
+            if (dwResult != ERROR_SUCCESS) {
+                wprintf(L"WlanGetProfileList failed with error: %u\n", dwResult);
+                dwRetVal = 1;
+                // You can use FormatMessage to find out why the function failed
+            } else {
+                wprintf(L"WLAN_PROFILE_INFO_LIST for this interface\n");
+
+                wprintf(L"  Num Entries: %lu\n\n", pProfileList->dwNumberOfItems);
+
+                for (j = 0; j < pProfileList->dwNumberOfItems; j++) {
+                    pProfile = (WLAN_PROFILE_INFO *)&pProfileList->ProfileInfo[j];
+
+                    wprintf(L"  Profile Name[%u]:  %ws\n", j, pProfile->strProfileName);
+                    GetWlanProfile(pProfile->strProfileName);
+
+                    wprintf(L"  Flags[%u]:\t    0x%x", j, pProfile->dwFlags);
+                    if (pProfile->dwFlags & WLAN_PROFILE_GROUP_POLICY)
+                        wprintf(L"   Group Policy");
+                    if (pProfile->dwFlags & WLAN_PROFILE_USER)
+                        wprintf(L"   Per User Profile");
+                    wprintf(L"\n");
+
+                    wprintf(L"\n");
+                }
+            }
+        }
+    }
+
+    if (pProfileList != NULL) {
+        WlanFreeMemory(pProfileList);
+        pProfileList = NULL;
+    }
+
+    if (pIfList != NULL) {
+        WlanFreeMemory(pIfList);
+        pIfList = NULL;
+    }
+
+    return dwRetVal;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -360,6 +602,7 @@ Arguments:
 {
     wprintf(L"查看连接的WIFI: %s WlanEnum.\n", name);
     wprintf(L"查看发现的WIFI: %s WlanEnumEx.\n", name);
+    wprintf(L"查看用过的WlanProfile: %s EnumWlanProfile.\n", name);
 
     return ERROR_SUCCESS;
 }
@@ -377,6 +620,8 @@ int wlan(int argc, wchar_t * argv[])
         ret = WlanEnum();
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("WlanEnumEx")) == 0) {
         ret = WlanEnumEx();
+    } else if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanProfile")) == 0) {
+        ret = EnumWlanProfile();
     } else {
         ret = Usage(argv[0]);
     }

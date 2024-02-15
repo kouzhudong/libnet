@@ -71,6 +71,7 @@
 #include <limits.h>
 #include <iptypes.h>
 #include <strsafe.h>
+#include <wtypes.h>
 
 #include <atlstr.h>
 #include <atlconv.h>
