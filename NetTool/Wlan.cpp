@@ -5,13 +5,109 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+void DumpWlanInterfaceState(WLAN_INTERFACE_STATE isState)
+{
+    switch (isState) {
+    case wlan_interface_state_not_ready:
+        wprintf(L"Not ready\n");
+        break;
+    case wlan_interface_state_connected:
+        wprintf(L"Connected\n");
+        break;
+    case wlan_interface_state_ad_hoc_network_formed:
+        wprintf(L"First node in a ad hoc network\n");
+        break;
+    case wlan_interface_state_disconnecting:
+        wprintf(L"Disconnecting\n");
+        break;
+    case wlan_interface_state_disconnected:
+        wprintf(L"Not connected\n");
+        break;
+    case wlan_interface_state_associating:
+        wprintf(L"Attempting to associate with a network\n");
+        break;
+    case wlan_interface_state_discovering:
+        wprintf(L"Auto configuration is discovering settings for the network\n");
+        break;
+    case wlan_interface_state_authenticating:
+        wprintf(L"In process of authenticating\n");
+        break;
+    default:
+        wprintf(L"Unknown state %ld\n", isState);
+        break;
+    }
+}
+
+
+void Dumpdot11AuthAlgorithm(PWLAN_AVAILABLE_NETWORK pBssEntry)
+{
+    switch (pBssEntry->dot11DefaultAuthAlgorithm) {
+    case DOT11_AUTH_ALGO_80211_OPEN:
+        wprintf(L"802.11 Open (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    case DOT11_AUTH_ALGO_80211_SHARED_KEY:
+        wprintf(L"802.11 Shared (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    case DOT11_AUTH_ALGO_WPA:
+        wprintf(L"WPA (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    case DOT11_AUTH_ALGO_WPA_PSK:
+        wprintf(L"WPA-PSK (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    case DOT11_AUTH_ALGO_WPA_NONE:
+        wprintf(L"WPA-None (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    case DOT11_AUTH_ALGO_RSNA:
+        wprintf(L"RSNA (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    case DOT11_AUTH_ALGO_RSNA_PSK:
+        wprintf(L"RSNA with PSK(%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    default:
+        wprintf(L"Other (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+        break;
+    }
+}
+
+
+void Dumpdot11CipherAlgorithm(PWLAN_AVAILABLE_NETWORK pBssEntry)
+{
+    switch (pBssEntry->dot11DefaultCipherAlgorithm) {
+    case DOT11_CIPHER_ALGO_NONE:
+        wprintf(L"None (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+        break;
+    case DOT11_CIPHER_ALGO_WEP40:
+        wprintf(L"WEP-40 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+        break;
+    case DOT11_CIPHER_ALGO_TKIP:
+        wprintf(L"TKIP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+        break;
+    case DOT11_CIPHER_ALGO_CCMP:
+        wprintf(L"CCMP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+        break;
+    case DOT11_CIPHER_ALGO_WEP104:
+        wprintf(L"WEP-104 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+        break;
+    case DOT11_CIPHER_ALGO_WEP:
+        wprintf(L"WEP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+        break;
+    default:
+        wprintf(L"Other (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+        break;
+    }
+}
+
+
 int WlanEnum()
 /*
 The following example enumerates the wireless LAN interfaces on the local computer and
-prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and the enumerated WLAN_INTERFACE_INFO structures.
+prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and 
+the enumerated WLAN_INTERFACE_INFO structures.
 
 Note  This example will fail to load on Windows Server 2008 and
 Windows Server 2008 R2 if the Wireless LAN Service is not installed and started.
+
+经测试：这个显示的只是已经连接的WIFI。
 
 https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenuminterfaces
 */
@@ -20,21 +116,15 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
     HANDLE hClient = nullptr;
     DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
-    DWORD dwResult = 0;
-    int iRet = 0;
-    WCHAR GuidString[40] = {0};
-
-    /* variables used for WlanEnumInterfaces  */
-    PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
-    PWLAN_INTERFACE_INFO pIfInfo = nullptr;
-
-    dwResult = WlanOpenHandle(dwMaxClient, nullptr, &dwCurVersion, &hClient);
+    DWORD dwResult = WlanOpenHandle(dwMaxClient, nullptr, &dwCurVersion, &hClient);
     if (dwResult != ERROR_SUCCESS) {
         wprintf(L"WlanOpenHandle failed with error: %u\n", dwResult);
         // FormatMessage can be used to find out why the function failed
         return 1;
     }
 
+    /* variables used for WlanEnumInterfaces  */
+    PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
     dwResult = WlanEnumInterfaces(hClient, nullptr, &pIfList);
     if (dwResult != ERROR_SUCCESS) {
         wprintf(L"WlanEnumInterfaces failed with error: %u\n", dwResult);
@@ -44,9 +134,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
         wprintf(L"Num Entries: %lu\n", pIfList->dwNumberOfItems);
         wprintf(L"Current Index: %lu\n", pIfList->dwIndex);
         for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
-            pIfInfo = reinterpret_cast<WLAN_INTERFACE_INFO *>(&pIfList->InterfaceInfo[i]);
+            PWLAN_INTERFACE_INFO pIfInfo = reinterpret_cast<WLAN_INTERFACE_INFO *>(&pIfList->InterfaceInfo[i]);
             wprintf(L"  Interface Index[%d]:\t %ld\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString), 39);
+
+            WCHAR GuidString[40] = {0};
+            int iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString), 39);
             // For c rather than C++ source code, the above line needs to be
             // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 39); 
             if (iRet == 0)
@@ -57,35 +149,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
             wprintf(L"  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription);
             wprintf(L"\n");
             wprintf(L"  Interface State[%d]:\t ", i);
-            switch (pIfInfo->isState) {
-            case wlan_interface_state_not_ready:
-                wprintf(L"Not ready\n");
-                break;
-            case wlan_interface_state_connected:
-                wprintf(L"Connected\n");
-                break;
-            case wlan_interface_state_ad_hoc_network_formed:
-                wprintf(L"First node in a ad hoc network\n");
-                break;
-            case wlan_interface_state_disconnecting:
-                wprintf(L"Disconnecting\n");
-                break;
-            case wlan_interface_state_disconnected:
-                wprintf(L"Not connected\n");
-                break;
-            case wlan_interface_state_associating:
-                wprintf(L"Attempting to associate with a network\n");
-                break;
-            case wlan_interface_state_discovering:
-                wprintf(L"Auto configuration is discovering settings for the network\n");
-                break;
-            case wlan_interface_state_authenticating:
-                wprintf(L"In process of authenticating\n");
-                break;
-            default:
-                wprintf(L"Unknown state %ld\n", pIfInfo->isState);
-                break;
-            }
+            DumpWlanInterfaceState(pIfInfo->isState);
             wprintf(L"\n");
         }
     }
@@ -94,6 +158,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
         WlanFreeMemory(pIfList);
         pIfList = nullptr;
     }
+
     return 0;
 }
 
@@ -106,6 +171,8 @@ retrieves the list of available networks on each wireless LAN interface,
 and prints values from the retrieved WLAN_AVAILABLE_NETWORK_LIST that contains the WLAN_AVAILABLE_NETWORK entries.
 
 Note  This example will fail to load on Windows Server 2008 and Windows Server 2008 R2 if the Wireless LAN Service is not installed and started.
+
+经测试：这是显示所有的发现的WIFI。
 
 https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetavailablenetworklist
 */
@@ -161,42 +228,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
             wprintf(L"  Interface Description[%u]: %ws", i, pIfInfo->strInterfaceDescription);
             wprintf(L"\n");
             wprintf(L"  Interface State[%u]:\t ", i);
-            switch (pIfInfo->isState) {
-            case wlan_interface_state_not_ready:
-                wprintf(L"Not ready\n");
-                break;
-            case wlan_interface_state_connected:
-                wprintf(L"Connected\n");
-                break;
-            case wlan_interface_state_ad_hoc_network_formed:
-                wprintf(L"First node in a ad hoc network\n");
-                break;
-            case wlan_interface_state_disconnecting:
-                wprintf(L"Disconnecting\n");
-                break;
-            case wlan_interface_state_disconnected:
-                wprintf(L"Not connected\n");
-                break;
-            case wlan_interface_state_associating:
-                wprintf(L"Attempting to associate with a network\n");
-                break;
-            case wlan_interface_state_discovering:
-                wprintf(L"Auto configuration is discovering settings for the network\n");
-                break;
-            case wlan_interface_state_authenticating:
-                wprintf(L"In process of authenticating\n");
-                break;
-            default:
-                wprintf(L"Unknown state %ld\n", pIfInfo->isState);
-                break;
-            }
+            DumpWlanInterfaceState(pIfInfo->isState);
             wprintf(L"\n");
 
-            dwResult = WlanGetAvailableNetworkList(hClient,
-                                                   &pIfInfo->InterfaceGuid,
-                                                   0,
-                                                   nullptr,
-                                                   &pBssList);
+            dwResult = WlanGetAvailableNetworkList(hClient, &pIfInfo->InterfaceGuid, 0, nullptr, &pBssList);
             if (dwResult != ERROR_SUCCESS) {
                 wprintf(L"WlanGetAvailableNetworkList failed with error: %u\n", dwResult);
                 dwRetVal = 1;
@@ -215,7 +250,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                         wprintf(L"\n");
                     else {
                         for (k = 0; k < pBssEntry->dot11Ssid.uSSIDLength; k++) {
-                            wprintf(L"%c", pBssEntry->dot11Ssid.ucSSID[k]);
+                            wprintf(L"%c", pBssEntry->dot11Ssid.ucSSID[k]);//这个有乱码，估计是UTF8.
                         }
                         wprintf(L"\n");
                     }
@@ -253,7 +288,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                     else
                         iRSSI = -100 + (pBssEntry->wlanSignalQuality / 2);
 
-                    wprintf(L"  Signal Quality[%u]:\t %u (RSSI: %i dBm)\n", j,
+                    wprintf(L"  Signal Quality[%u]:\t %u (RSSI: %i dBm)\n", j, 
                             pBssEntry->wlanSignalQuality, iRSSI);
 
                     wprintf(L"  Security Enabled[%u]:\t ", j);
@@ -263,57 +298,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                         wprintf(L"No\n");
 
                     wprintf(L"  Default AuthAlgorithm[%u]: ", j);
-                    switch (pBssEntry->dot11DefaultAuthAlgorithm) {
-                    case DOT11_AUTH_ALGO_80211_OPEN:
-                        wprintf(L"802.11 Open (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    case DOT11_AUTH_ALGO_80211_SHARED_KEY:
-                        wprintf(L"802.11 Shared (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    case DOT11_AUTH_ALGO_WPA:
-                        wprintf(L"WPA (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    case DOT11_AUTH_ALGO_WPA_PSK:
-                        wprintf(L"WPA-PSK (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    case DOT11_AUTH_ALGO_WPA_NONE:
-                        wprintf(L"WPA-None (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    case DOT11_AUTH_ALGO_RSNA:
-                        wprintf(L"RSNA (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    case DOT11_AUTH_ALGO_RSNA_PSK:
-                        wprintf(L"RSNA with PSK(%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    default:
-                        wprintf(L"Other (%d)\n", pBssEntry->dot11DefaultAuthAlgorithm);
-                        break;
-                    }
+                    Dumpdot11AuthAlgorithm(pBssEntry);
 
                     wprintf(L"  Default CipherAlgorithm[%u]: ", j);
-                    switch (pBssEntry->dot11DefaultCipherAlgorithm) {
-                    case DOT11_CIPHER_ALGO_NONE:
-                        wprintf(L"None (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
-                        break;
-                    case DOT11_CIPHER_ALGO_WEP40:
-                        wprintf(L"WEP-40 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
-                        break;
-                    case DOT11_CIPHER_ALGO_TKIP:
-                        wprintf(L"TKIP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
-                        break;
-                    case DOT11_CIPHER_ALGO_CCMP:
-                        wprintf(L"CCMP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
-                        break;
-                    case DOT11_CIPHER_ALGO_WEP104:
-                        wprintf(L"WEP-104 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
-                        break;
-                    case DOT11_CIPHER_ALGO_WEP:
-                        wprintf(L"WEP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
-                        break;
-                    default:
-                        wprintf(L"Other (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
-                        break;
-                    }
+                    Dumpdot11CipherAlgorithm(pBssEntry);
 
                     wprintf(L"  Flags[%u]:\t 0x%x", j, pBssEntry->dwFlags);
                     if (pBssEntry->dwFlags) {
@@ -322,14 +310,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
                         if (pBssEntry->dwFlags & WLAN_AVAILABLE_NETWORK_HAS_PROFILE)
                             wprintf(L" - Has profile");
                     }
-                    wprintf(L"\n");
 
+                    wprintf(L"\n");
                     wprintf(L"\n");
                 }
             }
         }
-
     }
+
     if (pBssList != nullptr) {
         WlanFreeMemory(pBssList);
         pBssList = nullptr;
@@ -345,3 +333,38 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetava
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+static int Usage(__in const wchar_t * name)
+/*++
+Routine Description:
+    This routine prints the intended usage for this program.
+Arguments:
+    progName - NULL terminated string representing the name of the executable
+--*/
+{
+    wprintf(L"查看连接的WIFI %s: WlanEnum.\n", name);
+    wprintf(L"查看发现的WIFI %s: WlanEnumEx.\n", name);
+
+    return ERROR_SUCCESS;
+}
+
+
+int wlan(int argc, wchar_t * argv[])
+{
+    int ret = ERROR_SUCCESS;
+
+    if (argc == 1) {
+        return Usage(argv[0]);
+    }
+
+    if (argc == 2 && lstrcmpi(argv[1], TEXT("WlanEnum")) == 0) {
+        ret = WlanEnum();
+    } else if (argc == 2 && lstrcmpi(argv[1], TEXT("WlanEnumEx")) == 0) {
+        ret = WlanEnumEx();
+    } else {
+        ret = Usage(argv[0]);
+    }
+
+    return ret;
+}

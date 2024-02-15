@@ -14,6 +14,7 @@
 #include "spi.h"
 #include "NetBIOS.h"
 #include "nslookup.h"
+#include "Wlan.h"
 
 
 #ifdef _WIN64  
@@ -40,7 +41,7 @@ void banner()
 }
 
 
-void Usage(_In_ LPCWSTR programName)
+int Usage(_In_ LPCWSTR programName)
 {
     banner();
 
@@ -50,7 +51,7 @@ void Usage(_In_ LPCWSTR programName)
     printf("%ls tracert.\r\n", programName);
 
 
-
+    return ERROR_SUCCESS;
 }
 
 
@@ -145,7 +146,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     else if (_wcsicmp(Arglist[1], L"wlan") == 0) {
-        //wlan(--argc, ++Arglist);
+        wlan(--argc, ++Arglist);
     }
 
     else if (_wcsicmp(Arglist[1], L"net") == 0) {
