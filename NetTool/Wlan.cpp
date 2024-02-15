@@ -685,6 +685,78 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/ns-wlanapi-wlan_bss_
 }
 
 
+int EnumWlanFilter(_In_ WLAN_FILTER_LIST_TYPE wlanFilterListType)
+/*
+WlanGetFilterList 函数检索组策略或用户权限列表。
+
+https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetfilterlist
+*/
+{
+    // Declare and initialize variables.
+    HANDLE hClient = NULL;
+    DWORD dwMaxClient = 2;
+    DWORD dwCurVersion = 0;
+    DWORD dwResult = 0;
+    DWORD dwRetVal = 0;
+    int iRet = 0;
+
+    WCHAR GuidString[39] = {0};
+
+    unsigned int j;
+
+    /* variables used for WlanEnumInterfaces  */
+
+    PWLAN_INTERFACE_INFO_LIST pIfList = NULL;
+    PWLAN_INTERFACE_INFO pIfInfo = NULL;
+
+    dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanOpenHandle failed with error: %u\n", dwResult);
+        return 1;
+        // You can use FormatMessage here to find out why the function failed
+    }
+
+    PDOT11_NETWORK_LIST NetworkList = NULL;
+    dwResult = WlanGetFilterList(hClient, wlanFilterListType, NULL, &NetworkList);
+    if (dwResult != ERROR_SUCCESS) {
+        wprintf(L"WlanGetFilterList failed with error: %u\n", dwResult);
+        dwRetVal = 1;
+        // You can use FormatMessage to find out why the function failed
+    } else {
+        if (NetworkList) {//经测试这里始终是NULL。
+            wprintf(L"  DOT11_NETWORK_LIST for this interface\n");
+            wprintf(L"  Num Entries: %lu\n\n", NetworkList->dwNumberOfItems);
+
+            for (j = 0; j < NetworkList->dwNumberOfItems; j++) {
+                wprintf(L"  dot11BssType: %lu\n\n", NetworkList->Network[j].dot11BssType);
+
+                _ASSERTE(NetworkList->Network[j].dot11Ssid.uSSIDLength < _ARRAYSIZE(NetworkList->Network[j].dot11Ssid.ucSSID));
+                LPWSTR ucSSID = UTF8ToWideChar((PCHAR)NetworkList->Network[j].dot11Ssid.ucSSID);
+                wprintf(L"  SSID:%s\n", ucSSID);
+                HeapFree(GetProcessHeap(), 0, ucSSID);
+
+                wprintf(L"\n");
+            }
+
+            WlanFreeMemory(NetworkList);
+        }
+    }
+
+    return dwRetVal;
+}
+
+
+int EnumWlanFilter()
+{
+    EnumWlanFilter(wlan_filter_list_type_gp_permit);
+    EnumWlanFilter(wlan_filter_list_type_gp_deny);
+    EnumWlanFilter(wlan_filter_list_type_user_permit);
+    EnumWlanFilter(wlan_filter_list_type_user_deny);
+
+    return 0;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -706,6 +778,7 @@ Arguments:
     wprintf(L"查看发现的WIFI: %s EnumWlanAvailableNetwork.\n", name);
     wprintf(L"查看用过的WlanProfile: %s EnumWlanProfile.\n", name);
     wprintf(L"GetWlanNetworkBssList: %s EnumWlanNetworkBss.\n", name);
+    wprintf(L"GetWlanFilterList: %s EnumWlanFilter.\n", name);
 
     return ERROR_SUCCESS;
 }
@@ -727,6 +800,8 @@ int wlan(int argc, wchar_t * argv[])
         ret = EnumWlanProfile();
     } else if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanNetworkBss")) == 0) {
         ret = EnumWlanNetworkBss();
+    } else if (argc == 2 && lstrcmpi(argv[1], TEXT("EnumWlanFilter")) == 0) {
+        ret = EnumWlanFilter();
     } else {
         ret = Usage(argv[0]);
     }
