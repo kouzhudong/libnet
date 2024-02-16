@@ -105,6 +105,7 @@
 //#pragma comment (lib,"Url.lib")
 #pragma comment(lib, "wbemuuid.lib")
 #pragma comment(lib, "ntdll.lib")
+#pragma comment(lib, "XmlLite.lib")
 
 #include <bcrypt.h>
 #pragma comment (lib, "Bcrypt.lib")
@@ -157,6 +158,7 @@
 #pragma comment (lib, "Wlanapi.lib")
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <list>
 #include <regex>

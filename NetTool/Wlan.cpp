@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Wlan.h"
+#include "xml.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +105,7 @@ void Dumpdot11CipherAlgorithm(PWLAN_AVAILABLE_NETWORK pBssEntry)
 int EnumWlanInterfaces()
 /*
 The following example enumerates the wireless LAN interfaces on the local computer and
-prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and 
+prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and
 the enumerated WLAN_INTERFACE_INFO structures.
 
 Note  This example will fail to load on Windows Server 2008 and
@@ -298,7 +299,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetav
                     else
                         iRSSI = -100 + (pBssEntry->wlanSignalQuality / 2);
 
-                    wprintf(L"  Signal Quality[%u]:\t %u (RSSI: %i dBm)\n", j, 
+                    wprintf(L"  Signal Quality[%u]:\t %u (RSSI: %i dBm)\n", j,
                             pBssEntry->wlanSignalQuality, iRSSI);
 
                     wprintf(L"  Security Enabled[%u]:\t ", j);
@@ -346,14 +347,14 @@ void ParseProfileXml(LPWSTR pProfileXml)
 /*
 ¹¦ÄÜ½âÎöXML£¬Ö÷ÒªÊÇ½âÃÜÃÜÂë¡£
 
-Èç¹û WlanGetProfile º¯Êı³É¹¦£¬Ôò»áÔÚ pstrProfileXml ²ÎÊıÖ¸ÏòµÄ»º³åÇøÖĞ·µ»ØÎŞÏßÅäÖÃÎÄ¼ş¡£ 
-»º³åÇø°üº¬Ò»¸ö×Ö·û´®£¬¸Ã×Ö·û´®ÊÇ²éÑ¯µÄÅäÖÃÎÄ¼şµÄ XML ±íÊ¾ĞÎÊ½¡£ 
+Èç¹û WlanGetProfile º¯Êı³É¹¦£¬Ôò»áÔÚ pstrProfileXml ²ÎÊıÖ¸ÏòµÄ»º³åÇøÖĞ·µ»ØÎŞÏßÅäÖÃÎÄ¼ş¡£
+»º³åÇø°üº¬Ò»¸ö×Ö·û´®£¬¸Ã×Ö·û´®ÊÇ²éÑ¯µÄÅäÖÃÎÄ¼şµÄ XML ±íÊ¾ĞÎÊ½¡£
 ÓĞ¹ØÎŞÏßÅäÖÃÎÄ¼şµÄ XML ±íÊ¾ĞÎÊ½µÄËµÃ÷£¬Çë²ÎÔÄ WLAN_profile ¼Ü¹¹¡£
 
 µ÷ÓÃ·½¸ºÔğµ÷ÓÃ WlanFreeMemory º¯Êı£¬ÒÔ±ãÔÚ²»ÔÙĞèÒª»º³åÇøÊ±ÊÍ·Å pstrProfileXml ²ÎÊıÎª»º³åÇøÖ¸Õë·ÖÅäµÄÄÚ´æ¡£
 
-Èç¹û pstrProfileXml Ö¸¶¨ÁËÒ»¸öÈ«ÓÃ»§ÅäÖÃÎÄ¼ş£¬ Ôò WlanGetProfile µ÷ÓÃ·½±ØĞë¶Ô¸ÃÅäÖÃÎÄ¼ş¾ßÓĞ¶ÁÈ¡·ÃÎÊÈ¨ÏŞ¡£ 
-·ñÔò£¬ WlanGetProfile µ÷ÓÃ½«Ê§°Ü£¬·µ»ØÖµÎª ERROR_ACCESS_DENIED¡£ 
+Èç¹û pstrProfileXml Ö¸¶¨ÁËÒ»¸öÈ«ÓÃ»§ÅäÖÃÎÄ¼ş£¬ Ôò WlanGetProfile µ÷ÓÃ·½±ØĞë¶Ô¸ÃÅäÖÃÎÄ¼ş¾ßÓĞ¶ÁÈ¡·ÃÎÊÈ¨ÏŞ¡£
+·ñÔò£¬ WlanGetProfile µ÷ÓÃ½«Ê§°Ü£¬·µ»ØÖµÎª ERROR_ACCESS_DENIED¡£
 Ê¹ÓÃ WlanSetProfile »ò WlanSaveTemporaryProfile ´´½¨»ò±£´æÅäÖÃÎÄ¼şÊ±£¬½«½¨Á¢¶ÔËùÓĞÓÃ»§ÅäÖÃÎÄ¼şµÄÈ¨ÏŞ¡£
 
 Windows 7£º
@@ -364,10 +365,10 @@ Windows 7£º
 Èç¹ûµ÷ÓÃÏß³ÌÈ±ÉÙËùĞèµÄÈ¨ÏŞ£¬WlanGetProfile º¯Êı½«ÔÚ pstrProfileXml ²ÎÊıÖ¸ÏòµÄ»º³åÇøÖĞ·µ»ØµÄÅäÖÃÎÄ¼şµÄ keyMaterial ÔªËØÖĞ·µ»Ø¼ÓÃÜÃÜÔ¿¡£
 Èç¹ûµ÷ÓÃÏß³ÌÈ±ÉÙËùĞèµÄÈ¨ÏŞ£¬Ôò²»»á·µ»Ø´íÎó¡£
 
-Ä¬ÈÏÇé¿öÏÂ£¬pstrProfileXml Ö¸ÏòµÄÅäÖÃÎÄ¼şÖĞ·µ»ØµÄ keyMaterial ÔªËØÊÇ¼ÓÃÜµÄ¡£ 
+Ä¬ÈÏÇé¿öÏÂ£¬pstrProfileXml Ö¸ÏòµÄÅäÖÃÎÄ¼şÖĞ·µ»ØµÄ keyMaterial ÔªËØÊÇ¼ÓÃÜµÄ¡£
 Èç¹û½ø³ÌÔÚÍ¬Ò»¼ÆËã»úÉÏµÄ LocalSystem ÕÊ»§ÉÏÏÂÎÄÖĞÔËĞĞ£¬Ôò¿ÉÒÔÍ¨¹ıµ÷ÓÃ CryptUnprotectData º¯ÊıÀ´È¡Ïû¼ÓÃÜÃÜÔ¿²ÄÁÏ¡£
 
-Windows Server 2008 ºÍ Windows Vista£º Ê¼ÖÕ¼ÓÃÜ pstrProfileXml Ö¸ÏòµÄÅäÖÃÎÄ¼ş¼Ü¹¹ÖĞ·µ»ØµÄ keyMaterial ÔªËØ¡£ 
+Windows Server 2008 ºÍ Windows Vista£º Ê¼ÖÕ¼ÓÃÜ pstrProfileXml Ö¸ÏòµÄÅäÖÃÎÄ¼ş¼Ü¹¹ÖĞ·µ»ØµÄ keyMaterial ÔªËØ¡£
 Èç¹û½ø³ÌÔÚ LocalSystem ÕÊ»§µÄÉÏÏÂÎÄÖĞÔËĞĞ£¬Ôò¿ÉÒÔÍ¨¹ıµ÷ÓÃ CryptUnprotectData º¯ÊıÀ´È¡Ïû¼ÓÃÜÃÜÔ¿²ÄÁÏ¡£
 
 ¾ßÓĞ SP3 µÄ Windows XP ºÍÊÊÓÃÓÚ SP2 µÄ Windows XP µÄÎŞÏß LAN API£º ÃÜÔ¿²ÄÁÏÓÀÔ¶²»»á¼ÓÃÜ¡£
@@ -375,20 +376,71 @@ Windows Server 2008 ºÍ Windows Vista£º Ê¼ÖÕ¼ÓÃÜ pstrProfileXml Ö¸ÏòµÄÅäÖÃÎÄ¼ş¼Ü¹
 https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofile
 https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofilecustomuserdata
 https://learn.microsoft.com/zh-cn/windows/win32/seccrypto/example-c-program-using-cryptprotectdata
+
+https://www.codenong.com/10765860/
+https://www.oomake.com/question/2930367
+https://cloud.tencent.com/developer/ask/sof/109443020
 */
 {
-    UNREFERENCED_PARAMETER(pProfileXml);
+    wstring keyMaterial;//error C2712: ÎŞ·¨ÔÚÒªÇó¶ÔÏóÕ¹¿ªµÄº¯ÊıÖĞÊ¹ÓÃ __try
+    ParseXml(pProfileXml, keyMaterial);
+    LPCWSTR pszString = keyMaterial.c_str();
 
+    DWORD dwProcessId = FindOnePidByName(L"winlogon.exe");
+    if (dwProcessId == 0)
+        return;
 
+    BOOL bIsSuccess = AdjustCurrentProcessPrivilege(SE_DEBUG_NAME, TRUE);
+    if (!bIsSuccess)
+        return;
 
+    BOOL bImpersonated = FALSE;
+    HANDLE hProcess = NULL, hProcessToken = NULL;
 
+    do {
+        hProcess = OpenProcess(MAXIMUM_ALLOWED, FALSE, dwProcessId);
+        if (!hProcess)
+            break;
 
+        bIsSuccess = OpenProcessToken(hProcess, MAXIMUM_ALLOWED, &hProcessToken);
+        if (!bIsSuccess)
+            break;
+
+        bIsSuccess = ImpersonateLoggedOnUser(hProcessToken);
+        if (!bIsSuccess)
+            break;
+
+        bImpersonated = TRUE;
+
+        BYTE byKey[1024];
+        DWORD cbBinary = sizeof(byKey);
+        DWORD dwFlags, dwSkip;
+        bIsSuccess = CryptStringToBinary(pszString, NULL, CRYPT_STRING_HEX, byKey, &cbBinary, &dwSkip, &dwFlags);
+        if (!bIsSuccess)
+            break;
+
+        DATA_BLOB DataOut, DataVerify;
+        DataOut.cbData = cbBinary;
+        DataOut.pbData = (BYTE *)byKey;
+        if (CryptUnprotectData(&DataOut, NULL, NULL, NULL, NULL, 0, &DataVerify)) {
+            _tprintf(TEXT("keyMaterial:%hs"), DataVerify.pbData);
+        }
+    } while (false);
+
+    if (bImpersonated)
+        RevertToSelf();
+
+    if (hProcess)
+        CloseHandle(hProcess);
+
+    if (hProcessToken)
+        CloseHandle(hProcessToken);
 }
 
 
-int GetWlanProfile(LPCWSTR pProfileName) 
+int GetWlanProfile(LPCWSTR pProfileName)
 /*
-ÒÔÏÂÊ¾ÀıÃ¶¾Ù±¾µØ¼ÆËã»úÉÏµÄÎŞÏß LAN ½Ó¿Ú£¬¼ìË÷Ã¿¸öÎŞÏß LAN ½Ó¿ÚÉÏÌØ¶¨ÎŞÏßÅäÖÃÎÄ¼şµÄĞÅÏ¢£¬²¢´òÓ¡¼ìË÷µ½µÄÖµ¡£ 
+ÒÔÏÂÊ¾ÀıÃ¶¾Ù±¾µØ¼ÆËã»úÉÏµÄÎŞÏß LAN ½Ó¿Ú£¬¼ìË÷Ã¿¸öÎŞÏß LAN ½Ó¿ÚÉÏÌØ¶¨ÎŞÏßÅäÖÃÎÄ¼şµÄĞÅÏ¢£¬²¢´òÓ¡¼ìË÷µ½µÄÖµ¡£
 »¹»á´òÓ¡²éÑ¯ÅäÖÃÎÄ¼şµÄ XML ±íÊ¾ĞÎÊ½µÄ×Ö·û´®¡£
 
 ×¢Òâ Èç¹ûÎ´°²×°²¢Æô¶¯ÎŞÏß LAN ·şÎñ£¬±¾Ê¾Àı½«ÎŞ·¨ÔÚ Windows Server 2008 ºÍ Windows Server 2008 R2 ÉÏ¼ÓÔØ¡£
@@ -450,7 +502,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
         for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
             pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, 
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString,
                                    sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
             // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
@@ -532,7 +584,7 @@ https://learn.microsoft.com/zh-CN/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
 {
     // Declare and initialize variables.
     HANDLE hClient = NULL;
-    DWORD dwMaxClient = 2; 
+    DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
     DWORD dwResult = 0;
     DWORD dwRetVal = 0;

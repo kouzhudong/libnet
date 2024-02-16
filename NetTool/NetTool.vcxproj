@@ -162,6 +162,7 @@
     <ClCompile Include="wfp.cpp" />
     <ClCompile Include="whois.cpp" />
     <ClCompile Include="Wlan.cpp" />
+    <ClCompile Include="xml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IPArp.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="wfp.h" />
     <ClInclude Include="whois.h" />
     <ClInclude Include="Wlan.h" />
+    <ClInclude Include="xml.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="localmsg.mc">
