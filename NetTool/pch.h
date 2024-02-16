@@ -167,9 +167,18 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+typedef BOOL(WINAPI * EnumerateProcessCallBack) (_In_ LPPROCESSENTRY32W lppe, _In_opt_ PVOID Context);
+
+typedef struct ProcessInfo {
+    DWORD   ProcessID;
+    WCHAR   ProcessName[MAX_PATH];
+} ProcessInfo;
+
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 
 LPWSTR UTF8ToWideChar(IN PCHAR utf8);
+BOOL WINAPI AdjustCurrentProcessPrivilege(PCTSTR szPrivilege, BOOL fEnable);
+DWORD FindOnePidByName(PCWCHAR ProcessName);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
