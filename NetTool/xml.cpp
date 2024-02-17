@@ -57,10 +57,10 @@ HRESULT WriteAttributes(IXmlReader * pReader)
                     return hr;
                 }
 
-                if (cwchPrefix > 0)
-                    wprintf(L"Attr: %s:%s=\"%s\" \n", pwszPrefix, pwszLocalName, pwszValue);
-                else
-                    wprintf(L"Attr: %s=\"%s\" \n", pwszLocalName, pwszValue);
+                //if (cwchPrefix > 0)
+                //    wprintf(L"Attr: %s:%s=\"%s\" \n", pwszPrefix, pwszLocalName, pwszValue);
+                //else
+                //    wprintf(L"Attr: %s=\"%s\" \n", pwszLocalName, pwszValue);
             }
 
             if (S_OK != pReader->MoveToNextAttribute())
@@ -120,7 +120,7 @@ https://stackoverflow.com/questions/8804687/unable-to-read-xml-string-with-xmlli
     while (S_OK == (hr = pReader->Read(&nodeType))) {
         switch (nodeType) {
         case XmlNodeType_XmlDeclaration:
-            wprintf(L"XmlDeclaration\n");
+            //wprintf(L"XmlDeclaration\n");
             if (FAILED(hr = WriteAttributes(pReader))) {
                 wprintf(L"Error writing attributes, error is %08.8lx", hr);
                 HR(hr);
@@ -162,10 +162,10 @@ https://stackoverflow.com/questions/8804687/unable-to-read-xml-string-with-xmlli
                 HR(hr);
             }
 
-            if (cwchPrefix > 0)
-                wprintf(L"End Element: %s:%s\n", pwszPrefix, pwszLocalName);
-            else
-                wprintf(L"End Element: %s\n", pwszLocalName);
+            //if (cwchPrefix > 0)
+            //    wprintf(L"End Element: %s:%s\n", pwszPrefix, pwszLocalName);
+            //else
+            //    wprintf(L"End Element: %s\n", pwszLocalName);
 
             break;
         case XmlNodeType_Text:

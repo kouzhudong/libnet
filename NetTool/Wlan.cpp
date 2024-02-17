@@ -423,7 +423,7 @@ https://cloud.tencent.com/developer/ask/sof/109443020
         DataOut.cbData = cbBinary;
         DataOut.pbData = (BYTE *)byKey;
         if (CryptUnprotectData(&DataOut, NULL, NULL, NULL, NULL, 0, &DataVerify)) {
-            _tprintf(TEXT("keyMaterial:%hs"), DataVerify.pbData);
+            _tprintf(TEXT("Œﬁœﬂ√‹¬Î:%hs\r\n"), DataVerify.pbData);
         }
     } while (false);
 
