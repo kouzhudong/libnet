@@ -758,7 +758,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/ns-wlanapi-wlan_bss_
                 wprintf(L"  Num Entries: %lu\n\n", WlanBssList->dwNumberOfItems);
 
                 for (j = 0; j < WlanBssList->dwNumberOfItems; j++) {
-                    wprintf(L"  PhyId: %lu\n\n", WlanBssList->wlanBssEntries[j].uPhyId);
+                    _ASSERTE(WlanBssList->wlanBssEntries[j].dot11Ssid.uSSIDLength < _ARRAYSIZE(WlanBssList->wlanBssEntries[j].dot11Ssid.ucSSID));
+                    LPWSTR ucSSID = UTF8ToWideChar((PCHAR)WlanBssList->wlanBssEntries[j].dot11Ssid.ucSSID);
+                    wprintf(L"  SSID:%s\n", ucSSID);
+                    HeapFree(GetProcessHeap(), 0, ucSSID);
+
+                    wprintf(L"  PhyId: %lu\n", WlanBssList->wlanBssEntries[j].uPhyId);
 
                     //以后闲的时候补充打印输出。
 
