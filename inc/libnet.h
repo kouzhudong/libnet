@@ -135,39 +135,6 @@ EXTERN_C_START
 
 
 __declspec(dllimport)
-void WINAPI RegistersNotifyIpInterfaceChange();
-
-__declspec(dllimport)
-void WINAPI DeregisterNotifyIpInterfaceChange();
-
-__declspec(dllimport)
-void WINAPI RegistersNotifyNetworkConnectivityHintChange();
-
-__declspec(dllimport)
-void WINAPI DeregisterNotifyRouteChange2();
-
-__declspec(dllimport)
-void WINAPI RegistersNotifyRouteChange2();
-
-__declspec(dllimport)
-void WINAPI DeregisterNotifyStableUnicastIpAddressTable();
-
-__declspec(dllimport)
-void WINAPI RegistersNotifyStableUnicastIpAddressTable();
-
-__declspec(dllimport)
-void WINAPI DeregisterNotifyTeredoPortChange();
-
-__declspec(dllimport)
-void WINAPI RegistersNotifyTeredoPortChange();
-
-__declspec(dllimport)
-void WINAPI DeregisterNotifyUnicastIpAddressChange();
-
-__declspec(dllimport)
-void WINAPI RegistersNotifyUnicastIpAddressChange();
-
-__declspec(dllimport)
 int WINAPI GetMacByIPv4Test(int argc, char ** argv);
 
 __declspec(dllimport)
