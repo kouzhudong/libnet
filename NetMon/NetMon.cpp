@@ -12,6 +12,9 @@ void DeRegisterNotify()
     DeregisterNotifyStableUnicastIpAddressTable();
     DeregisterNotifyTeredoPortChange();
     DeregisterNotifyUnicastIpAddressChange();
+    DeRegisterWlanNotification();
+
+
 
 }
 
@@ -24,6 +27,9 @@ void RegistersNotify()
     RegistersNotifyStableUnicastIpAddressTable();
     RegistersNotifyTeredoPortChange();
     RegistersNotifyUnicastIpAddressChange();
+    RegisterWlanNotification();
+
+
 
 }
 
