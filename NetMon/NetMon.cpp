@@ -5,6 +5,9 @@
 #include "NetworkListManager.h"
 
 
+StableUnicastIpAddressTable Suiat;
+
+
 void DeRegisterNotify()
 {
     DeregisterNotifyIpInterfaceChange();
@@ -13,6 +16,8 @@ void DeRegisterNotify()
     DeregisterNotifyTeredoPortChange();
     DeregisterNotifyUnicastIpAddressChange();
     DeRegisterWlanNotification();
+
+    Suiat.Deregister();
 
 
 
@@ -28,7 +33,9 @@ void RegistersNotify()
     RegistersNotifyTeredoPortChange();
     RegistersNotifyUnicastIpAddressChange();
     RegisterWlanNotification();
-
+    
+    Suiat.Registers();
+    
 
 
 }
