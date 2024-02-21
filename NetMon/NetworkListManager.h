@@ -29,7 +29,4 @@ https://review.jami.net/plugins/gitiles/jami-client-qt/+/8cb4e442d95df6d65a26e59
 #include "pch.h"
 
 
-class NetworkListManager
-{
 
-};

@@ -149,9 +149,6 @@ void WINAPI Icmp6Test();
 __declspec(dllimport)
 int WINAPI GetNetworkParamsTest();
 
-__declspec(dllimport)
-void WINAPI NotifyAddrChangeTest();
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -352,19 +349,6 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size);
 
 __declspec(dllimport)
 USHORT WINAPI checksum(USHORT * buffer, int size);
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-__declspec(dllimport)
-void WINAPI TestNetworkListManager();
-
-__declspec(dllimport)
-void WINAPI TestNetworkListManagerEvents();
-
-__declspec(dllimport)
-void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
