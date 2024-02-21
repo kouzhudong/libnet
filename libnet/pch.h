@@ -36,3 +36,7 @@ void PrintRouteType(_In_ DWORD dwForwardType);
 void PrintRoutingProtocols(_In_ DWORD dwForwardProto);
 void PrintInterfaceOperationalStatus(_In_ INTERNAL_IF_OPER_STATUS dwOperStatus);
 void PrintAdapterType(INT Type);
+void PrintPrefixOrigin(NL_PREFIX_ORIGIN PrefixOrigin);
+void PrintSuffixOrigin(NL_SUFFIX_ORIGIN SuffixOrigin);
+void PrintDadState(NL_DAD_STATE DadState);
+void PrintNodeType(UINT NodeType);
