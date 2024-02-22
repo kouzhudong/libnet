@@ -156,6 +156,12 @@ __declspec(dllimport)
 int WINAPI EnumInvertedStackInterface();
 
 __declspec(dllimport)
+int WINAPI EnumIpInterface();
+
+__declspec(dllimport)
+int WINAPI EnumIpPath();
+
+__declspec(dllimport)
 void WINAPI Icmp6Test();
 
 __declspec(dllimport)
