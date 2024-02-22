@@ -6,11 +6,12 @@
 
 
 StableUnicastIpAddressTable Suiat;
+IpInterfaceChange Iic;
 
 
 void DeRegisterNotify()
 {
-    DeregisterNotifyIpInterfaceChange();
+    //DeregisterNotifyIpInterfaceChange();
     DeregisterNotifyRouteChange2();
     DeregisterNotifyStableUnicastIpAddressTable();
     DeregisterNotifyTeredoPortChange();
@@ -18,7 +19,7 @@ void DeRegisterNotify()
     DeRegisterWlanNotification();
 
     Suiat.Deregister();
-
+    Iic.Deregister();
 
 
 }
@@ -27,7 +28,7 @@ void DeRegisterNotify()
 void RegistersNotify()
 {    
     RegistersNotifyNetworkConnectivityHintChange();
-    RegistersNotifyIpInterfaceChange();
+    //RegistersNotifyIpInterfaceChange();
     RegistersNotifyRouteChange2();
     RegistersNotifyStableUnicastIpAddressTable();
     RegistersNotifyTeredoPortChange();
@@ -35,6 +36,7 @@ void RegistersNotify()
     RegisterWlanNotification();
     
     Suiat.Registers();
+    Iic.Registers();
     
 
 
