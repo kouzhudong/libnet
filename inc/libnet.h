@@ -144,6 +144,12 @@ __declspec(dllimport)
 int WINAPI EnumUnicastIpAddressTable();
 
 __declspec(dllimport)
+int WINAPI EnumAnycastIpAddress();
+
+__declspec(dllimport)
+int WINAPI EnumMulticastIpAddress();
+
+__declspec(dllimport)
 void WINAPI Icmp6Test();
 
 __declspec(dllimport)

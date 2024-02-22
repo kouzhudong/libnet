@@ -45,7 +45,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //test_c();
 
-    //EnumAdaptersInfo();
+    EnumMulticastIpAddress();
     //TestNetworkListManager();
     //TestNetworkListManagerEvents();
     //ListenToNetworkConnectivityChangesSample(false);
