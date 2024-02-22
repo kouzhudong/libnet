@@ -127,11 +127,11 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     else if (_wcsicmp(Arglist[1], L"nbtstat") == 0) {
-        //nbtstat(--argc, ++Arglist);
+        //nbtstat(--argc, ++Arglist);//Win2K3\NT\net\netbt\nbtstat
     }
 
     else if (_wcsicmp(Arglist[1], L"netstat") == 0) {
-        //netstat(--argc, ++Arglist);
+        //netstat(--argc, ++Arglist);//reactos\base\applications\network\netstat
     }
 
     else if (_wcsicmp(Arglist[1], L"netsh") == 0) {

@@ -15,6 +15,17 @@ const HTTPREQUEST_PROXY_SETTING HTTPREQUEST_PROXYSETTING_PROXY = 0x00000002;
 const IID IID_IWinHttpRequest = {0x06f29373,0x5c5a,0x4b54,{0xb0, 0x25, 0x6e, 0xf1, 0xbf, 0x8a, 0xbf, 0x0e}};
 
 
+struct SWinHttpSampleGet {
+    LPCWSTR szServer;
+    LPCWSTR szPath;
+    BOOL fUseSSL;
+    LPCWSTR szServerUsername;
+    LPCWSTR szServerPassword;
+    LPCWSTR szProxyUsername;
+    LPCWSTR szProxyPassword;
+};
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -11,9 +11,8 @@ void TestINetworkConnection(INetworkConnection & NetworkConnection)
 https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-inetworkconnection
 */
 {
-    HRESULT hr = S_OK;
     VARIANT_BOOL IsConnected;
-    hr = NetworkConnection.get_IsConnected(&IsConnected);
+    HRESULT hr = NetworkConnection.get_IsConnected(&IsConnected);
     //printf("IsConnected:%d.\r\n", IsConnected);
 
     hr = NetworkConnection.get_IsConnectedToInternet(&IsConnected);
@@ -46,12 +45,10 @@ void TestIEnumNetworkConnections(IEnumNetworkConnections & EnumNetworkConnection
 https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ienumnetworkconnections
 */
 {
-    HRESULT hr = S_OK;
-
     for (;;) {
         INetworkConnection * rgelt{};
         ULONG  pceltFetched = 0;
-        hr = EnumNetworkConnection.Next(1, &rgelt, &pceltFetched);
+        HRESULT hr = EnumNetworkConnection.Next(1, &rgelt, &pceltFetched);
         if (hr != S_OK) {
             break;
         }
@@ -71,9 +68,8 @@ void TestNetwork(INetwork & Network)
 https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-inetwork
 */
 {
-    HRESULT hr = S_OK;
     VARIANT_BOOL IsConnected;
-    hr = Network.get_IsConnected(&IsConnected);
+    HRESULT hr = Network.get_IsConnected(&IsConnected);
 
     hr = Network.get_IsConnectedToInternet(&IsConnected);
 
@@ -127,18 +123,15 @@ void WINAPI TestNetworkListManager()
 https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manager-api
 */
 {
-    HRESULT hr = S_OK;
-
-    hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     if (FAILED(hr)) {//COM initialize failed        
         wprintf(L"CoInitialize failed: 0x%08lx\n", hr);
         return;
     }
 
     INetworkListManager * pNetworkListManager = nullptr;
-    hr = CoCreateInstance(CLSID_NetworkListManager, nullptr,
-                          CLSCTX_ALL, IID_INetworkListManager,
-                          (LPVOID *)&pNetworkListManager);
+    hr = CoCreateInstance(
+        CLSID_NetworkListManager, nullptr, CLSCTX_ALL, IID_INetworkListManager, (LPVOID *)&pNetworkListManager);
 
     VARIANT_BOOL IsConnected = 0;
     hr = pNetworkListManager->get_IsConnected(&IsConnected);
@@ -193,8 +186,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-class MyNetWorkEvent : public INetworkListManagerEvents
-{
+class MyNetWorkEvent : public INetworkListManagerEvents {
 public:
     MyNetWorkEvent()
     {
@@ -293,8 +285,7 @@ https://www.cxyzjd.com/article/chouhuan1877/100808606
 
 namespace Utility
 {
-    enum class CostGuidance
-    {
+    enum class CostGuidance {
         Normal,
         OptIn,
         Conservative
@@ -374,6 +365,7 @@ namespace Utility
         } else {
             std::wcout << "Machine is not connected." << std::endl;
         }
+
         return false;
     }
 
@@ -412,9 +404,7 @@ namespace Utility
 
 #pragma region COM helpers
 using unique_connectionpoint_token = wil::unique_com_token<IConnectionPoint,
-    DWORD,
-    decltype(&IConnectionPoint::Unadvise),
-    &IConnectionPoint::Unadvise>;
+    DWORD, decltype(&IConnectionPoint::Unadvise), &IConnectionPoint::Unadvise>;
 
 unique_connectionpoint_token FindConnectionPointAndAdvise(REFIID itf, IUnknown * source, IUnknown * sink)
 {
@@ -438,8 +428,7 @@ unique_connectionpoint_token FindConnectionPointAndAdvise(IUnknown * source, IUn
 
 #pragma region ListenToNetworkConnectivityChangesSample
 class NetworkConnectivityListener final
-    : public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, INetworkListManagerEvents>
-{
+    : public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, INetworkListManagerEvents> {
 public:
     NetworkConnectivityListener(bool optedIn, INetworkListManager * networkListManager)
         : m_optedIn(optedIn), m_networkListManager(networkListManager)
