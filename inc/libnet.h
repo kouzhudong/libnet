@@ -150,6 +150,12 @@ __declspec(dllimport)
 int WINAPI EnumMulticastIpAddress();
 
 __declspec(dllimport)
+int WINAPI EnumStackInterface();
+
+__declspec(dllimport)
+int WINAPI EnumInvertedStackInterface();
+
+__declspec(dllimport)
 void WINAPI Icmp6Test();
 
 __declspec(dllimport)
