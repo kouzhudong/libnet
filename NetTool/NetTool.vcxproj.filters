@@ -63,6 +63,9 @@
     <ClCompile Include="xml.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="finger.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -114,6 +117,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="xml.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="finger.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,6 +16,7 @@
 #include "nslookup.h"
 #include "Wlan.h"
 #include "NetApi.h"
+#include "finger.h"
 
 
 #ifdef _WIN64  
@@ -139,7 +140,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     else if (_wcsicmp(Arglist[1], L"finger") == 0) {
-        //finger(--argc, ++Arglist);//reactos\base\applications\network\finger
+        finger(--argc, ++argv);//reactos\base\applications\network\finger
     }
 
     else if (_wcsicmp(Arglist[1], L"nslookup") == 0) {

@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="finger.cpp" />
     <ClCompile Include="IPArp.Cpp" />
     <ClCompile Include="IPConfig.cpp" />
     <ClCompile Include="IPRoute.Cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="xml.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="finger.h" />
     <ClInclude Include="IPArp.h" />
     <ClInclude Include="IPConfig.h" />
     <ClInclude Include="iphdr.h" />
