@@ -88,5 +88,8 @@ typedef long uid_t;  // SunOS 5.5
 #define index(s, c)  strchr(s, c)
 #define rindex(s, c)  strrchr(s, c)
 
+#define	BADCH	(int)'?'
+#define	EMSG	""
+
 
 int finger(int argc, char ** argv);

@@ -5,13 +5,6 @@ char * __progname;
 time_t now;
 int lflag, mflag, pplan, sflag;
 
-static void userlist(int, char **);
-void usage();
-
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)getopt.c	4.13 (Berkeley) 2/23/91";
-#endif /* LIBC_SCCS and not lint */
 
 /*
  * get option letter from argument vector
@@ -21,8 +14,6 @@ optind = 1,		/* index into parent argv vector */
 optopt;			/* character checked for validity */
 const char * optarg;		/* argument associated with option */
 
-#define	BADCH	(int)'?'
-#define	EMSG	""
 
 int getopt(int nargc, char * const * nargv, const char * ostr)
 {
@@ -88,13 +79,6 @@ int getopt(int nargc, char * const * nargv, const char * ostr)
 }
 
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)err.c	8.1 (Berkeley) 6/4/93";
-#endif /* LIBC_SCCS and not lint */
-
-extern char * __progname;		/* Program name, from crt0. */
-
-
 void verr(int eval, const char * fmt, va_list ap)
 {
     int sverrno;
@@ -140,50 +124,6 @@ void errx(int eval, const char * fmt, ...)
     va_start(ap, fmt);
     verrx(eval, fmt, ap);
     va_end(ap);
-}
-
-
-int finger(int argc, char ** argv)
-{
-    int ch;
-
-    while ((ch = getopt(argc, argv, "lmps")) != EOF)
-        switch (ch) {
-        case 'l':
-            lflag = 1;		/* long format */
-            break;
-        case 'm':
-            mflag = 1;		/* force exact match of names */
-            break;
-        case 'p':
-            pplan = 1;		/* don't show .plan/.project */
-            break;
-        case 's':
-            sflag = 1;		/* short format */
-            break;
-        case '?':
-        default:
-            (void)fprintf(stderr,
-                          "usage: finger [-lmps] login [...]\n");
-            exit(1);
-        }
-    argc -= optind;
-    argv += optind;
-
-    (void)time(&now);
-    if (!*argv) {
-        usage();
-    } else {
-        userlist(argc, argv);
-        /*
-         * Assign explicit "large" format if names given and -s not
-         * explicitly stated.  Force the -l AFTER we get names so any
-         * remote finger attempts specified won't be mishandled.
-         */
-        if (!sflag)
-            lflag = 1;	/* if -s not explicit, force -l */
-    }
-    return 0;
 }
 
 
@@ -336,4 +276,47 @@ void usage()
 {
     (void)fprintf(stderr, "usage: finger [-lmps] login [...]\n");
     exit(1);
+}
+
+
+int finger(int argc, char ** argv)
+{
+    int ch;
+
+    while ((ch = getopt(argc, argv, "lmps")) != EOF)
+        switch (ch) {
+        case 'l':
+            lflag = 1;		/* long format */
+            break;
+        case 'm':
+            mflag = 1;		/* force exact match of names */
+            break;
+        case 'p':
+            pplan = 1;		/* don't show .plan/.project */
+            break;
+        case 's':
+            sflag = 1;		/* short format */
+            break;
+        case '?':
+        default:
+            (void)fprintf(stderr, "usage: finger [-lmps] login [...]\n");
+            exit(1);
+        }
+    argc -= optind;
+    argv += optind;
+
+    (void)time(&now);
+    if (!*argv) {
+        usage();
+    } else {
+        userlist(argc, argv);
+        /*
+         * Assign explicit "large" format if names given and -s not
+         * explicitly stated.  Force the -l AFTER we get names so any
+         * remote finger attempts specified won't be mishandled.
+         */
+        if (!sflag)
+            lflag = 1;	/* if -s not explicit, force -l */
+    }
+    return 0;
 }
