@@ -1,49 +1,3 @@
-// From Network Programming for Microsoft Windows, Second Edition by 
-// Anthony Jones and James Ohlund.  
-// Copyright 2002.   Reproduced by permission of Microsoft Press.  
-// All rights reserved.
-//
-//
-// Sample: IPv4 and IPv6 Ping Sample
-//
-// Files:
-//    iphdr.h       - IPv4 and IPv6 packet header definitions
-//    ping.cpp      - this file
-//    resolve.cpp   - Common name resolution routine
-//    resolve.h     - Header file for common name resolution routines
-//
-// Description:
-//    This sample illustrates how to use raw sockets to send ICMP
-//    echo requests and receive their response. This sample performs
-//    both IPv4 and IPv6 ICMP echo requests. When using raw sockets,
-//    the protocol value supplied to the socket API is used as the
-//    protocol field (or next header field) of the IP packet. Then
-//    as a part of the data submitted to sendto, we include both
-//    the ICMP request and data.
-//
-//    For IPv4 the IP record route option is supported via the 
-//    IP_OPTIONS socket option.
-//
-// Compile:
-//      cl -o ping.exe ping.cpp resolve.cpp ws2_32.lib
-//
-// Command Line Options/Parameters:
-//     ping.exe [-a 4|6] [-i ttl] [-l datasize] [-r] [host]
-//     
-//     -a       Address family (IPv4 or IPv6)
-//     -i ttl   TTL value to set on socket
-//     -l size  Amount of data to send as part of the ICMP request
-//     -r       Use IPv4 record route
-//     host     Hostname or literal address
-//
-#ifdef _IA64_
-#pragma warning (disable: 4267)
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
 #include "ping.h"
 #include "iphdr.h"
 
@@ -66,8 +20,8 @@ int   recvbuflen = MAX_RECV_BUF_LEN;    // Length of received packets.
 
 int PrintAddress(SOCKADDR * sa, int salen)
 // Description:
-//    This routine takes a SOCKADDR structure and its length and prints
-//    converts it to a string representation. This string is printed to the console via stdout.
+//    This routine takes a SOCKADDR structure and its length and prints converts it to a string representation.
+//    This string is printed to the console via stdout.
 {
     char    host[NI_MAXHOST], serv[NI_MAXSERV];
     int     hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
@@ -94,8 +48,7 @@ int PrintAddress(SOCKADDR * sa, int salen)
 int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 // Description:
 //    This is similar to the PrintAddress function except that instead of
-//    printing the string address to the console, it is formatted into
-//    the supplied string buffer.
+//    printing the string address to the console, it is formatted into the supplied string buffer.
 {
     char    host[NI_MAXHOST], serv[NI_MAXSERV];
     int     hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
@@ -328,9 +281,8 @@ void SetIcmpSequence(char * buf)
 // Description:
 //    This routine sets the sequence number of the ICMP request packet.
 {
-    ULONG    sequence = 0;
+    ULONG    sequence = GetTickCount();
 
-    sequence = GetTickCount();
     if (gAddressFamily == AF_INET) {
         ICMP_HDR * icmpv4 = NULL;
 
@@ -563,17 +515,14 @@ int SetTtl(SOCKET s, int ttl)
 int ping(int argc, char ** argv)
 /*
 // Description:
-//    Setup the ICMP raw socket and create the ICMP header. Add
-//    the appropriate IP option header and start sending ICMP
-//    echo requests to the endpoint. For each send and receive we
-//    set a timeout value so that we don't wait forever for a
-//    response in case the endpoint is not responding. When we
-//    receive a packet decode it.
+//    Setup the ICMP raw socket and create the ICMP header.
+//    Add the appropriate IP option header and start sending ICMP echo requests to the endpoint.
+//    For each send and receive we set a timeout value so that we don't wait forever for a
+//    response in case the endpoint is not responding. When we receive a packet decode it.
 
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
 */
 {
-
     WSADATA            wsd;
     WSAOVERLAPPED      recvol;
     SOCKET             s = INVALID_SOCKET;
@@ -638,8 +587,7 @@ int ping(int argc, char ** argv)
     else if (gAddressFamily == AF_INET6)
         packetlen += sizeof(ICMPV6_HDR) + sizeof(ICMPV6_ECHO_REQUEST);
 
-    // Add in the data size
-    packetlen += gDataSize;
+    packetlen += gDataSize;// Add in the data size
 
     // Allocate the buffer that will contain the ICMP request
     icmpbuf = (char *)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, packetlen);
@@ -657,7 +605,6 @@ int ping(int argc, char ** argv)
             ipopt.opt_code = IP_RECORD_ROUTE; // record route option
             ipopt.opt_ptr = 4;               // point to the first addr offset
             ipopt.opt_len = 39;              // length of option header
-
             rc = setsockopt(s, IPPROTO_IP, IP_OPTIONS, (char *)&ipopt, sizeof(ipopt));
             if (rc == SOCKET_ERROR) {
                 fprintf(stderr, "setsockopt(IP_OPTIONS) failed: %d\n", WSAGetLastError());
@@ -741,6 +688,7 @@ int ping(int argc, char ** argv)
                 PostRecvfrom(s, recvbuf, recvbuflen, (SOCKADDR *)&from, &fromlen, &recvol);
             }
         }
+
         Sleep(1000);
     }
 
