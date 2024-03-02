@@ -366,6 +366,14 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
 );
 
 __declspec(dllimport)
+void WINAPI packetize_icmpv4_echo_request(IN PBYTE SrcMac,    //6字节长的本地的MAC。
+                                          IN PBYTE DesMac,
+                                          IN PIN_ADDR SourceAddress,
+                                          IN PIN_ADDR DestinationAddress,
+                                          OUT PBYTE buffer//长度是sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE)
+);
+
+__declspec(dllimport)
 USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size);
 
 __declspec(dllimport)
