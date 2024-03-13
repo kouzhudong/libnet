@@ -16,6 +16,8 @@
 #define NET_FW_RULE_ENABLE_IN_NAME L"TRUE"
 #define NET_FW_RULE_DISABLE_IN_NAME L"FALSE"
 
+#define STRING_BUFFER_SIZE  500   
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
