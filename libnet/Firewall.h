@@ -22,39 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int __cdecl DynamicEdgeTraversal();
 
-int __cdecl EnumeratingFirewallRules();
-
-int __cdecl DisablingFirewallPerInterface();
-
-int __cdecl DisablingFirewall();
-
-int __cdecl EnablingGroup();
-
-int __cdecl GettingFirewallSettings();
-
-int __cdecl RestrictingService();
-
-int __cdecl AddGreRule();
-
-int __cdecl AddIcmpRule();
-
-int __cdecl AddLanRule();
-
-int __cdecl AddOutboundRule();
-
-int __cdecl AddPerInterfaceRule();
-
-int __cdecl AddServiceRule();
-
-void __cdecl RWFTOFPM();
-
-void __cdecl RWFWTOFPM();
-
-int __cdecl MultipleProfiles();
-
-int __cdecl Exercising(int argc, wchar_t * argv[]);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
