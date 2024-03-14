@@ -76,76 +76,76 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
     if (j == SOCKET_ERROR) {
         switch (WSAGetLastError()) {
         case WSANOTINITIALISED:
-            _tprintf(_T("sendto() failed with WSANOTINITIALIZED\n"));
+            printf(("sendto() failed with WSANOTINITIALIZED\n"));
             break;
         case WSAENETDOWN:
-            _tprintf(_T("sendto() failed with WSAENETDOWN\n"));
+            printf(("sendto() failed with WSAENETDOWN\n"));
             break;
         case WSAEACCES:
-            _tprintf(_T("sendto() failed with WSAEACCES\n"));
+            printf(("sendto() failed with WSAEACCES\n"));
             break;
         case WSAEINVAL:
-            _tprintf(_T("sendto() failed with WSAEINVAL\n"));
+            printf(("sendto() failed with WSAEINVAL\n"));
             break;
         case WSAEINTR:
-            _tprintf(_T("sendto() failed with WSAEINTR\n"));
+            printf(("sendto() failed with WSAEINTR\n"));
             break;
         case WSAEINPROGRESS:
-            _tprintf(_T("sendto() failed with WSAEINPROGRESS\n"));
+            printf(("sendto() failed with WSAEINPROGRESS\n"));
             break;
         case WSAEFAULT:
-            _tprintf(_T("sendto() failed with WSAEFAULT\n"));
+            printf(("sendto() failed with WSAEFAULT\n"));
             break;
         case WSAENETRESET:
-            _tprintf(_T("sendto() failed with WSAENETRESET\n"));
+            printf(("sendto() failed with WSAENETRESET\n"));
             break;
         case WSAENOBUFS:
-            _tprintf(_T("sendto() failed with WSAENOBUFS\n"));
+            printf(("sendto() failed with WSAENOBUFS\n"));
             break;
         case WSAENOTCONN:
-            _tprintf(_T("sendto() failed with WSAENOTCONN\n"));
+            printf(("sendto() failed with WSAENOTCONN\n"));
             break;
         case WSAENOTSOCK:
-            _tprintf(_T("sendto() failed with WSAENOTSOCK\n"));
+            printf(("sendto() failed with WSAENOTSOCK\n"));
             break;
         case WSAEOPNOTSUPP:
-            _tprintf(_T("sendto() failed with WSAEOPNOTSUPP\n"));
+            printf(("sendto() failed with WSAEOPNOTSUPP\n"));
             break;
         case WSAESHUTDOWN:
-            _tprintf(_T("sendto() failed with WSAESHUTDOWN\n"));
+            printf(("sendto() failed with WSAESHUTDOWN\n"));
             break;
         case WSAEWOULDBLOCK:
-            _tprintf(_T("sendto() failed with WSAEWOULDBLOCK\n"));
+            printf(("sendto() failed with WSAEWOULDBLOCK\n"));
             break;
         case WSAEMSGSIZE:
-            _tprintf(_T("sendto() failed with WSAEMSGSIZE\n"));
+            printf(("sendto() failed with WSAEMSGSIZE\n"));
             break;
         case WSAEHOSTUNREACH:
-            _tprintf(_T("sendto() failed with WSAEHOSTUNREACH\n"));
+            printf(("sendto() failed with WSAEHOSTUNREACH\n"));
             break;
         case WSAECONNABORTED:
-            _tprintf(_T("sendto() failed with WSAECONNABORTED\n"));
+            printf(("sendto() failed with WSAECONNABORTED\n"));
             break;
         case WSAECONNRESET:
-            _tprintf(_T("sendto() failed with WSAECONNRESET\n"));
+            printf(("sendto() failed with WSAECONNRESET\n"));
             break;
         case WSAEADDRNOTAVAIL:
-            _tprintf(_T("sendto() failed with WSAEADDRNOTAVAIL\n"));
+            printf(("sendto() failed with WSAEADDRNOTAVAIL\n"));
             break;
         case WSAEAFNOSUPPORT:
-            _tprintf(_T("sendto() failed with WSAEAFNOSUPPORT\n"));
+            printf(("sendto() failed with WSAEAFNOSUPPORT\n"));
             break;
         case WSAEDESTADDRREQ:
-            _tprintf(_T("sendto() failed with WSAEDESTADDRREQ\n"));
+            printf(("sendto() failed with WSAEDESTADDRREQ\n"));
             break;
         case WSAENETUNREACH:
-            _tprintf(_T("sendto() failed with WSAENETUNREACH\n"));
+            printf(("sendto() failed with WSAENETUNREACH\n"));
             break;
         case WSAETIMEDOUT:
-            _tprintf(_T("sendto() failed with WSAETIMEDOUT\n"));
+            printf(("sendto() failed with WSAETIMEDOUT\n"));
             break;
         default:
-            _tprintf(_T("sendto() failed with unknown error\n"));
+            printf(("sendto() failed with unknown error\n"));
         }
 
         closesocket(s);
@@ -160,76 +160,76 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
         if (j == SOCKET_ERROR) {
             switch (WSAGetLastError()) {
             case WSANOTINITIALISED:
-                _tprintf(_T("recvfrom() failed with WSANOTINITIALIZED\n"));
+                printf(("recvfrom() failed with WSANOTINITIALIZED\n"));
                 break;
             case WSAENETDOWN:
-                _tprintf(_T("recvfrom() failed with WSAENETDOWN\n"));
+                printf(("recvfrom() failed with WSAENETDOWN\n"));
                 break;
             case WSAEACCES:
-                _tprintf(_T("recvfrom() failed with WSAEACCES\n"));
+                printf(("recvfrom() failed with WSAEACCES\n"));
                 break;
             case WSAEINVAL:
-                _tprintf(_T("recvfrom() failed with WSAEINVAL\n"));
+                printf(("recvfrom() failed with WSAEINVAL\n"));
                 break;
             case WSAEINTR:
-                _tprintf(_T("recvfrom() failed with WSAEINTR\n"));
+                printf(("recvfrom() failed with WSAEINTR\n"));
                 break;
             case WSAEINPROGRESS:
-                _tprintf(_T("recvfrom() failed with WSAEINPROGRESS\n"));
+                printf(("recvfrom() failed with WSAEINPROGRESS\n"));
                 break;
             case WSAEFAULT:
-                _tprintf(_T("recvfrom() failed with WSAEFAULT\n"));
+                printf(("recvfrom() failed with WSAEFAULT\n"));
                 break;
             case WSAENETRESET:
-                _tprintf(_T("recvfrom() failed with WSAENETRESET\n"));
+                printf(("recvfrom() failed with WSAENETRESET\n"));
                 break;
             case WSAENOBUFS:
-                _tprintf(_T("recvfrom() failed with WSAENOBUFS\n"));
+                printf(("recvfrom() failed with WSAENOBUFS\n"));
                 break;
             case WSAENOTCONN:
-                _tprintf(_T("recvfrom() failed with WSAENOTCONN\n"));
+                printf(("recvfrom() failed with WSAENOTCONN\n"));
                 break;
             case WSAENOTSOCK:
-                _tprintf(_T("recvfrom() failed with WSAENOTSOCK\n"));
+                printf(("recvfrom() failed with WSAENOTSOCK\n"));
                 break;
             case WSAEOPNOTSUPP:
-                _tprintf(_T("recvfrom() failed with WSAEOPNOTSUPP\n"));
+                printf(("recvfrom() failed with WSAEOPNOTSUPP\n"));
                 break;
             case WSAESHUTDOWN:
-                _tprintf(_T("recvfrom() failed with WSAESHUTDOWN\n"));
+                printf(("recvfrom() failed with WSAESHUTDOWN\n"));
                 break;
             case WSAEWOULDBLOCK:
-                _tprintf(_T("recvfrom() failed with WSAEWOULDBLOCK\n"));
+                printf(("recvfrom() failed with WSAEWOULDBLOCK\n"));
                 break;
             case WSAEMSGSIZE:
-                _tprintf(_T("recvfrom() failed with WSAEMSGSIZE\n"));
+                printf(("recvfrom() failed with WSAEMSGSIZE\n"));
                 break;
             case WSAEHOSTUNREACH:
-                _tprintf(_T("recvfrom() failed with WSAEHOSTUNREACH\n"));
+                printf(("recvfrom() failed with WSAEHOSTUNREACH\n"));
                 break;
             case WSAECONNABORTED:
-                _tprintf(_T("recvfrom() failed with WSAECONNABORTED\n"));
+                printf(("recvfrom() failed with WSAECONNABORTED\n"));
                 break;
             case WSAECONNRESET:
-                _tprintf(_T("recvfrom() failed with WSAECONNRESET\n"));
+                printf(("recvfrom() failed with WSAECONNRESET\n"));
                 break;
             case WSAEADDRNOTAVAIL:
-                _tprintf(_T("recvfrom() failed with WSAEADDRNOTAVAIL\n"));
+                printf(("recvfrom() failed with WSAEADDRNOTAVAIL\n"));
                 break;
             case WSAEAFNOSUPPORT:
-                _tprintf(_T("recvfrom() failed with WSAEAFNOSUPPORT\n"));
+                printf(("recvfrom() failed with WSAEAFNOSUPPORT\n"));
                 break;
             case WSAEDESTADDRREQ:
-                _tprintf(_T("recvfrom() failed with WSAEDESTADDRREQ\n"));
+                printf(("recvfrom() failed with WSAEDESTADDRREQ\n"));
                 break;
             case WSAENETUNREACH:
-                _tprintf(_T("recvfrom() failed with WSAENETUNREACH\n"));
+                printf(("recvfrom() failed with WSAENETUNREACH\n"));
                 break;
             case WSAETIMEDOUT:
-                _tprintf(_T("recvfrom() failed with WSAETIMEDOUT\n"));
+                printf(("recvfrom() failed with WSAETIMEDOUT\n"));
                 break;
             default:
-                _tprintf(_T("recvfrom() failed with unknown error\n"));
+                printf(("recvfrom() failed with unknown error\n"));
             }
 
             closesocket(s);
@@ -461,32 +461,32 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
     NumAdditional = ntohs(((PUSHORT)&pBuffer[i])[0]);
     i += 2;
 
-    _tprintf(_T("------------\n"));
-    _tprintf(_T("SendRequest(), len %d\n"), (int)BufferLength);
-    _tprintf(_T("    HEADER:\n"));
-    _tprintf(_T("        opcode = %s, id = %d, rcode = %s\n"),
-             OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3),
-             (int)RequestID,
-             RCodeIDtoRCodeName(Header2 & 0x0F));
+    printf(("------------\n"));
+    printf(("SendRequest(), len %d\n"), (int)BufferLength);
+    printf(("    HEADER:\n"));
+    printf("        opcode = %s, id = %d, rcode = %s\n",
+           OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3),
+           (int)RequestID,
+           RCodeIDtoRCodeName(Header2 & 0x0F));
 
-    _tprintf(_T("        header flags:  query"));
-    if (Header1 & 0x01) _tprintf(_T(", want recursion"));
-    _tprintf(_T("\n"));
+    printf(("        header flags:  query"));
+    if (Header1 & 0x01) printf((", want recursion"));
+    printf(("\n"));
 
-    _tprintf(_T("        questions = %d,  answers = %d,"
-                "  authority records = %d,  additional = %d\n\n"),
-             (int)NumQuestions,
-             (int)NumAnswers,
-             (int)NumAuthority,
-             (int)NumAdditional);
+    printf(("        questions = %d,  answers = %d,"
+            "  authority records = %d,  additional = %d\n\n"),
+           (int)NumQuestions,
+           (int)NumAnswers,
+           (int)NumAuthority,
+           (int)NumAdditional);
 
     if (NumQuestions) {
-        _tprintf(_T("    QUESTIONS:\n"));
+        printf(("    QUESTIONS:\n"));
 
         for (k = 0; k < NumQuestions; k += 1) {
             i += ExtractName(pBuffer, pName, i, 0);
 
-            _tprintf(_T("        %s"), pName);
+            printf("        %s", pName);
 
             Type = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
@@ -494,11 +494,11 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
             Class = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            _tprintf(_T(", type = %s, class = %s\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class));
+            printf((", type = %s, class = %s\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class));
         }
     }
 
-    _tprintf(_T("\n------------\n"));
+    printf(("\n------------\n"));
 }
 
 
@@ -533,33 +533,33 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
     NumAdditional = ntohs(((PUSHORT)&pBuffer[i])[0]);
     i += 2;
 
-    _tprintf(_T("------------\n"));
-    _tprintf(_T("Got answer (%d bytes):\n"), (int)BufferLength);
-    _tprintf(_T("    HEADER:\n"));
-    _tprintf(_T("        opcode = %s, id = %d, rcode = %s\n"),
-             OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3),
-             (int)ResponseID,
-             RCodeIDtoRCodeName(Header2 & 0x0F));
+    printf(("------------\n"));
+    printf(("Got answer (%d bytes):\n"), (int)BufferLength);
+    printf(("    HEADER:\n"));
+    printf(("        opcode = %s, id = %d, rcode = %s\n"),
+           OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3),
+           (int)ResponseID,
+           RCodeIDtoRCodeName(Header2 & 0x0F));
 
-    _tprintf(_T("        header flags:  response"));
-    if (Header1 & 0x01) _tprintf(_T(", want recursion"));
-    if (Header2 & 0x80) _tprintf(_T(", recursion avail."));
-    _tprintf(_T("\n"));
+    printf(("        header flags:  response"));
+    if (Header1 & 0x01) printf((", want recursion"));
+    if (Header2 & 0x80) printf((", recursion avail."));
+    printf(("\n"));
 
-    _tprintf(_T("        questions = %d,  answers = %d,  "
-                "authority records = %d,  additional = %d\n\n"),
-             (int)NumQuestions,
-             (int)NumAnswers,
-             (int)NumAuthority,
-             (int)NumAdditional);
+    printf(("        questions = %d,  answers = %d,  "
+            "authority records = %d,  additional = %d\n\n"),
+           (int)NumQuestions,
+           (int)NumAnswers,
+           (int)NumAuthority,
+           (int)NumAdditional);
 
     if (NumQuestions) {
-        _tprintf(_T("    QUESTIONS:\n"));
+        printf(("    QUESTIONS:\n"));
 
         for (k = 0; k < NumQuestions; k += 1) {
             i += ExtractName(pBuffer, pName, i, 0);
 
-            _tprintf(_T("        %s"), pName);
+            printf(("        %s"), pName);
 
             Type = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
@@ -567,20 +567,20 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             Class = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            _tprintf(_T(", type = %s, class = %s\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class));
+            printf((", type = %s, class = %s\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class));
         }
     }
 
     if (NumAnswers) {
-        _tprintf(_T("    ANSWERS:\n"));
+        printf(("    ANSWERS:\n"));
 
         for (k = 0; k < NumAnswers; k += 1) {
-            _tprintf(_T("    ->  "));
+            printf(("    ->  "));
 
             /* Print out the name. */
             i += ExtractName(pBuffer, pName, i, 0);
 
-            _tprintf(_T("%s\n"), pName);
+            printf(("%s\n"), pName);
 
             /* Print out the type, class and data length. */
             Type = ntohs(((PUSHORT)&pBuffer[i])[0]);
@@ -595,34 +595,34 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             d = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            _tprintf(_T("        type = %s, class = %s, dlen = %d\n"),
-                     TypeIDtoTypeName(Type),
-                     ClassIDtoClassName(Class),
-                     d);
+            printf(("        type = %s, class = %s, dlen = %d\n"),
+                   TypeIDtoTypeName(Type),
+                   ClassIDtoClassName(Class),
+                   d);
 
             /* Print out the answer. */
             if (TYPE_A == Type) {
                 i += ExtractIP(pBuffer, pName, i);
 
-                _tprintf(_T("        internet address = %s\n"), pName);
+                printf(("        internet address = %s\n"), pName);
             } else {
                 i += ExtractName(pBuffer, pName, i, d);
 
-                _tprintf(_T("        name = %s\n"), pName);
+                printf(("        name = %s\n"), pName);
             }
 
-            _tprintf(_T("        ttl = %d ()\n"), (int)TTL);
+            printf(("        ttl = %d ()\n"), (int)TTL);
         }
     }
 
     if (NumAuthority) {
-        _tprintf(_T("    AUTHORITY RECORDS:\n"));
+        printf(("    AUTHORITY RECORDS:\n"));
 
         for (k = 0; k < NumAuthority; k += 1) {
             /* Print out the zone name. */
             i += ExtractName(pBuffer, pName, i, 0);
 
-            _tprintf(_T("    ->  %s\n"), pName);
+            printf(("    ->  %s\n"), pName);
 
             /* Print out the type, class, data length and TTL. */
             Type = ntohs(((PUSHORT)&pBuffer[i])[0]);
@@ -637,51 +637,51 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             d = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            _tprintf(_T("        type = %s, class = %s, dlen = %d\n"),
-                     TypeIDtoTypeName(Type),
-                     ClassIDtoClassName(Class),
-                     d);
+            printf(("        type = %s, class = %s, dlen = %d\n"),
+                   TypeIDtoTypeName(Type),
+                   ClassIDtoClassName(Class),
+                   d);
 
             /* TODO: There might be more types? */
             if (TYPE_NS == Type) {
                 /* Print out the NS. */
                 i += ExtractName(pBuffer, pName, i, d);
 
-                _tprintf(_T("        nameserver = %s\n"), pName);
+                printf(("        nameserver = %s\n"), pName);
 
-                _tprintf(_T("        ttl = %d ()\n"), (int)TTL);
+                printf(("        ttl = %d ()\n"), (int)TTL);
             } else if (TYPE_SOA == Type) {
-                _tprintf(_T("        ttl = %d ()\n"), (int)TTL);
+                printf(("        ttl = %d ()\n"), (int)TTL);
 
                 /* Print out the primary NS. */
                 i += ExtractName(pBuffer, pName, i, 0);
 
-                _tprintf(_T("        primary name server = %s\n"), pName);
+                printf(("        primary name server = %s\n"), pName);
 
                 /* Print out the responsible mailbox. */
                 i += ExtractName(pBuffer, pName, i, 0);
 
-                _tprintf(_T("        responsible mail addr = %s\n"), pName);
+                printf(("        responsible mail addr = %s\n"), pName);
 
                 /* Print out the serial, refresh, retry, expire and default TTL. */
-                _tprintf(_T("        serial = ()\n"));
-                _tprintf(_T("        refresh = ()\n"));
-                _tprintf(_T("        retry = ()\n"));
-                _tprintf(_T("        expire = ()\n"));
-                _tprintf(_T("        default TTL = ()\n"));
+                printf(("        serial = ()\n"));
+                printf(("        refresh = ()\n"));
+                printf(("        retry = ()\n"));
+                printf(("        expire = ()\n"));
+                printf(("        default TTL = ()\n"));
                 i += 20;
             }
         }
     }
 
     if (NumAdditional) {
-        _tprintf(_T("    ADDITIONAL:\n"));
+        printf(("    ADDITIONAL:\n"));
 
         for (k = 0; k < NumAdditional; k += 1) {
             /* Print the name. */
             i += ExtractName(pBuffer, pName, i, 0);
 
-            _tprintf(_T("    ->  %s\n"), pName);
+            printf(("    ->  %s\n"), pName);
 
             /* Print out the type, class, data length and TTL. */
             Type = ntohs(((PUSHORT)&pBuffer[i])[0]);
@@ -696,23 +696,23 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             d = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            _tprintf(_T("        type = %s, class = %s, dlen = %d\n"),
-                     TypeIDtoTypeName(Type),
-                     ClassIDtoClassName(Class),
-                     d);
+            printf(("        type = %s, class = %s, dlen = %d\n"),
+                   TypeIDtoTypeName(Type),
+                   ClassIDtoClassName(Class),
+                   d);
 
             /* TODO: There might be more types? */
             if (TYPE_A == Type) {
                 /* Print out the NS. */
                 i += ExtractIP(pBuffer, pName, i);
 
-                _tprintf(_T("        internet address = %s\n"), pName);
-                _tprintf(_T("        ttl = %d ()\n"), (int)TTL);
+                printf(("        internet address = %s\n"), pName);
+                printf(("        ttl = %d ()\n"), (int)TTL);
             }
         }
     }
 
-    _tprintf(_T("\n------------\n"));
+    printf(("\n------------\n"));
 }
 
 
@@ -819,63 +819,63 @@ USHORT ClassNametoClassID(PCHAR ClassName)
 
 void PrintState()
 {
-    _tprintf(_T("Default Server:  (null)\n\n"));
-    _tprintf(_T("Set options:\n"));
+    printf(("Default Server:  (null)\n\n"));
+    printf(("Set options:\n"));
 
-    _tprintf(_T("  "));
-    if (!State.debug) _tprintf(_T("no"));
-    _tprintf(_T("debug\n"));
+    printf(("  "));
+    if (!State.debug) printf(("no"));
+    printf(("debug\n"));
 
-    _tprintf(_T("  "));
-    if (!State.defname) _tprintf(_T("no"));
-    _tprintf(_T("defname\n"));
+    printf(("  "));
+    if (!State.defname) printf(("no"));
+    printf(("defname\n"));
 
-    _tprintf(_T("  "));
-    if (!State.search) _tprintf(_T("no"));
-    _tprintf(_T("search\n"));
+    printf(("  "));
+    if (!State.search) printf(("no"));
+    printf(("search\n"));
 
-    _tprintf(_T("  "));
-    if (!State.recurse) _tprintf(_T("no"));
-    _tprintf(_T("recurse\n"));
+    printf(("  "));
+    if (!State.recurse) printf(("no"));
+    printf(("recurse\n"));
 
-    _tprintf(_T("  "));
-    if (!State.d2) _tprintf(_T("no"));
-    _tprintf(_T("d2\n"));
+    printf(("  "));
+    if (!State.d2) printf(("no"));
+    printf(("d2\n"));
 
-    _tprintf(_T("  "));
-    if (!State.vc) _tprintf(_T("no"));
-    _tprintf(_T("vc\n"));
+    printf(("  "));
+    if (!State.vc) printf(("no"));
+    printf(("vc\n"));
 
-    _tprintf(_T("  "));
-    if (!State.ignoretc) _tprintf(_T("no"));
-    _tprintf(_T("ignoretc\n"));
+    printf(("  "));
+    if (!State.ignoretc) printf(("no"));
+    printf(("ignoretc\n"));
 
-    _tprintf(_T("  port=%d\n"), State.port);
-    _tprintf(_T("  type=%s\n"), State.type);
-    _tprintf(_T("  class=%s\n"), State.Class);
-    _tprintf(_T("  timeout=%d\n"), (int)State.timeout);
-    _tprintf(_T("  retry=%d\n"), (int)State.retry);
-    _tprintf(_T("  root=%s\n"), State.root);
-    _tprintf(_T("  domain=%s\n"), State.domain);
+    printf(("  port=%d\n"), State.port);
+    printf(("  type=%s\n"), State.type);
+    printf(("  class=%s\n"), State.Class);
+    printf(("  timeout=%d\n"), (int)State.timeout);
+    printf(("  retry=%d\n"), (int)State.retry);
+    printf(("  root=%s\n"), State.root);
+    printf(("  domain=%s\n"), State.domain);
 
-    _tprintf(_T("  "));
-    if (!State.MSxfr) _tprintf(_T("no"));
-    _tprintf(_T("MSxfr\n"));
+    printf(("  "));
+    if (!State.MSxfr) printf(("no"));
+    printf(("MSxfr\n"));
 
-    _tprintf(_T("  IXFRversion=%d\n"), (int)State.ixfrver);
+    printf(("  IXFRversion=%d\n"), (int)State.ixfrver);
 
-    _tprintf(_T("  srchlist=%s\n\n"), State.srchlist[0]);
+    printf(("  srchlist=%s\n\n"), State.srchlist[0]);
 }
 
 void PrintUsage()
 {
-    _tprintf(_T("Usage:\n"
-                "   nslookup [-opt ...]             # interactive mode using"
-                " default server\n   nslookup [-opt ...] - server    #"
-                " interactive mode using 'server'\n   nslookup [-opt ...]"
-                " host        # just look up 'host' using default server\n"
-                "   nslookup [-opt ...] host server # just look up 'host'"
-                " using 'server'\n"));
+    printf(("Usage:\n"
+            "   nslookup [-opt ...]             # interactive mode using"
+            " default server\n   nslookup [-opt ...] - server    #"
+            " interactive mode using 'server'\n   nslookup [-opt ...]"
+            " host        # just look up 'host' using default server\n"
+            "   nslookup [-opt ...] host server # just look up 'host'"
+            " using 'server'\n"));
 }
 
 BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
@@ -910,14 +910,14 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
     /* Allocate memory for the buffer. */
     Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength);
     if (!Buffer) {
-        _tprintf(_T("ERROR: Out of memory\n"));
+        printf(("ERROR: Out of memory\n"));
         goto cleanup;
     }
 
     /* Allocate the receiving buffer. */
     RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength);
     if (!RecBuffer) {
-        _tprintf(_T("ERROR: Out of memory\n"));
+        printf(("ERROR: Out of memory\n"));
         goto cleanup;
     }
 
@@ -1061,14 +1061,14 @@ void PerformLookup(PCHAR pAddr)
     /* Allocate memory for the buffer. */
     Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength);
     if (!Buffer) {
-        _tprintf(_T("ERROR: Out of memory\n"));
+        printf(("ERROR: Out of memory\n"));
         goto cleanup;
     }
 
     /* Allocate memory for the return buffer. */
     RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength);
     if (!RecBuffer) {
-        _tprintf(_T("ERROR: Out of memory\n"));
+        printf(("ERROR: Out of memory\n"));
         goto cleanup;
     }
 
@@ -1142,13 +1142,13 @@ void PerformLookup(PCHAR pAddr)
     if (d != RCODE_NOERROR) {
         switch (d) {
         case RCODE_NXDOMAIN:
-            _tprintf(_T("*** %s can't find %s: Non-existant domain\n"), State.DefaultServer, pAddr);
+            printf(("*** %s can't find %s: Non-existant domain\n"), State.DefaultServer, pAddr);
             break;
         case RCODE_REFUSED:
-            _tprintf(_T("*** %s can't find %s: Query refused\n"), State.DefaultServer, pAddr);
+            printf(("*** %s can't find %s: Query refused\n"), State.DefaultServer, pAddr);
             break;
         default:
-            _tprintf(_T("*** %s can't find %s: Unknown RCODE\n"), State.DefaultServer, pAddr);
+            printf(("*** %s can't find %s: Unknown RCODE\n"), State.DefaultServer, pAddr);
         }
 
         goto cleanup;
@@ -1184,16 +1184,16 @@ void PerformLookup(PCHAR pAddr)
     /* FIXME: This'll need to support more than PTR and A at some point. */
     if (!strcmp(State.type, TypePTR)) {
         if (TYPE_PTR == Type) {
-            _tprintf(_T("%s     name = %s\n"), pResolve, pResult);
+            printf(("%s     name = %s\n"), pResolve, pResult);
         } else {
         }
     } else if (!strcmp(State.type, TypeA) || !strcmp(State.type, TypeAAAA) || !strcmp(State.type, TypeBoth)) {
         if ((TYPE_A == Type) /*|| (TYPE_AAAA == Type)*/) {
             if (0 == NumAuthority)
-                _tprintf(_T("Non-authoritative answer:\n"));
+                printf(("Non-authoritative answer:\n"));
 
-            _tprintf(_T("Name:    %s\n"), pAddr);
-            _tprintf(_T("Address:  %s\n\n"), pResult);
+            printf(("Name:    %s\n"), pAddr);
+            printf(("Address:  %s\n\n"), pResult);
         } else {
             printf("Name:    %s\n", pResult);
             printf("Address:  %s\n\n", pAddr);
@@ -1276,7 +1276,7 @@ BOOL ParseCommandLine(int argc, char * argv[])
                     } else if (!strncmp(TypeSRV, &argv[i][6], strlen(TypeSRV))) {
                         State.type = (PCHAR)TypeSRV;
                     } else {
-                        _tprintf(_T("unknown query type: %s"), &argv[i][6]);
+                        printf(("unknown query type: %s"), &argv[i][6]);
                     }
                 } else if (!strncmp("-domain=", argv[i], 8)) {
                     strcpy(State.domain, &argv[i][8]);
@@ -1307,7 +1307,7 @@ BOOL ParseCommandLine(int argc, char * argv[])
                     } else if (!strncmp(TypeSRV, &argv[i][11], strlen(TypeSRV))) {
                         State.type = (PCHAR)TypeSRV;
                     } else {
-                        _tprintf(_T("unknown query type: %s"), &argv[i][6]);
+                        printf(("unknown query type: %s"), &argv[i][6]);
                     }
                 } else if (!strncmp("-class=", argv[i], 7)) {
                     if (!strncmp(ClassIN, &argv[i][7], strlen(ClassIN))) {
@@ -1315,7 +1315,7 @@ BOOL ParseCommandLine(int argc, char * argv[])
                     } else if (!strncmp(ClassAny, &argv[i][7], strlen(ClassAny))) {
                         State.Class = (PCHAR)ClassAny;
                     } else {
-                        _tprintf(_T("unknown query class: %s"), &argv[i][7]);
+                        printf(("unknown query class: %s"), &argv[i][7]);
                     }
                 } else if (!strncmp("-ixfrver=", argv[i], 9)) {
                 } else if (!strncmp("-debug", argv[i], 6)) {
@@ -1327,7 +1327,7 @@ BOOL ParseCommandLine(int argc, char * argv[])
                     State.d2 = TRUE;
                     State.debug = TRUE;
                 } else if (!strncmp("-nod2", argv[i], 5)) {
-                    if (State.debug) _tprintf(_T("d2 mode disabled; still in debug mode\n"));
+                    if (State.debug) printf(("d2 mode disabled; still in debug mode\n"));
 
                     State.d2 = FALSE;
                 } else if (!strncmp("-defname", argv[i], 8)) {
@@ -1380,12 +1380,12 @@ BOOL ParseCommandLine(int argc, char * argv[])
 
 void InteractiveMode()
 {
-    _tprintf(_T("Default Server:  %s\n"), State.DefaultServer);
-    _tprintf(_T("Address:  %s\n\n"), State.DefaultServerAddress);
+    printf(("Default Server:  %s\n"), State.DefaultServer);
+    printf(("Address:  %s\n\n"), State.DefaultServerAddress);
 
     /* TODO: Implement interactive mode. */
 
-    _tprintf(_T("ERROR: Feature not implemented.\n"));
+    printf(("ERROR: Feature not implemented.\n"));
 }
 
 
@@ -1430,20 +1430,20 @@ int nslookup(int argc, char * argv[])
     Status = GetNetworkParams(pNetInfo, &NetBufLen);
 
     if (Status != ERROR_BUFFER_OVERFLOW) {
-        _tprintf(_T("Error in GetNetworkParams call\n"));
+        printf(("Error in GetNetworkParams call\n"));
         return -2;
     }
 
     pNetInfo = (PFIXED_INFO)HeapAlloc(ProcessHeap, 0, NetBufLen);
     if (pNetInfo == NULL) {
-        _tprintf(_T("ERROR: Out of memory\n"));
+        printf(("ERROR: Out of memory\n"));
         return -1;
     }
 
     /* For real this time. */
     Status = GetNetworkParams(pNetInfo, &NetBufLen);
     if (Status != NO_ERROR) {
-        _tprintf(_T("Error in GetNetworkParams call\n"));
+        printf(("Error in GetNetworkParams call\n"));
         HeapFree(ProcessHeap, 0, pNetInfo);
         return -2;
     }
@@ -1456,7 +1456,7 @@ int nslookup(int argc, char * argv[])
 
     ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (ret != 0) {
-        _tprintf(_T("Winsock initialization failed: %d\n"), ret);
+        printf(("Winsock initialization failed: %d\n"), ret);
         return ret;
     }
 
