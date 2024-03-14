@@ -32,11 +32,9 @@ int getopt(int nargc, char * const * nargv, const char * ostr)
             return(EOF);
         }
     }					/* option letter okay? */
-    if ((optopt = (int)*place++) == (int)':' ||
-        !(oli = (char *)strchr(ostr, optopt))) {
+    if ((optopt = (int)*place++) == (int)':' || !(oli = (char *)strchr(ostr, optopt))) {
         /*
-         * if the user didn't specify '-' as an option,
-         * assume it means EOF.
+         * if the user didn't specify '-' as an option, assume it means EOF.
          */
         if (optopt == (int)'-')
             return(EOF);
@@ -47,8 +45,7 @@ int getopt(int nargc, char * const * nargv, const char * ostr)
                 p = *nargv;
             else
                 ++p;
-            (void)fprintf(stderr, "%s: illegal option -- %c\n",
-                          p, optopt);
+            (void)fprintf(stderr, "%s: illegal option -- %c\n", p, optopt);
         }
         return(BADCH);
     }
@@ -66,15 +63,15 @@ int getopt(int nargc, char * const * nargv, const char * ostr)
             else
                 ++p;
             if (opterr)
-                (void)fprintf(stderr,
-                              "%s: option requires an argument -- %c\n",
-                              p, optopt);
+                (void)fprintf(stderr, "%s: option requires an argument -- %c\n", p, optopt);
             return(BADCH);
         } else				/* white space */
             optarg = nargv[optind];
+
         place = EMSG;
         ++optind;
     }
+
     return(optopt);				/* dump back option letter */
 }
 
@@ -187,12 +184,11 @@ void netfinger(char * name)
      * data.  If none arrives, we hang until the user interrupts.
      *
      * If we see a <CR> or a <CR> with the high bit set, treat it as
-     * a newline; if followed by a newline character, only output one
-     * newline.
+     * a newline; if followed by a newline character, only output one newline.
      *
      * Otherwise, all high bits are stripped; if it isn't printable and
-     * it isn't a space, we can simply set the 7th bit.  Every ASCII
-     * character with bit 7 set is printable.
+     * it isn't a space, we can simply set the 7th bit.
+     * Every ASCII character with bit 7 set is printable.
      */
     lastc = 0;
     while (recv(s, &c, 1, 0) == 1) {
@@ -302,6 +298,7 @@ int finger(int argc, char ** argv)
             (void)fprintf(stderr, "usage: finger [-lmps] login [...]\n");
             exit(1);
         }
+
     argc -= optind;
     argv += optind;
 
@@ -318,5 +315,6 @@ int finger(int argc, char ** argv)
         if (!sflag)
             lflag = 1;	/* if -s not explicit, force -l */
     }
+
     return 0;
 }

@@ -34,10 +34,7 @@ ULONG   RequestID;
 
 #include "nslookup.h"
 
-BOOL SendRequest(PCHAR pInBuffer,
-                 ULONG InBufferLength,
-                 PCHAR pOutBuffer,
-                 PULONG pOutBufferLength)
+BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG pOutBufferLength)
 {
     int j;
     USHORT RequestID, ResponseID;
@@ -58,7 +55,6 @@ BOOL SendRequest(PCHAR pInBuffer,
 
     /* Create the sockets for both send and receive. */
     s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
     if (s == INVALID_SOCKET)
         return FALSE;
 
@@ -245,14 +241,12 @@ BOOL SendRequest(PCHAR pInBuffer,
         if (ResponseID == RequestID) bWait = FALSE;
     }
 
-    /* We don't need the sockets anymore. */
-    closesocket(s);
+    closesocket(s);/* We don't need the sockets anymore. */
 
     /* If debug information then display debug information. */
     if (State.debug) PrintDebug(pOutBuffer, j);
 
-    /* Return the real output buffer length. */
-    *pOutBufferLength = j;
+    *pOutBufferLength = j;/* Return the real output buffer length. */
 
     return TRUE;
 }
@@ -314,6 +308,7 @@ void ReverseIP(PCHAR pIP, PCHAR pReturn)
     pReturn[k] = '\0';
 }
 
+
 BOOL IsValidIP(PCHAR pInput)
 {
     int i = 0, l = 0, b = 0, c = 1;
@@ -340,12 +335,12 @@ BOOL IsValidIP(PCHAR pInput)
 
     if (b > 3) return FALSE;
 
-    /* 'c' is the number of segments seen. If it's less than 4, then it's not
-       a valid IP. */
+    /* 'c' is the number of segments seen. If it's less than 4, then it's not a valid IP. */
     if (c < 4) return FALSE;
 
     return TRUE;
 }
+
 
 int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
 {
@@ -395,6 +390,7 @@ int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
     return c;
 }
 
+
 int ExtractIP(PCHAR pBuffer, PCHAR pOutput, USHORT Offset)
 {
     int c = 0, l = 0, i = 0, v = 0;
@@ -433,6 +429,7 @@ int ExtractIP(PCHAR pBuffer, PCHAR pOutput, USHORT Offset)
 
     return l;
 }
+
 
 void PrintD2(PCHAR pBuffer, DWORD BufferLength)
 {
@@ -503,6 +500,7 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
 
     _tprintf(_T("\n------------\n"));
 }
+
 
 void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
 {
@@ -717,6 +715,7 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
     _tprintf(_T("\n------------\n"));
 }
 
+
 PCHAR OpcodeIDtoOpcodeName(UCHAR Opcode)
 {
     switch (Opcode & 0x0F) {
@@ -730,6 +729,7 @@ PCHAR OpcodeIDtoOpcodeName(UCHAR Opcode)
         return (PCHAR)OpcodeReserved;
     }
 }
+
 
 PCHAR RCodeIDtoRCodeName(UCHAR RCode)
 {
@@ -750,6 +750,7 @@ PCHAR RCodeIDtoRCodeName(UCHAR RCode)
         return (PCHAR)RCodeReserved;
     }
 }
+
 
 PCHAR TypeIDtoTypeName(USHORT TypeID)
 {
@@ -775,6 +776,7 @@ PCHAR TypeIDtoTypeName(USHORT TypeID)
     }
 }
 
+
 USHORT TypeNametoTypeID(PCHAR TypeName)
 {
     if (!strncmp(TypeName, TypeA, strlen(TypeA))) return TYPE_A;
@@ -789,19 +791,19 @@ USHORT TypeNametoTypeID(PCHAR TypeName)
     return 0;
 }
 
+
 PCHAR ClassIDtoClassName(USHORT ClassID)
 {
     switch (ClassID) {
     case CLASS_IN:
         return (PCHAR)ClassIN;
-
     case CLASS_ANY:
         return (PCHAR)ClassAny;
-
     default:
         return (PCHAR)"Unknown";
     }
 }
+
 
 USHORT ClassNametoClassID(PCHAR ClassName)
 {
@@ -1016,6 +1018,7 @@ cleanup:
     return bOk;
 }
 
+
 void PerformLookup(PCHAR pAddr)
 {
     /* Needed to issue DNS packets and parse them. */
@@ -1205,6 +1208,7 @@ cleanup:
     RequestID += 1;
 }
 
+
 BOOL ParseCommandLine(int argc, char * argv[])
 {
     int i;
@@ -1373,6 +1377,7 @@ BOOL ParseCommandLine(int argc, char * argv[])
     return 1;
 }
 
+
 void InteractiveMode()
 {
     _tprintf(_T("Default Server:  %s\n"), State.DefaultServer);
@@ -1382,6 +1387,7 @@ void InteractiveMode()
 
     _tprintf(_T("ERROR: Feature not implemented.\n"));
 }
+
 
 int nslookup(int argc, char * argv[])
 {
@@ -1460,8 +1466,7 @@ int nslookup(int argc, char * argv[])
         break;
     default:
         /* Anything else means we enter interactive mode. The only exception
-           to this is when the host to resolve was provided on the command
-           line. */
+           to this is when the host to resolve was provided on the command line. */
         InteractiveMode();
     }
 

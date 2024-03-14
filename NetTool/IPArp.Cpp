@@ -117,8 +117,7 @@ void DoGetIpNetTable()
 
 void DoSetIpNetEntry(char * pszDottedInetAddr, char * pszPhysAddr, char * pszInterface)
 // Add an arp entry with ip dotted decimal address of "pszDottedInetAddr" and
-// physical address of "pszPhysAddr" in 00-aa-bb-cc-dd-ee format on interface 
-// index of "pszInterface" in hex form.
+// physical address of "pszPhysAddr" in 00-aa-bb-cc-dd-ee format on interface index of "pszInterface" in hex form.
 {
     DWORD dwInetAddr = 0; // ip address
     DWORD dwStatus;

@@ -157,8 +157,7 @@ void DoSetIpForwardEntry(char * pszDest, char * pszNetMask, char * pszGateway, c
     }
 
     routeEntry.dwForwardMask = inet_addr(pszNetMask);
-    if ((routeEntry.dwForwardMask == INADDR_NONE) &&
-        (strcmp("255.255.255.255", pszNetMask) != 0)) {
+    if ((routeEntry.dwForwardMask == INADDR_NONE) && (strcmp("255.255.255.255", pszNetMask) != 0)) {
         printf("IpRoute: Bad Mask %s\n", pszNetMask);
         return;
     }
@@ -238,8 +237,7 @@ void DoDeleteIpForwardEntry(char * pszDest)
                 memcpy(&routeEntry, &(pIpRouteTab->table[i]), sizeof(MIB_IPFORWARDROW));
                 dwDelStatus = DeleteIpForwardEntry(&routeEntry);
                 if (dwDelStatus != NO_ERROR) {
-                    printf("IpRoute: couldn't delete (%s), dwStatus = %lu.\n",
-                           pszDest, dwDelStatus);
+                    printf("IpRoute: couldn't delete (%s), dwStatus = %lu.\n", pszDest, dwDelStatus);
                     return;
                 } else
                     fDeleted = TRUE;
@@ -345,11 +343,7 @@ void PrintIpForwardTable(PMIB_IPFORWARDTABLE pIpRouteTable)
         strcpy_s(szMaskIp, sizeof(szDestIp), inet_ntoa(inadMask));
         strcpy_s(szGatewayIp, sizeof(szDestIp), inet_ntoa(inadGateway));
         printf("  %15s %16s %16s %16s %7d\n",
-               szDestIp,
-               szMaskIp,
-               szGatewayIp,
-               szIpAddr,
-               pIpRouteTable->table[i].dwForwardMetric1);
+               szDestIp, szMaskIp, szGatewayIp, szIpAddr, pIpRouteTable->table[i].dwForwardMetric1);
     }
 
     if (pIpAddrTable)

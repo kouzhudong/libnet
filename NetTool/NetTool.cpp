@@ -48,10 +48,22 @@ int Usage(_In_ LPCWSTR programName)
     banner();
 
     printf("Usage:\r\n");                 //printf("%s.\r\n", __FUNCTION__);
-    printf("%ls ping.\r\n", programName); 
+    printf("%ls ping.\r\n", programName);
     printf("%ls pathping.\r\n", programName);
     printf("%ls tracert.\r\n", programName);
-
+    printf("%ls whois.\r\n", programName);
+    printf("%ls Arp.\r\n", programName);
+    printf("%ls Route.\r\n", programName);
+    printf("%ls Ipconfig.\r\n", programName);
+    printf("%ls wfp.\r\n", programName);
+    printf("%ls spi.\r\n", programName);
+    printf("%ls nbtstat.\r\n", programName);
+    printf("%ls netstat.\r\n", programName);
+    printf("%ls netsh.\r\n", programName);
+    printf("%ls finger.\r\n", programName);
+    printf("%ls nslookup.\r\n", programName);
+    printf("%ls wlan.\r\n", programName);
+    printf("%ls net.\r\n", programName);
 
     return ERROR_SUCCESS;
 }
@@ -61,13 +73,13 @@ void help()
 {
     banner();
 
- 
+
 }
 
 
 void init()
 {
- 
+
 }
 
 

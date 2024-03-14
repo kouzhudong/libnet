@@ -85,15 +85,9 @@ extern HANDLE   ProcessHeap;
 
 /* utility.c */
 
-BOOL SendRequest(PCHAR pInBuffer,
-                 ULONG InBufferLength,
-                 PCHAR pOutBuffer,
-                 PULONG pOutBufferLength);
+BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG pOutBufferLength);
 
-int     ExtractName(PCHAR pBuffer,
-                    PCHAR pOutput,
-                    USHORT Offset,
-                    UCHAR Limit);
+int     ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit);
 
 void    ReverseIP(PCHAR pIP, PCHAR pReturn);
 BOOL    IsValidIP(PCHAR pInput);
