@@ -195,7 +195,7 @@
     <ClInclude Include="Firewall.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="html.h" />
-    <ClInclude Include="IOCTL.h" />
+    <ClInclude Include="ioctl.h" />
     <ClInclude Include="IpAddr.h" />
     <ClInclude Include="IpHelper.h" />
     <ClInclude Include="log.h" />
@@ -215,7 +215,7 @@
     <ClCompile Include="dns.cpp" />
     <ClCompile Include="Firewall.cpp" />
     <ClCompile Include="html.cpp" />
-    <ClCompile Include="IOCTL.cpp" />
+    <ClCompile Include="ioctl.cpp" />
     <ClCompile Include="IpAddr.cpp" />
     <ClCompile Include="IpHelper.cpp" />
     <ClCompile Include="log.cpp" />

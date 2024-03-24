@@ -42,7 +42,7 @@
     <ClInclude Include="log.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="IOCTL.h">
+    <ClInclude Include="ioctl.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="raw.h">
@@ -98,7 +98,7 @@
     <ClCompile Include="log.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="IOCTL.cpp">
+    <ClCompile Include="ioctl.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="raw.cpp">
