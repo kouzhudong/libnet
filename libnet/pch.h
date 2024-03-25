@@ -22,6 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+void DisplayError(_In_ DWORD dwMessageId);
 void GetTimeString(LARGE_INTEGER UtcTime, _Out_ LPWSTR TimeString);
 void PrintTcpConnectionState(_In_ DWORD dwState);
 void PrintInterfaceType(_In_ WORD Type);

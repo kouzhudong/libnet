@@ -48,7 +48,6 @@ void _cdecl IpArp(int argc, char ** argv)
 {
     WORD wVersionRequested = MAKEWORD(1, 1);
     WSADATA wsaData;
-
     int nRet = WSAStartup(wVersionRequested, &wsaData);
     if (wsaData.wVersion != wVersionRequested) {
         fprintf(stderr, "\n Wrong version\n");
@@ -246,8 +245,7 @@ int StringToPhysAddr(char * szInEther, char * szOutEther)
     if (strlen(szInEther) != 17)
         return (-1);
 
-    if (szInEther[2] != DASH || szInEther[5] != DASH || szInEther[8] != DASH ||
-        szInEther[8] != DASH || szInEther[14] != DASH)
+    if (szInEther[2] != DASH || szInEther[5] != DASH || szInEther[8] != DASH || szInEther[14] != DASH)
         return (-1);
 
     if (!isxdigit(szInEther[0]) || !isxdigit(szInEther[1]) ||

@@ -62,9 +62,7 @@ void _cdecl IpRoute(int argc, char ** argv)
 {
     WORD wVersionRequested = MAKEWORD(1, 1);
     WSADATA wsaData;
-    int nRet;
-
-    nRet = WSAStartup(wVersionRequested, &wsaData);
+    int nRet = WSAStartup(wVersionRequested, &wsaData);
     if (wsaData.wVersion != wVersionRequested) {
         fprintf(stderr, "\n Wrong version\n");
         return;
