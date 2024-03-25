@@ -135,6 +135,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -158,7 +159,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="c.c" />
-    <ClCompile Include="init.cpp" />
     <ClCompile Include="IpHelper.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="test.cpp" />
@@ -167,7 +167,6 @@
   <ItemGroup>
     <ClInclude Include="..\inc\libnet.h" />
     <ClInclude Include="c.h" />
-    <ClInclude Include="init.h" />
     <ClInclude Include="IpHelper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="WinHttp.h" />

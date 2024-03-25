@@ -2,7 +2,6 @@
 //
 
 #include "..\inc\libnet.h"
-#include "init.h"
 #include "IpHelper.h"
 #include "c.h"
 #include "pch.h"
@@ -37,15 +36,12 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         return 0;
     }
 
-    init();
-
     //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
-
     //tracert(argc, argv);//单字符函数入口示例。
 
     //test_c();
 
-    GettingFirewallSettings();
+    EnumAdaptersInfo();
     //EnumExtendedTcpTable(AF_INET6, TCP_TABLE_OWNER_MODULE_ALL);
     //TestNetworkListManagerEvents();
     //ListenToNetworkConnectivityChangesSample(false);
