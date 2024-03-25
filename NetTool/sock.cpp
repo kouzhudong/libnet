@@ -756,6 +756,188 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
+    /*
+    其他数据（不在正常网络数据流中）与网络请求一起发送以建立连接。 旧版协议（如 DECNet、OSI TP4 等）使用此选项。 
+    Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    //SO_CONNDATA
+
+
+    /*
+    附加数据的长度，以字节为单位，而不是在正常网络数据流中，与网络请求一起发送以建立连接。
+    旧版协议（如 DECNet、OSI TP4 等）使用此选项。 Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_CONNDATALEN, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    其他连接选项数据（不在正常网络数据流中）与网络请求一起发送以建立连接。 
+    旧版协议（如 DECNet、OSI TP4 等）使用此选项。 Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    //SO_CONNOPT
+
+
+    /*
+    连接选项数据的长度（以字节为单位），而不是在正常网络数据流中，该数据随网络请求一起发送以建立连接。 
+    旧版协议（如 DECNet、OSI TP4 等）使用此选项。 Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_CONNOPTLEN, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    其他数据（不在正常网络数据流中）与网络请求一起发送，以断开连接。
+    旧版协议（如 DECNet、OSI TP4 等）使用此选项。 Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    //SO_DISCDATA
+
+
+    /*
+    	附加数据的长度（以字节为单位），该长度不是在正常网络数据流中，随网络请求一起发送，以断开连接。 
+        旧版协议（如 DECNet、OSI TP4 等）使用此选项。 Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_DISCDATALEN, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    其他断开连接选项数据，而不是在正常网络数据流中，随网络请求一起发送，以断开连接。 
+    旧版协议（如 DECNet、OSI TP4 等）使用此选项。 Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    //SO_DISCOPT
+
+    /*
+    附加断开连接选项数据（而不是在正常网络数据流中）的长度（以字节为单位），该数据随网络请求一起发送以断开连接。
+    旧版协议（如 DECNet、OSI TP4 等）使用此选项。 Windows 中的 TCP/IP 协议不支持此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_DISCOPTLEN, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    返回协议支持的出站数据报的最大大小（以字节为单位）。 此套接字选项对于面向流的套接字没有意义。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_MAXDG, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    返回协议支持到给定目标地址的出站数据报的最大大小（以字节为单位）。 此套接字选项对于面向流的套接字没有意义。
+    Microsoft 提供商可能会以无提示方式将此视为SO_MAXDG。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_MAXPATHDG, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    设置后，将影响创建的后续套接字是否不重叠。 此选项的可能值为SO_SYNCHRONOUS_ALERT和SO_SYNCHRONOUS_NONALERT。 
+    不应使用此选项。 请改用 WSASocket 函数并关闭 dwFlags 参数中的WSA_FLAG_OVERLAPPED位。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_OPENTYPE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    使用此选项侦听套接字。 设置 选项后，套接字将使用 RST 响应所有传入连接，而不是接受它们。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_PAUSE_ACCEPT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    应在未绑定的套接字上设置此选项。 设置SO_RANDOMIZE_PORT并在套接字上选择临时端口时，将绑定随机端口号。
+    使用 SO_REUSE_UNICASTPORT) 选择的端口 (自动重用端口也会随机化返回的端口，因此，如果应用程序SO_REUSE_UNICASTPORT然后尝试设置SO_RANDOMIZE_PORT，则第二 个 setockopt 调用将失败。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_RANDOMIZE_PORT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    设置后，允许 Winsock API 连接函数重复使用需要显式绑定的临时端口，例如 ConnectEx。 
+    请注意，具有隐式绑定 (的连接函数（例如，在没有显式绑定的情况下进行连接) 默认设置了此选项。 
+    使用此选项，而不是在两者都可用的平台上 SO_PORT_SCALABILITY 。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_REUSE_UNICASTPORT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    在套接字上设置此选项时，表示永远不会使用该套接字接收单播数据包，因此，其端口可以与其他仅多播应用程序共享。
+    将值设置为 1 可始终在端口上共享多播流量。 将值设置为 0 (默认) 会禁用此行为。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_REUSE_MULTICASTPORT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    此选项与 AcceptEx 函数一起使用。 此选项更新从侦听套接字继承的套接字的属性。 
+    如果要在接受的套接字上使用 getpeername、 getockname、 getockopt 或 setsockopt 函数，则应设置此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    此选项与 ConnectEx、 WSAConnectByList 和 WSAConnectByName 函数一起使用。 建立连接后，此选项将更新套接字的属性。
+    如果要在连接的套接字上使用 getpeername、 getockname、 getockopt、 setsockopt 或 shutdown 函数，则应设置此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
     return ret;
 }
 
