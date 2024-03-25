@@ -17,6 +17,7 @@
 #include "Wlan.h"
 #include "NetApi.h"
 #include "finger.h"
+#include "sock.h"
 
 
 #ifdef _WIN64
@@ -162,6 +163,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     else if (_wcsicmp(Arglist[1], L"net") == 0) {
         net(--argc, ++Arglist);
+    }
+
+    else if (_wcsicmp(Arglist[1], L"sock") == 0) {
+        sock(--argc, ++Arglist);
     }
 
     else {

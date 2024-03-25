@@ -1,6 +1,23 @@
 #include "pch.h"
 
 
+void DisplayError(_In_ DWORD dwMessageId)
+{
+    LPVOID lpMsgBuf = nullptr;/* Variables used to return error message */
+    DWORD dwFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+    if (FormatMessage(dwFlags,
+                      nullptr,
+                      dwMessageId,
+                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                      (LPTSTR)&lpMsgBuf,
+                      0,
+                      nullptr)) {
+        printf("LastError:%d, Message:%ls", dwMessageId, (wchar_t *)lpMsgBuf);
+    }
+    LocalFree(lpMsgBuf);
+}
+
+
 LPWSTR UTF8ToWideChar(IN PCHAR utf8)
 /*
 得到的内存有调用者释放。

@@ -21,7 +21,8 @@
 #define UNICODE
 #endif
 
-#include <Winsock2.h>
+#include <Winsock2.h> //定义在windows.h的前面。
+#include <Mswsock.h> //定义在Winsock2.h的后面。
 #include <windows.h>
 #include <strsafe.h>
 #include <assert.h>
@@ -179,9 +180,10 @@ typedef struct ProcessInfo {
     WCHAR   ProcessName[MAX_PATH];
 } ProcessInfo;
 
-#define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
+#define MALLOC(x) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 
+void DisplayError(_In_ DWORD dwMessageId);
 LPWSTR UTF8ToWideChar(IN PCHAR utf8);
 BOOL WINAPI AdjustCurrentProcessPrivilege(PCTSTR szPrivilege, BOOL fEnable);
 DWORD FindOnePidByName(PCWCHAR ProcessName);

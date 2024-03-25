@@ -66,6 +66,9 @@
     <ClCompile Include="finger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="sock.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -120,6 +123,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="finger.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sock.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
