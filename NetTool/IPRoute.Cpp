@@ -79,7 +79,7 @@ void _cdecl IpRoute(int argc, char ** argv)
         DoGetIpForwardTable();
         break;
     case 'a':
-        //Adds an entry into routing table   
+        //Adds an entry into routing table
         if (argc == 6)
             DoSetIpForwardEntry(argv[2], argv[3], argv[4], argv[5]); // dest mask gateway if
         else if (argc == 7) {
@@ -93,7 +93,7 @@ void _cdecl IpRoute(int argc, char ** argv)
 
         break;
     case 'd':
-        //Delete an entry from the routing table    
+        //Delete an entry from the routing table
         if (argc == 3)
             DoDeleteIpForwardEntry(argv[2]);
         else
@@ -101,7 +101,7 @@ void _cdecl IpRoute(int argc, char ** argv)
 
         break;
     default:
-        Usage("IpRoute");// help
+        Usage("IpRoute"); // help
         break;
     }
 
@@ -134,11 +134,11 @@ void DoSetIpForwardEntry(char * pszDest, char * pszNetMask, char * pszGateway, c
 {
     DWORD dwStatus;
 
-    MIB_IPFORWARDROW routeEntry;            // Ip routing table row entry
-    PMIB_IPADDRTABLE pIpAddrTable = NULL;   // Ip Addr Table
-    DWORD dwIfIndex;                        // Interface index number  
-    DWORD dwIfMask;                         // Interface Subnet Mask
-    DWORD dwIfIpAddr;                       // Interface Ip Address
+    MIB_IPFORWARDROW routeEntry;          // Ip routing table row entry
+    PMIB_IPADDRTABLE pIpAddrTable = NULL; // Ip Addr Table
+    DWORD dwIfIndex;                      // Interface index number
+    DWORD dwIfMask;                       // Interface Subnet Mask
+    DWORD dwIfIpAddr;                     // Interface Ip Address
 
     memset(&routeEntry, 0, sizeof(MIB_IPFORWARDROW));
 
@@ -271,7 +271,7 @@ DWORD MyGetIpForwardTable(PMIB_IPFORWARDTABLE & pIpRouteTab, BOOL fOrder)
     if (status == NO_ERROR) {
         printf("No error\n");
         return status;
-    } else if (status == ERROR_INSUFFICIENT_BUFFER) {// need more space
+    } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpRouteTab = (PMIB_IPFORWARDTABLE)malloc(dwActualSize);
         assert(pIpRouteTab);
 
@@ -300,7 +300,7 @@ void PrintIpForwardTable(PMIB_IPFORWARDTABLE pIpRouteTable)
     struct in_addr inadDest;
     struct in_addr inadMask;
     struct in_addr inadGateway;
-    char szIpAddr[128];          // ip address of an interface index
+    char szIpAddr[128]; // ip address of an interface index
     PMIB_IPADDRTABLE pIpAddrTable = NULL;
 
     char szDestIp[128];
@@ -341,7 +341,11 @@ void PrintIpForwardTable(PMIB_IPFORWARDTABLE pIpRouteTable)
         strcpy_s(szMaskIp, sizeof(szDestIp), inet_ntoa(inadMask));
         strcpy_s(szGatewayIp, sizeof(szDestIp), inet_ntoa(inadGateway));
         printf("  %15s %16s %16s %16s %7d\n",
-               szDestIp, szMaskIp, szGatewayIp, szIpAddr, pIpRouteTable->table[i].dwForwardMetric1);
+               szDestIp,
+               szMaskIp,
+               szGatewayIp,
+               szIpAddr,
+               pIpRouteTable->table[i].dwForwardMetric1);
     }
 
     if (pIpAddrTable)
@@ -416,7 +420,7 @@ DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE & pIpAddrTable, BOOL fOrder)
     if (status == NO_ERROR) {
         printf("No error\n");
         return status;
-    } else if (status == ERROR_INSUFFICIENT_BUFFER) {// need more space
+    } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpAddrTable = (PMIB_IPADDRTABLE)malloc(dwActualSize);
         assert(pIpAddrTable);
 

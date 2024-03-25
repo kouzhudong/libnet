@@ -14,7 +14,7 @@
 
 #include "IpArp.h"
 
-#pragma warning(disable:4996)
+#pragma warning(disable : 4996)
 
 void Usage(const char * pszProgramName)
 {
@@ -61,11 +61,11 @@ void _cdecl IpArp(int argc, char ** argv)
         Usage("IpArp");
 
     switch (argv[1][1]) {
-    case 'a':        
-        DoGetIpNetTable();// Print arp table
+    case 'a':
+        DoGetIpNetTable(); // Print arp table
         break;
     case 's':
-        //Update or add an ARP Internet/Ethernet Address entry 
+        //Update or add an ARP Internet/Ethernet Address entry
         if (argc == 4)
             DoSetIpNetEntry(argv[2], argv[3]);
         else if (argc == 5)
@@ -74,7 +74,7 @@ void _cdecl IpArp(int argc, char ** argv)
             Usage("IpArp");
         break;
     case 'd':
-        //Delete an Internet/Ethernet Address pair from the ARP table 
+        //Delete an Internet/Ethernet Address pair from the ARP table
         if (argc == 3)
             DoDeleteIpNetEntry(argv[2]);
         else if (argc == 4)
@@ -82,8 +82,8 @@ void _cdecl IpArp(int argc, char ** argv)
         else
             Usage("IpArp");
         break;
-    default:        
-        Usage("IpArp");// help
+    default:
+        Usage("IpArp"); // help
         break;
     }
 
@@ -165,7 +165,7 @@ void DoSetIpNetEntry(char * pszDottedInetAddr, char * pszPhysAddr, char * pszInt
 
 
 void DoDeleteIpNetEntry(char * pszDottedInetAddr, char * pszInterface)
-// Delete an arp entry with ip dotted decimal address of "pszDottedInetAddr" 
+// Delete an arp entry with ip dotted decimal address of "pszDottedInetAddr"
 // and interface index of "pszInterface" in hex form.
 {
     DWORD dwInetAddr = 0; // ip address
@@ -262,7 +262,7 @@ int StringToPhysAddr(char * szInEther, char * szOutEther)
         c = toupper(szInEther[i * 3]);
         c = c - (isdigit(c) ? '0' : ('A' - 10)); //offset adjustment
         val += c;
-        val = (val << 4); // val * 16 
+        val = (val << 4); // val * 16
         c = toupper(szInEther[i * 3 + 1]);
         c = c - (isdigit(c) ? '0' : ('A' - 10)); // offset adjustement
         val += c;
@@ -420,7 +420,7 @@ DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE & pIpAddrTable, bool fOrder)
     if (status == NO_ERROR) {
         printf("No error\n");
         return status;
-    } else if (status == ERROR_INSUFFICIENT_BUFFER) {// need more space
+    } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpAddrTable = (PMIB_IPADDRTABLE)malloc(dwActualSize);
         assert(pIpAddrTable);
 
@@ -444,7 +444,7 @@ DWORD MyGetIpNetTable(PMIB_IPNETTABLE & pIpNetTable, bool fOrder)
     status = GetIpNetTable(pIpNetTable, &dwActualSize, fOrder);
     if (status == NO_ERROR) {
         return status;
-    } else if (status == ERROR_INSUFFICIENT_BUFFER) {// need more space   
+    } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpNetTable = (PMIB_IPNETTABLE)malloc(dwActualSize);
         assert(pIpNetTable);
 

@@ -38,7 +38,7 @@
 
 #include "whois.h"
 
-#pragma warning(disable:6011) //取消对 NULL 指针“XXX”的引用
+#pragma warning(disable : 6011) //取消对 NULL 指针“XXX”的引用
 
 static char NICHOST[] = "whois.internic.net";
 char * host = NULL;
@@ -109,7 +109,7 @@ int whois(int argc, char ** argv)
         cleanup(1);
     }
 
-    memset(/*(caddr_t)*/&sin, 0, sizeof(sin));
+    memset(/*(caddr_t)*/ &sin, 0, sizeof(sin));
     sin.sin_family = hp->h_addrtype;
     if (bind(s, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
         perror("whois: bind");

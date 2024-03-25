@@ -144,7 +144,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
             WCHAR GuidString[40] = {0};
             int iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString), 39);
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 39); 
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 39);
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
@@ -220,11 +220,10 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetav
         for (i = 0; i < pIfList->dwNumberOfItems; i++) {
             pIfInfo = reinterpret_cast<WLAN_INTERFACE_INFO *>(&pIfList->InterfaceInfo[i]);
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString),
-                                   sizeof(GuidString) / sizeof(*GuidString));
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString), sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
-            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
+            //     sizeof(GuidString)/sizeof(*GuidString));
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
@@ -286,8 +285,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetav
                         wprintf(L"Yes\n");
                     else {
                         wprintf(L"No\n");
-                        wprintf(L"  Not connectable WLAN_REASON_CODE value[%u]:\t %u\n", j,
-                                pBssEntry->wlanNotConnectableReason);
+                        wprintf(L"  Not connectable WLAN_REASON_CODE value[%u]:\t %u\n", j, pBssEntry->wlanNotConnectableReason);
                     }
 
                     wprintf(L"  Number of PHY types supported[%u]:\t %u\n", j, pBssEntry->uNumberOfPhyTypes);
@@ -299,8 +297,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetav
                     else
                         iRSSI = -100 + (pBssEntry->wlanSignalQuality / 2);
 
-                    wprintf(L"  Signal Quality[%u]:\t %u (RSSI: %i dBm)\n", j,
-                            pBssEntry->wlanSignalQuality, iRSSI);
+                    wprintf(L"  Signal Quality[%u]:\t %u (RSSI: %i dBm)\n", j, pBssEntry->wlanSignalQuality, iRSSI);
 
                     wprintf(L"  Security Enabled[%u]:\t ", j);
                     if (pBssEntry->bSecurityEnabled)
@@ -382,7 +379,7 @@ https://www.oomake.com/question/2930367
 https://cloud.tencent.com/developer/ask/sof/109443020
 */
 {
-    wstring keyMaterial;//error C2712: 无法在要求对象展开的函数中使用 __try
+    wstring keyMaterial; //error C2712: 无法在要求对象展开的函数中使用 __try
     ParseXml(pProfileXml, keyMaterial);
     LPCWSTR pszString = keyMaterial.c_str();
 
@@ -450,7 +447,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
 {
     // Declare and initialize variables.
     HANDLE hClient = NULL;
-    DWORD dwMaxClient = 2;      //    
+    DWORD dwMaxClient = 2; //
     DWORD dwCurVersion = 0;
     DWORD dwResult = 0;
     DWORD dwRetVal = 0;
@@ -467,7 +464,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
 
     //LPCWSTR pProfileName = NULL;
     LPWSTR pProfileXml = NULL;
-    DWORD dwFlags = 0;//WLAN_PROFILE_GET_PLAINTEXT_KEY
+    DWORD dwFlags = 0; //WLAN_PROFILE_GET_PLAINTEXT_KEY
     DWORD dwGrantedAccess = 0;
 
     // Validate the parameters
@@ -502,11 +499,10 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
         for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
             pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString,
-                                   sizeof(GuidString) / sizeof(*GuidString));
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
-            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
+            //     sizeof(GuidString)/sizeof(*GuidString));
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
@@ -532,7 +528,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
                 wprintf(L"  Profile Name:  %ws\n", pProfileName);
 
                 wprintf(L"  Profile XML string:\n");
-                wprintf(L"%ws\n\n", pProfileXml);//可解密出密码。
+                wprintf(L"%ws\n\n", pProfileXml); //可解密出密码。
                 ParseProfileXml(pProfileXml);
 
                 wprintf(L"  dwFlags:\t    0x%x", dwFlags);
@@ -622,11 +618,10 @@ https://learn.microsoft.com/zh-CN/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
         for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
             pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString,
-                                   sizeof(GuidString) / sizeof(*GuidString));
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
-            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
+            //     sizeof(GuidString)/sizeof(*GuidString));
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
@@ -731,11 +726,10 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/ns-wlanapi-wlan_bss_
         for (i = 0; i < (int)pIfList->dwNumberOfItems; i++) {
             pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
-            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString,
-                                   sizeof(GuidString) / sizeof(*GuidString));
+            iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
-            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
+            //     sizeof(GuidString)/sizeof(*GuidString));
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
@@ -825,7 +819,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetfi
         dwRetVal = 1;
         // You can use FormatMessage to find out why the function failed
     } else {
-        if (NetworkList) {//经测试这里始终是NULL。
+        if (NetworkList) { //经测试这里始终是NULL。
             wprintf(L"  DOT11_NETWORK_LIST for this interface\n");
             wprintf(L"  Num Entries: %lu\n\n", NetworkList->dwNumberOfItems);
 

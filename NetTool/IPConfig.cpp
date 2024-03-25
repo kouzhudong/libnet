@@ -187,16 +187,16 @@ void __cdecl Ipconfig(void)
         printf("\tPrimary WINS Server . . . . : %s\n", pAdapt->PrimaryWinsServer.IpAddress.String);
         printf("\tSecondary WINS Server . . . : %s\n", pAdapt->SecondaryWinsServer.IpAddress.String);
 
-        // Display coordinated universal time - GMT 
+        // Display coordinated universal time - GMT
     #ifdef WIN64
         error = _localtime64_s(&newtime, &pAdapt->LeaseObtained);
     #else
         error = _localtime32_s(&newtime, (const __time32_t *)&pAdapt->LeaseObtained);
-    #endif 
+    #endif
         if (error) {
             printf("Invalid Argument to _localtime32_s.");
         } else {
-            // Convert to an ASCII representation 
+            // Convert to an ASCII representation
             error = asctime_s(buffer, 32, &newtime);
             if (error) {
                 printf("Invalid Argument to asctime_s.");
@@ -209,11 +209,11 @@ void __cdecl Ipconfig(void)
         error = _localtime64_s(&newtime, &pAdapt->LeaseExpires);
     #else
         error = _localtime32_s(&newtime, (const __time32_t *)&pAdapt->LeaseExpires);
-    #endif 
+    #endif
         if (error) {
             printf("Invalid Argument to _localtime32_s.");
         } else {
-            // Convert to an ASCII representation 
+            // Convert to an ASCII representation
             error = asctime_s(buffer, 32, &newtime);
             if (error) {
                 printf("Invalid Argument to asctime_s.");

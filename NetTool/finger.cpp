@@ -9,35 +9,35 @@ int lflag, mflag, pplan, sflag;
 /*
  * get option letter from argument vector
  */
-int	opterr = 1,		/* if error message should be printed */
-optind = 1,		/* index into parent argv vector */
-optopt;			/* character checked for validity */
-const char * optarg;		/* argument associated with option */
+int opterr = 1,      /* if error message should be printed */
+optind = 1,      /* index into parent argv vector */
+optopt;          /* character checked for validity */
+const char * optarg; /* argument associated with option */
 
 
 int getopt(int nargc, char * const * nargv, const char * ostr)
 {
-    static const char * place = EMSG;		/* option letter processing */
-    register char * oli;			/* option letter list index */
+    static const char * place = EMSG; /* option letter processing */
+    register char * oli;              /* option letter list index */
     char * p;
 
-    if (!*place) {				/* update scanning pointer */
+    if (!*place) { /* update scanning pointer */
         if (optind >= nargc || *(place = nargv[optind]) != '-') {
             place = EMSG;
-            return(EOF);
+            return (EOF);
         }
-        if (place[1] && *++place == '-') {	/* found "--" */
+        if (place[1] && *++place == '-') { /* found "--" */
             ++optind;
             place = EMSG;
-            return(EOF);
+            return (EOF);
         }
-    }					/* option letter okay? */
+    } /* option letter okay? */
     if ((optopt = (int)*place++) == (int)':' || !(oli = (char *)strchr(ostr, optopt))) {
         /*
          * if the user didn't specify '-' as an option, assume it means EOF.
          */
         if (optopt == (int)'-')
-            return(EOF);
+            return (EOF);
         if (!*place)
             ++optind;
         if (opterr) {
@@ -47,16 +47,16 @@ int getopt(int nargc, char * const * nargv, const char * ostr)
                 ++p;
             (void)fprintf(stderr, "%s: illegal option -- %c\n", p, optopt);
         }
-        return(BADCH);
+        return (BADCH);
     }
-    if (*++oli != ':') {			/* don't need argument */
+    if (*++oli != ':') { /* don't need argument */
         optarg = NULL;
         if (!*place)
             ++optind;
-    } else {					/* need an argument */
-        if (*place)			/* no white space */
+    } else {        /* need an argument */
+        if (*place) /* no white space */
             optarg = place;
-        else if (nargc <= ++optind) {	/* no arg */
+        else if (nargc <= ++optind) { /* no arg */
             place = EMSG;
             if (!(p = strrchr(*nargv, '/')))
                 p = *nargv;
@@ -64,15 +64,15 @@ int getopt(int nargc, char * const * nargv, const char * ostr)
                 ++p;
             if (opterr)
                 (void)fprintf(stderr, "%s: option requires an argument -- %c\n", p, optopt);
-            return(BADCH);
-        } else				/* white space */
+            return (BADCH);
+        } else /* white space */
             optarg = nargv[optind];
 
         place = EMSG;
         ++optind;
     }
 
-    return(optopt);				/* dump back option letter */
+    return (optopt); /* dump back option letter */
 }
 
 
@@ -88,9 +88,9 @@ void verr(int eval, const char * fmt, va_list ap)
     }
 
 #pragma warning(push)
-#pragma warning(disable:4996) 
+#pragma warning(disable : 4996)
     (void)fprintf(stderr, "%s\n", strerror(sverrno));
-#pragma warning(pop)   
+#pragma warning(pop)
 
     exit(eval);
 }
@@ -194,7 +194,7 @@ void netfinger(char * name)
     while (recv(s, &c, 1, 0) == 1) {
         c &= 0x7f;
         if (c == 0x0d) {
-            if (lastc == '\r')	/* ^M^M - skip dupes */
+            if (lastc == '\r') /* ^M^M - skip dupes */
                 continue;
             c = '\n';
             lastc = '\r';
@@ -282,16 +282,16 @@ int finger(int argc, char ** argv)
     while ((ch = getopt(argc, argv, "lmps")) != EOF)
         switch (ch) {
         case 'l':
-            lflag = 1;		/* long format */
+            lflag = 1; /* long format */
             break;
         case 'm':
-            mflag = 1;		/* force exact match of names */
+            mflag = 1; /* force exact match of names */
             break;
         case 'p':
-            pplan = 1;		/* don't show .plan/.project */
+            pplan = 1; /* don't show .plan/.project */
             break;
         case 's':
-            sflag = 1;		/* short format */
+            sflag = 1; /* short format */
             break;
         case '?':
         default:
@@ -313,7 +313,7 @@ int finger(int argc, char ** argv)
          * remote finger attempts specified won't be mishandled.
          */
         if (!sflag)
-            lflag = 1;	/* if -s not explicit, force -l */
+            lflag = 1; /* if -s not explicit, force -l */
     }
 
     return 0;

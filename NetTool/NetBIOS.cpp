@@ -70,11 +70,14 @@ This causes the adapter status to be treated as a remote call, which enables you
 
 void NBListNames()
 {
-    if (!NBReset(LANANUM, 20, 30)) return;
+    if (!NBReset(LANANUM, 20, 30))
+        return;
 
-    if (!NBAddName(LANANUM, LOCALNAME)) return;
+    if (!NBAddName(LANANUM, LOCALNAME))
+        return;
 
-    if (!NBListNames(LANANUM, LOCALNAME)) return;
+    if (!NBListNames(LANANUM, LOCALNAME))
+        return;
 
     printf("Succeeded.\n");
 }
@@ -86,10 +89,10 @@ BOOL NBReset(UCHAR nLana, UCHAR nSessions, UCHAR nNames)
 
     memset(&ncb, 0, sizeof(ncb));
     ncb.ncb_command = NCBRESET;
-    ncb.ncb_lsn = 0;                // Allocate new lana_num resources 
+    ncb.ncb_lsn = 0; // Allocate new lana_num resources
     ncb.ncb_lana_num = nLana;
-    ncb.ncb_callname[0] = nSessions;  // maximum sessions 
-    ncb.ncb_callname[2] = nNames;   // maximum names 
+    ncb.ncb_callname[0] = nSessions; // maximum sessions
+    ncb.ncb_callname[2] = nNames;    // maximum names
 
     Netbios(&ncb);
     NBCheck(ncb);
@@ -139,7 +142,7 @@ BOOL NBListNames(int nLana, LPCSTR szName)
 
     hHeap = GetProcessHeap();
 
-    // Allocate the largest buffer that might be needed. 
+    // Allocate the largest buffer that might be needed.
     cbBuffer = sizeof(ADAPTER_STATUS) + 255 * sizeof(NAME_BUFFER);
     pStatus = reinterpret_cast<ADAPTER_STATUS *>(HeapAlloc(hHeap, 0, cbBuffer));
     if (nullptr == pStatus)

@@ -11,14 +11,14 @@
 #include <winbase.h>
 #include <iphlpapi.h>
 
-STATE   State;
-HANDLE  ProcessHeap;
-ULONG   RequestID;
+STATE State;
+HANDLE ProcessHeap;
+ULONG RequestID;
 
-#pragma warning(disable:4996)
-#pragma warning(disable:4477)
-#pragma warning(disable:4267)
-#pragma warning(disable:4244)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4477)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4244)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,8 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
     RequestID = ntohs(((PSHORT)&pInBuffer[0])[0]);
 
     /* If D2 flags is enabled, then display D2 information. */
-    if (State.d2) PrintD2(pInBuffer, InBufferLength);
+    if (State.d2)
+        PrintD2(pInBuffer, InBufferLength);
 
     /* Create the sockets for both send and receive. */
     s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -238,15 +239,17 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
 
         ResponseID = ntohs(((PSHORT)&pOutBuffer[0])[0]);
 
-        if (ResponseID == RequestID) bWait = FALSE;
+        if (ResponseID == RequestID)
+            bWait = FALSE;
     }
 
-    closesocket(s);/* We don't need the sockets anymore. */
+    closesocket(s); /* We don't need the sockets anymore. */
 
     /* If debug information then display debug information. */
-    if (State.debug) PrintDebug(pOutBuffer, j);
+    if (State.debug)
+        PrintDebug(pOutBuffer, j);
 
-    *pOutBufferLength = j;/* Return the real output buffer length. */
+    *pOutBufferLength = j; /* Return the real output buffer length. */
 
     return TRUE;
 }
@@ -264,7 +267,9 @@ void ReverseIP(PCHAR pIP, PCHAR pReturn)
        We will turn this into D.C.B.A and stick it in pReturn */
 
        /* A */
-    for (; i > 0; i -= 1) if ('.' == pIP[i]) break;
+    for (; i > 0; i -= 1)
+        if ('.' == pIP[i])
+            break;
 
     strncpy(&pReturn[k], &pIP[i + 1], (j - i));
     k += (j - i);
@@ -276,7 +281,9 @@ void ReverseIP(PCHAR pIP, PCHAR pReturn)
     j = i;
 
     /* B */
-    for (; i > 0; i -= 1) if ('.' == pIP[i]) break;
+    for (; i > 0; i -= 1)
+        if ('.' == pIP[i])
+            break;
 
     strncpy(&pReturn[k], &pIP[i + 1], (j - i));
     k += (j - i);
@@ -288,7 +295,9 @@ void ReverseIP(PCHAR pIP, PCHAR pReturn)
     j = i;
 
     /* C */
-    for (; i > 0; i -= 1) if ('.' == pIP[i]) break;
+    for (; i > 0; i -= 1)
+        if ('.' == pIP[i])
+            break;
 
     strncpy(&pReturn[k], &pIP[i + 1], (j - i));
     k += (j - i);
@@ -300,7 +309,8 @@ void ReverseIP(PCHAR pIP, PCHAR pReturn)
     j = i;
 
     /* D */
-    for (; i > 0; i -= 1);
+    for (; i > 0; i -= 1)
+        ;
 
     strncpy(&pReturn[k], &pIP[i], (j - i) + 1);
     k += (j - i) + 1;
@@ -315,28 +325,34 @@ BOOL IsValidIP(PCHAR pInput)
 
     /* Max length of an IP, e.g. 255.255.255.255, is 15 characters. */
     l = strlen(pInput);
-    if (l > 15) return FALSE;
+    if (l > 15)
+        return FALSE;
 
     /* 'b' is the count of the current segment. It gets reset after seeing a
        '.'. */
     for (; i < l; i += 1) {
         if ('.' == pInput[i]) {
-            if (!b) return FALSE;
-            if (b > 3) return FALSE;
+            if (!b)
+                return FALSE;
+            if (b > 3)
+                return FALSE;
 
             b = 0;
             c += 1;
         } else {
             b += 1;
 
-            if ((pInput[i] < '0') || (pInput[i] > '9')) return FALSE;
+            if ((pInput[i] < '0') || (pInput[i] > '9'))
+                return FALSE;
         }
     }
 
-    if (b > 3) return FALSE;
+    if (b > 3)
+        return FALSE;
 
     /* 'c' is the number of segments seen. If it's less than 4, then it's not a valid IP. */
-    if (c < 4) return FALSE;
+    if (c < 4)
+        return FALSE;
 
     return TRUE;
 }
@@ -350,15 +366,18 @@ int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
 
     /* If Limit == 0, then we assume "no" limit. */
     d = Limit;
-    if (0 == Limit) d = 255;
+    if (0 == Limit)
+        d = 255;
 
     while (d > 0) {
         l = pBuffer[i] & 0xFF;
         i += 1;
-        if (!m) c += 1;
+        if (!m)
+            c += 1;
 
         if (0xC0 == l) {
-            if (!m) c += 1;
+            if (!m)
+                c += 1;
             m = 1;
             d += (255 - Limit);
             i = pBuffer[i];
@@ -367,14 +386,16 @@ int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
                 pOutput[k] = pBuffer[i];
 
                 i += 1;
-                if (!m) c += 1;
+                if (!m)
+                    c += 1;
                 k += 1;
                 d -= 1;
             }
 
             d -= 1;
 
-            if (!pBuffer[i] || (d < 1)) break;
+            if (!pBuffer[i] || (d < 1))
+                break;
 
             pOutput[k] = '.';
             k += 1;
@@ -382,7 +403,8 @@ int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
     };
 
     if (!m) {
-        if (!Limit) c += 1;
+        if (!Limit)
+            c += 1;
     }
 
     pOutput[k] = '\0';
@@ -470,7 +492,8 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
            RCodeIDtoRCodeName(Header2 & 0x0F));
 
     printf(("        header flags:  query"));
-    if (Header1 & 0x01) printf((", want recursion"));
+    if (Header1 & 0x01)
+        printf((", want recursion"));
     printf(("\n"));
 
     printf(("        questions = %d,  answers = %d,"
@@ -542,8 +565,10 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
            RCodeIDtoRCodeName(Header2 & 0x0F));
 
     printf(("        header flags:  response"));
-    if (Header1 & 0x01) printf((", want recursion"));
-    if (Header2 & 0x80) printf((", recursion avail."));
+    if (Header1 & 0x01)
+        printf((", want recursion"));
+    if (Header2 & 0x80)
+        printf((", recursion avail."));
     printf(("\n"));
 
     printf(("        questions = %d,  answers = %d,  "
@@ -779,14 +804,22 @@ PCHAR TypeIDtoTypeName(USHORT TypeID)
 
 USHORT TypeNametoTypeID(PCHAR TypeName)
 {
-    if (!strncmp(TypeName, TypeA, strlen(TypeA))) return TYPE_A;
-    if (!strncmp(TypeName, TypeNS, strlen(TypeNS))) return TYPE_NS;
-    if (!strncmp(TypeName, TypeCNAME, strlen(TypeCNAME))) return TYPE_CNAME;
-    if (!strncmp(TypeName, TypeSOA, strlen(TypeSOA))) return TYPE_SOA;
-    if (!strncmp(TypeName, TypeSRV, strlen(TypeSRV))) return TYPE_WKS;
-    if (!strncmp(TypeName, TypePTR, strlen(TypePTR))) return TYPE_PTR;
-    if (!strncmp(TypeName, TypeMX, strlen(TypeMX))) return TYPE_MX;
-    if (!strncmp(TypeName, TypeAny, strlen(TypeAny))) return TYPE_ANY;
+    if (!strncmp(TypeName, TypeA, strlen(TypeA)))
+        return TYPE_A;
+    if (!strncmp(TypeName, TypeNS, strlen(TypeNS)))
+        return TYPE_NS;
+    if (!strncmp(TypeName, TypeCNAME, strlen(TypeCNAME)))
+        return TYPE_CNAME;
+    if (!strncmp(TypeName, TypeSOA, strlen(TypeSOA)))
+        return TYPE_SOA;
+    if (!strncmp(TypeName, TypeSRV, strlen(TypeSRV)))
+        return TYPE_WKS;
+    if (!strncmp(TypeName, TypePTR, strlen(TypePTR)))
+        return TYPE_PTR;
+    if (!strncmp(TypeName, TypeMX, strlen(TypeMX)))
+        return TYPE_MX;
+    if (!strncmp(TypeName, TypeAny, strlen(TypeAny)))
+        return TYPE_ANY;
 
     return 0;
 }
@@ -807,8 +840,10 @@ PCHAR ClassIDtoClassName(USHORT ClassID)
 
 USHORT ClassNametoClassID(PCHAR ClassName)
 {
-    if (!strncmp(ClassName, ClassIN, strlen(ClassIN))) return CLASS_IN;
-    if (!strncmp(ClassName, ClassAny, strlen(ClassAny))) return CLASS_ANY;
+    if (!strncmp(ClassName, ClassIN, strlen(ClassIN)))
+        return CLASS_IN;
+    if (!strncmp(ClassName, ClassAny, strlen(ClassAny)))
+        return CLASS_ANY;
 
     return 0;
 }
@@ -823,31 +858,38 @@ void PrintState()
     printf(("Set options:\n"));
 
     printf(("  "));
-    if (!State.debug) printf(("no"));
+    if (!State.debug)
+        printf(("no"));
     printf(("debug\n"));
 
     printf(("  "));
-    if (!State.defname) printf(("no"));
+    if (!State.defname)
+        printf(("no"));
     printf(("defname\n"));
 
     printf(("  "));
-    if (!State.search) printf(("no"));
+    if (!State.search)
+        printf(("no"));
     printf(("search\n"));
 
     printf(("  "));
-    if (!State.recurse) printf(("no"));
+    if (!State.recurse)
+        printf(("no"));
     printf(("recurse\n"));
 
     printf(("  "));
-    if (!State.d2) printf(("no"));
+    if (!State.d2)
+        printf(("no"));
     printf(("d2\n"));
 
     printf(("  "));
-    if (!State.vc) printf(("no"));
+    if (!State.vc)
+        printf(("no"));
     printf(("vc\n"));
 
     printf(("  "));
-    if (!State.ignoretc) printf(("no"));
+    if (!State.ignoretc)
+        printf(("no"));
     printf(("ignoretc\n"));
 
     printf(("  port=%d\n"), State.port);
@@ -859,7 +901,8 @@ void PrintState()
     printf(("  domain=%s\n"), State.domain);
 
     printf(("  "));
-    if (!State.MSxfr) printf(("no"));
+    if (!State.MSxfr)
+        printf(("no"));
     printf(("MSxfr\n"));
 
     printf(("  IXFRversion=%d\n"), (int)State.ixfrver);
@@ -891,10 +934,12 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
     USHORT NumQuestions;
     USHORT Type;
 
-    if ((strlen(pAddr) + 1) > 255) return FALSE;
+    if ((strlen(pAddr) + 1) > 255)
+        return FALSE;
 
     Type = TYPE_A;
-    if (IsValidIP(pAddr)) Type = TYPE_PTR;
+    if (IsValidIP(pAddr))
+        Type = TYPE_PTR;
 
     /* If it's a PTR lookup then append the ARPA sig to the end. */
     if (Type == TYPE_PTR) {
@@ -925,10 +970,10 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
     ((PSHORT)&Buffer[i])[0] = htons(RequestID);
     i += 2;
 
-    /* Bits 0-7 of the second 16 are all 0, except for when recursion is
-       desired. */
+    /* Bits 0-7 of the second 16 are all 0, except for when recursion is desired. */
     Buffer[i] = 0x00;
-    if (State.recurse) Buffer[i] |= 0x01;
+    if (State.recurse)
+        Buffer[i] |= 0x01;
     i += 1;
 
     /* Bits 8-15 of the second 16 are 0 for a query. */
@@ -977,7 +1022,8 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
 
     /* Ship the request off to the DNS server. */
     bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
-    if (!bOk) goto cleanup;
+    if (!bOk)
+        goto cleanup;
 
     /* Start parsing the received packet. */
     NumQuestions = ntohs(((PSHORT)&RecBuffer[4])[0]);
@@ -1010,8 +1056,10 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
 
 cleanup:
     /* Free memory. */
-    if (Buffer) HeapFree(ProcessHeap, 0, Buffer);
-    if (RecBuffer) HeapFree(ProcessHeap, 0, RecBuffer);
+    if (Buffer)
+        HeapFree(ProcessHeap, 0, Buffer);
+    if (RecBuffer)
+        HeapFree(ProcessHeap, 0, RecBuffer);
 
     RequestID += 1;
 
@@ -1036,14 +1084,16 @@ void PerformLookup(PCHAR pAddr)
     USHORT NumAuthority;
     USHORT Type;
 
-    if ((strlen(pAddr) + 1) > 255) return;
+    if ((strlen(pAddr) + 1) > 255)
+        return;
 
     printf("Server:  %s\n", State.DefaultServer);
     printf("Address:  %s\n\n", State.DefaultServerAddress);
 
     if (!strcmp(TypeA, State.type) || !strcmp(TypeAAAA, State.type) || !strcmp(TypeBoth, State.type)) {
         Type = TYPE_A;
-        if (IsValidIP(pAddr)) Type = TYPE_PTR;
+        if (IsValidIP(pAddr))
+            Type = TYPE_PTR;
     } else
         Type = TypeNametoTypeID(State.type);
 
@@ -1076,10 +1126,10 @@ void PerformLookup(PCHAR pAddr)
     ((PSHORT)&Buffer[i])[0] = htons(RequestID);
     i += 2;
 
-    /* Bits 0-7 of the second 16 are all 0, except for when recursion is
-    desired. */
+    /* Bits 0-7 of the second 16 are all 0, except for when recursion is desired. */
     Buffer[i] = 0x00;
-    if (State.recurse) Buffer[i] |= 0x01;
+    if (State.recurse)
+        Buffer[i] |= 0x01;
     i += 1;
 
     /* Bits 8-15 of the second 16 are 0 for a query. */
@@ -1128,7 +1178,8 @@ void PerformLookup(PCHAR pAddr)
 
     /* Ship off the request to the DNS server. */
     bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
-    if (!bOk) goto cleanup;
+    if (!bOk)
+        goto cleanup;
 
     /* Start parsing the received packet. */
     Header2 = RecBuffer[3];
@@ -1202,8 +1253,10 @@ void PerformLookup(PCHAR pAddr)
 
 cleanup:
     /* Free memory. */
-    if (Buffer) HeapFree(ProcessHeap, 0, Buffer);
-    if (RecBuffer) HeapFree(ProcessHeap, 0, RecBuffer);
+    if (Buffer)
+        HeapFree(ProcessHeap, 0, Buffer);
+    if (RecBuffer)
+        HeapFree(ProcessHeap, 0, RecBuffer);
 
     RequestID += 1;
 }
@@ -1246,7 +1299,8 @@ BOOL ParseCommandLine(int argc, char * argv[])
                     PerformInternalLookup(State.DefaultServer, State.DefaultServerAddress);
                 }
 
-                if (Interactive) return 1;
+                if (Interactive)
+                    return 1;
 
                 PerformLookup(AddrToResolve);
 
@@ -1327,7 +1381,8 @@ BOOL ParseCommandLine(int argc, char * argv[])
                     State.d2 = TRUE;
                     State.debug = TRUE;
                 } else if (!strncmp("-nod2", argv[i], 5)) {
-                    if (State.debug) printf(("d2 mode disabled; still in debug mode\n"));
+                    if (State.debug)
+                        printf(("d2 mode disabled; still in debug mode\n"));
 
                     State.d2 = FALSE;
                 } else if (!strncmp("-defname", argv[i], 8)) {
@@ -1419,7 +1474,8 @@ int nslookup(int argc, char * argv[])
 
     RtlZeroMemory(State.root, 256);
     RtlZeroMemory(State.domain, 256);
-    for (i = 0; i < 6; i += 1) RtlZeroMemory(State.srchlist[i], 256);
+    for (i = 0; i < 6; i += 1)
+        RtlZeroMemory(State.srchlist[i], 256);
     RtlZeroMemory(State.DefaultServer, 256);
     RtlZeroMemory(State.DefaultServerAddress, 16);
 

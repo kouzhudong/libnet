@@ -19,13 +19,13 @@
 #include "finger.h"
 
 
-#ifdef _WIN64  
+#ifdef _WIN64
 #ifdef _DEBUG
 #pragma comment(lib, "..\\x64\\Debug\\libnet.lib")
 #else
 #pragma comment(lib, "..\\x64\\Release\\libnet.lib")
 #endif
-#else 
+#else
 #ifdef _DEBUG
 #pragma comment(lib, "..\\Debug\\libnet.lib")
 #else
@@ -47,7 +47,7 @@ int Usage(_In_ LPCWSTR programName)
 {
     banner();
 
-    printf("Usage:\r\n");                 //printf("%s.\r\n", __FUNCTION__);
+    printf("Usage:\r\n"); //printf("%s.\r\n", __FUNCTION__);
     printf("%ls ping.\r\n", programName);
     printf("%ls pathping.\r\n", programName);
     printf("%ls tracert.\r\n", programName);
@@ -72,14 +72,11 @@ int Usage(_In_ LPCWSTR programName)
 void help()
 {
     banner();
-
-
 }
 
 
 void init()
 {
-
 }
 
 
@@ -152,7 +149,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     else if (_wcsicmp(Arglist[1], L"finger") == 0) {
-        finger(--argc, ++argv);//reactos\base\applications\network\finger
+        finger(--argc, ++argv); //reactos\base\applications\network\finger
     }
 
     else if (_wcsicmp(Arglist[1], L"nslookup") == 0) {

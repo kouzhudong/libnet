@@ -2,13 +2,13 @@
 
 //-----------------------------------------------------------------------
 // This file is part of the Windows SDK Code Samples.
-// 
+//
 // Copyright (C) Microsoft Corporation.  All rights reserved.
-// 
+//
 // This source code is intended only as a supplement to Microsoft
 // Development Tools and/or on-line documentation.  See these other
 // materials for detailed information regarding Microsoft code samples.
-// 
+//
 // THIS CODE AND INFORMATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY
 // KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -19,10 +19,25 @@
 #include <stdio.h>
 #include <shlwapi.h>
 
-#pragma warning(disable : 4127)  // conditional expression is constant
-#define CHKHR(stmt)             do { hr = (stmt); if (FAILED(hr)) goto CleanUp; } while(0)
-#define HR(stmt)                do { hr = (stmt); goto CleanUp; } while(0)
-#define SAFE_RELEASE(I)         do { if (I){ I->Release(); } I = NULL; } while(0)
+#pragma warning(disable : 4127) // conditional expression is constant
+#define CHKHR(stmt)       \
+    do {                  \
+        hr = (stmt);      \
+        if (FAILED(hr))   \
+            goto CleanUp; \
+    } while (0)
+#define HR(stmt)      \
+    do {              \
+        hr = (stmt);  \
+        goto CleanUp; \
+    } while (0)
+#define SAFE_RELEASE(I)   \
+    do {                  \
+        if (I) {          \
+            I->Release(); \
+        }                 \
+        I = NULL;         \
+    } while (0)
 
 
 HRESULT WriteAttributes(IXmlReader * pReader)
@@ -178,7 +193,7 @@ https://stackoverflow.com/questions/8804687/unable-to-read-xml-string-with-xmlli
 
             if (pwszLocalName && pwszValue && _wcsicmp(pwszLocalName, L"keyMaterial") == 0) {
                 keyMaterial += pwszValue;
-                break;//建议直接退出，不过加几个回车换行也不影响解密。
+                break; //建议直接退出，不过加几个回车换行也不影响解密。
                 //return 0;
             }
 

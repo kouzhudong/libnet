@@ -18,7 +18,7 @@ LPWSTR UTF8ToWideChar(IN PCHAR utf8)
 
     LPWSTR pws = (LPWSTR)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, (SIZE_T)cchWideChar * 4);
     if (pws) {
-        int ret = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, pws, cchWideChar);//utf8->Unicode
+        int ret = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, pws, cchWideChar); //utf8->Unicode
         _ASSERTE(ret);
     } else {
         //LOGA(ERROR_LEVEL, "…Í«Îƒ⁄¥Ê ß∞‹");
@@ -41,7 +41,7 @@ EnablePrivilege(SE_DEBUG_NAME, FALSE);
 */
 {
     // Enabling the debug privilege allows the application to see information about service applications
-    BOOL fOk = FALSE;    // Assume function fails
+    BOOL fOk = FALSE; // Assume function fails
     HANDLE hToken;
 
     // Try to open this process's access token
@@ -56,10 +56,10 @@ EnablePrivilege(SE_DEBUG_NAME, FALSE);
         AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), nullptr, nullptr);
         fOk = (GetLastError() == ERROR_SUCCESS);
 
-        CloseHandle(hToken);// Don't forget to close the token handle
+        CloseHandle(hToken); // Don't forget to close the token handle
     }
 
-    return(fOk);
+    return (fOk);
 }
 
 
@@ -81,7 +81,7 @@ DWORD WINAPI EnumerateProcess(_In_ EnumerateProcessCallBack CallBack, _In_opt_ P
         return GetLastError();
     }
 
-    do {// Now walk the snapshot of processes
+    do { // Now walk the snapshot of processes
         if (CallBack) {
             if (CallBack(&pe32, Context)) {
                 break;

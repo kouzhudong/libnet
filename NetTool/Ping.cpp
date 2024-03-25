@@ -2,17 +2,17 @@
 #include "iphdr.h"
 
 
-int   gAddressFamily = AF_UNSPEC,         // Address family to use
-gProtocol = IPPROTO_ICMP,           // Protocol value
-gTtl = DEFAULT_TTL;                 // Default TTL value
-int   gDataSize = DEFAULT_DATA_SIZE;      // Amount of data to send
-BOOL  bRecordRoute = FALSE;               // Use IPv4 record route?
-char * gDestination = NULL,                // Destination
-recvbuf[MAX_RECV_BUF_LEN];        // For received packets
-int   recvbuflen = MAX_RECV_BUF_LEN;    // Length of received packets.
+int gAddressFamily = AF_UNSPEC,    // Address family to use
+gProtocol = IPPROTO_ICMP,      // Protocol value
+gTtl = DEFAULT_TTL;            // Default TTL value
+int gDataSize = DEFAULT_DATA_SIZE; // Amount of data to send
+BOOL bRecordRoute = FALSE;         // Use IPv4 record route?
+char * gDestination = NULL,         // Destination
+recvbuf[MAX_RECV_BUF_LEN];     // For received packets
+int recvbuflen = MAX_RECV_BUF_LEN; // Length of received packets.
 
 
-#pragma warning(disable:28159) //考虑使用“GetTickCount64”而不是“GetTickCount”
+#pragma warning(disable : 28159) //考虑使用“GetTickCount64”而不是“GetTickCount”
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,8 +23,8 @@ int PrintAddress(SOCKADDR * sa, int salen)
 //    This routine takes a SOCKADDR structure and its length and prints converts it to a string representation.
 //    This string is printed to the console via stdout.
 {
-    char    host[NI_MAXHOST], serv[NI_MAXSERV];
-    int     hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
+    char host[NI_MAXHOST], serv[NI_MAXSERV];
+    int hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
 
     rc = getnameinfo(sa, salen, host, hostlen, serv, servlen, NI_NUMERICHOST | NI_NUMERICSERV);
     if (rc != 0) {
@@ -50,8 +50,8 @@ int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 //    This is similar to the PrintAddress function except that instead of
 //    printing the string address to the console, it is formatted into the supplied string buffer.
 {
-    char    host[NI_MAXHOST], serv[NI_MAXSERV];
-    int     hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
+    char host[NI_MAXHOST], serv[NI_MAXSERV];
+    int hostlen = NI_MAXHOST, servlen = NI_MAXSERV, rc;
     HRESULT hRet;
 
     rc = getnameinfo(sa, salen, host, hostlen, serv, servlen, NI_NUMERICHOST | NI_NUMERICSERV);
@@ -89,7 +89,7 @@ struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int
     //    it is a string listeral address or a hostname.
 {
     struct addrinfo hints, * res = NULL;
-    int             rc;
+    int rc;
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_flags = ((addr) ? 0 : AI_PASSIVE);
@@ -111,8 +111,8 @@ int ReverseLookup(SOCKADDR * sa, int salen, char * buf, int buflen)
 // Description:
 //    This routine takes a SOCKADDR and does a reverse lookup for the name corresponding to that address.
 {
-    char    host[NI_MAXHOST];
-    int     hostlen = NI_MAXHOST, rc;
+    char host[NI_MAXHOST];
+    int hostlen = NI_MAXHOST, rc;
     HRESULT hRet;
 
     rc = getnameinfo(sa, salen, host, hostlen, NULL, 0, 0);
@@ -156,7 +156,7 @@ void InitIcmpHeader(char * buf, int datasize)
     char * datapart = NULL;
 
     icmp_hdr = (ICMP_HDR *)buf;
-    icmp_hdr->icmp_type = ICMPV4_ECHO_REQUEST_TYPE;        // request an ICMP echo
+    icmp_hdr->icmp_type = ICMPV4_ECHO_REQUEST_TYPE; // request an ICMP echo
     icmp_hdr->icmp_code = ICMPV4_ECHO_REQUEST_CODE;
     icmp_hdr->icmp_id = (USHORT)GetCurrentProcessId();
     icmp_hdr->icmp_checksum = 0;
@@ -164,7 +164,7 @@ void InitIcmpHeader(char * buf, int datasize)
 
     datapart = buf + sizeof(ICMP_HDR);
 
-    memset(datapart, 'E', datasize);// Place some data in the buffer.
+    memset(datapart, 'E', datasize); // Place some data in the buffer.
 }
 
 
@@ -220,13 +220,13 @@ BOOL ValidateArgs(int argc, char ** argv)
 // Description:
 //    Parse the command line arguments.
 {
-    int                i;
-    BOOL               isValid = FALSE;
+    int i;
+    BOOL isValid = FALSE;
 
     for (i = 1; i < argc; i++) {
         if ((argv[i][0] == '-') || (argv[i][0] == '/')) {
             switch (tolower(argv[i][1])) {
-            case 'a':        // address family
+            case 'a': // address family
                 if (i + 1 >= argc) {
                     usage(argv[0]);
                     goto CLEANUP;
@@ -242,7 +242,7 @@ BOOL ValidateArgs(int argc, char ** argv)
 
                 i++;
                 break;
-            case 'i':        // Set TTL value
+            case 'i': // Set TTL value
                 if (i + 1 >= argc) {
                     usage(argv[0]);
                     goto CLEANUP;
@@ -250,7 +250,7 @@ BOOL ValidateArgs(int argc, char ** argv)
 
                 gTtl = atoi(argv[++i]);
                 break;
-            case 'l':        // buffer size tos end
+            case 'l': // buffer size tos end
                 if (i + 1 >= argc) {
                     usage(argv[0]);
                     goto CLEANUP;
@@ -258,7 +258,7 @@ BOOL ValidateArgs(int argc, char ** argv)
 
                 gDataSize = atoi(argv[++i]);
                 break;
-            case 'r':        // record route option
+            case 'r': // record route option
                 bRecordRoute = TRUE;
                 break;
             default:
@@ -281,7 +281,7 @@ void SetIcmpSequence(char * buf)
 // Description:
 //    This routine sets the sequence number of the ICMP request packet.
 {
-    ULONG    sequence = GetTickCount();
+    ULONG sequence = GetTickCount();
 
     if (gAddressFamily == AF_INET) {
         ICMP_HDR * icmpv4 = NULL;
@@ -301,7 +301,7 @@ void SetIcmpSequence(char * buf)
 }
 
 
-char             tmp[MAX_RECV_BUF_LEN] = {'\0'};
+char tmp[MAX_RECV_BUF_LEN] = {'\0'};
 USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen, struct addrinfo * dest)
 // Description:
 //    This routine computes the ICMP6 checksum which includes the pseudo
@@ -312,9 +312,9 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
 //    local interface for the outgoing packet.
 {
     SOCKADDR_STORAGE localif;
-    DWORD            bytes;
+    DWORD bytes;
     char * ptr = NULL, proto = 0;
-    int              rc, total, length, i;
+    int rc, total, length, i;
 
     // Find out which local interface for the destination
     rc = WSAIoctl(
@@ -332,7 +332,7 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
         return 0xFFFF;
     }
 
-    // We use a temporary buffer to calculate the pseudo header. 
+    // We use a temporary buffer to calculate the pseudo header.
     ptr = tmp;
     total = 0;
 
@@ -416,9 +416,9 @@ int PostRecvfrom(SOCKET s, char * buf, int buflen, SOCKADDR * from, int * fromle
 // Description:
 //    This routine posts an overlapped WSARecvFrom on the raw socket.
 {
-    WSABUF  wbuf;
-    DWORD   flags, bytes;
-    int     rc;
+    WSABUF wbuf;
+    DWORD flags, bytes;
+    int rc;
 
     wbuf.buf = buf;
     wbuf.len = buflen;
@@ -443,12 +443,12 @@ void PrintPayload(char * buf, int bytes)
 //    present (by seeing if the IP header length is greater than 20 bytes) and
 //    if so it prints the IP record route options.
 {
-    int     hdrlen = 0, routes = 0, i;
+    int hdrlen = 0, routes = 0, i;
 
     UNREFERENCED_PARAMETER(bytes);
 
     if (gAddressFamily == AF_INET) {
-        SOCKADDR_IN      hop;
+        SOCKADDR_IN hop;
         IPV4_OPTION_HDR * v4opt = NULL;
         IPV4_HDR * v4hdr = NULL;
 
@@ -487,7 +487,7 @@ int SetTtl(SOCKET s, int ttl)
 // Description:
 //    Sets the TTL on the socket.
 {
-    int     optlevel = 0, option = 0, rc;
+    int optlevel = 0, option = 0, rc;
 
     rc = NO_ERROR;
     if (gAddressFamily == AF_INET) {
@@ -523,15 +523,15 @@ int ping(int argc, char ** argv)
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
 */
 {
-    WSADATA            wsd;
-    WSAOVERLAPPED      recvol;
-    SOCKET             s = INVALID_SOCKET;
+    WSADATA wsd;
+    WSAOVERLAPPED recvol;
+    SOCKET s = INVALID_SOCKET;
     char * icmpbuf = NULL;
     struct addrinfo * dest = NULL, * local = NULL;
-    IPV4_OPTION_HDR    ipopt;
-    SOCKADDR_STORAGE   from;
-    DWORD              bytes, flags;
-    int                packetlen = 0, fromlen, time = 0, rc, i, status = 0;
+    IPV4_OPTION_HDR ipopt;
+    SOCKADDR_STORAGE from;
+    DWORD bytes, flags;
+    int packetlen = 0, fromlen, time = 0, rc, i, status = 0;
 
     recvol.hEvent = WSA_INVALID_EVENT;
 
@@ -587,7 +587,7 @@ int ping(int argc, char ** argv)
     else if (gAddressFamily == AF_INET6)
         packetlen += sizeof(ICMPV6_HDR) + sizeof(ICMPV6_ECHO_REQUEST);
 
-    packetlen += gDataSize;// Add in the data size
+    packetlen += gDataSize; // Add in the data size
 
     // Allocate the buffer that will contain the ICMP request
     icmpbuf = (char *)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, packetlen);
@@ -603,8 +603,8 @@ int ping(int argc, char ** argv)
             // Setup the IP option header to go out on every ICMP packet
             ZeroMemory(&ipopt, sizeof(ipopt));
             ipopt.opt_code = IP_RECORD_ROUTE; // record route option
-            ipopt.opt_ptr = 4;               // point to the first addr offset
-            ipopt.opt_len = 39;              // length of option header
+            ipopt.opt_ptr = 4;                // point to the first addr offset
+            ipopt.opt_len = 39;               // length of option header
             rc = setsockopt(s, IPPROTO_IP, IP_OPTIONS, (char *)&ipopt, sizeof(ipopt));
             if (rc == SOCKET_ERROR) {
                 fprintf(stderr, "setsockopt(IP_OPTIONS) failed: %d\n", WSAGetLastError());
