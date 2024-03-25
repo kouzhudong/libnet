@@ -1,5 +1,4 @@
 #include "IpHelper.h"
-#include "init.h"
 
 
 void TestGetIPv4ByMac()
