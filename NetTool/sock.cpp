@@ -666,6 +666,96 @@ int get_sol_sock_opt(_In_ SOCKET s)
     //    DisplayError(WSAGetLastError());
     //}
 
+     /*
+    从此套接字发送数据时，请使用本地环回地址。 仅当发送的所有数据也将在本地接收时，才应使用此选项。
+    Windows TCP/IP 提供程序不支持此选项。
+    如果在 Windows Vista 及更高版本上使用此选项， 则 getsockopt 和 setsockopt 函数将失败并显示 WSAEINVAL。
+    在早期版本的 Windows 上，这些函数失败并显示 WSAENOPROTOOPT。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_USELOOPBACK, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    包含 BSD UNIX 中的套接字选项，用于向后兼容。
+    此选项设置要处理的套接字输出操作的最小字节数。 Windows TCP/IP 提供程序不支持此选项。
+    如果在 Windows Vista 及更高版本上使用此选项， 则 getsockopt 和 setsockopt 函数将失败并出现 WSAEINVAL。
+    在早期版本的 Windows 上，这些函数失败并出现 WSAENOPROTOOPT。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_SNDLOWAT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    包含 BSD UNIX 中的套接字选项，用于向后兼容。 此选项设置套接字输入操作要处理的最小字节数。
+    Windows TCP/IP 提供程序不支持此选项。
+    如果在 Windows Vista 及更高版本上使用此选项， 则 getsockopt 和 setsockopt 函数将失败并出现 WSAEINVAL。
+    在早期版本的 Windows 上，这些函数失败并出现 WSAENOPROTOOPT。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_RCVLOWAT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    阻止发送调用的超时（以毫秒为单位）。
+    此选项的默认值为零，表示发送操作不会超时。如果阻止发送调用超时，则连接处于不确定状态，应关闭。
+    如果使用 WSASocket 函数创建套接字，则 dwFlags 参数必须设置 WSA_FLAG_OVERLAPPED 属性才能使超时正常工作。
+    否则，超时永远不会生效。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    阻止接收调用的超时（以毫秒为单位）。
+    此选项的默认值为零，表示接收操作不会超时。如果阻止接收调用超时，则连接处于不确定状态，应关闭。
+    如果使用 WSASocket 函数创建套接字，则 dwFlags 参数必须设置 WSA_FLAG_OVERLAPPED 属性才能使超时正常工作。
+    否则，超时永远不会生效。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //返回给定套接字 的WSAPROTOCOL_INFOA 结构
+    WSAPROTOCOL_INFOA ProtocalInfoA{};
+    optLen = sizeof(WSAPROTOCOL_INFOA);
+    iResult = getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFOA, reinterpret_cast<char *>(&ProtocalInfoA), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //返回给定套接字 的WSAPROTOCOL_INFOW 结构
+    WSAPROTOCOL_INFOW ProtocalInfoW{};
+    optLen = sizeof(WSAPROTOCOL_INFOW);
+    iResult = getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFOW, reinterpret_cast<char *>(&ProtocalInfoW), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
     return ret;
 }
 
