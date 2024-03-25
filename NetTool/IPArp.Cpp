@@ -286,9 +286,9 @@ bool PhysAddrToString(BYTE PhysAddr[], DWORD PhysAddrLen, char str[])
 
     for (DWORD dwIdx = 0; dwIdx < PhysAddrLen; dwIdx++) {
         if (dwIdx == PhysAddrLen - 1)
-            sprintf_s(str + (dwIdx * 3), IPADDR_BUF_SIZE - (dwIdx * 3), "%02X", ((int)PhysAddr[dwIdx]) & 0xff);
+            sprintf_s(str + ((size_t)dwIdx * 3), IPADDR_BUF_SIZE - (dwIdx * 3), "%02X", ((int)PhysAddr[dwIdx]) & 0xff);
         else
-            sprintf_s(str + (dwIdx * 3), IPADDR_BUF_SIZE - (dwIdx * 3), "%02X-", ((int)PhysAddr[dwIdx]) & 0xff);
+            sprintf_s(str + ((size_t)dwIdx * 3), IPADDR_BUF_SIZE - (dwIdx * 3), "%02X-", ((int)PhysAddr[dwIdx]) & 0xff);
     }
 
     return TRUE;

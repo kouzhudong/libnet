@@ -253,9 +253,9 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
 
 void ReverseIP(PCHAR pIP, PCHAR pReturn)
 {
-    int i;
-    int j;
-    int k = 0;
+    size_t i;
+    size_t j;
+    size_t k = 0;
 
     j = strlen(pIP) - 1;
     i = j;

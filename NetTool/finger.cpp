@@ -225,7 +225,7 @@ static void userlist(int argc, char ** argv)
     WSADATA wsaData;
     int iErr;
 
-    if ((nargv = (char **)malloc((argc + 1) * sizeof(char *))) == NULL ||
+    if ((nargv = (char **)malloc(((size_t)argc + 1) * sizeof(char *))) == NULL ||
         (used = (int *)calloc(argc, sizeof(int))) == NULL)
         err(1, NULL);
 
