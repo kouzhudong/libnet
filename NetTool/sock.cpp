@@ -384,6 +384,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-udp-socket-optio
 int get_ipx_sock_opt()
 /*
 
+当 level 参数设置为 NSPROTO_IPX 时，optname 参数的取值可以是IPX_PTYPE等。
 
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/nsproto-ipx-socket-options
 */
@@ -420,6 +421,255 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sol-irlmp-socket-options
 }
 
 
+int get_sol_sock_opt(_In_ SOCKET s)
+{
+    int ret = ERROR_SUCCESS;
+
+    /*
+    套接字正在侦听。
+    */
+    int optVal{};
+    int optLen = sizeof(int);
+    int iResult = getsockopt(s, SOL_SOCKET, SO_ACCEPTCONN, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        printf("SO_ACCEPTCONN: %ld\n", optVal);
+    } else {
+        printf("LastError:%d\n", WSAGetLastError());
+    }
+
+    /*
+    套接字配置为用于传输和接收广播消息。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+        printf("SO_BROADCAST: %ld\n", optVal);
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    返回套接字使用的本地地址、本地端口、远程地址、远程端口、套接字类型和协议。
+    */
+    CSADDR_INFO AddrInfo{};
+    optLen = sizeof(CSADDR_INFO);
+    iResult = getsockopt(s, SOL_SOCKET, SO_BSP_STATE, reinterpret_cast<char *>(&AddrInfo), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    从上一次调用 setsockopt 或系统默认值返回当前套接字状态。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_CONDITIONAL_ACCEPT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    返回已连接套接字的秒数。 此套接字选项仅适用于面向连接的协议。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_CONNECT_TIME, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //已启用调试。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_DEBUG, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //如果 为 TRUE，则禁用SO_LINGER选项。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_DONTLINGER, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    路由功能被禁用。 
+    此设置成功，但在AF_INET套接字上将被忽略;使用 WSAENOPROTOOPT AF_INET6套接字失败。 
+    ATM 套接字不支持此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_DONTROUTE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //检索错误状态并清除。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    阻止任何其他套接字绑定到同一地址和端口。 在调用 绑定 函数之前，必须设置此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //保留。
+    GROUP Group{};
+    optLen = sizeof(GROUP);
+    iResult = getsockopt(s, SOL_SOCKET, SO_GROUP_ID, reinterpret_cast<char *>(&Group), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //保留。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_GROUP_PRIORITY, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //正在发送“保持连接”。 ATM 套接字不支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //返回当前的逗留选项。
+    LINGER Linger{};
+    optLen = sizeof(LINGER);
+    iResult = getsockopt(s, SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&Linger), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    面向消息的套接字类型的消息的最大大小 (例如，SOCK_DGRAM) 。 对于面向流的套接字没有意义。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_MAX_MSG_SIZE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    正在正常数据流中接收 OOB 数据。 (有关本主题的讨论，请参阅 Windows 套接字 1.1 阻止例程和 EINPROGRESS 部分。)
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_OOBINLINE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    通过为本地计算机上的不同本地地址端口对多次分配通配符端口，允许最大化端口分配，从而为套接字启用本地端口可伸缩性。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_PORT_SCALABILITY, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //绑定到此套接字的协议的协议信息的说明。
+    WSAPROTOCOL_INFO ProtocalInfo{};
+    optLen = sizeof(WSAPROTOCOL_INFO);
+    iResult = getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFO, reinterpret_cast<char *>(&ProtocalInfo), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    为接收保留的每个套接字的总缓冲区空间。 这与SO_MAX_MSG_SIZE无关，也不一定对应于 TCP 接收窗口的大小。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //可以将套接字绑定到已在使用中的地址。 不适用于 ATM 插座。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    为发送保留的每个套接字缓冲区总空间。 这与SO_MAX_MSG_SIZE无关，也不一定对应于 TCP 发送窗口的大小。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //套接字的类型 (例如，SOCK_STREAM) 。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, SO_TYPE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    与 套接字关联的服务提供程序中的不透明数据结构对象。 此对象存储服务提供程序的当前配置信息。 
+    此数据结构的确切格式特定于服务提供程序。
+    */
+    //optLen = sizeof(int);
+    //iResult = getsockopt(s, SOL_SOCKET, PVD_CONFIG, reinterpret_cast<char *>(&optVal), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    return ret;
+}
+
+
 int get_sol_sock_opt()
 /*
 
@@ -428,6 +678,25 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sol-socket-socket-option
 */
 {
     int ret = ERROR_SUCCESS;
+
+    WSADATA wsaData{};
+    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    _ASSERTE(iResult == NO_ERROR);
+
+    SOCKET s4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    _ASSERTE(s4 != INVALID_SOCKET);
+
+    SOCKET s6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+    _ASSERTE(s6 != INVALID_SOCKET);
+
+    //还可以搞侦听绑定的。
+
+    get_sol_sock_opt(s4);
+    get_sol_sock_opt(s6);
+
+    closesocket(s4);
+
+    WSACleanup();
 
     return ret;
 }
