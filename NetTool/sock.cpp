@@ -582,9 +582,15 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
 
     //还可以搞侦听绑定的。
 
-    get_ipv4_sock_opt(tcp, SOL_SOCKET);
-    get_ipv4_sock_opt(udp, SOL_SOCKET);
-    get_ipv4_sock_opt(ipv4, SOL_SOCKET);
+    get_ipv4_sock_opt(tcp, SOL_SOCKET); printf("\r\n\r\n\r\n");
+    get_ipv4_sock_opt(udp, SOL_SOCKET); printf("\r\n\r\n\r\n");
+    get_ipv4_sock_opt(ipv4, SOL_SOCKET); printf("\r\n\r\n\r\n");
+
+    get_ipv4_sock_opt(tcp, IPPROTO_IP); printf("\r\n\r\n\r\n");
+    get_ipv4_sock_opt(udp, IPPROTO_IP); printf("\r\n\r\n\r\n");
+    get_ipv4_sock_opt(ipv4, IPPROTO_IP); printf("\r\n\r\n\r\n");
+
+    //以上组合测试总能发现一些正确成功的调用。
 
     closesocket(tcp);
     closesocket(udp);
