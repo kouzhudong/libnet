@@ -144,6 +144,420 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
 }
 
 
+int get_ipv4_sock_opt(_In_ SOCKET s, _In_ int level)
+/*
+
+有的地方取值是IPPROTO_IP。
+
+https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-options
+https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
+*/
+{
+    int ret = ERROR_SUCCESS;
+
+    /*
+    将接口索引添加到与 IP_IFLIST 选项关联的 IFLIST。
+    这个只支持设置不支持获取。
+    */
+    int optVal{};//IF_INDEX
+    int optLen = sizeof(int);
+    int iResult = getsockopt(s, level, IP_ADD_IFLIST, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    将套接字加入指定接口上提供的多播组。
+    这个只支持设置不支持获取。
+    */
+    ip_mreq tmp{};
+    //optLen = sizeof(ip_mreq);
+    //iResult = getsockopt(s, level, IP_ADD_MEMBERSHIP, reinterpret_cast<char *>(&tmp), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+    //    
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    /*
+    加入给定接口上提供的多播组，并接受来自提供的源地址的数据。
+    这个只支持设置不支持获取。
+    */
+    ip_mreq_source IpMreqSource{};
+    //optLen = sizeof(ip_mreq_source);
+    //iResult = getsockopt(s, level, IP_ADD_SOURCE_MEMBERSHIP, reinterpret_cast<char *>(&IpMreqSource), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+    //     
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    //删除给定源作为提供的多播组和接口的发送方。
+    //这个只支持设置不支持获取。
+    //optLen = sizeof(ip_mreq_source);
+    //iResult = getsockopt(s, level, IP_BLOCK_SOURCE, reinterpret_cast<char *>(&IpMreqSource), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    /*
+    从与 IP_IFLIST 选项关联的 IFLIST 中删除接口索引。 
+    条目只能由应用程序删除，因此请注意，一旦删除接口，条目可能会过时。
+    这个只支持设置不支持获取。
+    */
+    //optLen = sizeof(int);
+    //iResult = getsockopt(s, level, IP_DEL_IFLIST, reinterpret_cast<char *>(&optVal), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    /*
+    指示无论本地 MTU 如何，都不应对数据进行碎片处理。 仅对面向消息的协议有效。
+    对于 UDP 和 ICMP，Microsoft TCP/IP 提供程序遵循此选项。
+    这个既支持获取也支持设置。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_DONTFRAGMENT, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    离开指定接口中的指定多播组。 支持多播时，服务提供商必须支持此选项。 
+    支持在 WSAEnumProtocols 函数调用返回的WSAPROTOCOL_INFO结构中指示：XPI_SUPPORT_MULTIPOINT=1、XP1_MULTIPOINT_CONTROL_PLANE=0、XP1_MULTIPOINT_DATA_PLANE=0。
+    */
+    //这个只支持设置不支持获取。
+    //optLen = sizeof(ip_mreq);
+    //iResult = getsockopt(s, level, IP_DROP_MEMBERSHIP, reinterpret_cast<char *>(&tmp), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    //删除给定多播组、接口和源地址的成员身份。
+    //这个只支持设置不支持获取。
+    //optLen = sizeof(ip_mreq_source);
+    //iResult = getsockopt(s, level, IP_DROP_SOURCE_MEMBERSHIP, reinterpret_cast<char *>(&IpMreqSource), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    //获取与 IP_IFLIST 选项关联的当前 IFLIST。 如果未启用 IP_IFLIST ，则返回错误。
+    //这个只能获取不能设置。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_GET_IFLIST, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    设置为 TRUE 时，指示应用程序提供 IP 标头。 仅适用于SOCK_RAW套接字。
+    如果应用程序提供的值为零，TCP/IP 服务提供程序可能会设置 ID 字段。
+    IP_HDRINCL选项仅适用于SOCK_RAW类型的协议。 
+    支持SOCK_RAW的 TCP/IP 服务提供程序还应支持IP_HDRINCL。
+    这个既支持获取也支持设置。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_HDRINCL, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    获取或设置 套接字IP_IFLIST 状态。 如果此选项设置为 true，则数据报接收仅限于 IFLIST 中的接口。 
+    忽略在任何其他接口上收到的数据报。 IFLIST 开始为空。 使用 IP_ADD_IFLIST 和 IP_DEL_IFLIST 编辑 IFLIST。
+    这个及支持获取也支持设置。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_IFLIST, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //获取系统对路径 MTU 的估计值。 套接字必须已连接。
+    //这个只能获取，不能设置。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_MTU, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    获取或设置套接字的路径 MTU 发现状态。 默认值为 IP_PMTUDISC_NOT_SET。 
+    对于流套接字， IP_PMTUDISC_NOT_SET 和 IP_PMTUDISC_DO 将执行路径 MTU 发现。 
+    IP_PMTUDISC_DONT 和 IP_PMTUDISC_PROBE 将关闭路径 MTU 发现。 
+    对于数据报套接字， IP_PMTUDISC_DO 将强制所有传出数据包设置 DF 位，并且尝试发送大于路径 MTU 的数据包将导致错误。
+    IP_PMTUDISC_DONT 将强制所有传出数据包未设置 DF 位，并且数据包将根据接口 MTU 进行分段。 
+    IP_PMTUDISC_PROBE 将强制所有传出数据包设置 DF 位，并且尝试发送大于接口 MTU 的数据包将导致错误。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);//PMTUD_STATE
+    iResult = getsockopt(s, level, IP_MTU_DISCOVER, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    获取或设置用于发送 IPv4 多播流量的传出接口。 此选项不会更改用于接收 IPv4 多播流量的默认接口。 
+    设置此选项的输入值是按网络字节顺序排列的 4 字节 IPv4 地址。 
+    此 DWORD 参数也可以是按网络字节顺序排列的接口索引。
+    除 IPv4 地址 0.0.) 0.0 之外，0.x.x 块 (第一个八位字节（0.0.0.0 除外）的任何 IP 地址都被视为接口索引。 
+    接口索引是一个 24 位数字， (此范围保留) ，则不使用 0.0.0.0/8 IPv4 地址块。 
+    接口索引可用于指定 IPv4 的多播流量的默认接口。 如果 optval 为零，则为发送多播流量指定用于接收多播的默认接口。 
+    获取此选项时， optval 将返回当前默认接口索引，用于按主机字节顺序发送多播 IPv4 流量。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_MULTICAST_IF, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    对于联接到一个或多个多播组的套接字，此控制是否接收通过所选多播接口发送到这些多播组的 传出 数据包的副本。
+    默认情况下， IP_MULTICAST_LOOP 启用 (值 1/TRUE) ，因此套接字 将 接收当前计算机发送的匹配多播数据包。 
+    通过将此选项设置为 0/FALSE) 来禁用此选项 (意味着，即使该套接字在环回接口上打开，也不会接收从本地计算机发送的多播。
+
+    这与 POSIX 版本的 IP_MULTICAST_LOOP 不兼容 - 必须在接收套接字上设置 选项;而必须在发送套接字上设置 POSIX 选项。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_MULTICAST_LOOP, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //设置/获取与套接字上的 IP 多播流量关联的 TTL 值。
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_MULTICAST_TTL, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    指定要插入传出数据包的 IP 选项。 设置新选项将覆盖以前指定的所有选项。 
+    将 optval 设置为零会删除以前指定的所有选项。 
+    不需要IP_OPTIONS支持;若要检查是否支持IP_OPTIONS，请使用 getockopt 获取当前选项。
+    如果 getsockopt 失败，则不支持IP_OPTIONS。
+    */
+    //获取和设置都支持。
+    //optLen = sizeof(int);
+    //iResult = getsockopt(s, level, IP_OPTIONS, reinterpret_cast<char *>(&optVal), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    /*
+    指示 LPFN_WSARECVMSG (WSARecvMsg) 函数是否应返回可选控制数据，其中包含为数据报套接字接收数据包的到达接口。
+    此选项允许在 WSAMSG 结构中返回接收数据包的 IPv4 接口。 
+    此选项仅在数据报和原始套接字上有效， (套接字类型必须SOCK_DGRAM或SOCK_RAW) 。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_ORIGINAL_ARRIVAL_IF, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //指示 WSARecvMsg 函数应返回数据包信息。
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_PKTINFO, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //允许或阻止广播接收。
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_RECEIVE_BROADCAST, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    指示 IP 堆栈是否应使用有关哪个接口使用数据报套接字接收数据包的详细信息填充控制缓冲区。
+    如果此值为 true， LPFN_WSARECVMSG (WSARecvMsg) 函数将返回可选控制数据，其中包含接口，其中为数据报套接字接收了数据包。
+    此选项允许在 WSAMSG 结构中返回接收数据包的 IPv4 接口。 
+    此选项仅在数据报和原始套接字上有效， (套接字类型必须SOCK_DGRAM或SOCK_RAW) 。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_RECVIF, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    指示 IP 堆栈是否应使用包含已接收数据报上的服务类型 (TOS) IPv4 标头字段的消息填充控制缓冲区。
+    如果此值为 true， LPFN_WSARECVMSG (WSARecvMsg) 函数将返回可选的控制数据，其中包含接收的数据报的 TOS IPv4 标头字段值。
+    此选项允许在 WSAMSG 结构中返回接收的数据报的 TOS IPv4 标头字段。 将IP_TOS返回的消息类型。 
+    将返回 TOS 字段的所有 DSCP 和 ECN 位。 此选项仅在数据报套接字上有效， (套接字类型必须SOCK_DGRAM) 。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_RECVTOS, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    指示应在 LPFN_WSARECVMSG (WSARecvMsg ) 函数中返回跃点 (TTL) 信息。 
+    如果在调用 setsockopt 时将 optval 设置为 1，则启用该选项。
+    如果设置为 0，则禁用该选项。
+    此选项仅对数据报和原始套接字有效， (套接字类型必须SOCK_DGRAM或SOCK_RAW) 。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_RECVTTL, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    请勿使用。 服务类型 (TOS) 设置应仅使用服务质量 API 进行设置。 
+    有关详细信息，请参阅平台 SDK 的服务质量部分中的 区分 服务。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_TOS, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    更改 TCP/IP 服务提供程序在传出数据报中 IP 标头的 TTL 字段中设置的默认值。 
+    不需要IP_TTL支持;若要检查是否支持IP_TTL，请使用 getockopt 获取当前选项。 
+    如果 getsockopt 失败，则不支持IP_TTL。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_TTL, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    //将给定源作为发送方添加到提供的多播组和接口。
+    //只能设置不能获取。
+    //optLen = sizeof(ip_mreq_source);
+    //iResult = getsockopt(s, level, IP_UNBLOCK_SOURCE, reinterpret_cast<char *>(&IpMreqSource), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    /*
+    获取或设置用于发送 IPv4 流量的传出接口。 此选项不会更改用于接收 IPv4 流量的默认接口。 
+    此选项对于多宿主计算机非常重要。 设置此选项的输入值是按网络字节顺序排列的 4 字节 IPv4 地址。
+    此 DWORD 参数必须是按网络字节顺序排列的接口索引。
+    除 IPv4 地址 0.0.0.0 之外，) 0.x.x 块 (第一个八位字节 0.x.x.x 中的任何 IP 地址都被视为接口索引。
+    接口索引是一个 24 位数字， (此范围保留) ，则不使用 0.0.0.0/8 IPv4 地址块。 
+    接口索引可用于指定用于发送 IPv4 流量的默认接口。 GetAdaptersAddresses 函数可用于获取接口索引信息。 
+    如果 optval 为零，则用于发送流量的默认接口设置为“未指定”。
+    获取此选项时， optval 将返回当前默认接口索引，用于按主机字节顺序发送 IPv4 流量。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_UNICAST_IF, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    	获取或设置给定套接字的 IP 层 MTU (的上限（以字节) 为单位）。
+        如果该值高于系统对路径 MTU (的估计值，可以通过查询 IP_MTU 套接字选项) 在连接的套接字上检索，则选项无效。
+        如果该值较低，则大于此值的出站数据包将被分段，或者无法发送，具体取决于 IP_DONTFRAGMENT的值。
+        默认值为 MAXULONG) (IP_UNSPECIFIED_USER_MTU。 
+        为了保护类型安全，应使用 WSAGetIPUserMtu 和 WSASetIPUserMtu 函数，而不是直接使用套接字选项。
+    */
+    //获取和设置都支持。
+    optLen = sizeof(int);
+    iResult = getsockopt(s, level, IP_USER_MTU, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    数据报套接字辅助数据类型 (cmsg_type) 指示用户模式 Windows 筛选平台 (WFP) 重定向服务使用的 UDP 套接字的重定向上下文。
+    */
+    //获取和设置都支持。
+    //具有控制数据的 WSACMSGHDR
+    //optLen = sizeof(int);
+    //iResult = getsockopt(s, level, IP_WFP_REDIRECT_CONTEXT, reinterpret_cast<char *>(&optVal), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    /*
+    数据报套接字辅助数据类型 (cmsg_type) 指示用户模式 Windows 筛选平台 (WFP) 重定向服务使用的 UDP 套接字的重定向记录。
+    */
+    //获取和设置都支持。
+    //具有控制数据的 WSACMSGHDR
+    //optLen = sizeof(int);
+    //iResult = getsockopt(s, level, IP_WFP_REDIRECT_RECORDS, reinterpret_cast<char *>(&optVal), &optLen);
+    //if (iResult != SOCKET_ERROR) {
+
+    //} else {
+    //    DisplayError(WSAGetLastError());
+    //}
+
+    return ret;
+}
+
+
 int get_ipv4_sock_opt()
 /*
 
@@ -152,6 +566,31 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
 */
 {
     int ret = ERROR_SUCCESS;
+
+    WSADATA wsaData{};
+    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    _ASSERTE(iResult == NO_ERROR);
+
+    SOCKET tcp = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    _ASSERTE(tcp != INVALID_SOCKET);
+
+    SOCKET udp = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    _ASSERTE(udp != INVALID_SOCKET);
+
+    SOCKET ipv4 = socket(AF_INET, SOCK_RAW, IPPROTO_IPV4);
+    _ASSERTE(udp != INVALID_SOCKET);
+
+    //还可以搞侦听绑定的。
+
+    get_ipv4_sock_opt(tcp, SOL_SOCKET);
+    get_ipv4_sock_opt(udp, SOL_SOCKET);
+    get_ipv4_sock_opt(ipv4, SOL_SOCKET);
+
+    closesocket(tcp);
+    closesocket(udp);
+    closesocket(ipv4);
+
+    WSACleanup();
 
     return ret;
 }
