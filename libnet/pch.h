@@ -11,7 +11,7 @@
 #define MAX_ADDRESS_STRING_LENGTH   64
 
 
-#define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
+#define MALLOC(x) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 
 
