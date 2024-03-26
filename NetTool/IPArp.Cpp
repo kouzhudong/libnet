@@ -15,6 +15,7 @@
 #include "IpArp.h"
 
 #pragma warning(disable : 4996)
+#pragma warning(disable : 28193)
 
 void Usage(const char * pszProgramName)
 {

@@ -172,6 +172,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ipv6-socket-opti
 
 int get_rm_sock_opt()
 /*
+下表介绍了IPPROTO_RM套接字选项，这些选项适用于为 IPv4 地址系列 (AF_INET) 创建的套接字，
+这些套接字具有指定为可靠多播 (IPPROTO_RM) 的套接字函数的协议参数。
 
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-rm-socket-options
 */
@@ -368,14 +370,100 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-tcp-socket-optio
 }
 
 
+int get_udp_sock_opt(_In_ SOCKET s)
+{
+    int ret = ERROR_SUCCESS;
+
+    /*
+    如果 为 TRUE，则 UDP 数据报会随校验和一起发送。
+    */
+    int optVal{};
+    int optLen = sizeof(int);
+    int iResult = getsockopt(s, SOL_SOCKET, UDP_CHECKSUM_COVERAGE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    如果 为 TRUE，则发送 UDP 数据报，校验和为零。 对于服务提供商是必需的。 
+    如果服务提供商没有禁用 UDP 校验和计算的机制，它可能只存储此选项而不执行任何操作。 IPv6 不支持此选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, UDP_NOCHECKSUM, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    设置为非零值时，多个接收的数据报可能会在向应用程序指示之前合并成单个消息缓冲区。 
+    选项值表示可以向应用程序指示的合并消息的最大消息大小（以字节为单位）。 
+    可能仍会指示大于选项值的未合并消息。 默认值为 0 (无合并) 。 
+    仅当数据报源自同一源地址和端口时，才会合并数据报。 
+    合并的所有数据报的大小都相同，但最后一个数据报可能更小。 
+    如果应用程序想要检索除最后一个数据报以外的 (数据报大小（) 可能有所不同），
+    则必须使用支持控制信息 (的接收 API，例如 LPFN_WSARECVMSG (WSARecvMsg) ) 。 
+    除最后一条消息之外的所有消息的大小都可以在 UDP_COALESCED_INFO 控件消息中找到，该消息的类型为 DWORD。 
+    为保护类型，应用程序应直接使用 WSAGetUdpRecvMaxCoalescedSize 和 WSASetUdpRecvMaxCoalescedSize 函数，
+    而不是直接使用套接字选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, UDP_RECV_MAX_COALESCED_SIZE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    /*
+    当设置为非零值时，应用程序发送的缓冲区将按网络堆栈细分为多个消息。 选项值表示每个分解消息的大小。 
+    选项值以字节表示。 最后一个段的大小可能小于选项的值。 默认值为 0 (无分段) 。 
+    应用程序应设置一个小于目标路径的 MTU 的值， () ，以避免 IP 碎片。 
+    为保护类型，应用程序应使用 WSAGetUdpSendMessageSize 和 WSASetUdpSendMessageSize 函数，而不是直接使用套接字选项。
+    */
+    optLen = sizeof(int);
+    iResult = getsockopt(s, SOL_SOCKET, UDP_SEND_MSG_SIZE, reinterpret_cast<char *>(&optVal), &optLen);
+    if (iResult != SOCKET_ERROR) {
+         
+    } else {
+        DisplayError(WSAGetLastError());
+    }
+
+    return ret;
+}
+
+
 int get_udp_sock_opt()
 /*
-
+下表描述了 IPPROTO_UDP 套接字选项，这些选项适用于为 IPv4 和 IPv6 地址系列创建的套接字，
+(AF_INET并将 协议 参数AF_INET6) 指定为 UDP (IPPROTO_UDP) 的 套接字 函数。
 
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-udp-socket-options
 */
 {
     int ret = ERROR_SUCCESS;
+
+    WSADATA wsaData{};
+    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    _ASSERTE(iResult == NO_ERROR);
+
+    SOCKET s4 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    _ASSERTE(s4 != INVALID_SOCKET);
+
+    SOCKET s6 = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
+    _ASSERTE(s6 != INVALID_SOCKET);
+
+    //还可以搞侦听绑定的。
+
+    get_udp_sock_opt(s4);
+    get_udp_sock_opt(s6);
+
+    closesocket(s4);
+
+    WSACleanup();
 
     return ret;
 }

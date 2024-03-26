@@ -15,6 +15,10 @@
 
 #include "IpRoute.h"
 
+
+#pragma warning(disable : 28193)
+
+
 static void Usage(const char * pszProgramName)
 {
     printf("Manipulates network routing tables.\n\n");

@@ -15,6 +15,9 @@ optopt;          /* character checked for validity */
 const char * optarg; /* argument associated with option */
 
 
+#pragma warning(disable : 28182)
+
+
 int getopt(int nargc, char * const * nargv, const char * ostr)
 {
     static const char * place = EMSG; /* option letter processing */
