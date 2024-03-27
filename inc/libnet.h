@@ -227,13 +227,13 @@ void WINAPI Sessions();
 //__declspec(dllimport)
 //DWORD WINAPI UnregisterProxyChangeNotification();
 
-__declspec(dllexport)
+__declspec(dllimport)
 void WINAPI SetDefaultProxyConfiguration();
 
-__declspec(dllexport)
+__declspec(dllimport)
 int WINAPI SetProxy();
 
-__declspec(dllexport)
+__declspec(dllimport)
 int WINAPI WriteProxySettings();
 
 

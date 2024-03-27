@@ -9,13 +9,13 @@
 EXTERN_C_START
 
 
-__declspec(dllexport)
+DLLEXPORT
 void WINAPI DnsQueryTest(int argc, char * argv[]);
 
-__declspec(dllexport)
+DLLEXPORT
 void WINAPI ModifyRecords(int argc, wchar_t * argv[]);
 
-__declspec(dllexport)
+DLLEXPORT
 VOID WINAPI PrintDnsRecordList(PDNS_RECORD DnsRecord);
 
 

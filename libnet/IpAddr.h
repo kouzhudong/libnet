@@ -12,10 +12,10 @@ int _cdecl special_ip();
 EXTERN_C_START
 
 
-__declspec(dllexport)
+DLLEXPORT
 void WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask);
 
-__declspec(dllexport)
+DLLEXPORT
 void WINAPI EnumIPv4ByMasks(const char * ipv4, BYTE mask);
 
 

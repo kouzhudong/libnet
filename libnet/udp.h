@@ -21,16 +21,16 @@ typedef struct udp_hdr {// Define the UDP header
 EXTERN_C_START
 
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumUdpTable();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumUdp6Table();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumExtendedUdpTable4();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumExtendedUdpTable6();
 
 

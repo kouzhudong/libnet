@@ -32,7 +32,7 @@ struct SWinHttpSampleGet {
 EXTERN_C_START
 
 
-__declspec(dllexport)
+DLLEXPORT
 void WINAPI HttpReadData();
 
 

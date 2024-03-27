@@ -9,25 +9,25 @@
 EXTERN_C_START
 
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumTcpTable();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumTcpTable2();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumTcp6Table();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumTcp6Table2();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumTcpStatistics();
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass);
 
-__declspec(dllexport)
+DLLEXPORT
 int WINAPI RunEstats();
 
 
