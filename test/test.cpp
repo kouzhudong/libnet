@@ -41,8 +41,8 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     //test_c();
 
-    EnumAdaptersInfo();
-    //EnumExtendedTcpTable(AF_INET6, TCP_TABLE_OWNER_MODULE_ALL);
+    //EnumTcp6Table2();
+    EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_MODULE_ALL);
     //TestNetworkListManagerEvents();
     //ListenToNetworkConnectivityChangesSample(false);
 
