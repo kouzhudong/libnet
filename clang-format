@@ -1,6 +1,8 @@
 #https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
-ColumnLimit: 0
+# 每行字符的限制，0表示没有限制
+ColumnLimit: 115
+
 IndentWidth: 4
 UseTab: Never
 MaxEmptyLinesToKeep: 3
@@ -83,5 +85,6 @@ StatementMacros: [
     'NONPAGED',
     'PAGED',
     'PAGEDX',
+    'DllExport',
     'PNPCODE'
     ]
