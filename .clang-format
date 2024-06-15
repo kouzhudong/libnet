@@ -29,6 +29,7 @@ BraceWrapping:
   BeforeWhile: false
   BeforeCatch: false
   BeforeWhile: false
+  AfterStruct: false
 
 
 StatementMacros: [
