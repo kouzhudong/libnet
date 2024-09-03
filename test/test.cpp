@@ -37,12 +37,12 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     //EnumWfpInfo(Args, Arglist);//宽字符函数入口示例。
-    //tracert(argc, argv);//单字符函数入口示例。
+    getaddrinfo_test(argc, argv); //单字符函数入口示例。
 
     //test_c();
 
     //EnumTcp6Table2();
-    EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_MODULE_ALL);
+    //EnumExtendedTcpTable(AF_INET, TCP_TABLE_OWNER_MODULE_ALL);
     //TestNetworkListManagerEvents();
     //ListenToNetworkConnectivityChangesSample(false);
 
