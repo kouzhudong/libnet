@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #pragma warning(disable:28251)
 #pragma warning(disable:28301)

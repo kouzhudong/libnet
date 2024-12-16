@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "log.h"
 #include "NetApi.h"
 #include "Sock.h"
