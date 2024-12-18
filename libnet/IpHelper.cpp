@@ -44,7 +44,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
 
     // Make a second call to GetIpAddrTable to get the actual data we want
     if ((dwRetVal = GetIpAddrTable(pIPAddrTable, &dwSize, 0)) != NO_ERROR) {
-        printf("GetIpAddrTable failed with error %u\n", dwRetVal);
+        printf("GetIpAddrTable failed with error %lu\n", dwRetVal);
         DisplayError(dwRetVal);
         return (1);
     }
@@ -114,7 +114,7 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
     ret = GetIpNetTable(IpNetTable, &SizePointer, TRUE);
     _ASSERTE(NO_ERROR == ret); // ERROR_NO_DATA
 
-    printf("Number of IPv4 table entries: %u\n\n", IpNetTable->dwNumEntries);
+    printf("Number of IPv4 table entries: %lu\n\n", IpNetTable->dwNumEntries);
 
     for (DWORD i = 0; i < IpNetTable->dwNumEntries; i++) {
         printf("Index: %02u\t", IpNetTable->table[i].dwIndex); //类似于arp -a的接口。
@@ -207,7 +207,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
     }
 
     // Print some variables from the table
-    printf("Number of IP table entries: %u\n\n", pipTable->NumEntries);
+    printf("Number of IP table entries: %lu\n\n", pipTable->NumEntries);
 
     for (ULONG i = 0; (unsigned)i < pipTable->NumEntries; i++) {
         //        printf("Table entry: %d\n", i);
@@ -273,14 +273,14 @@ EXTERN_C
 DLLEXPORT
 void WINAPI GetMacByIPv6(const char * IPv6, PBYTE Mac)
 {
-    MIB_IPNET_ROW2 Row = {0};
+    MIB_IPNET_ROW2 Row{};
 
     Row.Address.si_family = AF_INET6;
     InetPtonA(AF_INET6, IPv6, &Row.Address.Ipv6.sin6_addr);
 
     NTSTATUS status = ResolveIpNetEntry2(&Row, nullptr);
     if (NO_ERROR != status) {
-        printf("%d\n", status);
+        printf("%ld\n", status);
         return;
     }
 
@@ -328,10 +328,9 @@ then the InterfaceIndex member is next used to determine the interface.
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-resolveipnetentry2
 */
 {
-    MIB_IPNET_ROW2 Row = {0};
-
-    IN6_ADDR sin6_addr = {0};
-    IN_ADDR sin_addr = {0};
+    MIB_IPNET_ROW2 Row{};
+    IN6_ADDR sin6_addr{};
+    IN_ADDR sin_addr{};
 
     if (InetPtonA(AF_INET6, ip, &sin6_addr)) {
         Row.Address.si_family = AF_INET6;
@@ -345,7 +344,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-resolvei
 
     NTSTATUS status = ResolveIpNetEntry2(&Row, nullptr);
     if (NO_ERROR != status) {
-        printf("%d\n", status);
+        printf("%ld\n", status);
         return;
     }
 
@@ -381,7 +380,7 @@ BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
         return ret;
     }
 
-    IN6_ADDR sin6_addr = {0};
+    IN6_ADDR sin6_addr{};
     InetPtonA(AF_INET6, ipv6, &sin6_addr);
 
     for (int i = 0; (unsigned)i < pipTable->NumEntries; i++) {
@@ -589,7 +588,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
             printf("\n");
         }
     } else {
-        printf("GetIfTable failed with error:%u \n", dwRetVal); // MSDN少写%了。
+        printf("GetIfTable failed with error:%lu \n", dwRetVal); // MSDN少写%了。
         if (pIfTable != nullptr) {
             FREE(pIfTable);
             pIfTable = nullptr;
@@ -620,7 +619,7 @@ int WINAPI EnumIfTable2()
         return GetLastError();
     }
 
-    printf("Number of entries: %u\n", table->NumEntries);
+    printf("Number of entries: %lu\n", table->NumEntries);
 
     printf("\n");
 
@@ -656,7 +655,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftab
         return GetLastError();
     }
 
-    printf("Number of entries: %u\n", table->NumEntries);
+    printf("Number of entries: %lu\n", table->NumEntries);
 
     printf("\n");
 
@@ -756,7 +755,7 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
     if (dwRetVal == NO_ERROR) {
         bPhysAddr = (BYTE *)&MacAddr;
         if (PhysAddrLen) {
-            for (i = 0; i < (int)PhysAddrLen; i++) {
+            for (i = 0; i < PhysAddrLen; i++) {
                 if (i == (PhysAddrLen - 1))
                     printf("%.2X\n", (int)bPhysAddr[i]);
                 else
@@ -766,7 +765,7 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
             printf("Warning: SendArp completed successfully, but returned length=0\n");
         }
     } else {
-        printf("Error: SendArp failed with error: %u", dwRetVal);
+        printf("Error: SendArp failed with error: %lu", dwRetVal);
         switch (dwRetVal) {
         case ERROR_GEN_FAILURE:
             printf(" (ERROR_GEN_FAILURE)\n");
@@ -820,7 +819,7 @@ GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
             printf("Warning: SendArp completed successfully, but returned length=0\n");
         }
     } else {
-        printf("Error: SendArp failed with error: %u", dwRetVal);
+        printf("Error: SendArp failed with error: %lu", dwRetVal);
     }
 
     return 0;
@@ -966,13 +965,13 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
         return;
     }
 
-    sockaddr_in6 SourceAddress = {0};
+    sockaddr_in6 SourceAddress{};
     InetPtonA(AF_INET6, "fe80::10bb:f0a9:744b:aac2", &SourceAddress.sin6_addr);
 
     // SourceAddress.sin6_addr = in6addr_any;//这个更通用。
     SourceAddress.sin6_family = AF_INET6;
 
-    sockaddr_in6 DestinationAddress = {0};
+    sockaddr_in6 DestinationAddress{};
     InetPtonA(AF_INET6, "fe80::ec0f:f6:4a6d:89d2", &DestinationAddress.sin6_addr);
 
     DestinationAddress.sin6_family = AF_INET6;
@@ -1120,7 +1119,7 @@ https://learn.microsoft.com/zh-CN/windows/win32/api/iphlpapi/nf-iphlpapi-getnetw
         else
             printf("DNS: disabled\n");
     } else {
-        printf("GetNetworkParams failed with error: %u\n", dwRetVal);
+        printf("GetNetworkParams failed with error: %lu\n", dwRetVal);
         return 1;
     }
 
@@ -1292,7 +1291,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getipin
         exit(1);
     }
     // Print some variables from the rows in the table
-    printf("Number of table entries: %d\n\n", pipTable->NumEntries);
+    printf("Number of table entries: %lu\n\n", pipTable->NumEntries);
 
     for (i = 0; i < (int)pipTable->NumEntries; i++) {
         printf("Address Family[%d]:\t\t", i);
@@ -1411,7 +1410,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getippa
 
     for (ULONG i = 0; i < Table->NumEntries; i++) {
 
-        printf("PathMtu:%u\r\n", Table->Table[i].PathMtu);
+        printf("PathMtu:%lu\r\n", Table->Table[i].PathMtu);
 
         printf("\r\n");
     }

@@ -55,7 +55,7 @@ MSDN没有例子。
             printf("\n");
         }
     } else {
-        printf("\tGetUdpTable failed with %u\n", dwRetVal);
+        printf("\tGetUdpTable failed with %lu\n", dwRetVal);
         FREE(pUdpTable);
         return 1;
     }
@@ -120,7 +120,7 @@ MSDN没有例子。
             printf("\n");
         }
     } else {
-        printf("\tGetUdpTable failed with %u\n", dwRetVal);
+        printf("\tGetUdpTable failed with %lu\n", dwRetVal);
         FREE(pUdp6Table);
         return 1;
     }
@@ -136,7 +136,7 @@ MSDN没有例子。
 
 void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
 {
-    TCPIP_OWNER_MODULE_BASIC_INFO temp = {0};
+    TCPIP_OWNER_MODULE_BASIC_INFO temp{};
     DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
     DWORD ret = GetOwnerModuleFromUdpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
     _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
@@ -212,7 +212,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
             printf("\n");
         }
     } else {
-        printf("\tGetExtendedUdpTable failed with %u\n", dwRetVal);
+        printf("\tGetExtendedUdpTable failed with %lu\n", dwRetVal);
         FREE(pUdpTable);
         return 1;
     }
@@ -228,7 +228,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
 void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
 {
-    TCPIP_OWNER_MODULE_BASIC_INFO temp = {0};
+    TCPIP_OWNER_MODULE_BASIC_INFO temp{};
     DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
     DWORD ret = GetOwnerModuleFromUdp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
     _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
@@ -294,14 +294,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
             printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tUdp[%d] Local Port: %u \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
-            printf("\tUdp[%d] OwningPid: %u \n", i, pUdpTable->table[i].dwOwningPid);
+            printf("\tUdp[%d] OwningPid: %lu \n", i, pUdpTable->table[i].dwOwningPid);
 
             GetOwnerModuleFromUdp6EntryEx(&pUdpTable->table[i]);
 
             printf("\n");
         }
     } else {
-        printf("\tGetExtendedUdpTable failed with %u\n", dwRetVal);
+        printf("\tGetExtendedUdpTable failed with %lu\n", dwRetVal);
         FREE(pUdpTable);
         return 1;
     }

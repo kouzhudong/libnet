@@ -12,13 +12,13 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/************************************************************\
+/*
     THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
     ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
     THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
   Copyright ?2000  Microsoft Corporation.  All Rights Reserved.
-/***************************************************************/
+*/
 
 
 #define BUFFER_LEN 255
@@ -135,9 +135,9 @@ SUPPORTED PLATFORMS:
                         nullptr);               // reserved for future use
     if (status) {
         if (wType == DNS_TYPE_A)
-            printf("Failed to query the host record for %s and the error is %d \n", pOwnerName, status);
+            printf("Failed to query the host record for %s and the error is %ld \n", pOwnerName, status);
         else
-            printf("Failed to query the PTR record and the error is %d \n", status);
+            printf("Failed to query the PTR record and the error is %ld \n", status);
     } else {
         if (wType == DNS_TYPE_A) {
             // convert the Internet network address into a string in Internet standard dotted format.
@@ -325,9 +325,9 @@ SUPPORTED PLATFORMS:
                                      nullptr);                        // reserved for future use
     if (status) {
         if (pmyDnsRecord->wType == DNS_TYPE_A)
-            printf("Failed to add the host record for %ws and the error is %d \n", pOwnerName, status);
+            printf("Failed to add the host record for %ws and the error is %ld \n", pOwnerName, status);
         else
-            printf("Failed to add the Cname record for %ws and the error is %d \n", pOwnerName, status);
+            printf("Failed to add the Cname record for %ws and the error is %ld \n", pOwnerName, status);
     } else {
         if (pmyDnsRecord->wType == DNS_TYPE_A)
             printf("Successfully added the host record for %ws \n", pOwnerName);

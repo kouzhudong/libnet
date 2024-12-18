@@ -82,7 +82,7 @@ void WebBrowserApp()
     HRESULT hr{};
     IWebBrowserApp * pWBApp = nullptr; // Derived from IWebBrowser
     BSTR bstrURL = nullptr, bstrHeaders = nullptr;
-    VARIANT vFlags = {0}, vTargetFrameName = {0}, vPostData = {0}, vHeaders = {0};
+    VARIANT vFlags{}, vTargetFrameName{}, vPostData{}, vHeaders{};
 
     if (FAILED(hr = CoInitialize(nullptr))) {
         return;

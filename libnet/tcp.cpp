@@ -68,7 +68,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             printf("\tTCP[%d] Remote Port: %u\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
         }
     } else {
-        printf("\tGetTcpTable failed with %u\n", dwRetVal);
+        printf("\tGetTcpTable failed with %lu\n", dwRetVal);
         FREE(pTcpTable);
         return 1;
     }
@@ -130,7 +130,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
             printf("\tTCP[%d] Remote Port: %u\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
 
-            printf("\tTCP[%d] Owning PID: %u\n", i, pTcpTable->table[i].dwOwningPid);
+            printf("\tTCP[%d] Owning PID: %lu\n", i, pTcpTable->table[i].dwOwningPid);
 
             char szModName[MAX_PATH] = {0};
             DWORD Size = _countof(szModName);
@@ -165,11 +165,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             ////GetOwnerModuleFromTcp4EntryEx((PMIB_TCPROW_OWNER_MODULE)&pTcpTable->table[i]);//不行。
             // GetOwnerModuleFromTcp4EntryEx(&Tcp4Entry);
 
-            printf("\tTCP[%d] Offload State: %ld - ", i, pTcpTable->table[i].dwOffloadState);
+            printf("\tTCP[%d] Offload State: %d - ", i, pTcpTable->table[i].dwOffloadState);
             PrintOffloadStateOfTcpConnection(pTcpTable->table[i].dwOffloadState);
         }
     } else {
-        printf("\tGetTcpTable2 failed with %u\n", dwRetVal);
+        printf("\tGetTcpTable2 failed with %lu\n", dwRetVal);
         FREE(pTcpTable);
         return 1;
     }
@@ -390,22 +390,22 @@ void DumpBasicExtendedTcp4Table(_In_ PMIB_TCPTABLE pTcpTable)
     char szRemoteAddr[128]{};
     in_addr IpAddr{};
 
-    printf("\tNumber of entries: %u\n", pTcpTable->dwNumEntries);
+    printf("\tNumber of entries: %lu\n", pTcpTable->dwNumEntries);
     for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
-        printf("\n\tTCP[%u] State: %lu - ", i, pTcpTable->table[i].dwState);
+        printf("\n\tTCP[%lu] State: %lu - ", i, pTcpTable->table[i].dwState);
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwLocalAddr;
         strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
-        printf("\tTCP[%u] Local Addr: %s\n", i, szLocalAddr);
+        printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
-        printf("\tTCP[%u] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
+        printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwRemoteAddr;
         strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
-        printf("\tTCP[%u] Remote Addr: %s\n", i, szRemoteAddr);
+        printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
-        printf("\tTCP[%u] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
+        printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
     }
 }
 
@@ -446,28 +446,28 @@ void DumpModuleExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_MODULE pTcpTable)
     char szRemoteAddr[128]{};
     in_addr IpAddr{};
 
-    printf("\tNumber of entries: %u\n", pTcpTable->dwNumEntries);
+    printf("\tNumber of entries: %lu\n", pTcpTable->dwNumEntries);
     for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
-        printf("\n\tTCP[%u] State: %lu - ", i, pTcpTable->table[i].dwState);
+        printf("\n\tTCP[%lu] State: %lu - ", i, pTcpTable->table[i].dwState);
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwLocalAddr;
         strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
-        printf("\tTCP[%u] Local Addr: %s\n", i, szLocalAddr);
+        printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
-        printf("\tTCP[%u] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
+        printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwRemoteAddr;
         strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
-        printf("\tTCP[%u] Remote Addr: %s\n", i, szRemoteAddr);
+        printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
-        printf("\tTCP[%u] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
+        printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
 
-        printf("\tTCP[%u] OwningPid: %u\n", i, pTcpTable->table[i].dwOwningPid);
+        printf("\tTCP[%lu] OwningPid: %lu\n", i, pTcpTable->table[i].dwOwningPid);
 
         WCHAR TimeString[MAX_PATH] = {0};
         GetTimeString(pTcpTable->table[i].liCreateTimestamp, TimeString);
-        printf("\tTCP[%u] CreateTimestamp: %ls\n", i, TimeString);
+        printf("\tTCP[%lu] CreateTimestamp: %ls\n", i, TimeString);
 
         // OwningModuleInfo里的TCPIP_OWNING_MODULE_SIZE个数，全都是0.
 
@@ -482,24 +482,24 @@ void DumpPidExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_PID pTcpTable)
     char szRemoteAddr[128]{};
     in_addr IpAddr{};
 
-    printf("\tNumber of entries: %u\n", pTcpTable->dwNumEntries);
+    printf("\tNumber of entries: %lu\n", pTcpTable->dwNumEntries);
     for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
-        printf("\n\tTCP[%u] State: %lu - ", i, pTcpTable->table[i].dwState);
+        printf("\n\tTCP[%lu] State: %lu - ", i, pTcpTable->table[i].dwState);
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwLocalAddr;
         strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
-        printf("\tTCP[%u] Local Addr: %s\n", i, szLocalAddr);
+        printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
-        printf("\tTCP[%u] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
+        printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwRemoteAddr;
         strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
-        printf("\tTCP[%u] Remote Addr: %s\n", i, szRemoteAddr);
+        printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
-        printf("\tTCP[%u] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
+        printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
 
-        printf("\tTCP[%u] Owning PID: %u\n", i, pTcpTable->table[i].dwOwningPid);
+        printf("\tTCP[%lu] Owning PID: %lu\n", i, pTcpTable->table[i].dwOwningPid);
     }
 }
 
@@ -539,33 +539,33 @@ void DumpModuleExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_MODULE pTcpTable)
     char szLocalAddr[128]{};
     char szRemoteAddr[128]{};
 
-    printf("\tNumber of entries: %u\n", pTcpTable->dwNumEntries);
+    printf("\tNumber of entries: %lu\n", pTcpTable->dwNumEntries);
     for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
-        printf("\n\tTCP[%u] State: %lu - ", i, pTcpTable->table[i].dwState);
+        printf("\n\tTCP[%lu] State: %lu - ", i, pTcpTable->table[i].dwState);
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr));
-        printf("\tTCP[%u] Local Addr: %s\n", i, szLocalAddr);
+        printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
-        printf("\tTCP[%u] LocalScopeId: %u \n", i, pTcpTable->table[i].dwLocalScopeId);
+        printf("\tTCP[%lu] LocalScopeId: %lu \n", i, pTcpTable->table[i].dwLocalScopeId);
 
-        printf("\tTCP[%u] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
+        printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr));
-        printf("\tTCP[%u] Remote Addr: %s\n", i, szRemoteAddr);
+        printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
-        printf("\tTCP[%u] RemoteScopeId: %u \n", i, pTcpTable->table[i].dwRemoteScopeId);
+        printf("\tTCP[%lu] RemoteScopeId: %lu \n", i, pTcpTable->table[i].dwRemoteScopeId);
 
-        printf("\tTCP[%u] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
+        printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
 
-        printf("\tTCP[%u] OwningPid: %u\n", i, pTcpTable->table[i].dwOwningPid);
+        printf("\tTCP[%lu] OwningPid: %lu\n", i, pTcpTable->table[i].dwOwningPid);
 
         WCHAR TimeString[MAX_PATH] = {0};
         GetTimeString(pTcpTable->table[i].liCreateTimestamp, TimeString);
-        printf("\tTCP[%u] CreateTimestamp: %ls\n", i, TimeString);
+        printf("\tTCP[%lu] CreateTimestamp: %ls\n", i, TimeString);
 
         for (int j = 0; j < TCPIP_OWNING_MODULE_SIZE; j++) {
-            printf("\tTCP[%u] ModuleInfo: %llX\n", i, pTcpTable->table[i].OwningModuleInfo[j]);
+            printf("\tTCP[%lu] ModuleInfo: %llX\n", i, pTcpTable->table[i].OwningModuleInfo[j]);
         }
 
         GetOwnerModuleFromTcp6EntryEx(&pTcpTable->table[i]);
@@ -578,26 +578,26 @@ void DumpPidExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_PID pTcpTable)
     char szLocalAddr[128]{};
     char szRemoteAddr[128]{};
 
-    printf("\tNumber of entries: %u\n", pTcpTable->dwNumEntries);
+    printf("\tNumber of entries: %lu\n", pTcpTable->dwNumEntries);
     for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
-        printf("\n\tTCP[%u] State: %lu - ", i, pTcpTable->table[i].dwState);
+        printf("\n\tTCP[%lu] State: %lu - ", i, pTcpTable->table[i].dwState);
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr));
-        printf("\tTCP[%u] Local Addr: %s\n", i, szLocalAddr);
+        printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
-        printf("\tTCP[%u] LocalScopeId: %u \n", i, pTcpTable->table[i].dwLocalScopeId);
+        printf("\tTCP[%lu] LocalScopeId: %lu \n", i, pTcpTable->table[i].dwLocalScopeId);
 
-        printf("\tTCP[%u] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
+        printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr));
-        printf("\tTCP[%u] Remote Addr: %s\n", i, szRemoteAddr);
+        printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
-        printf("\tTCP[%u] RemoteScopeId: %u \n", i, pTcpTable->table[i].dwRemoteScopeId);
+        printf("\tTCP[%lu] RemoteScopeId: %lu \n", i, pTcpTable->table[i].dwRemoteScopeId);
 
-        printf("\tTCP[%u] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
+        printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
 
-        printf("\tTCP[%u] OwningPid: %u\n", i, pTcpTable->table[i].dwOwningPid);
+        printf("\tTCP[%lu] OwningPid: %lu\n", i, pTcpTable->table[i].dwOwningPid);
     }
 }
 
@@ -749,7 +749,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     if (dwRetVal == NO_ERROR) {
         DumpExtendedTcpTable(ulAf, TableClass, pTcpTable);
     } else {
-        printf("\tGetExtendedTcpTable failed with %u\n", dwRetVal);
+        printf("\tGetExtendedTcpTable failed with %lu\n", dwRetVal);
         FREE(pTcpTable);
         return 1;
     }
@@ -1331,14 +1331,14 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
             memset(rod, 0, rodSize); // zero the buffer
     }
 
-    TCP_ESTATS_DATA_RW_v0 dataRw = {0};
-    TCP_ESTATS_SND_CONG_RW_v0 sndCongRw = {0};
-    TCP_ESTATS_PATH_RW_v0 pathRw = {0};
-    TCP_ESTATS_SEND_BUFF_RW_v0 sndBuffRw = {0};
-    TCP_ESTATS_REC_RW_v0 recRw = {0};
-    TCP_ESTATS_OBS_REC_RW_v0 obsRecRw = {0};
-    TCP_ESTATS_BANDWIDTH_RW_v0 bandwidthRw = {0};
-    TCP_ESTATS_FINE_RTT_RW_v0 fineRttRw = {0};
+    TCP_ESTATS_DATA_RW_v0 dataRw{};
+    TCP_ESTATS_SND_CONG_RW_v0 sndCongRw{};
+    TCP_ESTATS_PATH_RW_v0 pathRw{};
+    TCP_ESTATS_SEND_BUFF_RW_v0 sndBuffRw{};
+    TCP_ESTATS_REC_RW_v0 recRw{};
+    TCP_ESTATS_OBS_REC_RW_v0 obsRecRw{};
+    TCP_ESTATS_BANDWIDTH_RW_v0 bandwidthRw{};
+    TCP_ESTATS_FINE_RTT_RW_v0 fineRttRw{};
     BOOLEAN RwEnableCollection{FALSE};
 
     switch (type) {

@@ -881,7 +881,7 @@ void PrintSocketType(int SocketType)
         printf("SOCK_SEQPACKET (pseudo-stream packet)\n");
         break;
     default:
-        printf("Other %ld\n", SocketType);
+        printf("Other %d\n", SocketType);
         break;
     }
 }
@@ -1262,7 +1262,7 @@ void PrintInterfaceOperationalStatus(_In_ INTERNAL_IF_OPER_STATUS dwOperStatus)
         printf("Operational\n");
         break;
     default:
-        printf("Unknown status %ld\n", dwOperStatus);
+        printf("Unknown status %d\n", dwOperStatus);
         break;
     }
 }
@@ -1308,7 +1308,7 @@ void PrintAdapterType(INT Type)
         printf("Radio spread spectrum\n");
         break;
     default:
-        printf("Unknown type %ld\n", Type);
+        printf("Unknown type %d\n", Type);
         break;
     }
 }

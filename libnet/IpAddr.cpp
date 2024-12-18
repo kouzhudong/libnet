@@ -215,7 +215,7 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
 
     ULONG numbers = 1 << bits;
     printf("IPv4的子网掩码位数：%d\n", 32 - bits);
-    printf("IPv4地址个数（包括特殊地址）：%u\n", numbers);
+    printf("IPv4地址个数（包括特殊地址）：%lu\n", numbers);
 
     for (ULONG i = 0; i < numbers; i++) {
         IN_ADDR start;

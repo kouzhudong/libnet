@@ -133,7 +133,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
         pCurrAddresses = pAddresses;
         while (pCurrAddresses) {
             printf("\tLength of the IP_ADAPTER_ADDRESS struct: %lu\n", pCurrAddresses->Length);
-            printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
+            printf("\tIfIndex (IPv4 interface): %lu\n", pCurrAddresses->IfIndex);
             printf("\tAdapter name: %s\n", pCurrAddresses->AdapterName);
 
             GetPerAdapterInfoEx(pCurrAddresses->IfIndex);
@@ -192,7 +192,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 
             if (pCurrAddresses->PhysicalAddressLength != 0) {
                 printf("\tPhysical address: ");
-                for (i = 0; i < (int)pCurrAddresses->PhysicalAddressLength; i++) {
+                for (i = 0; i < pCurrAddresses->PhysicalAddressLength; i++) {
                     if (i == (pCurrAddresses->PhysicalAddressLength - 1))
                         printf("%.2X\n", (int)pCurrAddresses->PhysicalAddress[i]);
                     else
@@ -203,8 +203,8 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             printf("\tFlags: %lu\n", pCurrAddresses->Flags);
             printf("\tMtu: %lu\n", pCurrAddresses->Mtu);
             printf("\tIfType: %lu\n", pCurrAddresses->IfType);
-            printf("\tOperStatus: %ld\n", pCurrAddresses->OperStatus);
-            printf("\tIpv6IfIndex (IPv6 interface): %u\n", pCurrAddresses->Ipv6IfIndex);
+            printf("\tOperStatus: %d\n", pCurrAddresses->OperStatus);
+            printf("\tIpv6IfIndex (IPv6 interface): %lu\n", pCurrAddresses->Ipv6IfIndex);
             printf("\tZoneIndices (hex): ");
             for (i = 0; i < 16; i++)
                 printf("%lx ", pCurrAddresses->ZoneIndices[i]);
@@ -257,7 +257,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             pCurrAddresses = pCurrAddresses->Next;
         }
     } else {
-        printf("Call to GetAdaptersAddresses failed with error: %u\n", dwRetVal);
+        printf("Call to GetAdaptersAddresses failed with error: %lu\n", dwRetVal);
         if (dwRetVal == ERROR_NO_DATA)
             printf("\tNo addresses were found for the requested parameters\n");
         else {
@@ -318,7 +318,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
     if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
         PIP_ADAPTER_INFO pAdapter = pAdapterInfo;
         while (pAdapter) {
-            printf("\tComboIndex: \t%u\n", pAdapter->ComboIndex);
+            printf("\tComboIndex: \t%lu\n", pAdapter->ComboIndex);
             printf("\tAdapter Name: \t%s\n", pAdapter->AdapterName);
             printf("\tAdapter Desc: \t%s\n", pAdapter->Description);
             printf("\tAdapter Addr: \t");
@@ -330,7 +330,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
                     printf("%.2X-", (int)pAdapter->Address[i]);
             }
 
-            printf("\tIndex: \t%u\n", pAdapter->Index);
+            printf("\tIndex: \t%lu\n", pAdapter->Index);
             GetPerAdapterInfoEx(pAdapter->Index);
 
             printf("\tType: \t");
@@ -388,7 +388,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
             printf("\n");
         }
     } else {
-        printf("GetAdaptersInfo failed with error: %u\n", dwRetVal);
+        printf("GetAdaptersInfo failed with error: %lu\n", dwRetVal);
     }
 
     if (pAdapterInfo)
@@ -408,7 +408,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
 */
 {
     // Declare and initialize variables
-    PIP_INTERFACE_INFO pInfo = nullptr;
+    PIP_INTERFACE_INFO pInfo{};
     ULONG ulOutBufLen = 0;
     int iReturn = 1;
 
@@ -431,7 +431,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
 
 #pragma prefast(push)
 #pragma prefast(disable : 6011, "取消对 NULL 指针“pInfo”的引用")
-        printf("Number of Adapters: %d\n\n", pInfo->NumAdapters);
+        printf("Number of Adapters: %ld\n\n", pInfo->NumAdapters);
 #pragma prefast(pop)
 
         for (int i = 0; i < pInfo->NumAdapters; i++) {
@@ -443,7 +443,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
         printf("There are no network adapters with IPv4 enabled on the local system\n");
         iReturn = 0;
     } else {
-        printf("GetInterfaceInfo failed with error: %u\n", dwRetVal);
+        printf("GetInterfaceInfo failed with error: %lu\n", dwRetVal);
         iReturn = 1;
     }
 
@@ -488,7 +488,7 @@ int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
             pAdapter = pAdapter->Next;
         }
     } else {
-        printf("GetAdaptersInfo failed with error: %u\n", dwRetVal);
+        printf("GetAdaptersInfo failed with error: %lu\n", dwRetVal);
     }
 
     if (pAdapterInfo) {
@@ -529,7 +529,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
     PIP_ADAPTER_ADDRESSES pCurrAddresses = nullptr;
     PIP_ADAPTER_UNICAST_ADDRESS pUnicast = nullptr;
 
-    IN6_ADDR sin6_addr = {0};
+    IN6_ADDR sin6_addr{};
     InetPtonA(AF_INET6, IPv6, &sin6_addr);
 
     do {
@@ -603,7 +603,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
             pCurrAddresses = pCurrAddresses->Next;
         }
     } else {
-        printf("Call to GetAdaptersAddresses failed with error: %u\n", dwRetVal);
+        printf("Call to GetAdaptersAddresses failed with error: %lu\n", dwRetVal);
         if (dwRetVal == ERROR_NO_DATA)
             printf("\tNo addresses were found for the requested parameters\n");
         else {

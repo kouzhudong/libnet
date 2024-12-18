@@ -60,9 +60,9 @@ www.126.com
 
         // Use WinHttpQueryOption to retrieve internet options.
         if (WinHttpQueryOption(hSession, WINHTTP_OPTION_CONNECT_TIMEOUT, &data, &dwSize)) {
-            printf("Connection timeout: %u ms\n\n", data); // 60000ms
+            printf("Connection timeout: %lu ms\n\n", data); // 60000ms
         } else {
-            printf("Error %u in WinHttpQueryOption.\n", GetLastError());
+            printf("Error %lu in WinHttpQueryOption.\n", GetLastError());
         }
 
         // When finished, release the HINTERNET handle.
@@ -112,7 +112,7 @@ www.126.com
             // Check for available data.
             dwSize = 0;
             if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) {
-                printf("Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
+                printf("Error %lu in WinHttpQueryDataAvailable.\n", GetLastError());
                 break;
             }
 
@@ -130,7 +130,7 @@ www.126.com
             // Read the Data.
             ZeroMemory(pszOutBuffer, (size_t)dwSize + 1);
             if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded)) {
-                printf("Error %u in WinHttpReadData.\n", GetLastError());
+                printf("Error %lu in WinHttpReadData.\n", GetLastError());
             } else {
                 printf("%s", pszOutBuffer);
             }
@@ -143,7 +143,7 @@ www.126.com
                 break;
         } while (dwSize > 0);
     } else {
-        printf("Error %u has occurred.\n", GetLastError()); // Report any errors.
+        printf("Error %lu has occurred.\n", GetLastError()); // Report any errors.
     }
 
     // Close any open handles.
@@ -350,7 +350,7 @@ void WINAPI DetectAutoProxyConfigUrl()
     LPWSTR ppwstrAutoConfigUrl = nullptr;
     BOOL ret = WinHttpDetectAutoProxyConfigUrl(WINHTTP_AUTO_DETECT_TYPE_DHCP, &ppwstrAutoConfigUrl);
     if (!ret) {
-        printf("LastError:%#x.\n", GetLastError()); // LastError:0x2f94.
+        printf("LastError:%#lx.\n", GetLastError()); // LastError:0x2f94.
     }
 
     if (ppwstrAutoConfigUrl) {
@@ -359,7 +359,7 @@ void WINAPI DetectAutoProxyConfigUrl()
 
     ret = WinHttpDetectAutoProxyConfigUrl(WINHTTP_AUTO_DETECT_TYPE_DNS_A, &ppwstrAutoConfigUrl);
     if (!ret) {
-        printf("LastError:%#x.\n", GetLastError()); // LastError:0x2f94.
+        printf("LastError:%#lx.\n", GetLastError()); // LastError:0x2f94.
     }
 
     if (ppwstrAutoConfigUrl) {
@@ -541,7 +541,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
             // Check for available data.
             dwSize = 0;
             if (!WinHttpQueryDataAvailable(hRequest, &dwSize))
-                printf("Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
+                printf("Error %lu in WinHttpQueryDataAvailable.\n", GetLastError());
 
             // Allocate space for the buffer.
             pszOutBuffer = new char[(size_t)dwSize + 1];
@@ -551,7 +551,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
             } else { // Read the data.
                 ZeroMemory(pszOutBuffer, (size_t)dwSize + 1);
                 if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
-                    printf("Error %u in WinHttpReadData.\n", GetLastError());
+                    printf("Error %lu in WinHttpReadData.\n", GetLastError());
                 else
                     printf("%s", pszOutBuffer);
 
@@ -562,7 +562,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
 
     // Report any errors.
     if (!bResults)
-        printf("Error %u has occurred.\n", GetLastError());
+        printf("Error %lu has occurred.\n", GetLastError());
 
     // Close any open handles.
     if (hRequest)
@@ -747,7 +747,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
                 break;
             default:
                 // The status code does not indicate success.
-                printf("Error. Status code %u returned.\n", dwStatusCode);
+                printf("Error. Status code %lu returned.\n", dwStatusCode);
                 bDone = TRUE;
             }
         }
@@ -761,7 +761,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
     // Report any errors.
     if (!bResults) {
         DWORD dwLastError = GetLastError();
-        printf("Error %u has occurred.\n", dwLastError);
+        printf("Error %lu has occurred.\n", dwLastError);
     }
 
     // Close any open handles.
@@ -893,7 +893,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/winhttp/nf-winhttp-winhttpse
         printf("Proxy Configuration Set.\n");
         //代码成功了，见WinHttpGetDefaultProxyConfiguration的输出，但是有效没？
     } else {
-        printf("LastError:%#x.\n", GetLastError());
+        printf("LastError:%#lx.\n", GetLastError());
     }
 
     // Free memory allocated to the strings.
@@ -1038,7 +1038,7 @@ int WINAPI WriteProxySettings()
         WINHTTP_NO_PROXY_BYPASS,
         0);          //#define WINHTTP_NO_PROXY_BYPASS   NULL
     if (!hSession) { // Specify an HTTP server.
-        printf("LastError:%#x.\n", GetLastError());
+        printf("LastError:%#lx.\n", GetLastError());
         return 0;
     }
 
@@ -1061,18 +1061,18 @@ int WINAPI WriteProxySettings()
                                    &pfDefaultSettingsAreReturned,
                                    &WinHttpProxySettings); //这家伙会自动申请内存。
     if (0 != ret) {
-        printf("LastError:%#x.\n", GetLastError());
+        printf("LastError:%#lx.\n", GetLastError());
         WinHttpCloseHandle(hSession);
         return ret;
     }
 
-    printf("CurrentSettingsVersion:%u.\r\n", WinHttpProxySettings.dwCurrentSettingsVersion);
+    printf("CurrentSettingsVersion:%lu.\r\n", WinHttpProxySettings.dwCurrentSettingsVersion);
     printf("Proxy:%ls.\r\n", WinHttpProxySettings.pwszProxy);
     printf("ProxyBypass:%ls.\r\n", WinHttpProxySettings.pwszProxyBypass);
 
     ret = WinHttpWriteProxySettings(hSession, fForceUpdate, &WinHttpProxySettings);
     if (0 != ret) {
-        printf("LastError:%#x.\n", GetLastError());
+        printf("LastError:%#lx.\n", GetLastError());
     }
 
     WinHttpFreeProxySettings(&WinHttpProxySettings);

@@ -56,7 +56,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     // of addrinfo structures containing response information
     dwRetval = getaddrinfo(argv[1], argv[2], &hints, &result);
     if (dwRetval != 0) {
-        printf("getaddrinfo failed with error: %u\n", dwRetval);
+        printf("getaddrinfo failed with error: %lu\n", dwRetval);
         WSACleanup();
         return 1;
     }
@@ -99,7 +99,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             printf("AF_NETBIOS (NetBIOS)\n");
             break;
         default:
-            printf("Other %ld\n", ptr->ai_family);
+            printf("Other %d\n", ptr->ai_family);
             break;
         }
         printf("\tSocket type: ");
@@ -166,7 +166,7 @@ http://correy.webs.com
         &hints,                   //必须有，而且4个成员必须为0.
         &result);
     if (dwRetval != 0) {
-        printf("getaddrinfo failed with error: %u\n", dwRetval);
+        printf("getaddrinfo failed with error: %lu\n", dwRetval);
         WSACleanup();
         return 1;
     }
@@ -936,7 +936,7 @@ http://correy.webs.com
         return 1;
     }
 
-    WSADATA wsaData = {0};
+    WSADATA wsaData{};
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
     if (iResult != 0) {
         printf("WSAStartup failed: %d\n", iResult);
@@ -958,7 +958,7 @@ http://correy.webs.com
         NI_NOFQDN //取这个值，方显函数的意义。
     );
     if (dwRetval != 0) {
-        printf("failed with error # %ld\n", WSAGetLastError());
+        printf("failed with error # %d\n", WSAGetLastError());
         return 1;
     } else {
         printf("returned hostname = %s\n", hostname);
@@ -1035,7 +1035,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
     int i = 0;
     int bIpv6 = 0;
     struct hostent * remoteHost{};
-    struct in_addr addr = {0};
+    struct in_addr addr{};
     IN6_ADDR addr6{};
     char ** pAlias{};
 

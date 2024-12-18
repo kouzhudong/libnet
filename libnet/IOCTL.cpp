@@ -50,7 +50,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     int optLen = sizeof(int);
     iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_ACCEPTCONN, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR)
-        printf("SockOpt Value: %ld\n", optVal);
+        printf("SockOpt Value: %d\n", optVal);
 
     if (listen(ListenSocket, 100) == SOCKET_ERROR) { // Put the listening socket in listening mode.
         printf("error listening\n");
@@ -59,7 +59,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     // Call getsockopt again to verify that the socket is in listening mode.
     iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_ACCEPTCONN, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR)
-        printf("SockOpt Value: %ld\n", optVal);
+        printf("SockOpt Value: %d\n", optVal);
 
     WSACleanup();
 }
@@ -92,7 +92,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     Sock = socket(AF_IRDA, SOCK_STREAM, 0);
     if (Sock == INVALID_SOCKET) {
         dwError = WSAGetLastError();
-        printf("socket failed trying to create an AF_IRDA socket with error %u\n", dwError);
+        printf("socket failed trying to create an AF_IRDA socket with error %lu\n", dwError);
         if (dwError == WSAEAFNOSUPPORT) {
             printf("Check that the local computer has an infrared device\n");
             printf("and a device driver is installed for the infrared device\n");
@@ -166,11 +166,11 @@ void getsockopt3()
     int optLen = sizeof(int);
     iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR)
-        printf("SO_RCVBUF Value: %ld\n", optVal);
+        printf("SO_RCVBUF Value: %d\n", optVal);
 
     iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR)
-        printf("SO_SNDBUF Value: %ld\n", optVal);
+        printf("SO_SNDBUF Value: %d\n", optVal);
 
     WSACleanup();
 }
@@ -283,7 +283,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocke
     SOCKET m_socket;
     m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // Create a SOCKET object.
     if (m_socket == INVALID_SOCKET) {
-        printf("Error at socket(): %ld\n", WSAGetLastError());
+        printf("Error at socket(): %d\n", WSAGetLastError());
         WSACleanup();
         return;
     }
@@ -295,7 +295,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocke
 
     iResult = ioctlsocket(m_socket, FIONBIO, &iMode);
     if (iResult != NO_ERROR)
-        printf("ioctlsocket failed with error: %ld\n", iResult);
+        printf("ioctlsocket failed with error: %d\n", iResult);
 }
 
 
@@ -348,7 +348,7 @@ DWORD GetTCPHandle(PHANDLE pTCPDriverHandle)
                         nullptr,
                         0);
     if (rVal < 0) {
-        printf("\nFailed to create TCP Driver handle; NT status code = %d.", rVal);
+        printf("\nFailed to create TCP Driver handle; NT status code = %ld.", rVal);
         *pTCPDriverHandle = INVALID_HANDLE_VALUE;
         return (FALSE);
     }
@@ -461,10 +461,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/tcpioctl/ni-tcpioctl-ioctl_tc
         return (1);
 
     entityPtr = entityArray;
-    printf("\n\nList of %u Transport Driver Interface Entities on this machine:\n", entityCount);
+    printf("\n\nList of %lu Transport Driver Interface Entities on this machine:\n", entityCount);
 
     for (DWORD i = 0; i < entityCount; ++i) {
-        printf("\n  Entity #%u:\n    Category (tei_entity) is ", i);
+        printf("\n  Entity #%lu:\n    Category (tei_entity) is ", i);
         switch (entityPtr->tei_entity) {
         case GENERIC_ENTITY:
             printf("Generic.");
@@ -491,10 +491,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/tcpioctl/ni-tcpioctl-ioctl_tc
             printf("Echo Request/Response (ER)");
             break;
         default:
-            printf("[Unidentified Entity Type] = 0x%x", entityPtr->tei_entity);
+            printf("[Unidentified Entity Type] = 0x%lx", entityPtr->tei_entity);
         }
 
-        printf("\n Instance (tei_instance) = %u\n", entityPtr->tei_instance);
+        printf("\n Instance (tei_instance) = %lu\n", entityPtr->tei_instance);
 
         ++entityPtr;
     }
@@ -526,11 +526,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-createp
     int startPort = 0; // host byte order
     int numPorts = 0;
     USHORT startPortns = 0; // Network byte order
-    ULONG64 resToken = {0};
+    ULONG64 resToken{};
 
     unsigned long status = 0;
 
-    WSADATA wsaData = {0};
+    WSADATA wsaData{};
     int iResult = 0;
 
     SOCKET sock = INVALID_SOCKET;
@@ -665,12 +665,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sio-acquire-port-reserva
     int numPorts = 0;
     USHORT startPortns = 0; // Network byte order
 
-    INET_PORT_RANGE portRange = {0};
-    INET_PORT_RESERVATION_INSTANCE portRes = {0};
+    INET_PORT_RANGE portRange{};
+    INET_PORT_RESERVATION_INSTANCE portRes{};
 
     // unsigned long status = 0;
 
-    WSADATA wsaData = {0};
+    WSADATA wsaData{};
     int iResult = 0;
 
     SOCKET sock = INVALID_SOCKET;
@@ -853,11 +853,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-lookupp
     int startPort = 0; // host byte order
     int numPorts = 0;
     USHORT startPortns = 0; // Network byte order
-    ULONG64 resToken = {0};
+    ULONG64 resToken{};
 
     unsigned long status = 0;
 
-    WSADATA wsaData = {0};
+    WSADATA wsaData{};
     int iResult = 0;
 
     SOCKET sock = INVALID_SOCKET;

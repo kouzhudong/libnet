@@ -1929,7 +1929,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     IUnknown * registration = nullptr;
     long * categories = nullptr;
     BSTR displayName = nullptr;
-    VARIANT varCategories = {VT_EMPTY};
+    VARIANT varCategories{};//VT_EMPTY
     int numberOfCategories = 1;
     long count = 0;
     BOOL comInit = FALSE;
@@ -2111,7 +2111,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     INetFwProducts * products = nullptr;
     IUnknown * registration = nullptr;
     BSTR displayName = nullptr;
-    VARIANT varCategories = {VT_EMPTY};
+    VARIANT varCategories{};
     long count = 0;
     BOOL comInit = FALSE;
 
