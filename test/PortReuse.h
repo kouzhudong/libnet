@@ -4,3 +4,6 @@
 
 int PortReuse();
 int __cdecl EXCLUSIVEADDRUSE(int argc, wchar_t ** argv);
+
+int PortReuseServer();
+int PortReuseClient();

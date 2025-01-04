@@ -309,3 +309,281 @@ https://learn.microsoft.com/zh-tw/windows/win32/winsock/using-so-reuseaddr-and-s
 
     return 0;
 }
+
+
+/*
+也许端口复用是用于客户端的。
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <winsock2.h>
+
+#pragma comment(lib, "ws2_32.lib")
+
+void communicate_with_server(SOCKET client_socket) {
+    char buffer[1024];
+    int bytes_sent, bytes_received;
+
+    // 发送消息到服务器
+    const char* message = "Hello, server!";
+    bytes_sent = send(client_socket, message, strlen(message), 0);
+    if (bytes_sent == SOCKET_ERROR) {
+        printf("Send failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+    printf("Message sent: %s\n", message);
+
+    // 接收来自服务器的响应
+    bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_received == SOCKET_ERROR) {
+        printf("Receive failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+    buffer[bytes_received] = '\0';
+    printf("Message received: %s\n", buffer);
+
+    closesocket(client_socket);
+}
+
+int main() {
+    WSADATA wsa;
+    SOCKET client_socket;
+    struct sockaddr_in server;
+    int opt = 1;
+
+    // 初始化 Winsock
+    printf("Initializing Winsock...\n");
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        printf("Failed. Error Code: %d\n", WSAGetLastError());
+        return 1;
+    }
+
+    printf("Initialized.\n");
+
+    // 创建客户端 socket
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+        printf("Could not create socket: %d\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Socket created.\n");
+
+    // 设置 socket 选项以允许端口复用
+    if (setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, (char*)&opt, sizeof(opt)) != 0) {
+        printf("setsockopt(SO_REUSEADDR) failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    // 设置服务器信息
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1"); // 连接到本地服务器
+    server.sin_port = htons(8888);
+
+    // 连接到服务器
+    if (connect(client_socket, (struct sockaddr*)&server, sizeof(server)) < 0) {
+        printf("Connect failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Connected to server.\n");
+
+    // 与服务器通讯
+    communicate_with_server(client_socket);
+
+    // 清理 Winsock
+    WSACleanup();
+
+    return 0;
+}
+*/
+
+
+void handle_client(SOCKET client_socket)
+{
+    char buffer[1024];
+    int bytes_received;
+
+    while ((bytes_received = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
+        buffer[bytes_received] = '\0';
+        printf("Received: %s\n", buffer);
+        send(client_socket, "ACK", 3, 0);
+    }
+
+    closesocket(client_socket);
+}
+
+int PortReuseServer()
+{
+    WSADATA wsa;
+    SOCKET server_socket, client_socket;
+    struct sockaddr_in server, client;
+    int c, opt = 1;
+
+    // 初始化 Winsock
+    printf("Initializing Winsock...\n");
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        printf("Failed. Error Code: %d\n", WSAGetLastError());
+        return 1;
+    }
+
+    printf("Initialized.\n");
+
+    // 创建 socket
+    if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+        printf("Could not create socket: %d\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Socket created.\n");
+
+    // 设置 socket 选项以允许端口复用
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) != 0) {
+        printf("setsockopt(SO_REUSEADDR) failed: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    // 准备 sockaddr_in 结构体
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons(1080);
+
+    // 绑定 socket
+    if (bind(server_socket, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
+        printf("Bind failed with error code: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Bind done.\n");
+
+    // 监听连接
+    if (listen(server_socket, 3) == SOCKET_ERROR) {
+        printf("Listen failed with error code: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Waiting for incoming connections...\n");
+    c = sizeof(struct sockaddr_in);
+
+    //如何才能收到客户端发来的信息呢？
+    while ((client_socket = accept(server_socket, (struct sockaddr *)&client, &c)) != INVALID_SOCKET) {
+        printf("Connection accepted.\n");
+        handle_client(client_socket);
+    }
+
+    if (client_socket == INVALID_SOCKET) {
+        printf("Accept failed with error code: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    closesocket(server_socket);
+    WSACleanup();
+
+    return 0;
+}
+
+
+void communicate_with_server(SOCKET client_socket)
+{
+    char buffer[1024];
+    int bytes_sent, bytes_received;
+
+    // 发送消息到服务器
+    const char * message = "Hello, server!";
+    bytes_sent = send(client_socket, message, strlen(message), 0);
+    if (bytes_sent == SOCKET_ERROR) {
+        printf("Send failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+    printf("Message sent: %s\n", message);
+
+    // 接收来自服务器的响应
+    bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_received == SOCKET_ERROR) {
+        printf("Receive failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+    buffer[bytes_received] = '\0';
+    printf("Message received: %s\n", buffer);
+
+    closesocket(client_socket);
+}
+
+int PortReuseClient()
+{
+    WSADATA wsa;
+    SOCKET client_socket;
+    struct sockaddr_in server;
+    int opt = 1;
+
+    // 初始化 Winsock
+    printf("Initializing Winsock...\n");
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        printf("Failed. Error Code: %d\n", WSAGetLastError());
+        return 1;
+    }
+
+    printf("Initialized.\n");
+
+    // 创建客户端 socket
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+        printf("Could not create socket: %d\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Socket created.\n");
+
+    // 设置 socket 选项以允许端口复用
+    if (setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) != 0) {
+        printf("setsockopt(SO_REUSEADDR) failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    // 设置服务器信息
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1"); // 连接到本地服务器
+    server.sin_port = htons(8888);
+
+    // 连接到服务器
+    if (connect(client_socket, (struct sockaddr *)&server, sizeof(server)) < 0) {
+        printf("Connect failed: %d\n", WSAGetLastError());
+        closesocket(client_socket);
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Connected to server.\n");
+
+    // 与服务器通讯
+    communicate_with_server(client_socket);
+
+    // 清理 Winsock
+    WSACleanup();
+
+    return 0;
+}
