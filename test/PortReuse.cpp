@@ -142,6 +142,8 @@ int PortReuse()
     printf("Waiting for incoming connections...\n");
     c = sizeof(struct sockaddr_in);
 
+    //在这里用tcpview.exe等类似的工具，可以看到有两个进程侦听相同的端口。且本地IPv4也一样。
+
     while ((client_socket = accept(server_socket, (struct sockaddr *)&client, &c)) != INVALID_SOCKET) {
         printf("Connection accepted.\n");
         handle_client(client_socket);
