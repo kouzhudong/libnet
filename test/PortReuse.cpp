@@ -112,6 +112,8 @@ int PortReuse()
     }
 
     //这个应该注释掉。
+    // #define SO_EXCLUSIVEADDRUSE ((int)(~SO_REUSEADDR))
+    // 看看这个定义和说明，应该这两个不能同时调用。
     //if (setsockopt(server_socket, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (char *)&opt, sizeof(opt)) < 0) {
     //    printf("setsockopt(SO_EXCLUSIVEADDRUSE) failed: %d\n", WSAGetLastError());
     //    closesocket(server_socket);
