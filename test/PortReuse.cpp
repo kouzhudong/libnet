@@ -408,7 +408,7 @@ int main() {
 */
 
 
-void handle_client(SOCKET client_socket)
+void handle_client2(SOCKET client_socket)
 {
     char buffer[1024];
     int bytes_received;
@@ -484,7 +484,7 @@ int PortReuseServer()
     //如何才能收到客户端发来的信息呢？
     while ((client_socket = accept(server_socket, (struct sockaddr *)&client, &c)) != INVALID_SOCKET) {
         printf("Connection accepted.\n");
-        handle_client(client_socket);
+        handle_client2(client_socket);
     }
 
     if (client_socket == INVALID_SOCKET) {
@@ -508,7 +508,7 @@ void communicate_with_server(SOCKET client_socket)
 
     // 发送消息到服务器
     const char * message = "Hello, server!";
-    bytes_sent = send(client_socket, message, strlen(message), 0);
+    bytes_sent = send(client_socket, message, (int)strlen(message), 0);
     if (bytes_sent == SOCKET_ERROR) {
         printf("Send failed: %d\n", WSAGetLastError());
         closesocket(client_socket);

@@ -19,13 +19,14 @@ EXTERN_C_START
 DLLEXPORT
 int WINAPI getaddrinfo_test(int argc, char ** argv);
 
+DLLEXPORT
+int WINAPI GetAddrInfoW_test(int argc, wchar_t ** argv);
+
 
 EXTERN_C_END
 
 
 int __cdecl getaddrinfo2(int argc, char ** argv);
-
-int __cdecl GetAddrInfoW(int argc, wchar_t ** argv);
 
 int __cdecl GetAddrInfoExA(int argc, wchar_t ** argv);
 int __cdecl GetAddrInfoExA2(_In_ int Argc, PWCHAR Argv[]);

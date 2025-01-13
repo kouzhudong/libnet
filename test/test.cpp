@@ -37,10 +37,10 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         return 0;
     }
 
-    //EXCLUSIVEADDRUSE(Args, Arglist); //宽字符函数入口示例。
-    //getaddrinfo_test(argc, argv); //单字符函数入口示例。
+    GetAddrInfoW_test(Args, Arglist); //宽字符函数入口示例。
+    getaddrinfo_test(argc, argv); //单字符函数入口示例。
 
-    PortReuse();
+    //PortReuse();
 
     //EnumAdaptersAddressesInfo(AF_INET);
     //EnumAdaptersAddressesInfo(AF_INET6);

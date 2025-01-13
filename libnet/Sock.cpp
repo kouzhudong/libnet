@@ -11,6 +11,8 @@ int WINAPI getaddrinfo_test(int argc, char ** argv)
 /*
 The following code example shows how to use the getaddrinfo function.
 https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo
+
+最后一个参数不建议填写0，而是空字符串："".
 */
 {
     // Declare and initialize variables
@@ -194,10 +196,14 @@ http://correy.webs.com
 }
 
 
-int __cdecl GetAddrInfoW(int argc, wchar_t ** argv)
+EXTERN_C
+DLLEXPORT
+int WINAPI GetAddrInfoW_test(int argc, wchar_t ** argv)
 /*
 The following code example shows how to use the GetAddrInfoW function.
 https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfow
+
+最后一个参数不建议填写0，而是空字符串："".
 */
 {
     if (argc != 3) { // Validate the parameters

@@ -403,6 +403,7 @@ int WINAPI GettingFirewallSettings();
 
 
 int WINAPI getaddrinfo_test(int argc, char ** argv);
+int WINAPI GetAddrInfoW_test(int argc, wchar_t ** argv);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
