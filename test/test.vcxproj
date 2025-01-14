@@ -160,6 +160,7 @@
   <ItemGroup>
     <ClCompile Include="c.c" />
     <ClCompile Include="IpHelper.cpp" />
+    <ClCompile Include="mtu.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="PortReuse.cpp" />
     <ClCompile Include="test.cpp" />
@@ -169,9 +170,13 @@
     <ClInclude Include="..\inc\libnet.h" />
     <ClInclude Include="c.h" />
     <ClInclude Include="IpHelper.h" />
+    <ClInclude Include="mtu.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PortReuse.h" />
     <ClInclude Include="WinHttp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
