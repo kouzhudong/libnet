@@ -868,21 +868,15 @@ DWORD RunEstatsTest(bool v6)
     }
 
     // Obtain MIB_TCPROW corresponding to the TCP connection.
-    winStatus =
-        v6 ? GetTcp6Row(
-                 serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(serverConnectRow)) :
-             GetTcpRow(
-                 serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(serverConnectRow));
+    winStatus = v6 ? GetTcp6Row(serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(serverConnectRow)) :
+             GetTcpRow(serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(serverConnectRow));
     if (winStatus != ERROR_SUCCESS) {
         wprintf(L"\nGetTcpRow failed on the server established connection with %u", winStatus);
         goto bail;
     }
 
-    winStatus =
-        v6 ? GetTcp6Row(
-                 clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(clientConnectRow)) :
-             GetTcpRow(
-                 clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(clientConnectRow));
+    winStatus = v6 ? GetTcp6Row(clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(clientConnectRow)) :
+             GetTcpRow(clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(clientConnectRow));
     if (winStatus != ERROR_SUCCESS) {
         wprintf(L"\nGetTcpRow failed on the client established connection with %u", winStatus);
         goto bail;
@@ -930,8 +924,7 @@ bail:
 }
 
 
-int CreateTcpConnection(bool v6, SOCKET * serviceSocket, SOCKET * clientSocket, SOCKET * acceptSocket,
-                        u_short * serverPort, u_short * clientPort)
+int CreateTcpConnection(bool v6, SOCKET * serviceSocket, SOCKET * clientSocket, SOCKET * acceptSocket, u_short * serverPort, u_short * clientPort)
 {
     INT status{};
     ADDRINFOW hints{}, *localhost = nullptr;
@@ -1085,8 +1078,7 @@ DWORD GetTcpRow(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __ou
 
     for (i = 0; i < tcpTable->dwNumEntries; i++) {
         tcpRowIt = &tcpTable->table[i];
-        if (tcpRowIt->dwLocalPort == static_cast<DWORD>(localPort) &&
-            tcpRowIt->dwRemotePort == static_cast<DWORD>(remotePort) && tcpRowIt->State == state) {
+        if (tcpRowIt->dwLocalPort == static_cast<DWORD>(localPort) && tcpRowIt->dwRemotePort == static_cast<DWORD>(remotePort) && tcpRowIt->State == state) {
             connectionFound = TRUE;
             *row = *tcpRowIt;
             break;
@@ -1131,8 +1123,7 @@ DWORD GetTcp6Row(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __o
 
     for (i = 0; i < tcp6Table->dwNumEntries; i++) {
         tcp6RowIt = &tcp6Table->table[i];
-        if (tcp6RowIt->dwLocalPort == static_cast<DWORD>(localPort) &&
-            tcp6RowIt->dwRemotePort == static_cast<DWORD>(remotePort) && tcp6RowIt->State == state) {
+        if (tcp6RowIt->dwLocalPort == static_cast<DWORD>(localPort) && tcp6RowIt->dwRemotePort == static_cast<DWORD>(remotePort) && tcp6RowIt->State == state) {
             connectionFound = TRUE;
             *row = *tcp6RowIt;
             break;
@@ -1219,15 +1210,9 @@ void ToggleEstat(PVOID row, TCP_ESTATS_TYPE type, bool enable, bool v6)
 
     if (status != NO_ERROR) {
         if (v6)
-            wprintf(L"\nSetPerTcp6ConnectionEStats %ws %s failed. status = %u",
-                    estatsTypeNames[type],
-                    enable ? L"enabled" : L"disabled",
-                    status);
+            wprintf(L"\nSetPerTcp6ConnectionEStats %ws %s failed. status = %u", estatsTypeNames[type], enable ? L"enabled" : L"disabled", status);
         else
-            wprintf(L"\nSetPerTcpConnectionEStats %ws %s failed. status = %u",
-                    estatsTypeNames[type],
-                    enable ? L"enabled" : L"disabled",
-                    status);
+            wprintf(L"\nSetPerTcpConnectionEStats %ws %s failed. status = %u", estatsTypeNames[type], enable ? L"enabled" : L"disabled", status);
     }
 }
 
@@ -1251,11 +1236,9 @@ ULONG GetConnectionEStats(void * row, TCP_ESTATS_TYPE type, PUCHAR rw, ULONG rwS
 // Call GetPerTcp6ConnectionEStats or GetPerTcpConnectionEStats.
 {
     if (v6) {
-        return GetPerTcp6ConnectionEStats(
-            reinterpret_cast<PMIB_TCP6ROW>(row), type, rw, 0, rwSize, ros, 0, rosSize, rod, 0, rodSize);
+        return GetPerTcp6ConnectionEStats(reinterpret_cast<PMIB_TCP6ROW>(row), type, rw, 0, rwSize, ros, 0, rosSize, rod, 0, rodSize);
     } else {
-        return GetPerTcpConnectionEStats(
-            reinterpret_cast<PMIB_TCPROW>(row), type, rw, 0, rwSize, ros, 0, rosSize, rod, 0, rodSize);
+        return GetPerTcpConnectionEStats(reinterpret_cast<PMIB_TCPROW>(row), type, rw, 0, rwSize, ros, 0, rosSize, rod, 0, rodSize);
     }
 }
 
@@ -1343,99 +1326,35 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
 
     switch (type) {
     case TcpConnectionEstatsData:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&dataRw),
-                                        sizeof(TCP_ESTATS_DATA_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&dataRw), sizeof(TCP_ESTATS_DATA_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = dataRw.EnableCollection;
         break;
     case TcpConnectionEstatsSndCong:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&sndCongRw),
-                                        sizeof(TCP_ESTATS_SND_CONG_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&sndCongRw), sizeof(TCP_ESTATS_SND_CONG_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = sndCongRw.EnableCollection;
         break;
     case TcpConnectionEstatsPath:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&pathRw),
-                                        sizeof(TCP_ESTATS_PATH_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&pathRw), sizeof(TCP_ESTATS_PATH_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = pathRw.EnableCollection;
         break;
     case TcpConnectionEstatsSendBuff:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&sndBuffRw),
-                                        sizeof(TCP_ESTATS_SEND_BUFF_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&sndBuffRw), sizeof(TCP_ESTATS_SEND_BUFF_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = sndBuffRw.EnableCollection;
         break;
     case TcpConnectionEstatsRec:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&recRw),
-                                        sizeof(TCP_ESTATS_REC_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&recRw), sizeof(TCP_ESTATS_REC_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = recRw.EnableCollection;
         break;
     case TcpConnectionEstatsObsRec:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&obsRecRw),
-                                        sizeof(TCP_ESTATS_OBS_REC_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&obsRecRw), sizeof(TCP_ESTATS_OBS_REC_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = obsRecRw.EnableCollection;
         break;
     case TcpConnectionEstatsBandwidth:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&bandwidthRw),
-                                        sizeof(TCP_ESTATS_BANDWIDTH_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&bandwidthRw), sizeof(TCP_ESTATS_BANDWIDTH_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = bandwidthRw.EnableCollectionOutbound && bandwidthRw.EnableCollectionInbound;
         break;
     case TcpConnectionEstatsFineRtt:
-        winStatus = GetConnectionEStats(row,
-                                        type,
-                                        reinterpret_cast<PUCHAR>(&fineRttRw),
-                                        sizeof(TCP_ESTATS_FINE_RTT_RW_v0),
-                                        v6,
-                                        ros,
-                                        rosSize,
-                                        rod,
-                                        rodSize);
+        winStatus = GetConnectionEStats(row, type, reinterpret_cast<PUCHAR>(&fineRttRw), sizeof(TCP_ESTATS_FINE_RTT_RW_v0), v6, ros, rosSize, rod, rodSize);
         RwEnableCollection = fineRttRw.EnableCollection;
         break;
     default:
@@ -1445,8 +1364,7 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
 
     if (!RwEnableCollection) {
         if (v6)
-            wprintf(L"\nGetPerTcp6ConnectionEStats %s failed. Rw.EnableCollection == FALSE",
-                    estatsTypeNames[type]);
+            wprintf(L"\nGetPerTcp6ConnectionEStats %s failed. Rw.EnableCollection == FALSE", estatsTypeNames[type]);
         else
             wprintf(L"\nGetPerTcpConnectionEStats %s failed. Rw.EnableCollection == FALSE", estatsTypeNames[type]);
         return;

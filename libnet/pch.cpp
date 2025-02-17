@@ -42,14 +42,7 @@ void GetTimeString(LARGE_INTEGER UtcTime, _Out_ LPWSTR TimeString)
     // SystemTimeToTzSpecificLocalTime
 
     //格式：2016-07-11 17:35:54
-    wsprintfW(TimeString,
-              L"%04u-%02u-%02u %02u:%02u:%02u.\r\n",
-              st.wYear,
-              st.wMonth,
-              st.wDay,
-              st.wHour,
-              st.wMinute,
-              st.wSecond);
+    wsprintfW(TimeString, L"%04u-%02u-%02u %02u:%02u:%02u.\r\n", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 }
 
 

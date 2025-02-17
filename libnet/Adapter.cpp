@@ -519,8 +519,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
 
     // Set the flags to pass to GetAdaptersAddresses
     ULONG flags = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_WINS_INFO | GAA_FLAG_INCLUDE_GATEWAYS |
-                  GAA_FLAG_INCLUDE_ALL_INTERFACES | GAA_FLAG_INCLUDE_ALL_COMPARTMENTS |
-                  GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
+                  GAA_FLAG_INCLUDE_ALL_INTERFACES | GAA_FLAG_INCLUDE_ALL_COMPARTMENTS | GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
 
     PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
     ULONG outBufLen = WORKING_BUFFER_SIZE; // Allocate a 15 KB buffer to start with.
@@ -561,8 +560,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
                         PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pUnicast->Address.lpSockaddr;
                         if (IN6_ADDR_EQUAL(&sin6_addr, &sa_in6->sin6_addr)) {
 
-                            PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress =
-                                pCurrAddresses->FirstGatewayAddress;
+                            PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress = pCurrAddresses->FirstGatewayAddress;
                             if (FirstGatewayAddress) {
                                 for (i = 0; FirstGatewayAddress != nullptr; i++) {
 
@@ -571,8 +569,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
                                         DWORD ipbufferlength = 46;
                                         char ipstringbuffer[46] = {0};
 
-                                        PSOCKADDR_IN6_LH temp =
-                                            (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
+                                        PSOCKADDR_IN6_LH temp = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
                                         inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, ipbufferlength);
 
                                         lstrcpyA(Gateway, ipstringbuffer); //会有多个，取最后一个。

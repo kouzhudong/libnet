@@ -211,8 +211,7 @@ made at 2012.04.16
 
     hr = CLSIDFromProgID(L"WinHttp.WinHttpRequest.5.1", &clsid);
     if (SUCCEEDED(hr)) {
-        hr = CoCreateInstance(
-            clsid, nullptr, CLSCTX_INPROC_SERVER, IID_IWinHttpRequest, (void **)&pIWinHttpRequest);
+        hr = CoCreateInstance(clsid, nullptr, CLSCTX_INPROC_SERVER, IID_IWinHttpRequest, (void **)&pIWinHttpRequest);
     }
     if (SUCCEEDED(hr)) { // Open WinHttpRequest.
         BSTR bstrMethod = SysAllocString(L"GET");
@@ -395,11 +394,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
     ZeroMemory(&ProxyInfo, sizeof(ProxyInfo));
 
     // Create the WinHTTP session.
-    hHttpSession = WinHttpOpen(L"WinHTTP AutoProxy Sample/1.0",
-                               WINHTTP_ACCESS_TYPE_NO_PROXY,
-                               WINHTTP_NO_PROXY_NAME,
-                               WINHTTP_NO_PROXY_BYPASS,
-                               0);
+    hHttpSession = WinHttpOpen(L"WinHTTP AutoProxy Sample/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!hHttpSession)
         goto Exit; // Exit if WinHttpOpen failed.
 
@@ -409,8 +404,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
         goto Exit; // Exit if WinHttpConnect failed.
 
     // Create the HTTP request handle.
-    hRequest = WinHttpOpenRequest(
-        hConnect, L"GET", L"ms.htm", L"HTTP/1.1", WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
+    hRequest = WinHttpOpenRequest(hConnect, L"GET", L"ms.htm", L"HTTP/1.1", WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
     if (!hRequest)
         goto Exit; // Exit if WinHttpOpenRequest failed.
 
@@ -438,8 +432,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
             goto Exit; // Exit if setting the proxy info failed.
         }
     } else {
-        printf("LastError:%#x.\n",
-               GetLastError()); //无论开启自动检测与否，都返回ERROR_WINHTTP_AUTODETECTION_FAILED
+        printf("LastError:%#x.\n", GetLastError()); //无论开启自动检测与否，都返回ERROR_WINHTTP_AUTODETECTION_FAILED
 
         // If Step 1 fails, with ERROR_WINHTTP_LOGIN_FAILURE,
         // then call WinHttpGetProxyForUrl with the fAutoLogonIfChallenged member set to TRUE.
@@ -506,11 +499,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
     HINTERNET hSession = nullptr, hConnect = nullptr, hRequest = nullptr;
 
     // Use WinHttpOpen to obtain a session handle.
-    hSession = WinHttpOpen(L"WinHTTP Example/1.0",
-                           WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
-                           WINHTTP_NO_PROXY_NAME,
-                           WINHTTP_NO_PROXY_BYPASS,
-                           0);
+    hSession = WinHttpOpen(L"WinHTTP Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     // Specify an HTTP server.
     if (hSession)
@@ -518,18 +507,11 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
 
     // Create an HTTP request handle.
     if (hConnect)
-        hRequest = WinHttpOpenRequest(hConnect,
-                                      L"GET",
-                                      nullptr,
-                                      nullptr,
-                                      WINHTTP_NO_REFERER,
-                                      WINHTTP_DEFAULT_ACCEPT_TYPES,
-                                      WINHTTP_FLAG_SECURE);
+        hRequest = WinHttpOpenRequest(hConnect, L"GET", nullptr, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
 
     // Send a request.
     if (hRequest)
-        bResults =
-            WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
+        bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
 
     // End the request.
     if (bResults)
@@ -637,11 +619,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
     HINTERNET hSession = nullptr, hConnect = nullptr, hRequest = nullptr;
 
     // Use WinHttpOpen to obtain a session handle.
-    hSession = WinHttpOpen(L"WinHTTP Example/1.0",
-                           WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
-                           WINHTTP_NO_PROXY_NAME,
-                           WINHTTP_NO_PROXY_BYPASS,
-                           0);
+    hSession = WinHttpOpen(L"WinHTTP Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     INTERNET_PORT nPort = (pGetRequest->fUseSSL) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT;
 
@@ -651,7 +629,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
 
     // Create an HTTP request handle.
     if (hConnect)
-        hRequest = WinHttpOpenRequest(hConnect,
+        hRequest = WinHttpOpenRequest(hConnect, 
                                       L"GET",
                                       pGetRequest->szPath,
                                       nullptr,
@@ -669,7 +647,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
         //  may require re-authentication after responding to a 401 or
         //  to a redirect. If you don't, you can get into a 407-401-407-401- loop.
         if (dwProxyAuthScheme != 0)
-            bResults = WinHttpSetCredentials(hRequest,
+            bResults = WinHttpSetCredentials(hRequest, 
                                              WINHTTP_AUTH_TARGET_PROXY,
                                              dwProxyAuthScheme,
                                              pGetRequest->szProxyUsername,
@@ -690,12 +668,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
 
         // Check the status code.
         if (bResults)
-            bResults = WinHttpQueryHeaders(hRequest,
-                                           WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
-                                           nullptr,
-                                           &dwStatusCode,
-                                           &dwSize,
-                                           nullptr);
+            bResults = WinHttpQueryHeaders(hRequest, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, nullptr, &dwStatusCode, &dwSize, nullptr);
 
         if (bResults) {
             switch (dwStatusCode) {
@@ -716,12 +689,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
                     if (dwSelectedScheme == 0)
                         bDone = TRUE;
                     else
-                        bResults = WinHttpSetCredentials(hRequest,
-                                                         dwTarget,
-                                                         dwSelectedScheme,
-                                                         pGetRequest->szServerUsername,
-                                                         pGetRequest->szServerPassword,
-                                                         nullptr);
+                        bResults = WinHttpSetCredentials(hRequest, dwTarget, dwSelectedScheme, pGetRequest->szServerUsername, pGetRequest->szServerPassword, nullptr);
                 }
 
                 // If the same credentials are requested twice, abort the request.
@@ -970,13 +938,11 @@ WScript.Echo( WinHttpReq.ResponseText);
 
     hr = CLSIDFromProgID(L"WinHttp.WinHttpRequest.5.1", &clsid);
     if (SUCCEEDED(hr)) {
-        hr = CoCreateInstance(
-            clsid, nullptr, CLSCTX_INPROC_SERVER, IID_IWinHttpRequest, (void **)&pIWinHttpRequest);
+        hr = CoCreateInstance(clsid, nullptr, CLSCTX_INPROC_SERVER, IID_IWinHttpRequest, (void **)&pIWinHttpRequest);
     }
     if (SUCCEEDED(hr)) { // Specify proxy and URL.
         varProxy.vt = VT_BSTR;
-        varProxy.bstrVal = SysAllocString(
-            L"127.0.0.1:9910"); //必须是已经存在的合理的配置，否则Send出问题，且get_ResponseText执行。
+        varProxy.bstrVal = SysAllocString(L"127.0.0.1:9910"); //必须是已经存在的合理的配置，否则Send出问题，且get_ResponseText执行。
         varUrl.vt = VT_BSTR;
         varUrl.bstrVal = SysAllocString(L"*.microsoft.com");
         hr = pIWinHttpRequest->SetProxy(HTTPREQUEST_PROXYSETTING_PROXY, varProxy, varUrl);

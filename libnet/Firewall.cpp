@@ -8,11 +8,7 @@
 HRESULT WFCOMInitialize(INetFwPolicy2 ** ppNetFwPolicy2)
 // Instantiate INetFwPolicy2
 {
-    HRESULT hr = CoCreateInstance(__uuidof(NetFwPolicy2),
-                                  nullptr,
-                                  CLSCTX_INPROC_SERVER,
-                                  __uuidof(INetFwPolicy2),
-                                  reinterpret_cast<void **>(ppNetFwPolicy2));
+    HRESULT hr = CoCreateInstance(__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), reinterpret_cast<void **>(ppNetFwPolicy2));
     if (FAILED(hr)) {
         wprintf(L"CoCreateInstance for INetFwPolicy2 failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -129,8 +125,7 @@ HRESULT AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
 
     //    Examples of using indirect strings -
     //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-128");
-    hr = StringCchPrintfW(
-        pwszTemp, STRING_BUFFER_SIZE, L"Allow inbound TCP traffic to application EdgeTraversalOptions.exe");
+    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"Allow inbound TCP traffic to application EdgeTraversalOptions.exe");
     if (FAILED(hr)) {
         wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1008,11 +1003,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
 
     // Add inbound WSH allow rule for allowing TCP 12345 to the service
     // Create a new Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule),
-                          reinterpret_cast<void **>(&pFwRule));
+    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1184,11 +1175,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule),
-                          reinterpret_cast<void **>(&pFwRule));
+    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1294,11 +1281,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule),
-                          reinterpret_cast<void **>(&pFwRule));
+    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1379,8 +1362,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     INetFwRule * pFwRule = nullptr;
     long CurrentProfilesBitMask = 0;
     BSTR bstrRuleName = SysAllocString(L"PER_INTERFACETYPE_RULE");
-    BSTR bstrRuleDescription =
-        SysAllocString(L"Allow incoming network traffic over port 2400 coming from LAN interface type");
+    BSTR bstrRuleDescription = SysAllocString(L"Allow incoming network traffic over port 2400 coming from LAN interface type");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleLPorts = SysAllocString(L"2400-2450");
     BSTR bstrRuleInterfaceType = SysAllocString(L"LAN");
@@ -1420,11 +1402,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule),
-                          reinterpret_cast<void **>(&pFwRule));
+    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1505,8 +1483,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     INetFwRule * pFwRule = nullptr;
     long CurrentProfilesBitMask = 0;
     BSTR bstrRuleName = SysAllocString(L"OUTBOUND_RULE");
-    BSTR bstrRuleDescription =
-        SysAllocString(L"Allow outbound network traffic from my Application over TCP port 4000");
+    BSTR bstrRuleDescription = SysAllocString(L"Allow outbound network traffic from my Application over TCP port 4000");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleApplication = SysAllocString(L"%programfiles%\\MyApplication.exe");
     BSTR bstrRuleLPorts = SysAllocString(L"4000");
@@ -1546,11 +1523,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule),
-                          reinterpret_cast<void **>(&pFwRule));
+    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1692,11 +1665,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule),
-                          reinterpret_cast<void **>(&pFwRule));
+    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1819,11 +1788,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     }
 
     // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule),
-                          reinterpret_cast<void **>(&pFwRule));
+    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
     if (FAILED(hr)) {
         printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -1906,8 +1871,7 @@ Abstract:
 
 
 // Forward declarations
-DWORD ArrayOfLongsToVariant(__in unsigned long numItems, __in_ecount(numItems) const long * items,
-                            __out VARIANT * dst);
+DWORD ArrayOfLongsToVariant(__in unsigned long numItems, __in_ecount(numItems) const long * items, __out VARIANT * dst);
 
 
 void __cdecl RWFTOFPM()
@@ -1959,11 +1923,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     comInit = TRUE;
 
 
-    hr = CoCreateInstance(__uuidof(NetFwProduct),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwProduct),
-                          reinterpret_cast<void **>(&product));
+    hr = CoCreateInstance(__uuidof(NetFwProduct), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), reinterpret_cast<void **>(&product));
     if (FAILED(hr)) { // CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
         goto CLEANUP;
@@ -1981,11 +1941,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
         goto CLEANUP;
     }
 
-    hr = CoCreateInstance(__uuidof(NetFwProducts),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwProducts),
-                          reinterpret_cast<void **>(&products));
+    hr = CoCreateInstance(__uuidof(NetFwProducts), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), reinterpret_cast<void **>(&products));
     if (FAILED(hr)) { // CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
         goto CLEANUP;
@@ -2028,8 +1984,7 @@ CLEANUP:
 }
 
 
-DWORD ArrayOfLongsToVariant(__in unsigned long numItems, __in_ecount(numItems) const long * items,
-                            __out VARIANT * dst)
+DWORD ArrayOfLongsToVariant(__in unsigned long numItems, __in_ecount(numItems) const long * items, __out VARIANT * dst)
 // This Function Converts and Array of Longs to Variant
 {
     DWORD result = NO_ERROR;
@@ -2131,11 +2086,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     }
     comInit = TRUE;
 
-    hr = CoCreateInstance(__uuidof(NetFwProduct),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwProduct),
-                          reinterpret_cast<void **>(&product));
+    hr = CoCreateInstance(__uuidof(NetFwProduct), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), reinterpret_cast<void **>(&product));
     if (FAILED(hr)) { // CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
         goto CLEANUP;
@@ -2153,11 +2104,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
         goto CLEANUP;
     }
 
-    hr = CoCreateInstance(__uuidof(NetFwProducts),
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwProducts),
-                          reinterpret_cast<void **>(&products));
+    hr = CoCreateInstance(__uuidof(NetFwProducts), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), reinterpret_cast<void **>(&products));
     if (FAILED(hr)) { // CoCreateInstance Failed
         wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
         goto CLEANUP;
@@ -2313,14 +2260,10 @@ HRESULT GetCurrentFirewallState(__in INetFwPolicy2 * pNetFwPolicy2)
             /*Is Firewall Enabled?*/
             hr = pNetFwPolicy2->get_FirewallEnabled(ProfileMap[i].Id, &bActualFirewallEnabled);
             if (FAILED(hr)) {
-                wprintf(L"Failed to get FirewallEnabled settings for %s profile. Error: %x.\n",
-                        ProfileMap[i].Name,
-                        hr);
+                wprintf(L"Failed to get FirewallEnabled settings for %s profile. Error: %x.\n", ProfileMap[i].Name, hr);
                 goto CLEANUP;
             }
-            wprintf(L"On %s profile (Current) : Firewall state is %s\n",
-                    ProfileMap[i].Name,
-                    (bActualFirewallEnabled ? L"ON" : L"OFF"));
+            wprintf(L"On %s profile (Current) : Firewall state is %s\n", ProfileMap[i].Name, (bActualFirewallEnabled ? L"ON" : L"OFF"));
         }
     }
 
@@ -2370,8 +2313,7 @@ HRESULT IsRuleGroupEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
     wprintf(L"\n\nIs 'File and Printer Sharing' rule group enabled in public and private profiles ?\n");
     wprintf(L"---------------------------------------------------------------------------------\n");
 
-    hr = pNetFwPolicy2->IsRuleGroupEnabled(
-        NET_FW_PROFILE2_PRIVATE | NET_FW_PROFILE2_PUBLIC, GroupName, &bActualEnabled);
+    hr = pNetFwPolicy2->IsRuleGroupEnabled(NET_FW_PROFILE2_PRIVATE | NET_FW_PROFILE2_PUBLIC, GroupName, &bActualEnabled);
     if (SUCCEEDED(hr)) {
         if (VARIANT_TRUE == bActualEnabled && S_OK == hr) {
             wprintf(L"Rule Group currently enabled on both public and private profiles\n");
@@ -2457,8 +2399,7 @@ HRESULT WindowsFirewallInitialize(OUT INetFwProfile ** fwProfile)
     *fwProfile = nullptr;
 
     // Create an instance of the firewall settings manager.
-    hr = CoCreateInstance(
-        __uuidof(NetFwMgr), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwMgr), reinterpret_cast<void **>(&fwMgr));
+    hr = CoCreateInstance(__uuidof(NetFwMgr), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwMgr), reinterpret_cast<void **>(&fwMgr));
     if (FAILED(hr)) {
         printf("CoCreateInstance failed: 0x%08lx\n", hr);
         goto error;
@@ -2678,7 +2619,7 @@ HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * f
         }
 
         // Create an instance of an authorized application.
-        hr = CoCreateInstance(__uuidof(NetFwAuthorizedApplication),
+        hr = CoCreateInstance(__uuidof(NetFwAuthorizedApplication), 
                               nullptr,
                               CLSCTX_INPROC_SERVER,
                               __uuidof(INetFwAuthorizedApplication),
@@ -2742,8 +2683,7 @@ error:
 }
 
 
-HRESULT WindowsFirewallPortIsEnabled(IN INetFwProfile * fwProfile, IN LONG portNumber,
-                                     IN NET_FW_IP_PROTOCOL ipProtocol, OUT BOOL * fwPortEnabled)
+HRESULT WindowsFirewallPortIsEnabled(IN INetFwProfile * fwProfile, IN LONG portNumber, IN NET_FW_IP_PROTOCOL ipProtocol, OUT BOOL * fwPortEnabled)
 {
     HRESULT hr = S_OK;
     VARIANT_BOOL fwEnabled{};
@@ -2801,8 +2741,7 @@ error:
 }
 
 
-HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber, IN NET_FW_IP_PROTOCOL ipProtocol,
-                               IN const wchar_t * name)
+HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber, IN NET_FW_IP_PROTOCOL ipProtocol, IN const wchar_t * name)
 {
     HRESULT hr = S_OK;
     BOOL fwPortEnabled{};
@@ -2830,11 +2769,7 @@ HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber,
         }
 
         // Create an instance of an open port.
-        hr = CoCreateInstance(__uuidof(NetFwOpenPort),
-                              nullptr,
-                              CLSCTX_INPROC_SERVER,
-                              __uuidof(INetFwOpenPort),
-                              reinterpret_cast<void **>(&fwOpenPort));
+        hr = CoCreateInstance(__uuidof(NetFwOpenPort), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwOpenPort), reinterpret_cast<void **>(&fwOpenPort));
         if (FAILED(hr)) {
             printf("CoCreateInstance failed: 0x%08lx\n", hr);
             goto error;

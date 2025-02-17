@@ -593,15 +593,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-createp
     else {
         wprintf(L"socket function succeeded\n");
 
-        iResult = WSAIoctl(sock,
-                           SIO_ASSOCIATE_PORT_RESERVATION,
-                           (LPVOID)&resToken,
-                           sizeof(ULONG64),
-                           nullptr,
-                           0,
-                           &bytesReturned,
-                           nullptr,
-                           nullptr);
+        iResult = WSAIoctl(sock, SIO_ASSOCIATE_PORT_RESERVATION, (LPVOID)&resToken, sizeof(ULONG64), nullptr, 0, &bytesReturned, nullptr, nullptr);
         if (iResult != 0) {
             wprintf(L"WSAIoctl(SIO_ASSOCIATE_PORT_RESERVATION) failed with error = %d\n", WSAGetLastError());
         } else {
@@ -734,7 +726,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sio-acquire-port-reserva
     } else {
         wprintf(L"socket function succeeded\n");
 
-        iResult = WSAIoctl(sock,
+        iResult = WSAIoctl(sock, 
                            SIO_ACQUIRE_PORT_RESERVATION,
                            (LPVOID)&portRange,
                            sizeof(INET_PORT_RANGE),
@@ -764,21 +756,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sio-acquire-port-reserva
             } else {
                 wprintf(L"socket function for second socket succeeded\n");
 
-                iResult = WSAIoctl(sock,
-                                   SIO_ASSOCIATE_PORT_RESERVATION,
-                                   (LPVOID)&portRes.Token,
-                                   sizeof(ULONG64),
-                                   nullptr,
-                                   0,
-                                   &bytesReturned,
-                                   nullptr,
-                                   nullptr);
+                iResult = WSAIoctl(sock, SIO_ASSOCIATE_PORT_RESERVATION, (LPVOID)&portRes.Token, sizeof(ULONG64), nullptr, 0, &bytesReturned, nullptr, nullptr);
                 if (iResult != 0) {
-                    wprintf(L"WSAIoctl(SIO_ASSOCIATE_PORT_RESERVATION) failed with error = %d\n",
-                            WSAGetLastError());
+                    wprintf(L"WSAIoctl(SIO_ASSOCIATE_PORT_RESERVATION) failed with error = %d\n", WSAGetLastError());
                 } else {
-                    wprintf(L"WSAIoctl(SIO_ASSOCIATE_PORT_RESERVATION) succeeded, bytesReturned = %u\n",
-                            bytesReturned);
+                    wprintf(L"WSAIoctl(SIO_ASSOCIATE_PORT_RESERVATION) succeeded, bytesReturned = %u\n", bytesReturned);
 
                     service.sin_family = (ADDRESS_FAMILY)iFamily;
                     service.sin_addr.s_addr = INADDR_ANY;
@@ -800,15 +782,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sio-acquire-port-reserva
             }
 
             // comment out this block of code if you don't want to delete the reservation just created
-            iResult = WSAIoctl(sock,
-                               SIO_RELEASE_PORT_RESERVATION,
-                               (LPVOID)&portRes.Token,
-                               sizeof(ULONG64),
-                               nullptr,
-                               0,
-                               &bytesReturned,
-                               nullptr,
-                               nullptr);
+            iResult = WSAIoctl(sock, SIO_RELEASE_PORT_RESERVATION, (LPVOID)&portRes.Token, sizeof(ULONG64), nullptr, 0, &bytesReturned, nullptr, nullptr);
             if (iResult != 0) {
                 wprintf(L"WSAIoctl(SIO_RELEASE_PORT_RESERVATION) failed with error = %d\n", WSAGetLastError());
             } else {
@@ -920,15 +894,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-lookupp
     else {
         wprintf(L"socket function succeeded\n");
 
-        iResult = WSAIoctl(sock,
-                           SIO_ASSOCIATE_PORT_RESERVATION,
-                           (LPVOID)&resToken,
-                           sizeof(ULONG64),
-                           nullptr,
-                           0,
-                           &bytesReturned,
-                           nullptr,
-                           nullptr);
+        iResult = WSAIoctl(sock, SIO_ASSOCIATE_PORT_RESERVATION, (LPVOID)&resToken, sizeof(ULONG64), nullptr, 0, &bytesReturned, nullptr, nullptr);
         if (iResult != 0) {
             wprintf(L"WSAIoctl(SIO_ASSOCIATE_PORT_RESERVATION) failed with error = %d\n", WSAGetLastError());
         } else {

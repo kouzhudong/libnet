@@ -85,7 +85,7 @@
 #include <initguid.h> //注意前后顺序。静态定义UUID用的，否则：error LNK2001。
 #include <usbioctl.h>
 #include <usbiodef.h>
-#include <usbctypes.h>
+//#include <usbctypes.h>
 #include <intsafe.h>
 #include <specstrings.h>
 #include <usb.h>

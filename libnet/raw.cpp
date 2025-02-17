@@ -105,17 +105,9 @@ IsCopy：是复制还是回复。
 */
 {
     if (IsCopy) {
-        InitIpv4Header(&InIPv4Header->SourceAddress,
-                       &InIPv4Header->DestinationAddress,
-                       InIPv4Header->Protocol,
-                       TotalLength,
-                       OutIPv4Header);
+        InitIpv4Header(&InIPv4Header->SourceAddress, &InIPv4Header->DestinationAddress, InIPv4Header->Protocol, TotalLength, OutIPv4Header);
     } else {
-        InitIpv4Header(&InIPv4Header->DestinationAddress,
-                       &InIPv4Header->SourceAddress,
-                       InIPv4Header->Protocol,
-                       TotalLength,
-                       OutIPv4Header);
+        InitIpv4Header(&InIPv4Header->DestinationAddress, &InIPv4Header->SourceAddress, InIPv4Header->Protocol, TotalLength, OutIPv4Header);
     }
 }
 
@@ -248,8 +240,7 @@ OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http
     test = test + sizeof(TCP_HDR);
     RtlCopyMemory(test, (PBYTE)&tcp4->tcp_hdr + sizeof(TCP_HDR), OptLen);
 
-    tcp4->tcp_hdr.th_sum =
-        checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
+    tcp4->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
 
     FREE(temp);
 }
@@ -387,17 +378,9 @@ IsCopy：是复制还是回复。
 */
 {
     if (IsCopy) {
-        InitIpv6HeaderForTcp(&InIPv6Header->SourceAddress,
-                             &InIPv6Header->DestinationAddress,
-                             InIPv6Header->NextHeader,
-                             OptLen,
-                             OutIPv6Header);
+        InitIpv6HeaderForTcp(&InIPv6Header->SourceAddress, &InIPv6Header->DestinationAddress, InIPv6Header->NextHeader, OptLen, OutIPv6Header);
     } else {
-        InitIpv6HeaderForTcp(&InIPv6Header->DestinationAddress,
-                             &InIPv6Header->SourceAddress,
-                             InIPv6Header->NextHeader,
-                             OptLen,
-                             OutIPv6Header);
+        InitIpv6HeaderForTcp(&InIPv6Header->DestinationAddress, &InIPv6Header->SourceAddress, InIPv6Header->NextHeader, OptLen, OutIPv6Header);
     }
 }
 
@@ -425,8 +408,7 @@ void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
     test = test + sizeof(TCP_HDR);
     RtlCopyMemory(test, (PBYTE)&tcp6->tcp_hdr + sizeof(TCP_HDR), OptLen);
 
-    tcp6->tcp_hdr.th_sum =
-        checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
+    tcp6->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
 
     FREE(temp);
 }

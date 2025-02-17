@@ -544,8 +544,7 @@ address..
         //  If we fail to wait, WSACleanup() could be called while an
         //  asynchronous query is still in progress, possibly causing a crash.
 
-        wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n",
-                QueryTimeout / 1000);
+        wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
 
         GetAddrInfoExCancel(&CancelHandle);
 
@@ -589,11 +588,7 @@ VOID WINAPI QueryCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOVE
     while (QueryResults) {
         AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
 
-        WSAAddressToString(QueryResults->ai_addr,
-                           static_cast<DWORD>(QueryResults->ai_addrlen),
-                           nullptr,
-                           AddrString,
-                           &AddressStringLength);
+        WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
 
         wprintf(L"Ip Address: %s\n", AddrString);
         QueryResults = QueryResults->ai_next;
@@ -823,7 +818,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     //  in the overlapped object (Just set hEvent in the Overlapped object and set NULL as completion callback.)
     //
     //  This sample uses the completion callback method.
-    Error = GetAddrInfoExW(Argv[1],
+    Error = GetAddrInfoExW(Argv[1], 
                            nullptr,
                            NS_DNS,
                            nullptr,
@@ -848,8 +843,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         //  If we fail to wait, WSACleanup() could be called while an
         //  asynchronous query is still in progress, possibly causing a crash.
 
-        wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n",
-                QueryTimeout / 1000);
+        wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
 
         GetAddrInfoExCancel(&CancelHandle);
 
@@ -893,11 +887,7 @@ VOID WINAPI QueryCompleteCallback2(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOV
     while (QueryResults) {
         AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
 
-        WSAAddressToString(QueryResults->ai_addr,
-                           static_cast<DWORD>(QueryResults->ai_addrlen),
-                           nullptr,
-                           AddrString,
-                           &AddressStringLength);
+        WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
 
         wprintf(L"Ip Address: %s\n", AddrString);
         QueryResults = QueryResults->ai_next;
@@ -1004,13 +994,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getnamei
     saGNI.sin_family = AF_INET;
     saGNI.sin_addr.s_addr = inet_addr(argv[1]);
     saGNI.sin_port = htons(port);
-    DWORD dwRetval = GetNameInfoW(reinterpret_cast<struct sockaddr *>(&saGNI),
-                                  sizeof(struct sockaddr),
-                                  hostname,
-                                  NI_MAXHOST,
-                                  servInfo,
-                                  NI_MAXSERV,
-                                  NI_NUMERICSERV);
+    DWORD dwRetval = GetNameInfoW(reinterpret_cast<struct sockaddr *>(&saGNI), sizeof(struct sockaddr), hostname, NI_MAXHOST, servInfo, NI_MAXSERV, NI_NUMERICSERV);
     if (dwRetval != 0) {
         wprintf(L"failed with error # %ld\n", WSAGetLastError());
         return 1;

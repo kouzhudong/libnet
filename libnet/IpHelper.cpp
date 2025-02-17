@@ -228,9 +228,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
         printf("Interface index[%d]:\t\t %lu\n", (int)i, pipTable->Table[i].InterfaceIndex);
 
-        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n",
-               (int)i,
-               pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
+        printf("Interface LUID NetLuidIndex[%d]:\t %llu\n", (int)i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
         printf("Interface LUID IfType[%d]: ", (int)i);
         PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);
 
@@ -255,7 +253,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
         printf("IsRouter[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].IsRouter);
         printf("IsUnreachable[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].IsUnreachable);
 
-        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n",
+        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", 
                (int)i,
                pipTable->Table[i].ReachabilityTime.LastReachable,
                pipTable->Table[i].ReachabilityTime.LastUnreachable);
@@ -886,8 +884,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
             break;
         }
 
-        wprintf(
-            L"Interface LUID NetLuidIndex[%u]:  %I64u\n", i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
+        wprintf(L"Interface LUID NetLuidIndex[%u]:  %I64u\n", i, pipTable->Table[i].InterfaceLuid.Info.NetLuidIndex);
         wprintf(L"Interface LUID IfType[%u]:\t ", i);
         PrintInterfaceType(pipTable->Table[i].InterfaceLuid.Info.IfType);
 
@@ -899,16 +896,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
         wprintf(L"Suffix Origin[%u]:\t\t ", i);
         PrintSuffixOrigin(pipTable->Table[i].SuffixOrigin);
 
-        wprintf(L"Valid Lifetime[%u]:\t\t 0x%x (%u)\n",
-                i,
-                pipTable->Table[i].ValidLifetime,
-                pipTable->Table[i].ValidLifetime);
-
-        wprintf(L"Preferred Lifetime[%u]:\t\t 0x%x (%u)\n",
-                i,
-                pipTable->Table[i].PreferredLifetime,
-                pipTable->Table[i].PreferredLifetime);
-
+        wprintf(L"Valid Lifetime[%u]:\t\t 0x%x (%u)\n", i, pipTable->Table[i].ValidLifetime, pipTable->Table[i].ValidLifetime);
+        wprintf(L"Preferred Lifetime[%u]:\t\t 0x%x (%u)\n", i, pipTable->Table[i].PreferredLifetime, pipTable->Table[i].PreferredLifetime);
         wprintf(L"OnLink PrefixLength[%u]:\t\t %lu\n", i, pipTable->Table[i].OnLinkPrefixLength);
 
         wprintf(L"Skip As Source[%u]:\t\t ", i);
@@ -1231,9 +1220,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/ns-netioapi-mib_ifs
     }
 
     for (ULONG i = 0; i < Table->NumEntries; i++) {
-        printf("HigherLayerInterfaceIndex:%u, LowerLayerInterfaceIndex:%u\r\n",
-               Table->Table[i].HigherLayerInterfaceIndex,
-               Table->Table[i].LowerLayerInterfaceIndex);
+        printf("HigherLayerInterfaceIndex:%u, LowerLayerInterfaceIndex:%u\r\n", Table->Table[i].HigherLayerInterfaceIndex, Table->Table[i].LowerLayerInterfaceIndex);
     }
 
     FreeMibTable(Table);
@@ -1259,9 +1246,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getinve
     }
 
     for (ULONG i = 0; i < Table->NumEntries; i++) {
-        printf("HigherLayerInterfaceIndex:%u, LowerLayerInterfaceIndex:%u\r\n",
-               Table->Table[i].HigherLayerInterfaceIndex,
-               Table->Table[i].LowerLayerInterfaceIndex);
+        printf("HigherLayerInterfaceIndex:%u, LowerLayerInterfaceIndex:%u\r\n", Table->Table[i].HigherLayerInterfaceIndex, Table->Table[i].LowerLayerInterfaceIndex);
     }
 
     FreeMibTable(Table);

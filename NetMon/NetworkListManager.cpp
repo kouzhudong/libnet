@@ -103,10 +103,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
     DWORD HighDateTimeCreated;
     DWORD LowDateTimeConnected;
     DWORD HighDateTimeConnected;
-    hr = Network.GetTimeCreatedAndConnected(&LowDateTimeCreated,
-                                            &HighDateTimeCreated,
-                                            &LowDateTimeConnected,
-                                            &HighDateTimeConnected);
+    hr = Network.GetTimeCreatedAndConnected(&LowDateTimeCreated, &HighDateTimeCreated, &LowDateTimeConnected, &HighDateTimeConnected);
 
     //INetwork£º£ºSetCategory
     //INetwork£º£ºSetDescription
@@ -130,8 +127,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
     }
 
     INetworkListManager * pNetworkListManager = nullptr;
-    hr = CoCreateInstance(
-        CLSID_NetworkListManager, nullptr, CLSCTX_ALL, IID_INetworkListManager, (LPVOID *)&pNetworkListManager);
+    hr = CoCreateInstance(CLSID_NetworkListManager, nullptr, CLSCTX_ALL, IID_INetworkListManager, (LPVOID *)&pNetworkListManager);
 
     VARIANT_BOOL IsConnected = 0;
     hr = pNetworkListManager->get_IsConnected(&IsConnected);
@@ -244,11 +240,7 @@ https://www.cxyzjd.com/article/chouhuan1877/100808606
     (void)CoInitialize(nullptr);
 
     INetworkListManager * pNetworkListManager = nullptr;
-    HRESULT hr = CoCreateInstance(CLSID_NetworkListManager,
-                                  nullptr,
-                                  CLSCTX_ALL,
-                                  IID_INetworkListManager,
-                                  (LPVOID *)&pNetworkListManager);
+    HRESULT hr = CoCreateInstance(CLSID_NetworkListManager, nullptr, CLSCTX_ALL, IID_INetworkListManager, (LPVOID *)&pNetworkListManager);
 
     VARIANT_BOOL bConnected = VARIANT_FALSE;
     hr = pNetworkListManager->get_IsConnected(&bConnected);
