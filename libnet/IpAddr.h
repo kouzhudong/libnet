@@ -21,5 +21,8 @@ void WINAPI EnumIPv4ByMasks(const char * ipv4, BYTE mask);
 DLLEXPORT
 int WINAPI AddIPv4Address(int argc, char ** argv);
 
+DLLEXPORT
+int WINAPI SetStaticIPv4(PCWSTR Ipv4, PCWSTR SubnetMask);
+
 
 EXTERN_C_END

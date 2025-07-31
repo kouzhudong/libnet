@@ -38,7 +38,9 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     }
 
     //GetAddrInfoW_test(Args, Arglist); //宽字符函数入口示例。
-    AddIPv4Address(argc, argv);       //单字符函数入口示例。
+    //AddIPv4Address(argc, argv);       //单字符函数入口示例。
+
+    SetStaticIPv4(L"192.168.176.9", L"255.255.255.0");
 
     LocalFree(Arglist);
 }

@@ -199,6 +199,9 @@ void WINAPI EnumIPv4ByMasks(const char * ipv4, BYTE mask);
 __declspec(dllimport)
 int WINAPI AddIPv4Address(int argc, char ** argv);
 
+__declspec(dllimport)
+int WINAPI SetStaticIPv4(PCWSTR Ipv4, PCWSTR SubnetMask);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

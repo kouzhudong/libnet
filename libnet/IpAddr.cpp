@@ -428,3 +428,161 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
 
     exit(0);
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+EXTERN_C
+DLLEXPORT
+int WINAPI SetStaticIPv4(PCWSTR Ipv4, PCWSTR SubnetMask)
+/*
+grok 3 AI 生成
+*/
+{
+    // Initialize COM
+    HRESULT hres = CoInitializeEx(0, COINIT_MULTITHREADED);
+    if (FAILED(hres)) {
+        printf("Failed to initialize COM: %ld\n", hres);
+        return 1;
+    }
+
+    // Initialize COM security
+    hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
+    if (FAILED(hres)) {
+        printf("Failed to initialize COM security: %ld\n", hres);
+        CoUninitialize();
+        return 1;
+    }
+
+    // Connect to WMI
+    IWbemLocator * pLoc = NULL;
+    hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *)&pLoc);
+    if (FAILED(hres)) {
+        printf("Failed to create IWbemLocator: %ld\n", hres);
+        CoUninitialize();
+        return 1;
+    }
+
+    IWbemServices * pSvc = NULL;
+    hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, 0, 0, 0, &pSvc);
+    if (FAILED(hres)) {
+        printf("Failed to connect to WMI: %ld\n", hres);
+        pLoc->Release();
+        CoUninitialize();
+        return 1;
+    }
+
+    // Set security levels on the proxy
+    hres = CoSetProxyBlanket(pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
+    if (FAILED(hres)) {
+        printf("Failed to set proxy blanket: %ld\n", hres);
+        pSvc->Release();
+        pLoc->Release();
+        CoUninitialize();
+        return 1;
+    }
+
+    // Query for network adapters
+    IEnumWbemClassObject * pEnumerator = NULL;
+    hres = pSvc->ExecQuery(_bstr_t("WQL"),
+                           _bstr_t("SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = TRUE"),
+                           WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
+                           NULL,
+                           &pEnumerator);
+    if (FAILED(hres)) {
+        printf("Query failed: %ld\n", hres);
+        pSvc->Release();
+        pLoc->Release();
+        CoUninitialize();
+        return 1;
+    }
+
+    // Iterate through adapters
+    IWbemClassObject * pclsObj = NULL;
+    ULONG uReturn = 0;
+    while (pEnumerator) {
+        hres = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+        if (uReturn == 0)
+            break;
+
+        VARIANT vtProp;
+        VariantInit(&vtProp);
+
+        // Get the EnableStatic method
+        IWbemClassObject * pClass = NULL;
+        hres = pSvc->GetObject(_bstr_t("Win32_NetworkAdapterConfiguration"), 0, NULL, &pClass, NULL);
+        if (FAILED(hres)) {
+            printf("Failed to get class object: %ld\n", hres);
+            pclsObj->Release();
+            continue;
+        }
+
+        IWbemClassObject * pInParamsDefinition = NULL;
+        hres = pClass->GetMethod(_bstr_t("EnableStatic"), 0, &pInParamsDefinition, NULL);
+        if (FAILED(hres)) {
+            printf("Failed to get method: %ld\n", hres);
+            pClass->Release();
+            pclsObj->Release();
+            continue;
+        }
+
+        IWbemClassObject * pInParams = NULL;
+        hres = pInParamsDefinition->SpawnInstance(0, &pInParams);
+        if (FAILED(hres)) {
+            printf("Failed to spawn instance: %ld\n", hres);
+            pInParamsDefinition->Release();
+            pClass->Release();
+            pclsObj->Release();
+            continue;
+        }
+
+        // Set IP address and subnet mask
+        VARIANT vIP, vSubnet;
+        VariantInit(&vIP);
+        VariantInit(&vSubnet);
+        SAFEARRAY * ipArray = SafeArrayCreateVector(VT_BSTR, 0, 1);
+        SAFEARRAY * subnetArray = SafeArrayCreateVector(VT_BSTR, 0, 1);
+        LONG index = 0;
+        _bstr_t ipAddress = Ipv4;
+        _bstr_t subnetMask = SubnetMask;
+        (void)SafeArrayPutElement(ipArray, &index, &ipAddress);
+        (void)SafeArrayPutElement(subnetArray, &index, &subnetMask);
+        vIP.vt = VT_ARRAY | VT_BSTR;
+        vIP.parray = ipArray;
+        vSubnet.vt = VT_ARRAY | VT_BSTR;
+        vSubnet.parray = subnetArray;
+
+        hres = pInParams->Put(_bstr_t("IPAddress"), 0, &vIP, 0);
+        hres = pInParams->Put(_bstr_t("SubnetMask"), 0, &vSubnet, 0);
+
+        // Execute the EnableStatic method
+        IWbemClassObject * pOutParams = NULL;
+        hres = pSvc->ExecMethod(_bstr_t(pclsObj), _bstr_t("EnableStatic"), 0, NULL, pInParams, &pOutParams, NULL);
+        if (FAILED(hres)) {
+            printf("Failed to execute EnableStatic: %ld\n", hres);
+        } else {
+            printf("IP address set successfully.\n");
+        }
+
+        // Cleanup
+        VariantClear(&vIP);
+        VariantClear(&vSubnet);
+        pInParams->Release();
+        pInParamsDefinition->Release();
+        pClass->Release();
+        pclsObj->Release();
+        if (pOutParams)
+            pOutParams->Release();
+    }
+
+    // Cleanup
+    pEnumerator->Release();
+    pSvc->Release();
+    pLoc->Release();
+    CoUninitialize();
+    return 0;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
