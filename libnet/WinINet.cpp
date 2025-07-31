@@ -61,8 +61,7 @@ homepage:http://correy.webs.com
 
     // b = InternetSetCookie(szURL, L"email", TEXT("kouleguan@hotmail.com"));
     b = InternetSetCookie(szURL, nullptr, TEXT("email = XXXXX@hotmail.com"));
-    b = InternetSetCookie(
-        szURL, nullptr, TEXT("email = XXXXX@hotmail.com; expires = Sat,01-Jan-2015 00:00:00 GMT"));
+    b = InternetSetCookie(szURL, nullptr, TEXT("email = XXXXX@hotmail.com; expires = Sat,01-Jan-2015 00:00:00 GMT"));
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     /*

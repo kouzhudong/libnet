@@ -279,17 +279,16 @@ EXTERN_C
 DLLEXPORT
 void WINAPI GetIEProxyConfigForCurrentUser()
 /*
-The WinHttpGetIEProxyConfigForCurrentUser function retrieves the Internet Explorer proxy configuration for the
-current user.
+The WinHttpGetIEProxyConfigForCurrentUser function retrieves the Internet Explorer proxy configuration for the current user.
 
 In Internet Explorer, the proxy settings are found on the Connections tab of the Tools / Internet Options menu
 option. Proxy settings are configured on a per-connection basis; that is, the proxy settings for a LAN connection
 are separate from those for a dial-up or VPN connection. WinHttpGetIEProxyConfigForCurrentUser returns the proxy settings for the current active connection.
 
 This function is useful in client applications running in network environments in which the Web Proxy
-Auto-Discovery (WPAD) protocol is not implemented (meaning that no Proxy Auto-Configuration file is available). If
-a PAC file is not available, then the WinHttpGetProxyForUrl function fails. The
-WinHttpGetIEProxyConfigForCurrentUser function can be used as a fall-back mechanism to discover a workable proxy
+Auto-Discovery (WPAD) protocol is not implemented (meaning that no Proxy Auto-Configuration file is available).
+If a PAC file is not available, then the WinHttpGetProxyForUrl function fails.
+The WinHttpGetIEProxyConfigForCurrentUser function can be used as a fall-back mechanism to discover a workable proxy
 configuration by retrieving the user's proxy configuration in Internet Explorer.
 
 This function should not be used in a service process that does not impersonate a logged-on user.
@@ -734,7 +733,6 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
 
 VOID CALLBACK ProxyChangeNotificationCallback(_In_ ULONGLONG ullFlags, _In_ PVOID pvContext)
 /*
-
 这里给出的信息少，看来还得再次获取代理信息。
 
 https://learn.microsoft.com/zh-cn/windows/win32/api/winhttp/nc-winhttp-winhttp_proxy_change_callback
@@ -783,7 +781,6 @@ EXTERN_C
 DLLEXPORT
 DWORD WINAPI UnregisterProxyChangeNotification()
 /*
-
 https://learn.microsoft.com/zh-cn/windows/win32/api/winhttp/nf-winhttp-winhttpunregisterproxychangenotification
 */
 {
@@ -865,8 +862,6 @@ EXTERN_C
 DLLEXPORT
 int WINAPI SetProxy()
 /*
-
-
 https://learn.microsoft.com/en-us/windows/win32/winhttp/iwinhttprequest-setproxy
 */
 /*
