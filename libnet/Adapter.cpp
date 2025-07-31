@@ -76,8 +76,7 @@ The values currently supported are AF_INET, AF_INET6, and AF_UNSPEC.
 
 addresses associated with the adapters
 
-This example retrieves the IP_ADAPTER_ADDRESSES structure for the adapters associated with the system and
-prints some members for each adapter interface.
+This example retrieves the IP_ADAPTER_ADDRESSES structure for the adapters associated with the system and prints some members for each adapter interface.
 
 The GetAdaptersAddresses function retrieves the addresses associated with the adapters on the local computer.
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
@@ -291,11 +290,8 @@ Remarks
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadaptersinfo
 */
 {
-    // It is possible for an adapter to have multiple IPv4 addresses, gateways,
-    // and secondary WINS servers assigned to the adapter.
-    //
-    // Note that this sample code only prints out the first entry for the IP address/mask,
-    // and gateway, and the primary and secondary WINS server for each adapter.
+    // It is possible for an adapter to have multiple IPv4 addresses, gateways, and secondary WINS servers assigned to the adapter.
+    // Note that this sample code only prints out the first entry for the IP address/mask, and gateway, and the primary and secondary WINS server for each adapter.
 
     ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
     PIP_ADAPTER_INFO pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(sizeof(IP_ADAPTER_INFO));

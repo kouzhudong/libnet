@@ -54,8 +54,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     printf("\tnodename = %s\n", argv[1]);
     printf("\tservname (or port) = %s\n\n", argv[2]);
 
-    // Call getaddrinfo(). If the call succeeds, the result variable will hold a linked list
-    // of addrinfo structures containing response information
+    // Call getaddrinfo(). If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
     dwRetval = getaddrinfo(argv[1], argv[2], &hints, &result);
     if (dwRetval != 0) {
         printf("getaddrinfo failed with error: %lu\n", dwRetval);
@@ -233,8 +232,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     wprintf(L"\tnodename = %ws\n", argv[1]);
     wprintf(L"\tservname (or port) = %ws\n\n", argv[2]);
 
-    // Call GetAddrinfoW(). If the call succeeds,
-    // the result variable will hold a linked list of addrinfow structures containing response information
+    // Call GetAddrinfoW(). If the call succeeds, the result variable will hold a linked list of addrinfow structures containing response information
     ADDRINFOW * result = nullptr;
     DWORD dwRetval = GetAddrInfoW(argv[1], argv[2], &hints, &result);
     if (dwRetval != 0) {
@@ -369,8 +367,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     int iRet = 0;
     WCHAR GuidString[40] = {0};
 
-    // Call getaddrinfoex(). If the call succeeds,
-    // the result variable will hold a linked list of addrinfo structures containing response information
+    // Call getaddrinfoex(). If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
     dwRetval =
         GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result, nullptr, nullptr, nullptr, nullptr);
     if (dwRetval != 0) {
@@ -539,10 +536,8 @@ address..
 
     //  Wait for query completion for 5 seconds and cancel the query if it has not yet completed.
     if (WaitForSingleObject(QueryContext.CompleteEvent, QueryTimeout) == WAIT_TIMEOUT) {
-        //  Cancel the query: Note that the GetAddrInfoExCancelcancel call does
-        //  not block, so we must wait for the completion routine to be invoked.
-        //  If we fail to wait, WSACleanup() could be called while an
-        //  asynchronous query is still in progress, possibly causing a crash.
+        //  Cancel the query: Note that the GetAddrInfoExCancelcancel call does not block, so we must wait for the completion routine to be invoked.
+        //  If we fail to wait, WSACleanup() could be called while an asynchronous query is still in progress, possibly causing a crash.
 
         wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
 
@@ -651,8 +646,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         return 1;
     }
 
-    // Setup the hints address info structure
-    // which is passed to the getaddrinfo() function
+    // Setup the hints address info structure which is passed to the getaddrinfo() function
     ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -667,10 +661,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     PrintProviderNamespace(dwNamespace);
     wprintf(L")\n\n");
 
-    // Call getaddrinfoex(). If the call succeeds,
-    // the result variable will hold a linked list of addrinfo structures containing response information
-    dwRetval =
-        GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result, nullptr, nullptr, nullptr, nullptr);
+    // Call getaddrinfoex(). If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
+    dwRetval = GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result, nullptr, nullptr, nullptr, nullptr);
     if (dwRetval != 0) {
         wprintf(L"GetAddrInfoEx failed with error: %u\n", dwRetval);
         WSACleanup();
@@ -838,10 +830,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
 
     //  Wait for query completion for 5 seconds and cancel the query if it has not yet completed.
     if (WaitForSingleObject(QueryContext.CompleteEvent, QueryTimeout) == WAIT_TIMEOUT) {
-        //  Cancel the query: Note that the GetAddrInfoExCancelcancel call does
-        //  not block, so we must wait for the completion routine to be invoked.
-        //  If we fail to wait, WSACleanup() could be called while an
-        //  asynchronous query is still in progress, possibly causing a crash.
+        //  Cancel the query: Note that the GetAddrInfoExCancelcancel call does not block, so we must wait for the completion routine to be invoked.
+        //  If we fail to wait, WSACleanup() could be called while an asynchronous query is still in progress, possibly causing a crash.
 
         wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
 

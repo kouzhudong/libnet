@@ -191,8 +191,7 @@ Parameters：
 [in] Family
 The values currently supported are AF_INET, AF_INET6, and AF_UNSPEC.
 
-The following example retrieves the IP neighbor table,
-then prints the values for IP neighbor row entries in the table.
+The following example retrieves the IP neighbor table, then prints the values for IP neighbor row entries in the table.
 
 The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
 
@@ -844,8 +843,7 @@ EXTERN_C
 DLLEXPORT
 int WINAPI EnumUnicastIpAddressTable()
 /*
-The following example retrieves a unicast IP address table and
-prints some values from each of the retrieved MIB_UNICASTIPADDRESS_ROW structures.
+The following example retrieves a unicast IP address table and prints some values from each of the retrieved MIB_UNICASTIPADDRESS_ROW structures.
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunicastipaddresstable
 */
@@ -968,15 +966,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     WORD RequestSize = 0;
 
     /*
-    A pointer to the IPv6 header options for the request,
-    in the form of an IP_OPTION_INFORMATION structure.
+    A pointer to the IPv6 header options for the request, in the form of an IP_OPTION_INFORMATION structure.
     On a 64-bit platform, this parameter is in the form for an IP_OPTION_INFORMATION32 structure.
 
     This parameter may be NULL if no IP header options need to be specified.
 
-    Note  On Windows Server 2003 and Windows XP,
-    the RequestOptions parameter is not optional and must not be NULL and
-    only the Ttl and Flags members are used.
+    Note  On Windows Server 2003 and Windows XP, the RequestOptions parameter is not optional and must not be NULL and only the Ttl and Flags members are used.
     */
     IP_OPTION_INFORMATION RequestOptions = {30, 0, 0, 0, nullptr};
 
@@ -984,9 +979,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
 
     /*
     The size, in bytes, of the reply buffer pointed to by the ReplyBuffer parameter.
-    This buffer should be large enough to hold at least one ICMPV6_ECHO_REPLY structure plus RequestSize bytes of
-    data. This buffer should also be large enough to also hold 8 more bytes of data (the size of an ICMP error
-    message) plus space for an IO_STATUS_BLOCK structure.
+    This buffer should be large enough to hold at least one ICMPV6_ECHO_REPLY structure plus RequestSize bytes of data.
+    This buffer should also be large enough to also hold 8 more bytes of data (the size of an ICMP error message) plus space for an IO_STATUS_BLOCK structure.
     */
     DWORD ReplySize = sizeof(ICMPV6_ECHO_REPLY) + RequestSize + 8; // + sizeof(IO_STATUS_BLOCK)
 

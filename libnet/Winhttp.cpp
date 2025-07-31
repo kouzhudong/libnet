@@ -137,8 +137,7 @@ www.126.com
 
             delete[] pszOutBuffer; // Free the memory allocated to the buffer.
 
-            // This condition should never be reached since WinHttpQueryDataAvailable
-            // reported that there are bits to read.
+            // This condition should never be reached since WinHttpQueryDataAvailable reported that there are bits to read.
             if (!dwDownloaded)
                 break;
         } while (dwSize > 0);
@@ -285,8 +284,7 @@ current user.
 
 In Internet Explorer, the proxy settings are found on the Connections tab of the Tools / Internet Options menu
 option. Proxy settings are configured on a per-connection basis; that is, the proxy settings for a LAN connection
-are separate from those for a dial-up or VPN connection. WinHttpGetIEProxyConfigForCurrentUser returns the proxy
-settings for the current active connection.
+are separate from those for a dial-up or VPN connection. WinHttpGetIEProxyConfigForCurrentUser returns the proxy settings for the current active connection.
 
 This function is useful in client applications running in network environments in which the Web Proxy
 Auto-Discovery (WPAD) protocol is not implemented (meaning that no Proxy Auto-Configuration file is available). If
@@ -376,7 +374,7 @@ void WINAPI GetProxyForUrl()
 /*
 The following example code uses autoproxy.
 It sets up an HTTP GET request by first creating the WinHTTP session connect and request handles.
-The WinHttpOpen call specifies WINHTTP_ACCESS_TYPE_NO_PROXY for the initial proxy configuration,
+The WinHttpOpen call specifies WINHTTP_ACCESS_TYPE_NO_PROXY for the initial proxy configuration, 
 to indicate that requests are sent directly to the target server by default.
 Using autoproxy, it then sets the proxy configuration directly on the request handle.
 
@@ -422,9 +420,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
 
     // Call WinHttpGetProxyForUrl with our target URL.
     // If auto-proxy succeeds, then set the proxy info on the request handle.
-    // If auto-proxy fails, ignore the error
-    // and attempt to send the HTTP request directly to the
-    // target server (using the default WINHTTP_ACCESS_TYPE_NO_PROXY
+    // If auto-proxy fails, ignore the error and attempt to send the HTTP request directly to the target server (using the default WINHTTP_ACCESS_TYPE_NO_PROXY
     // configuration, which the requesthandle will inherit from the session).
     if (WinHttpGetProxyForUrl(hHttpSession, L"https://www.microsoft.com/ms.htm", &AutoProxyOptions, &ProxyInfo)) {
         // A proxy configuration was found, set it on the request handle.
@@ -434,8 +430,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
     } else {
         printf("LastError:%#x.\n", GetLastError()); //无论开启自动检测与否，都返回ERROR_WINHTTP_AUTODETECTION_FAILED
 
-        // If Step 1 fails, with ERROR_WINHTTP_LOGIN_FAILURE,
-        // then call WinHttpGetProxyForUrl with the fAutoLogonIfChallenged member set to TRUE.
+        // If Step 1 fails, with ERROR_WINHTTP_LOGIN_FAILURE, then call WinHttpGetProxyForUrl with the fAutoLogonIfChallenged member set to TRUE.
         // https://learn.microsoft.com/en-us/windows/win32/winhttp/autoproxy-cache
     }
 
@@ -483,10 +478,9 @@ void WINAPI Sessions()
 * 这其实就是打开一个网页。
 *
 The following sample code shows how to download a resource with secure transaction semantics.
-The sample code initializes the WinHTTP application programming interface (API), selects a target HTTPS server,
+The sample code initializes the WinHTTP application programming interface (API), selects a target HTTPS server, 
 and then opens and sends a request for this secure resource.
-WinHttpQueryDataAvailable is used with the request handle to determine how much data is available for download,
-and then WinHttpReadData is used to read that data.
+WinHttpQueryDataAvailable is used with the request handle to determine how much data is available for download, and then WinHttpReadData is used to read that data.
 This process is repeated until the entire document has been retrieved and displayed.
 
 https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
@@ -569,15 +563,12 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
 DWORD ChooseAuthScheme(DWORD dwSupportedSchemes)
 {
     //  It is the server's responsibility only to accept
-    //  authentication schemes that provide a sufficient
-    //  level of security to protect the servers resources.
+    //  authentication schemes that provide a sufficient level of security to protect the servers resources.
     //
-    //  The client is also obligated only to use an authentication
-    //  scheme that adequately protects its username and password.
+    //  The client is also obligated only to use an authentication scheme that adequately protects its username and password.
     //
-    //  Thus, this sample code does not use Basic authentication
-    //  becaus Basic authentication exposes the client's username
-    //  and password to anyone monitoring the connection.
+    //  Thus, this sample code does not use Basic authentication 
+    //  becaus Basic authentication exposes the client's username and password to anyone monitoring the connection.
 
     if (dwSupportedSchemes & WINHTTP_AUTH_SCHEME_NEGOTIATE)
         return WINHTTP_AUTH_SCHEME_NEGOTIATE;
@@ -642,10 +633,8 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
         bDone = TRUE;
 
     while (!bDone) {
-        //  If a proxy authentication challenge was responded to, reset
-        //  those credentials before each SendRequest, because the proxy
-        //  may require re-authentication after responding to a 401 or
-        //  to a redirect. If you don't, you can get into a 407-401-407-401- loop.
+        //  If a proxy authentication challenge was responded to, reset those credentials before each SendRequest, because the proxy
+        //  may require re-authentication after responding to a 401 or to a redirect. If you don't, you can get into a 407-401-407-401- loop.
         if (dwProxyAuthScheme != 0)
             bResults = WinHttpSetCredentials(hRequest, 
                                              WINHTTP_AUTH_TARGET_PROXY,
@@ -654,15 +643,13 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/authentication-in-winhttp
                                              pGetRequest->szProxyPassword,
                                              nullptr);
         // Send a request.
-        bResults =
-            WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
+        bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
 
         // End the request.
         if (bResults)
             bResults = WinHttpReceiveResponse(hRequest, nullptr);
 
-        // Resend the request in case of
-        // ERROR_WINHTTP_RESEND_REQUEST error.
+        // Resend the request in case of ERROR_WINHTTP_RESEND_REQUEST error.
         if (!bResults && GetLastError() == ERROR_WINHTTP_RESEND_REQUEST)
             continue;
 
@@ -785,10 +772,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/winhttp/nf-winhttp-winhttpre
 
 #pragma prefast(push)
 #pragma prefast(disable : 6387, ""_Param_(3) " 可以是 " 0 "")
-    // ret = WinHttpRegisterProxyChangeNotification(WINHTTP_PROXY_NOTIFY_CHANGE,
-    //                                             ProxyChangeNotificationCallback,
-    //                                             nullptr,
-    //                                             &hRegistration);
+    // ret = WinHttpRegisterProxyChangeNotification(WINHTTP_PROXY_NOTIFY_CHANGE, ProxyChangeNotificationCallback, nullptr, &hRegistration);
 #pragma prefast(pop)
 
     return ret;
@@ -833,14 +817,12 @@ WinHTTP session by calling WinHttpSetOption and specifying the WINHTTP_OPTION_PR
 configuration can be overridden for a new session by specifying the configuration with the WinHttpOpen function.
 
 The dwAccessType member of the WINHTTP_PROXY_INFO structure pointed to by pProxyInfo should be set to
-WINHTTP_ACCESS_TYPE_NAMED_PROXY if a proxy is specified. Otherwise, it should be set to
-WINHTTP_ACCESS_TYPE_DEFAULT_PROXY.
+WINHTTP_ACCESS_TYPE_NAMED_PROXY if a proxy is specified. Otherwise, it should be set to WINHTTP_ACCESS_TYPE_DEFAULT_PROXY.
 
 Any new sessions created after calling this function use the new default proxy configuration.
 
 Even when WinHTTP is used in asynchronous mode (that is, when WINHTTP_FLAG_ASYNC has been set in WinHttpOpen), this
-function operates synchronously. The return value indicates success or failure. To get extended error information,
-call GetLastError.
+function operates synchronously. The return value indicates success or failure. To get extended error information, call GetLastError.
 
 https://learn.microsoft.com/zh-cn/windows/win32/api/winhttp/nf-winhttp-winhttpsetdefaultproxyconfiguration
 */
@@ -894,36 +876,21 @@ HTTPREQUEST_PROXYSETTING_PRECONFIG = 0;
 HTTPREQUEST_PROXYSETTING_DIRECT    = 1;
 HTTPREQUEST_PROXYSETTING_PROXY     = 2;
 
-// Instantiate a WinHttpRequest object.
-var WinHttpReq = new ActiveXObject("WinHttp.WinHttpRequest.5.1");
-
-// Use proxy_server for all requests outside of
-// the microsoft.com domain.
-WinHttpReq.SetProxy( HTTPREQUEST_PROXYSETTING_PROXY,
-                     "proxy_server:80",
-                     "*.microsoft.com");
-
-// Initialize an HTTP request.
-WinHttpReq.Open("GET", "https://www.microsoft.com", false);
-
-// Send the HTTP request.
-WinHttpReq.Send();
-
-// Display the response text.
-WScript.Echo( WinHttpReq.ResponseText);
+var WinHttpReq = new ActiveXObject("WinHttp.WinHttpRequest.5.1");// Instantiate a WinHttpRequest object.
+WinHttpReq.SetProxy( HTTPREQUEST_PROXYSETTING_PROXY, "proxy_server:80", "*.microsoft.com");// Use proxy_server for all requests outside of the microsoft.com domain.
+WinHttpReq.Open("GET", "https://www.microsoft.com", false);// Initialize an HTTP request.
+WinHttpReq.Send();// Send the HTTP request.
+WScript.Echo( WinHttpReq.ResponseText);// Display the response text.
 */
 {
     // Variable for return value
     HRESULT hr = CoInitialize(nullptr); // Initialize COM
-
     IWinHttpRequest * pIWinHttpRequest = nullptr;
-
     BSTR bstrResponse = nullptr;
     VARIANT varFalse{};
     VARIANT varEmpty{};
     VARIANT varProxy{};
     VARIANT varUrl{};
-
     CLSID clsid{};
 
     VariantInit(&varFalse);

@@ -91,8 +91,7 @@ void InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress,
 }
 
 
-void InitIpv4Header(IN PIPV4_HEADER InIPv4Header, IN UINT16 TotalLength, IN bool IsCopy,
-                    OUT PIPV4_HEADER OutIPv4Header)
+void InitIpv4Header(IN PIPV4_HEADER InIPv4Header, IN UINT16 TotalLength, IN bool IsCopy, OUT PIPV4_HEADER OutIPv4Header)
 /*
 功能：把in_ipv4的SYN包里的ipv4信息组装为buffer的要发生的ACK的ipv4。
 
@@ -157,8 +156,6 @@ void InitTcpHeaderBySyn(IN UINT16 th_sport, //网络序。如果是主机序，�
 
 void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
 /*
-
-
 用途：欺骗（扫描），而不是扫描和攻击。
 */
 {
@@ -282,11 +279,7 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac, // 6字节长的本地的MAC。
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, &tcp4->eth_hdr);
 
-    InitIpv4Header(SourceAddress,
-                   DestinationAddress,
-                   IPPROTO_TCP,
-                   sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT_MSS),
-                   &tcp4->ip_hdr);
+    InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_TCP, sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT_MSS), &tcp4->ip_hdr);
 
     InitTcpHeaderBySyn(th_sport, th_dport, sizeof(TCP_OPT_MSS), &tcp4->tcp_hdr);
 
@@ -310,11 +303,7 @@ void WINAPI packetize_icmpv4_echo_request(
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, (PETHERNET_HEADER)buffer);
 
-    InitIpv4Header(SourceAddress,
-                   DestinationAddress,
-                   IPPROTO_ICMP,
-                   sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE),
-                   (PIPV4_HEADER)(buffer + sizeof(ETHERNET_HEADER)));
+    InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_ICMP, sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE), (PIPV4_HEADER)(buffer + sizeof(ETHERNET_HEADER)));
 
     PICMP_MESSAGE icmp_message = (PICMP_MESSAGE)(buffer + sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER));
     icmp_message->Header.Type = 8; // ntohs ICMP6_ECHO_REQUEST;
@@ -332,12 +321,8 @@ void WINAPI packetize_icmpv4_echo_request(
 void InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress,
                     IN UINT8 NextHeader, //取值，如：IPPROTO_TCP等。
                     IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
-/*
-
-*/
 {
-    IPv6Header->VersionClassFlow =
-        ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
+    IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
     IPv6Header->PayloadLength = ntohs(OptLen);
     IPv6Header->NextHeader = NextHeader;
     IPv6Header->HopLimit = 128;
@@ -354,8 +339,7 @@ void InitIpv6HeaderForTcp(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAd
 功能：组装IPv6协议的TCP头。
 */
 {
-    IPv6Header->VersionClassFlow =
-        ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
+    IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
     IPv6Header->PayloadLength = ntohs(sizeof(TCP_HDR) + OptLen);
     IPv6Header->NextHeader = NextHeader;
     IPv6Header->HopLimit = 128;
@@ -501,11 +485,7 @@ void WINAPI packetize_icmpv6_echo_request(
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, (PETHERNET_HEADER)buffer);
 
-    InitIpv6Header(SourceAddress,
-                   DestinationAddress,
-                   IPPROTO_ICMPV6,
-                   sizeof(ICMP_MESSAGE) + 0x20,
-                   (PIPV6_HEADER)(buffer + sizeof(ETHERNET_HEADER)));
+    InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_ICMPV6, sizeof(ICMP_MESSAGE) + 0x20, (PIPV6_HEADER)(buffer + sizeof(ETHERNET_HEADER)));
 
     PICMP_MESSAGE icmp_message = (PICMP_MESSAGE)(buffer + sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER));
     icmp_message->Header.Type = ICMP6_ECHO_REQUEST;
@@ -514,8 +494,7 @@ void WINAPI packetize_icmpv6_echo_request(
     icmp_message->icmp6_id = (USHORT)GetCurrentProcessId();
     icmp_message->icmp6_seq = (USHORT)GetTickCount64();
     // icmp_message->Header.Checksum =
-    calculation_icmpv6_echo_request_checksum(
-        buffer, sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20);
+    calculation_icmpv6_echo_request_checksum(buffer, sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20);
 }
 
 
@@ -579,18 +558,16 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
 适用场景：修改了ICMPv4（头部及后面的内容）的情况。
 */
 {
-    USHORT sum = 0;
-
     PICMP_HEADER buf = (PICMP_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
     if (!buf) {
 
-        return sum;
+        return 0;
     }
 
     RtlCopyMemory(buf, icmp, size);
     buf->Checksum = 0;
 
-    sum = checksum((USHORT *)buf, size);
+    USHORT sum = checksum((USHORT *)buf, size);
 
     HeapFree(GetProcessHeap(), 0, buf);
 

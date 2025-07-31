@@ -177,8 +177,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-
 
     hr = CoInitialize(nullptr);
 
-    hr = CoCreateInstance(
-        CLSID_HostDialogHelper, nullptr, CLSCTX_INPROC, IID_IHostDialogHelper, reinterpret_cast<void **>(&pHDH));
+    hr = CoCreateInstance(CLSID_HostDialogHelper, nullptr, CLSCTX_INPROC, IID_IHostDialogHelper, reinterpret_cast<void **>(&pHDH));
 
     pHDH->ShowHTMLDialog(nullptr, pUrlMoniker, nullptr, bstrOptions, nullptr, nullptr);
 

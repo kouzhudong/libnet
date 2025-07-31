@@ -42,8 +42,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     }
 
     // Initialize variables and call getsockopt.
-    // The SO_ACCEPTCONN parameter is a socket option
-    // that tells the function to check whether the socket has been put in listening mode or not.
+    // The SO_ACCEPTCONN parameter is a socket option that tells the function to check whether the socket has been put in listening mode or not.
     // The various socket options return different information about the socket.
     // This call should return 0 to the optVal parameter, since the socket is not in listening mode.
     int optVal{};
@@ -78,8 +77,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     SOCKET Sock = INVALID_SOCKET;
 #define DEVICE_LIST_LEN 10
     SOCKADDR_IRDA DestSockAddr = {AF_IRDA, 0, 0, 0, 0, "SampleIrDAService"};
-    unsigned char DevListBuff[sizeof(DEVICELIST) - sizeof(IRDA_DEVICE_INFO) +
-                              (sizeof(IRDA_DEVICE_INFO) * DEVICE_LIST_LEN)]{};
+    unsigned char DevListBuff[sizeof(DEVICELIST) - sizeof(IRDA_DEVICE_INFO) + (sizeof(IRDA_DEVICE_INFO) * DEVICE_LIST_LEN)]{};
     int DevListLen = sizeof(DevListBuff);
     PDEVICELIST pDevList = reinterpret_cast<PDEVICELIST>(&DevListBuff);
 
@@ -228,13 +226,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
     }
 
     // Initialize variables and call setsockopt.
-    // The SO_KEEPALIVE parameter is a socket option
-    // that makes the socket send keepalive messages on the session.
+    // The SO_KEEPALIVE parameter is a socket option that makes the socket send keepalive messages on the session.
     // The SO_KEEPALIVE socket option requires a boolean value to be passed to the setsockopt function.
-    // If TRUE, the socket is configured to send keepalive messages, if FALSE
-    // the socket configured to NOT send keepalive messages.
-    // This section of code tests the setsockopt function
-    // by checking the status of SO_KEEPALIVE on the socket using the getsockopt function.
+    // If TRUE, the socket is configured to send keepalive messages, if FALSE the socket configured to NOT send keepalive messages.
+    // This section of code tests the setsockopt function by checking the status of SO_KEEPALIVE on the socket using the getsockopt function.
 
     bOptVal = TRUE;
     iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char *>(&iOptVal), &iOptLen);
@@ -313,8 +308,7 @@ DWORD GetTCPHandle(PHANDLE pTCPDriverHandle)
     Parameters:
       pTCPDriverHandle --  Pointer to a handle variable.
     Return Value (DWORD):  Returns TRUE if successful, and places a valid handle to the TCP driver in the
-                           handle pointed to by pTCPDriverHandle, or
-                           returns FALSE otherwise, and sets the handle to INVALID_HANDLE_VALUE.
+                           handle pointed to by pTCPDriverHandle, or returns FALSE otherwise, and sets the handle to INVALID_HANDLE_VALUE.
 */
 {
     NTSTATUS rVal{};
@@ -428,8 +422,7 @@ Return Value:
             status = GetLastError();
 
         // Even if the output buffer is too small, the TCP driver returns a status of TDI_SUCCESS;
-        // it is the value returned in
-        // arrayLen that indicates whether the entire array was successfully copied to the output buffer.
+        // it is the value returned in arrayLen that indicates whether the entire array was successfully copied to the output buffer.
         if (status == TDI_SUCCESS) {
             if (arrayLen && (arrayLen <= bufferLen))
                 break;
@@ -578,8 +571,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-createp
     wprintf(L"CreatePersistentTcpPortReservation call succeeded\n");
     wprintf(L"  Token = %I64u\n", resToken);
 
-    // Comment out this block if you don't want to create a socket and associate it with the
-    // persistent reservation
+    // Comment out this block if you don't want to create a socket and associate it with the persistent reservation
 
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
     if (iResult != 0) {

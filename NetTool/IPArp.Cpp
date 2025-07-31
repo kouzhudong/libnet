@@ -166,8 +166,7 @@ void DoSetIpNetEntry(char * pszDottedInetAddr, char * pszPhysAddr, char * pszInt
 
 
 void DoDeleteIpNetEntry(char * pszDottedInetAddr, char * pszInterface)
-// Delete an arp entry with ip dotted decimal address of "pszDottedInetAddr"
-// and interface index of "pszInterface" in hex form.
+// Delete an arp entry with ip dotted decimal address of "pszDottedInetAddr" and interface index of "pszInterface" in hex form.
 {
     DWORD dwInetAddr = 0; // ip address
     DWORD dwStatus;

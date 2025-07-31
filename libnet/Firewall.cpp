@@ -51,16 +51,14 @@ Adding an Application Rule to Allow Dynamic Edge Traversal
 
 05/31/2018
 
-This example adds an application rule to allow dynamic edge traversal using the Windows Firewall with Advanced
-Security APIs.
+This example adds an application rule to allow dynamic edge traversal using the Windows Firewall with Advanced Security APIs.
 
 In order for Windows Firewall to dynamically allow edge traversal traffic, the following two items must be done:
 
 The application must use the IPV6_PROTECTION_LEVEL socket option on the listening socket and set it to
 PROTECTION_LEVEL_UNRESTRICTED when the application wants to allow edge traffic. The Windows Firewall rule added for
 the application must set edge traversal option to NET_FW_EDGE_TRAVERSAL_TYPE_DEFER_TO_APP. This sample only
-illustrates one of the edge traversal option values. For more information on these values, see
-NET_FW_EDGE_TRAVERSAL_TYPE.
+illustrates one of the edge traversal option values. For more information on these values, see NET_FW_EDGE_TRAVERSAL_TYPE.
 
 https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-an-application-rule-edge-traversal
 */
@@ -549,8 +547,7 @@ Cleanup:
 
 
 /********************************************************************++
-THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
+THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
 TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
 Copyright (C) Microsoft. All Rights Reserved.
@@ -713,8 +710,7 @@ Cleanup:
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code for enabling Windows Firewall
-    exception groups using the Microsoft Windows Firewall APIs.
+    This C++ file includes sample code for enabling Windows Firewall exception groups using the Microsoft Windows Firewall APIs.
 
 --********************************************************************/
 
@@ -806,15 +802,13 @@ This example gets firewall settings using the Windows Firewall with Advanced Sec
 
 https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-getting-firewall-settings
 
-THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
+THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
 TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code for reading Windows Firewall
-    Settings per profile using the Microsoft Windows Firewall APIs.
+    This C++ file includes sample code for reading Windows Firewall Settings per profile using the Microsoft Windows Firewall APIs.
 */
 {
     HRESULT hr = S_OK;
@@ -901,8 +895,7 @@ void Get_FirewallSettings_PerProfileType(NET_FW_PROFILE_TYPE2 ProfileTypePassed,
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that restricts a service using
-    the Microsoft Windows Firewall APIs.
+    This C++ file includes sample code that restricts a service using the Microsoft Windows Firewall APIs.
 
 --********************************************************************/
 
@@ -927,12 +920,10 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
     // The Service and App name to use
     BSTR bstrServiceName = SysAllocString(L"SampleService"); // provide a valid service short name here.
     BSTR bstrAppName = SysAllocString(L"%systemDrive%\\WINDOWS\\system32\\svchost.exe");
-    // The rule name, description should be provided as indirect strings '@appfullpath,-resource index' for
-    // localization purposes.
+    // The rule name, description should be provided as indirect strings '@appfullpath,-resource index' for localization purposes.
     // Using the strings directly for illustration here.
     BSTR bstrRuleName = SysAllocString(L"Allow TCP 12345 to sampleservice");
-    BSTR bstrRuleDescription =
-        SysAllocString(L"Allow only TCP 12345 traffic to sampleservice service, block everything else");
+    BSTR bstrRuleDescription = SysAllocString(L"Allow only TCP 12345 traffic to sampleservice service, block everything else");
     BSTR bstrRuleLPorts = SysAllocString(L"12345");
 
     // Error checking for BSTR allocations
@@ -989,8 +980,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
         goto Cleanup;
     }
 
-    // If the service does not send/receive any network traffic then you are done. You can skip adding the allow
-    // WSH rules below.
+    // If the service does not send/receive any network traffic then you are done. You can skip adding the allow WSH rules below.
 
     // If the service requires sending/receiving certain traffic, then add 'allow' WSH rules as follows
 
@@ -1115,8 +1105,7 @@ Cleanup:
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that adds a GRE rule for the
-    currently active profiles using the Microsoft Windows Firewall APIs.
+    This C++ file includes sample code that adds a GRE rule for the currently active profiles using the Microsoft Windows Firewall APIs.
 
 --********************************************************************/
 
@@ -1230,8 +1219,7 @@ Cleanup:
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that adds a ICMP rule
-    for the Private profile using the Microsoft Windows Firewall APIs.
+    This C++ file includes sample code that adds a ICMP rule for the Private profile using the Microsoft Windows Firewall APIs.
 
 --********************************************************************/
 
@@ -1338,8 +1326,7 @@ Cleanup:
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that adds a LAN rule to the
-    currently active profiles using the Microsoft Windows Firewall APIs.
+    This C++ file includes sample code that adds a LAN rule to the currently active profiles using the Microsoft Windows Firewall APIs.
 
 --********************************************************************/
 
@@ -1461,7 +1448,7 @@ Cleanup:
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that adds a outbound rule for
+    This C++ file includes sample code that adds a outbound rule for 
     the currently active profiles to allow a TCP connection using the Microsoft Windows Firewall APIs.
 
 --********************************************************************/
@@ -1580,8 +1567,7 @@ Cleanup:
 
 
 /********************************************************************++
-THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
+THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
 TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
 Copyright (C) Microsoft. All Rights Reserved.
@@ -1723,8 +1709,7 @@ Cleanup:
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that adds a Service rule for the
-    currently active profiles using the Microsoft Windows Firewall APIs.
+    This C++ file includes sample code that adds a Service rule for the currently active profiles using the Microsoft Windows Firewall APIs.
 
 --********************************************************************/
 
@@ -1852,7 +1837,7 @@ Abstract:
   This C++ file includes sample code that takes ownership
     of the NET_FW_RULE_CATEGORY_FIREWALL using the Microsoft Windows Firewall APIs.
 
-    The API to register for NET_FW_RULE_CATEGORY_FIREWALL
+    The API to register for NET_FW_RULE_CATEGORY_FIREWALL 
     needs the binary that is making this call to be linked with /integritycheck option to ensure code integrity.
     Failure to do so can lead to error SEC_E_CANNOT_INSTALL at runtime.
 
@@ -2029,8 +2014,7 @@ Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
   This C++ file includes sample code that registers itself with the
-    Windows Firewall using the Microsoft Windows Firewall APIs but does
-    not take ownership of any NET_FW_RULE_CATEGORY.
+    Windows Firewall using the Microsoft Windows Firewall APIs but does not take ownership of any NET_FW_RULE_CATEGORY.
 
     The API to register for NET_FW_RULE_CATEGORY_FIREWALL
     needs the binary that is making this call to be linked with /integritycheck option to ensure code integrity.
@@ -2200,18 +2184,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/working-w
     if (FAILED(hr)) {
         goto Cleanup;
     }
-
-    // Show Firewall ON/OFF state on current profiles
-    GetCurrentFirewallState(pNetFwPolicy2);
-
-    // Show status of 'File and Printer Sharing' rule group on current profiles
-    IsRuleGroupCurrentlyEnabled(pNetFwPolicy2);
-
-    // Show status of 'File and Printer Sharing' rule group on specified profiles
-    IsRuleGroupEnabled(pNetFwPolicy2);
-
-    // For the current firewall profiles display whether the changes to firewall rules will take effect or not
-    GetLocalPolicyModifyState(pNetFwPolicy2);
+    
+    GetCurrentFirewallState(pNetFwPolicy2);// Show Firewall ON/OFF state on current profiles    
+    IsRuleGroupCurrentlyEnabled(pNetFwPolicy2);// Show status of 'File and Printer Sharing' rule group on current profiles    
+    IsRuleGroupEnabled(pNetFwPolicy2);// Show status of 'File and Printer Sharing' rule group on specified profiles    
+    GetLocalPolicyModifyState(pNetFwPolicy2);// For the current firewall profiles display whether the changes to firewall rules will take effect or not
 
 Cleanup:
 
@@ -2517,8 +2494,7 @@ error:
 }
 
 
-HRESULT WindowsFirewallAppIsEnabled(IN INetFwProfile * fwProfile, IN const wchar_t * fwProcessImageFileName,
-                                    OUT BOOL * fwAppEnabled)
+HRESULT WindowsFirewallAppIsEnabled(IN INetFwProfile * fwProfile, IN const wchar_t * fwProcessImageFileName, OUT BOOL * fwAppEnabled)
 {
     HRESULT hr = S_OK;
     BSTR fwBstrProcessImageFileName = nullptr;
@@ -2588,8 +2564,7 @@ error:
 }
 
 
-HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * fwProcessImageFileName,
-                              IN const wchar_t * fwName)
+HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * fwProcessImageFileName, IN const wchar_t * fwName)
 {
     HRESULT hr = S_OK;
     BOOL fwAppEnabled{};

@@ -13,8 +13,7 @@
 
 
 /*
-    THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-    ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+    THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
     THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
   Copyright ?2000  Microsoft Corporation.  All Rights Reserved.
@@ -41,8 +40,7 @@ DLLEXPORT
 void WINAPI DnsQueryTest(int argc, char * argv[])
 /*Windows-classic-samples\Samples\Win7Samples\netds\dns\dnsquery\DNSQuery.Cpp
    FILE:          Dnsquery.cpp
-   DESCRIPTION:   This sample illustrates the use of DnsQuery() function to send query to
-                  a DNS server to resolve the host name to an IP address and vice-versa.
+   DESCRIPTION:   This sample illustrates the use of DnsQuery() function to send query to a DNS server to resolve the host name to an IP address and vice-versa.
    PLATFORM:      Windows 2000
    WRITTEN BY:    Rashmi Anoop
    DATE:          3/22/2000
@@ -158,8 +156,7 @@ SUPPORTED PLATFORMS:
 
 
 /************************************************************\
-    THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-    ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+    THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
     THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
   Copyright ?2000  Microsoft Corporation.  All Rights Reserved.
@@ -184,9 +181,7 @@ DLLEXPORT
 void WINAPI ModifyRecords(int argc, wchar_t * argv[])
 /*
    FILE:          ModifyRecords.cpp
-   DESCRIPTION:   This sample illustrates how to add Host Address( A) and CNAME resource records
-                   to DNS server using DNSModifyRecordsInSet() API.
-
+   DESCRIPTION:   This sample illustrates how to add Host Address( A) and CNAME resource records to DNS server using DNSModifyRecordsInSet() API.
    PLATFORM:      Windows 2000
    WRITTEN BY:    Rashmi Anoop
    DATE:          3/22/2000
@@ -195,14 +190,12 @@ void WINAPI ModifyRecords(int argc, wchar_t * argv[])
 ========
 SUMMARY:
 ========
-  The Modifyrecords sample demonstrates the use of DnsModifyRecordsInSet() function to
-  add the resource records.
+  The Modifyrecords sample demonstrates the use of DnsModifyRecordsInSet() function to add the resource records.
 
 ============
 DESCRIPTION:
 ============
-  This sample demonstrates how to add Host
-  records (A) and CNAME resource records.
+  This sample demonstrates how to add Host records (A) and CNAME resource records.
 
   The following is the example of a Host record
   host1.example.microsoft.com.     IN  A  127.0.0.1
@@ -344,10 +337,8 @@ SUPPORTED PLATFORMS:
 
 
 //
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 //
 // Copyright (c) Microsoft Corporation. All rights reserved
 //
