@@ -158,8 +158,7 @@ http://correy.webs.com
     //    hints.ai_protocol = IPPROTO_TCP;
 
     // Call getaddrinfo().
-    // If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response
-    // information
+    // If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
     struct addrinfo * result = nullptr;
     DWORD dwRetval = getaddrinfo( //感觉这个函数没啥大的意义。
         argv[1],                  //只能是数字，不能是名字。这也符合了函数的名字。

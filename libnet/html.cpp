@@ -121,7 +121,7 @@ made by correy
 made at 2014.07.23
 */
 {
-    WNDCLASSEX sWndClassEx = {sizeof(WNDCLASSEX),
+    WNDCLASSEX sWndClassEx = {sizeof(WNDCLASSEX), 
                               3,
                               WindowProc,
                               0,

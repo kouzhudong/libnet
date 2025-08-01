@@ -418,8 +418,7 @@ void DumpFWRulesInCollection(INetFwRule * FwRule)
         if (InterfaceArray.vt != VT_EMPTY) {
             SAFEARRAY * pSa = InterfaceArray.parray;
 
-            for (LONG index = (pSa->rgsabound->lLbound); index < static_cast<LONG>(pSa->rgsabound->cElements);
-                 index++) {
+            for (LONG index = (pSa->rgsabound->lLbound); index < static_cast<LONG>(pSa->rgsabound->cElements); index++) {
                 SafeArrayGetElement(pSa, &index, &InterfaceString);
                 wprintf(L"Interfaces:       %s\n", InterfaceString.bstrVal);
             }
@@ -518,9 +517,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
                 hr = (V_DISPATCH(&var))->QueryInterface(__uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
             }
 
-            if (SUCCEEDED(hr)) {
-                // Output the properties of this rule
-                DumpFWRulesInCollection(pFwRule);
+            if (SUCCEEDED(hr)) {                
+                DumpFWRulesInCollection(pFwRule);// Output the properties of this rule
             }
         }
     }
@@ -628,14 +626,12 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code for disabling Windows Firewall
-    per profile using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+    This C++ file includes sample code for disabling Windows Firewall per profile using the Microsoft Windows Firewall APIs.
+*/
 
 
 int __cdecl DisablingFirewall()
@@ -706,13 +702,12 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
     This C++ file includes sample code for enabling Windows Firewall exception groups using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+*/
 
 
 int __cdecl EnablingGroup()
@@ -1101,13 +1096,12 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
     This C++ file includes sample code that adds a GRE rule for the currently active profiles using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+*/
 
 
 int __cdecl AddGreRule()
@@ -1215,13 +1209,12 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
     This C++ file includes sample code that adds a ICMP rule for the Private profile using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+*/
 
 
 int __cdecl AddIcmpRule()
@@ -1322,13 +1315,12 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
     This C++ file includes sample code that adds a LAN rule to the currently active profiles using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+*/
 
 
 int __cdecl AddLanRule()
@@ -1444,14 +1436,13 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
     This C++ file includes sample code that adds a outbound rule for 
     the currently active profiles to allow a TCP connection using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+*/
 
 
 int __cdecl AddOutboundRule()
@@ -1566,17 +1557,15 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED
 TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that adds a rule per interface
-    for the currently active profiles using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+    This C++ file includes sample code that adds a rule per interface for the currently active profiles using the Microsoft Windows Firewall APIs.
+*/
 
 
 int __cdecl AddPerInterfaceRule()
@@ -1705,13 +1694,12 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
     This C++ file includes sample code that adds a Service rule for the currently active profiles using the Microsoft Windows Firewall APIs.
-
---********************************************************************/
+*/
 
 
 int __cdecl AddServiceRule()
@@ -1830,12 +1818,11 @@ Cleanup:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-  This C++ file includes sample code that takes ownership
-    of the NET_FW_RULE_CATEGORY_FIREWALL using the Microsoft Windows Firewall APIs.
+  This C++ file includes sample code that takes ownership of the NET_FW_RULE_CATEGORY_FIREWALL using the Microsoft Windows Firewall APIs.
 
     The API to register for NET_FW_RULE_CATEGORY_FIREWALL 
     needs the binary that is making this call to be linked with /integritycheck option to ensure code integrity.
@@ -1843,8 +1830,7 @@ Abstract:
 
     For more details on code integrity read
     http://msdn2.microsoft.com/library/ms680339.aspx
-
---********************************************************************/
+*/
 
 
 #define BAIL_ON_ALLOC_FAILURE(ptr, fnName)                                                                        \
@@ -1865,8 +1851,7 @@ Registering with Windows Firewall And Taking Ownership of Firewall Policy Manage
 
 05/31/2018
 
-This example registers a product with Windows Firewall and takes ownership of Firewall policy management using the
-Windows Firewall with Advanced Security APIs.
+This example registers a product with Windows Firewall and takes ownership of Firewall policy management using the Windows Firewall with Advanced Security APIs.
 
 https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registering-with-windows-firewall-ownership
 */
@@ -1891,8 +1876,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     categories[0] = NET_FW_RULE_CATEGORY_FIREWALL;
     result = ArrayOfLongsToVariant(numberOfCategories, categories, &varCategories);
 
-    //  For localization purposes, the display name can be
-    //    provided as an indirect string. The indirect strings can be defined in an rc file.
+    //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
     //  Examples of the indirect string definition in the rc file -
     //    127                     "A Test Firewall Product"
     //    displayName = SysAllocString(L"@RegisterFirewallSample.exe,-127");
@@ -2009,7 +1993,7 @@ CLEANUP:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/********************************************************************++
+/*
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
@@ -2022,8 +2006,7 @@ Abstract:
 
     For more details on code integrity read
     http://msdn2.microsoft.com/library/ms680339.aspx
-
---********************************************************************/
+*/
 
 
 #define BAIL_ON_ALLOC_FAILURE_2(ptr, fnName)                                                                      \
@@ -2039,8 +2022,7 @@ Registering with Windows Firewall Without Taking Ownership of Firewall Policy Ma
 
 05/31/2018
 
-This example registers a product with Windows Firewall without taking ownership of Firewall policy management using
-the Windows Firewall with Advanced Security APIs.
+This example registers a product with Windows Firewall without taking ownership of Firewall policy management using the Windows Firewall with Advanced Security APIs.
 
 https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registering-with-windows-firewall-no-ownership
 */
@@ -2054,8 +2036,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     long count = 0;
     BOOL comInit = FALSE;
 
-    //  For localization purposes, the display name can be
-    //    provided as an indirect string. The indirect strings can be defined in an rc file.
+    //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
     //  Examples of the indirect string definition in the rc file -
     //    127                     "A Test Firewall Product"
     //    displayName = SysAllocString(L"@RegisterWithoutCategoryOwnership.exe,-127");
@@ -2141,8 +2122,7 @@ CLEANUP:
 
         Sample code for 'Windows Firewall with Advanced Security' COM interfaces.
 
-        Illustrates correct usage of following methods/properties of INetFwPolicy2 COM interface
-        in the presence of multiple firewall profiles:
+        Illustrates correct usage of following methods/properties of INetFwPolicy2 COM interface in the presence of multiple firewall profiles:
           - CurrentProfileTypes
           - IsRuleGroupCurrentlyEnabled
           - IsRuleGroupEnabled
@@ -2229,13 +2209,11 @@ HRESULT GetCurrentFirewallState(__in INetFwPolicy2 * pNetFwPolicy2)
         goto CLEANUP;
     }
 
-    // The returned 'CurrentProfiles' bitmask can have more than 1 bit set if multiple profiles
-    //   are active or current at the same time
+    // The returned 'CurrentProfiles' bitmask can have more than 1 bit set if multiple profiles are active or current at the same time
 
     for (int i = 0; i < 3; i++) {
-        if (CurrentProfilesBitMask & ProfileMap[i].Id) {
-            /*Is Firewall Enabled?*/
-            hr = pNetFwPolicy2->get_FirewallEnabled(ProfileMap[i].Id, &bActualFirewallEnabled);
+        if (CurrentProfilesBitMask & ProfileMap[i].Id) {            
+            hr = pNetFwPolicy2->get_FirewallEnabled(ProfileMap[i].Id, &bActualFirewallEnabled);/*Is Firewall Enabled?*/
             if (FAILED(hr)) {
                 wprintf(L"Failed to get FirewallEnabled settings for %s profile. Error: %x.\n", ProfileMap[i].Name, hr);
                 goto CLEANUP;
@@ -2264,8 +2242,7 @@ HRESULT IsRuleGroupCurrentlyEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
         if (VARIANT_TRUE == bActualEnabled && S_OK == hr) {
             wprintf(L"Rule Group currently enabled on all the current profiles\n");
         } else if (VARIANT_TRUE == bActualEnabled && S_FALSE == hr) {
-            wprintf(L"Rule Group currently enabled on some of the current profiles but not on all the current "
-                    L"profiles\n");
+            wprintf(L"Rule Group currently enabled on some of the current profiles but not on all the current profiles\n");
         } else if (VARIANT_FALSE == bActualEnabled) {
             wprintf(L"Rule Group Currently not enabled on any of the current profiles\n");
         }
@@ -2325,11 +2302,9 @@ HRESULT GetLocalPolicyModifyState(__in INetFwPolicy2 * pNetFwPolicy2)
 
     if (modifystate == NET_FW_MODIFY_STATE_OK) {
         if (hr == S_OK) {
-            wprintf(L"Changing or adding firewall rule (or group) to the current profiles will take effect on all "
-                    L"current profiles.\n");
+            wprintf(L"Changing or adding firewall rule (or group) to the current profiles will take effect on all current profiles.\n");
         } else if (hr == S_FALSE) {
-            wprintf(L"Changing or adding firewall rule (or group) to the current profiles will take effect on "
-                    L"only some current profiles but not all.\n");
+            wprintf(L"Changing or adding firewall rule (or group) to the current profiles will take effect on only some current profiles but not all.\n");
         }
     } else if (modifystate == NET_FW_MODIFY_STATE_GP_OVERRIDE) {
         if (hr == S_OK) {
