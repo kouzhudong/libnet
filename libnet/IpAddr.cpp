@@ -322,7 +322,6 @@ The IP address that was added is then deleted.
 https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipaddress
 */
 {
-
     /* Variables used by GetIpAddrTable */
     PMIB_IPADDRTABLE pIPAddrTable;
     DWORD dwSize = 0;

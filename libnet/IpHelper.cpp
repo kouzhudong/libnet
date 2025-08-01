@@ -839,6 +839,202 @@ int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+void PrintUnicastIpAddress(PMIB_UNICASTIPADDRESS_ROW pipRow)
+{
+    WCHAR Ipv4String[16] = {0};
+    WCHAR Ipv6String[46] = {0};
+
+    // Print some variables from the rows in the table
+    wprintf(L"AddressFamily:\t\t\t ");
+    switch (pipRow->Address.si_family) {
+    case AF_INET:
+        wprintf(L"IPv4\n");
+        if (InetNtop(AF_INET, &pipRow->Address.Ipv4.sin_addr, Ipv4String, 16) != NULL)
+            wprintf(L"IPv4 Address:\t\t\t %ws\n", Ipv4String);
+        break;
+    case AF_INET6:
+        wprintf(L"IPv6\n");
+        if (InetNtop(AF_INET6, &pipRow->Address.Ipv6.sin6_addr, Ipv6String, 46) != NULL)
+            wprintf(L"IPv6 Address:\t\t\t %s\n", Ipv6String);
+        break;
+    default:
+        wprintf(L"Other: %d\n", pipRow->Address.si_family);
+        break;
+    }
+
+    wprintf(L"Interface LUID NetLuidIndex:\t %llu\n", pipRow->InterfaceLuid.Info.NetLuidIndex);
+    wprintf(L"Interface LUID IfType:\t\t ");
+    switch (pipRow->InterfaceLuid.Info.IfType) {
+    case IF_TYPE_OTHER:
+        wprintf(L"Other\n");
+        break;
+    case IF_TYPE_ETHERNET_CSMACD:
+        wprintf(L"Ethernet\n");
+        break;
+    case IF_TYPE_ISO88025_TOKENRING:
+        wprintf(L"Token ring\n");
+        break;
+    case IF_TYPE_PPP:
+        wprintf(L"PPP\n");
+        break;
+    case IF_TYPE_SOFTWARE_LOOPBACK:
+        wprintf(L"Software loopback\n");
+        break;
+    case IF_TYPE_ATM:
+        wprintf(L"ATM\n");
+        break;
+    case IF_TYPE_IEEE80211:
+        wprintf(L"802.11 wireless\n");
+        break;
+    case IF_TYPE_TUNNEL:
+        wprintf(L"Tunnel encapsulation\n");
+        break;
+    case IF_TYPE_IEEE1394:
+        wprintf(L"IEEE 1394 (Firewire)\n");
+        break;
+    default:
+        wprintf(L"Unknown: %lld\n", pipRow->InterfaceLuid.Info.IfType);
+        break;
+    }
+
+    wprintf(L"Interface Index:\t\t %lu\n", pipRow->InterfaceIndex);
+
+    wprintf(L"Prefix Origin:\t\t\t ");
+    switch (pipRow->PrefixOrigin) {
+    case IpPrefixOriginOther:
+        wprintf(L"IpPrefixOriginOther\n");
+        break;
+    case IpPrefixOriginManual:
+        wprintf(L"IpPrefixOriginManual\n");
+        break;
+    case IpPrefixOriginWellKnown:
+        wprintf(L"IpPrefixOriginWellKnown\n");
+        break;
+    case IpPrefixOriginDhcp:
+        wprintf(L"IpPrefixOriginDhcp\n");
+        break;
+    case IpPrefixOriginRouterAdvertisement:
+        wprintf(L"IpPrefixOriginRouterAdvertisement\n");
+        break;
+    case IpPrefixOriginUnchanged:
+        wprintf(L"IpPrefixOriginUnchanged\n");
+        break;
+    default:
+        wprintf(L"Unknown: %d\n", pipRow->PrefixOrigin);
+        break;
+    }
+
+    wprintf(L"Suffix Origin:\t\t\t ");
+    switch (pipRow->SuffixOrigin) {
+    case IpSuffixOriginOther:
+        wprintf(L"IpSuffixOriginOther\n");
+        break;
+    case IpSuffixOriginManual:
+        wprintf(L"IpSuffixOriginManual\n");
+        break;
+    case IpSuffixOriginWellKnown:
+        wprintf(L"IpSuffixOriginWellKnown\n");
+        break;
+    case IpSuffixOriginDhcp:
+        wprintf(L"IpSuffixOriginDhcp\n");
+        break;
+    case IpSuffixOriginLinkLayerAddress:
+        wprintf(L"IpSuffixOriginLinkLayerAddress\n");
+        break;
+    case IpSuffixOriginRandom:
+        wprintf(L"IpSuffixOriginRandom\n");
+        break;
+    case IpSuffixOriginUnchanged:
+        wprintf(L"IpSuffixOriginUnchanged\n");
+        break;
+    default:
+        wprintf(L"Unknown: %d\n", pipRow->SuffixOrigin);
+        break;
+    }
+
+    wprintf(L"Valid Lifetime:\t\t\t 0x%x (%u)\n", pipRow->ValidLifetime, pipRow->ValidLifetime);
+    wprintf(L"Preferred Lifetime:\t\t 0x%x (%u)\n", pipRow->PreferredLifetime, pipRow->PreferredLifetime);
+    wprintf(L"OnLink PrefixLength:\t\t %lu\n", pipRow->OnLinkPrefixLength);
+
+    wprintf(L"Skip As Source:\t\t\t ");
+    if (pipRow->SkipAsSource)
+        wprintf(L"Yes\n");
+    else
+        wprintf(L"No\n");
+
+    wprintf(L"Dad State:\t\t\t ");
+    switch (pipRow->DadState) {
+    case IpDadStateInvalid:
+        wprintf(L"IpDadStateInvalid\n");
+        break;
+    case IpDadStateTentative:
+        wprintf(L"IpDadStateTentative\n");
+        break;
+    case IpDadStateDuplicate:
+        wprintf(L"IpDadStateDuplicate\n");
+        break;
+    case IpDadStateDeprecated:
+        wprintf(L"IpDadStateDeprecated\n");
+        break;
+    case IpDadStatePreferred:
+        wprintf(L"IpDadStatePreferred\n");
+        break;
+    default:
+        wprintf(L"Unknown: %d\n", pipRow->DadState);
+        break;
+    }
+
+    wprintf(L"\n");
+}
+
+
+int DumpUnicastIpAddressEntry(NET_IFINDEX InterfaceIndex, ADDRESS_FAMILY addressFamily, PCWSTR IPAddress)
+/*
+以下示例检索命令行中指定的单播 IP 地址条目，并从检索到 的 MIB_UNICASTIPADDRESS_ROW 结构中输出一些值。
+
+https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getunicastipaddressentry
+*/
+{
+    IN_ADDR Ipv4Addr{};
+    IN6_ADDR Ipv6Addr{};
+
+    if (addressFamily == AF_INET) {
+        if (InetPtonW(addressFamily, IPAddress, &Ipv4Addr) != 1) {
+            wprintf(L"Unable to parse IPv4 address string: %ls\n", IPAddress);
+            exit(1);
+        }
+    } else if (addressFamily == AF_INET6) {
+        if (InetPton(addressFamily, IPAddress, &Ipv6Addr) != 1) {
+            wprintf(L"Unable to parse IPv6 address string: %ls\n", IPAddress);
+            exit(1);
+        }
+    }
+
+    MIB_UNICASTIPADDRESS_ROW ipRow = {0};
+    ipRow.Address.si_family = (ADDRESS_FAMILY)addressFamily;
+    ipRow.InterfaceIndex = InterfaceIndex;
+
+    if (addressFamily == AF_INET) {
+        ipRow.Address.si_family = AF_INET;
+        memcpy(&ipRow.Address.Ipv4.sin_addr, &Ipv4Addr, sizeof(IN_ADDR));
+    }
+    if (addressFamily == AF_INET6) {
+        ipRow.Address.si_family = AF_INET6;
+        memcpy(&ipRow.Address.Ipv6.sin6_addr, &Ipv6Addr, sizeof(IN6_ADDR));
+    }
+
+    ULONG Result = GetUnicastIpAddressEntry(&ipRow);
+    if (Result != NO_ERROR) {
+        wprintf(L"GetUnicastIpAddressEntry returned error: %lu\n", Result);
+        exit(1);
+    }
+
+    PrintUnicastIpAddress(&ipRow);
+
+    return 0;
+}
+
+
 EXTERN_C
 DLLEXPORT
 int WINAPI EnumUnicastIpAddressTable()
@@ -847,15 +1043,9 @@ The following example retrieves a unicast IP address table and prints some value
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunicastipaddresstable
 */
-{
-    // Declare and initialize variables
-    unsigned int i{};
-    DWORD Result = 0;
-    WCHAR Ipv4String[16] = {0};
-    WCHAR Ipv6String[46] = {0};
+{   
     PMIB_UNICASTIPADDRESS_TABLE pipTable = nullptr;
-
-    Result = GetUnicastIpAddressTable(AF_UNSPEC, &pipTable);
+    DWORD Result = GetUnicastIpAddressTable(AF_UNSPEC, &pipTable);
     if (Result != NO_ERROR) {
         wprintf(L"GetUnicastIpAddressTable returned error: %lu\n", Result);
         return (1);
@@ -863,7 +1053,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
     // Print some variables from the rows in the table
     wprintf(L"Number of table entries: %u\n\n", pipTable->NumEntries);
 
-    for (i = 0; i < pipTable->NumEntries; i++) {
+    for (unsigned int i = 0; i < pipTable->NumEntries; i++) {
+        WCHAR Ipv4String[16] = {0};
+        WCHAR Ipv6String[46] = {0};
+
         wprintf(L"AddressFamily[%u]:\t\t ", i);
 
         switch (pipTable->Table[i].Address.si_family) {
@@ -906,6 +1099,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
 
         wprintf(L"Dad State[%u]:\t\t\t ", i);
         PrintDadState(pipTable->Table[i].DadState);
+
+        NET_IFINDEX InterfaceIndex = pipTable->Table[i].InterfaceIndex;
+        ADDRESS_FAMILY addressFamily = pipTable->Table[i].Address.si_family;
+        PCWSTR IPAddress = pipTable->Table[i].Address.si_family == AF_INET ? Ipv4String : Ipv6String;
+        DumpUnicastIpAddressEntry(InterfaceIndex, addressFamily, IPAddress);
 
         wprintf(L"\n");
     }
