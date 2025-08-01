@@ -2,8 +2,7 @@
     Copyright (c) 1998 - 2000  Microsoft Corporation
     Module Name: IpRoute.exe
     File       : IpRoute.cpp
-    Description: This file demonstrates the use of IP Helper APIs to
-                 manipulate routing table.
+    Description: This file demonstrates the use of IP Helper APIs to manipulate routing table.
     Author:
     Frank Li            April 18, 1998
 
@@ -137,7 +136,6 @@ void DoGetIpForwardTable()
 void DoSetIpForwardEntry(char * pszDest, char * pszNetMask, char * pszGateway, char * pszInterface, DWORD dwMetric)
 {
     DWORD dwStatus;
-
     MIB_IPFORWARDROW routeEntry;          // Ip routing table row entry
     PMIB_IPADDRTABLE pIpAddrTable = NULL; // Ip Addr Table
     DWORD dwIfIndex;                      // Interface index number
@@ -344,12 +342,7 @@ void PrintIpForwardTable(PMIB_IPFORWARDTABLE pIpRouteTable)
         strcpy_s(szDestIp, sizeof(szDestIp), inet_ntoa(inadDest));
         strcpy_s(szMaskIp, sizeof(szDestIp), inet_ntoa(inadMask));
         strcpy_s(szGatewayIp, sizeof(szDestIp), inet_ntoa(inadGateway));
-        printf("  %15s %16s %16s %16s %7d\n",
-               szDestIp,
-               szMaskIp,
-               szGatewayIp,
-               szIpAddr,
-               pIpRouteTable->table[i].dwForwardMetric1);
+        printf("  %15s %16s %16s %16s %7d\n", szDestIp, szMaskIp, szGatewayIp, szIpAddr, pIpRouteTable->table[i].dwForwardMetric1);
     }
 
     if (pIpAddrTable)

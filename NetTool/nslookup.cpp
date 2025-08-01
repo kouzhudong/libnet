@@ -487,18 +487,14 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
     printf(("------------\n"));
     printf(("SendRequest(), len %d\n"), (int)BufferLength);
     printf(("    HEADER:\n"));
-    printf("        opcode = %s, id = %d, rcode = %s\n",
-           OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3),
-           (int)RequestID,
-           RCodeIDtoRCodeName(Header2 & 0x0F));
+    printf("        opcode = %s, id = %d, rcode = %s\n", OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3), (int)RequestID, RCodeIDtoRCodeName(Header2 & 0x0F));
 
     printf(("        header flags:  query"));
     if (Header1 & 0x01)
         printf((", want recursion"));
     printf(("\n"));
 
-    printf(("        questions = %d,  answers = %d,"
-            "  authority records = %d,  additional = %d\n\n"),
+    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"), 
            (int)NumQuestions,
            (int)NumAnswers,
            (int)NumAuthority,
@@ -560,10 +556,7 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
     printf(("------------\n"));
     printf(("Got answer (%d bytes):\n"), (int)BufferLength);
     printf(("    HEADER:\n"));
-    printf(("        opcode = %s, id = %d, rcode = %s\n"),
-           OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3),
-           (int)ResponseID,
-           RCodeIDtoRCodeName(Header2 & 0x0F));
+    printf(("        opcode = %s, id = %d, rcode = %s\n"), OpcodeIDtoOpcodeName((Header1 & 0x78) >> 3), (int)ResponseID, RCodeIDtoRCodeName(Header2 & 0x0F));
 
     printf(("        header flags:  response"));
     if (Header1 & 0x01)
@@ -572,8 +565,7 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
         printf((", recursion avail."));
     printf(("\n"));
 
-    printf(("        questions = %d,  answers = %d,  "
-            "authority records = %d,  additional = %d\n\n"),
+    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"),
            (int)NumQuestions,
            (int)NumAnswers,
            (int)NumAuthority,
@@ -621,10 +613,7 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             d = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            printf(("        type = %s, class = %s, dlen = %d\n"),
-                   TypeIDtoTypeName(Type),
-                   ClassIDtoClassName(Class),
-                   d);
+            printf(("        type = %s, class = %s, dlen = %d\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class), d);
 
             /* Print out the answer. */
             if (TYPE_A == Type) {
@@ -663,10 +652,7 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             d = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            printf(("        type = %s, class = %s, dlen = %d\n"),
-                   TypeIDtoTypeName(Type),
-                   ClassIDtoClassName(Class),
-                   d);
+            printf(("        type = %s, class = %s, dlen = %d\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class), d);
 
             /* TODO: There might be more types? */
             if (TYPE_NS == Type) {
@@ -722,10 +708,7 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
             d = ntohs(((PUSHORT)&pBuffer[i])[0]);
             i += 2;
 
-            printf(("        type = %s, class = %s, dlen = %d\n"),
-                   TypeIDtoTypeName(Type),
-                   ClassIDtoClassName(Class),
-                   d);
+            printf(("        type = %s, class = %s, dlen = %d\n"), TypeIDtoTypeName(Type), ClassIDtoClassName(Class), d);
 
             /* TODO: There might be more types? */
             if (TYPE_A == Type) {
@@ -1407,8 +1390,7 @@ BOOL ParseCommandLine(int argc, char * argv[])
                 } else if (!strncmp("-nomsxfr", argv[i], 8)) {
                     State.MSxfr = FALSE;
                 } else if (!strncmp("-", argv[i], 1) && (strlen(argv[i]) == 1)) {
-                    /* Since we received just the plain - switch, we are going
-                       to be entering interactive mode. We also will not be parsing any more options. */
+                    /* Since we received just the plain - switch, we are going to be entering interactive mode. We also will not be parsing any more options. */
                     NoMoreOptions = TRUE;
                     Interactive = TRUE;
                 } else {
@@ -1426,9 +1408,8 @@ BOOL ParseCommandLine(int argc, char * argv[])
             return 0;
         }
     }
-
-    /* Get the FQDN of the DNS server. */
-    PerformInternalLookup(State.DefaultServerAddress, State.DefaultServer);
+    
+    PerformInternalLookup(State.DefaultServerAddress, State.DefaultServer);/* Get the FQDN of the DNS server. */
 
     return 1;
 }
@@ -1482,10 +1463,8 @@ int nslookup(int argc, char * argv[])
 
     memcpy(State.root, DEFAULT_ROOT, sizeof(DEFAULT_ROOT));
 
-    /* We don't know how long of a buffer it will want to return. So we'll
-       pass an empty one now and let it fail only once, instead of guessing. */
+    /* We don't know how long of a buffer it will want to return. So we'll pass an empty one now and let it fail only once, instead of guessing. */
     Status = GetNetworkParams(pNetInfo, &NetBufLen);
-
     if (Status != ERROR_BUFFER_OVERFLOW) {
         printf(("Error in GetNetworkParams call\n"));
         return -2;
@@ -1522,8 +1501,7 @@ int nslookup(int argc, char * argv[])
         /* This means that it was a /? parameter. */
         break;
     default:
-        /* Anything else means we enter interactive mode. The only exception
-           to this is when the host to resolve was provided on the command line. */
+        /* Anything else means we enter interactive mode. The only exception to this is when the host to resolve was provided on the command line. */
         InteractiveMode();
     }
 

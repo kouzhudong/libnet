@@ -630,10 +630,6 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-rm-socket-option
 
 
 int get_tcp_sock_opt(_In_ SOCKET s)
-/*
-
-
-*/
 {
     int ret = ERROR_SUCCESS;
 

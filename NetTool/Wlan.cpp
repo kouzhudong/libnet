@@ -104,12 +104,10 @@ void Dumpdot11CipherAlgorithm(PWLAN_AVAILABLE_NETWORK pBssEntry)
 
 int EnumWlanInterfaces()
 /*
-The following example enumerates the wireless LAN interfaces on the local computer and
-prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and
+The following example enumerates the wireless LAN interfaces on the local computer and prints values from the retrieved WLAN_INTERFACE_INFO_LIST structure and
 the enumerated WLAN_INTERFACE_INFO structures.
 
-Note  This example will fail to load on Windows Server 2008 and
-Windows Server 2008 R2 if the Wireless LAN Service is not installed and started.
+Note  This example will fail to load on Windows Server 2008 and Windows Server 2008 R2 if the Wireless LAN Service is not installed and started.
 
 经测试：这个显示的只是已经连接的WIFI。
 
@@ -170,8 +168,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanenumin
 int EnumWlanAvailableNetwork()
 /*
 Examples
-The following example enumerates the wireless LAN interfaces on the local computer,
-retrieves the list of available networks on each wireless LAN interface,
+The following example enumerates the wireless LAN interfaces on the local computer, retrieves the list of available networks on each wireless LAN interface,
 and prints values from the retrieved WLAN_AVAILABLE_NETWORK_LIST that contains the WLAN_AVAILABLE_NETWORK entries.
 
 Note  This example will fail to load on Windows Server 2008 and Windows Server 2008 R2 if the Wireless LAN Service is not installed and started.
@@ -222,8 +219,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetav
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
             iRet = StringFromGUID2(pIfInfo->InterfaceGuid, reinterpret_cast<LPOLESTR>(&GuidString), sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
-            //     sizeof(GuidString)/sizeof(*GuidString));
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString));
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
@@ -501,8 +497,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
             iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
-            //     sizeof(GuidString)/sizeof(*GuidString));
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString));
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {
@@ -514,13 +509,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetpr
             DumpWlanInterfaceState(pIfInfo->isState);
             wprintf(L"\n\n");
 
-            dwResult = WlanGetProfile(hClient,
-                                      &pIfInfo->InterfaceGuid,
-                                      pProfileName,
-                                      NULL,
-                                      &pProfileXml,
-                                      &dwFlags,
-                                      &dwGrantedAccess);
+            dwResult = WlanGetProfile(hClient, &pIfInfo->InterfaceGuid, pProfileName, NULL, &pProfileXml, &dwFlags, &dwGrantedAccess);
             if (dwResult != ERROR_SUCCESS) {
                 wprintf(L"WlanGetProfile failed with error: %u\n", dwResult);
                 // You can use FormatMessage to find out why the function failed

@@ -47,7 +47,7 @@ int PrintAddress(SOCKADDR * sa, int salen)
 
 int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 // Description:
-//    This is similar to the PrintAddress function except that instead of
+//    This is similar to the PrintAddress function except that instead of 
 //    printing the string address to the console, it is formatted into the supplied string buffer.
 {
     char host[NI_MAXHOST], serv[NI_MAXSERV];
@@ -83,10 +83,8 @@ int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 
 struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int proto)
     // Description:
-    //    This routine resolves the specified address and returns a list of addrinfo
-    //    structure containing SOCKADDR structures representing the resolved addresses.
-    //    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether
-    //    it is a string listeral address or a hostname.
+    //    This routine resolves the specified address and returns a list of addrinfo structure containing SOCKADDR structures representing the resolved addresses.
+    //    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether it is a string listeral address or a hostname.
 {
     struct addrinfo hints, * res = NULL;
     int rc;
@@ -304,12 +302,9 @@ void SetIcmpSequence(char * buf)
 char tmp[MAX_RECV_BUF_LEN] = {'\0'};
 USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen, struct addrinfo * dest)
 // Description:
-//    This routine computes the ICMP6 checksum which includes the pseudo
-//    header of the IPv6 header (see RFC2460 and RFC2463). The one difficulty
-//    here is we have to know the source and destination IPv6 addresses which
-//    will be contained in the IPv6 header in order to compute the checksum.
-//    To do this we call the SIO_ROUTING_INTERFACE_QUERY ioctl to find which
-//    local interface for the outgoing packet.
+//    This routine computes the ICMP6 checksum which includes the pseudo header of the IPv6 header (see RFC2460 and RFC2463). The one difficulty
+//    here is we have to know the source and destination IPv6 addresses which will be contained in the IPv6 header in order to compute the checksum.
+//    To do this we call the SIO_ROUTING_INTERFACE_QUERY ioctl to find which local interface for the outgoing packet.
 {
     SOCKADDR_STORAGE localif;
     DWORD bytes;
@@ -317,16 +312,7 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
     int rc, total, length, i;
 
     // Find out which local interface for the destination
-    rc = WSAIoctl(
-        s,
-        SIO_ROUTING_INTERFACE_QUERY,
-        dest->ai_addr,
-        (DWORD)dest->ai_addrlen,
-        (SOCKADDR *)&localif,
-        (DWORD)sizeof(localif),
-        &bytes,
-        NULL,
-        NULL);
+    rc = WSAIoctl(s, SIO_ROUTING_INTERFACE_QUERY, dest->ai_addr, (DWORD)dest->ai_addrlen, (SOCKADDR *)&localif, (DWORD)sizeof(localif), &bytes, NULL, NULL);
     if (rc == SOCKET_ERROR) {
         fprintf(stderr, "WSAIoctl failed: %d\n", WSAGetLastError());
         return 0xFFFF;
@@ -390,11 +376,9 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
 
 void ComputeIcmpChecksum(SOCKET s, char * buf, int packetlen, struct addrinfo * dest)
 // Description:
-//    This routine computes the checksum for the ICMP request. For IPv4 its
-//    easy, just compute the checksum for the ICMP packet and data. For IPv6,
+//    This routine computes the checksum for the ICMP request. For IPv4 its easy, just compute the checksum for the ICMP packet and data. For IPv6,
 //    its more complicated. The pseudo checksum has to be computed for IPv6
-//    which includes the ICMP6 packet and data plus portions of the IPv6
-//    header which is difficult since we aren't building our own IPv6 header.
+//    which includes the ICMP6 packet and data plus portions of the IPv6 header which is difficult since we aren't building our own IPv6 header.
 {
     if (gAddressFamily == AF_INET) {
         ICMP_HDR * icmpv4 = NULL;
@@ -440,8 +424,7 @@ int PostRecvfrom(SOCKET s, char * buf, int buflen, SOCKADDR * from, int * fromle
 void PrintPayload(char * buf, int bytes)
 // Description:
 //    This routine is for IPv4 only. It determines if there are any IP options
-//    present (by seeing if the IP header length is greater than 20 bytes) and
-//    if so it prints the IP record route options.
+//    present (by seeing if the IP header length is greater than 20 bytes) and if so it prints the IP record route options.
 {
     int hdrlen = 0, routes = 0, i;
 
@@ -458,8 +441,7 @@ void PrintPayload(char * buf, int bytes)
         v4hdr = (IPV4_HDR *)buf;
         hdrlen = (v4hdr->ip_verlen & 0x0F) * 4;
 
-        // If the header length is greater than the size of the basic IPv4
-        //    header then there are options present. Find them and print them.
+        // If the header length is greater than the size of the basic IPv4 header then there are options present. Find them and print them.
         if (hdrlen > sizeof(IPV4_HDR)) {
             v4opt = (IPV4_OPTION_HDR *)(buf + sizeof(IPV4_HDR));
             routes = (v4opt->opt_ptr / sizeof(ULONG)) - 1;
@@ -517,7 +499,7 @@ int ping(int argc, char ** argv)
 // Description:
 //    Setup the ICMP raw socket and create the ICMP header.
 //    Add the appropriate IP option header and start sending ICMP echo requests to the endpoint.
-//    For each send and receive we set a timeout value so that we don't wait forever for a
+//    For each send and receive we set a timeout value so that we don't wait forever for a 
 //    response in case the endpoint is not responding. When we receive a packet decode it.
 
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
