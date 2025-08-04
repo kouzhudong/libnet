@@ -585,3 +585,197 @@ grok 3 AI 生成
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+//一下代码由grok 3 AI 生成。
+
+
+bool ParseCIDR(const std::string & cidr, std::string & ip, int & prefix)
+{
+    // IPv4 CIDR 的正则表达式
+    // 匹配格式：xxx.xxx.xxx.xxx/yy
+    // xxx: 0-255, yy: 0-32
+    const std::regex cidr_regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})$");
+
+    std::smatch match;
+    if (std::regex_match(cidr, match, cidr_regex)) {
+        // 提取 IP 地址的四个部分
+        int octets[4];
+        for (int i = 1; i <= 4; ++i) {
+            octets[i - 1] = std::stoi(match[i].str());
+            // 验证每个八位字节在 0-255 范围内
+            if (octets[i - 1] < 0 || octets[i - 1] > 255) {
+                return false;
+            }
+        }
+        // 提取前缀长度
+        prefix = std::stoi(match[5].str());
+        // 验证前缀长度在 0-32 范围内
+        if (prefix < 0 || prefix > 32) {
+            return false;
+        }
+        // 拼接 IP 地址
+        ip = match[1].str() + "." + match[2].str() + "." + match[3].str() + "." + match[4].str();
+        return true;
+    }
+    return false;
+}
+
+int TestParseCIDR()
+{
+    std::string cidr;
+    std::cout << "请输入 IPv4 CIDR 地址 (如 192.168.1.0/24): ";
+    std::getline(std::cin, cidr);
+
+    std::string ip;
+    int prefix;
+
+    if (ParseCIDR(cidr, ip, prefix)) {
+        std::cout << "解析结果:\n";
+        std::cout << "IP 地址: " << ip << "\n";
+        std::cout << "子网掩码位数: " << prefix << "\n";
+    } else {
+        std::cout << "无效的 CIDR 格式!\n";
+    }
+
+    return 0;
+}
+
+
+bool ParseIPv6CIDR(const std::string & cidr, std::string & ip, int & prefix)
+{
+    // IPv6 CIDR 正则表达式
+    // 匹配格式：xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/yy
+    // 支持压缩格式（如 ::）和省略前导零
+    const std::regex ipv6_cidr_regex("^((?:[0-9a-fA-F]{1,4}:){0,7}[0-9a-fA-F]{1,4}::?|"
+                                     "(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4})/(\\d{1,3})$");
+
+    std::smatch match;
+    if (std::regex_match(cidr, match, ipv6_cidr_regex)) {
+        // 提取 IP 地址
+        ip = match[1].str();
+        // 提取前缀长度
+        prefix = std::stoi(match[2].str());
+        // 验证前缀长度在 0-128 范围内
+        if (prefix < 0 || prefix > 128) {
+            return false;
+        }
+        // 验证 IP 地址格式（简单检查，确保不是空或无效）
+        if (ip.empty() || ip == "::") {
+            ip = "::"; // 特殊处理全零地址
+            return true;
+        }
+        // 确保 IP 地址是有效的 IPv6 地址（进一步检查可添加）
+        return true;
+    }
+    return false;
+}
+
+int TestParseIPv6CIDR()
+{
+    std::string cidr;
+    std::cout << "请输入 IPv6 CIDR 地址 (如 2001:0db8::/32): ";
+    std::getline(std::cin, cidr);
+
+    std::string ip;
+    int prefix;
+
+    if (ParseIPv6CIDR(cidr, ip, prefix)) {
+        std::cout << "解析结果:\n";
+        std::cout << "IP 地址: " << ip << "\n";
+        std::cout << "前缀长度: " << prefix << "\n";
+    } else {
+        std::cout << "无效的 IPv6 CIDR 格式!\n";
+    }
+
+    return 0;
+}
+
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <iomanip>
+
+std::string prefixToIPv4Mask(int prefix)
+// 将 IPv4 前缀长度转换为子网掩码字符串
+{
+    if (prefix < 0 || prefix > 32) {
+        return "Invalid prefix";
+    }
+
+    uint32_t mask = 0xffffffff << (32 - prefix);
+    std::vector<int> octets(4);
+    octets[0] = (mask >> 24) & 0xff;
+    octets[1] = (mask >> 16) & 0xff;
+    octets[2] = (mask >> 8) & 0xff;
+    octets[3] = mask & 0xff;
+
+    std::stringstream ss;
+    ss << octets[0] << "." << octets[1] << "." << octets[2] << "." << octets[3];
+    return ss.str();
+}
+
+std::string prefixToIPv6Mask(int prefix)
+// 将 IPv6 前缀长度转换为子网掩码字符串
+{
+    if (prefix < 0 || prefix > 128) {
+        return "Invalid prefix";
+    }
+
+    std::vector<uint16_t> segments(8, 0);
+    int full_segments = prefix / 16;
+    int remaining_bits = prefix % 16;
+
+    for (int i = 0; i < full_segments; ++i) {
+        segments[i] = 0xffff;
+    }
+    if (remaining_bits > 0 && full_segments < 8) {
+        segments[full_segments] = (0xffff << (16 - remaining_bits)) & 0xffff;
+    }
+
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0');
+    for (int i = 0; i < 8; ++i) {
+        if (i > 0)
+            ss << ":";
+        ss << std::setw(4) << segments[i];
+    }
+
+    std::string result = ss.str();
+    if (prefix == 0) {
+        return "::";
+    }
+    size_t pos = result.find("0000:0000");
+    if (pos != std::string::npos && result.find("0000:0000", pos + 1) != std::string::npos) {
+        result.replace(pos, result.length(), "::");
+    }
+
+    return result;
+}
+
+int TestprefixToMask()
+{
+    int prefix;
+    std::string ip_version;
+
+    std::cout << "请输入 IP 版本 (IPv4 或 IPv6): ";
+    std::getline(std::cin, ip_version);
+    std::cout << "请输入前缀长度: ";
+    std::cin >> prefix;
+    std::cin.ignore(); // 清理输入缓冲区
+
+    if (ip_version == "IPv4") {
+        std::string mask = prefixToIPv4Mask(prefix);
+        std::cout << "IPv4 子网掩码: " << mask << "\n";
+    } else if (ip_version == "IPv6") {
+        std::string mask = prefixToIPv6Mask(prefix);
+        std::cout << "IPv6 子网掩码: " << mask << "\n";
+    } else {
+        std::cout << "无效的 IP 版本!\n";
+    }
+
+    return 0;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
