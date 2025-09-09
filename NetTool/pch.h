@@ -50,7 +50,12 @@
 #include <sddl.h>
 #include <ws2tcpip.h>
 #include <fwpsu.h>
+
+#pragma warning(push)
+#pragma warning(disable : 4995)
 #include <mbnapi.h>
+#pragma warning(pop)
+
 #include <netfw.h>
 #include <objbase.h>
 #include <oleauto.h>
