@@ -27,8 +27,6 @@ BraceWrapping:
   BeforeCatch: false
   BeforeElse: false
   BeforeWhile: false
-  BeforeCatch: false
-  BeforeWhile: false
   AfterStruct: false
 
 

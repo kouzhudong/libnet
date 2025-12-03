@@ -318,30 +318,29 @@ void WINAPI packetize_icmpv4_echo_request(
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress,
-                    IN UINT8 NextHeader, //取值，如：IPPROTO_TCP等。
-                    IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
+EXTERN_C
+DLLEXPORT
+void WINAPI InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
 {
     IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
     IPv6Header->PayloadLength = ntohs(OptLen);
-    IPv6Header->NextHeader = NextHeader;
+    IPv6Header->NextHeader = NextHeader;//取值，如：IPPROTO_TCP等。
     IPv6Header->HopLimit = 128;
-
-    RtlCopyMemory(&IPv6Header->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
-    RtlCopyMemory(&IPv6Header->DestinationAddress, DestinationAddress, sizeof(IN6_ADDR));
+    IPv6Header->SourceAddress = *SourceAddress;
+    IPv6Header->DestinationAddress = *DestinationAddress;
+    //RtlCopyMemory(&IPv6Header->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
+    //RtlCopyMemory(&IPv6Header->DestinationAddress, DestinationAddress, sizeof(IN6_ADDR));
 }
 
 
-void InitIpv6HeaderForTcp(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress,
-                          IN UINT8 NextHeader, //取值，如：IPPROTO_TCP等。
-                          IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
+void InitIpv6HeaderForTcp(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
 /*
 功能：组装IPv6协议的TCP头。
 */
 {
     IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
     IPv6Header->PayloadLength = ntohs(sizeof(TCP_HDR) + OptLen);
-    IPv6Header->NextHeader = NextHeader;
+    IPv6Header->NextHeader = NextHeader;//取值，如：IPPROTO_TCP等。
     IPv6Header->HopLimit = 128;
 
     RtlCopyMemory(&IPv6Header->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
