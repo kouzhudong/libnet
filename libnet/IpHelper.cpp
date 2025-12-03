@@ -356,7 +356,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-resolvei
 
 EXTERN_C
 DLLEXPORT
-BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
+BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac)
 /*
 功能：获取一个(本地的)IPv6地址(默认网关)的MAC地址。
 
@@ -384,8 +384,7 @@ BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac)
         if (IN6_ADDR_EQUAL(&sin6_addr, &pipTable->Table[i].Address.Ipv6.sin6_addr)) {
             if (pipTable->Table[i].IsRouter) { // && (pipTable->Table[i].State == NlnsStale)
                 if (6 == pipTable->Table[i].PhysicalAddressLength) {
-                    RtlCopyMemory(
-                        mac, pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
+                    RtlCopyMemory(mac, pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
                     ret = true;
                     break;
                 }
@@ -794,7 +793,7 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr)
+int WINAPI GetMacByIPv4(IPAddr DestIp, PDL_EUI48 MacAddr)
 /*
 功能：获取(局域网，不能是互联网)IPv4对应的MAC地址。
 
@@ -825,7 +824,7 @@ GetMacByIPv4(inet_addr("192.168.5.1"), MacAddr);
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac)
+int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac)
 {
     char Gateway[4 * 4];
     GetGatewayByIPv4(IPv4, Gateway);

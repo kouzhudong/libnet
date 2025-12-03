@@ -17,7 +17,7 @@ EXTERN_C_START
 
 
 DLLEXPORT
-BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac);
+BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac);
 
 
 EXTERN_C_END

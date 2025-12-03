@@ -614,7 +614,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetGatewayMacByIPv6(const char * IPv6, PBYTE GatewayMac)
+int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac)
 /*
 功能：获取一个本地IPv6的一个默认网关的MAC.
 

@@ -116,7 +116,7 @@ DLLEXPORT
 int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway);
 
 DLLEXPORT
-int WINAPI GetGatewayMacByIPv6(const char * IPv6, PBYTE GatewayMac);
+int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac);
 
 
 EXTERN_C_END

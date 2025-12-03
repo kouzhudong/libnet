@@ -137,8 +137,7 @@ EXTERN_C_START
 __declspec(dllimport)
 int WINAPI GetMacByIPv4Test(int argc, char ** argv);
 
-__declspec(dllimport)
-int WINAPI GetMacByIPv4(IPAddr DestIp, PBYTE MacAddr);
+__declspec(dllimport) int WINAPI GetMacByIPv4(IPAddr DestIp, PDL_EUI48 MacAddr);
 
 __declspec(dllimport)
 int WINAPI EnumUnicastIpAddressTable();
@@ -313,11 +312,9 @@ int WINAPI EnumInterfaceInfo();
 __declspec(dllimport)
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
 
-__declspec(dllimport)
-int WINAPI GetGatewayMacByIPv6(const char * IPv6, PBYTE GatewayMac);
+__declspec(dllimport) int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac);
 
-__declspec(dllimport)
-int WINAPI GetGatewayMacByIPv4(const char * IPv4, PBYTE GatewayMac);
+__declspec(dllimport) int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac);
 
 __declspec(dllimport)
 int WINAPI EnumIpNetTable();
@@ -334,8 +331,7 @@ void WINAPI ResolveIpNetEntry2Test(const char * ip);
 __declspec(dllimport)
 void WINAPI GetMacByIPv6(const char * IPv6, PBYTE Mac);
 
-__declspec(dllimport)
-BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PBYTE mac);//c没有bool.
+__declspec(dllimport) BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac); // c没有bool.
 
 __declspec(dllimport)
 int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
