@@ -345,40 +345,35 @@ int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 //RAWÏà¹ØµÄ¡£
 
 
-__declspec(dllimport)
-void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW_TCP buffer);
+__declspec(dllimport) void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW_TCP buffer);
 
 __declspec(dllimport) void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen);
 
-__declspec(dllimport)
-void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer);
+__declspec(dllimport) void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW6_TCP buffer);
 
-__declspec(dllimport)
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac,  
-                          IN PBYTE DesMac,
+__declspec(dllimport) void WINAPI PacketizeSyn4(IN PDL_EUI48 SrcMac,  
+                          IN PDL_EUI48 DesMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
                           IN UINT16 th_sport, 
                           IN UINT16 th_dport, 
                           OUT PBYTE buffer);
 
-__declspec(dllimport)
-void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
-                          IN PBYTE DesMac,
+__declspec(dllimport) void WINAPI PacketizeSyn6(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
                           IN UINT16 th_sport, 
                           IN UINT16 th_dport, 
                           OUT PBYTE buffer);
 
-__declspec(dllimport)
-void WINAPI packetize_icmpv4_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, OUT PBYTE buffer);
+__declspec(dllimport) void WINAPI packetize_icmpv4_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress,
+                                                                OUT PBYTE buffer);
 
 __declspec(dllimport) 
 void WINAPI InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header);
 
-__declspec(dllimport)
-void WINAPI packetize_icmpv6_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, OUT PBYTE buffer);
+__declspec(dllimport) void WINAPI packetize_icmpv6_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress,
+                                                                OUT PBYTE buffer);
 
 __declspec(dllimport)
 USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size);
@@ -389,15 +384,16 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size);
 __declspec(dllimport)
 USHORT WINAPI checksum(USHORT * buffer, int size);
 
-__declspec(dllimport) void WINAPI InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr);
+__declspec(dllimport) void WINAPI InitEthernetHeader(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr);
 
 __declspec(dllimport) void WINAPI InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT8 Protocol, IN UINT16 TotalLength,
                                                  OUT PIPV4_HEADER IPv4Header);
 
-__declspec(dllimport) PVOID WINAPI PacketizeUdp4(PUINT8 SrcMac, PBYTE DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort,
+__declspec(dllimport) PVOID WINAPI PacketizeUdp4(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort,
+                                                 WORD DestinationPort,
                                                  PBYTE Data, WORD DataLen);
 
-__declspec(dllimport) PVOID WINAPI PacketizeUdp6(PUINT8 SrcMac, PBYTE DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort,
+__declspec(dllimport) PVOID WINAPI PacketizeUdp6(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort,
                                                  WORD DestinationPort, PBYTE Data, WORD DataLen);
 
 

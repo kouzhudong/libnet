@@ -204,7 +204,7 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
 
 EXTERN_C
 DLLEXPORT
-void WINAPI InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
+void WINAPI InitEthernetHeader(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
 /*
 功能：填写以太头。
 
@@ -217,19 +217,25 @@ Type，取值，如：ETHERNET_TYPE_IPV4，ETHERNET_TYPE_IPV6， ETHERNET_TYPE_A
 3.这个MAC需要计算，如网关的MAC。
 */
 {
-    eth_hdr->Destination.Byte[0] = DesMac[0];
-    eth_hdr->Destination.Byte[1] = DesMac[1];
-    eth_hdr->Destination.Byte[2] = DesMac[2];
-    eth_hdr->Destination.Byte[3] = DesMac[3];
-    eth_hdr->Destination.Byte[4] = DesMac[4];
-    eth_hdr->Destination.Byte[5] = DesMac[5];
+    if (!SrcMac || !DesMac || !eth_hdr) {
+        return;
+    }
 
-    eth_hdr->Source.Byte[0] = SrcMac[0];
-    eth_hdr->Source.Byte[1] = SrcMac[1];
-    eth_hdr->Source.Byte[2] = SrcMac[2];
-    eth_hdr->Source.Byte[3] = SrcMac[3];
-    eth_hdr->Source.Byte[4] = SrcMac[4];
-    eth_hdr->Source.Byte[5] = SrcMac[5];
+    //eth_hdr->Destination.Byte[0] = DesMac[0];
+    //eth_hdr->Destination.Byte[1] = DesMac[1];
+    //eth_hdr->Destination.Byte[2] = DesMac[2];
+    //eth_hdr->Destination.Byte[3] = DesMac[3];
+    //eth_hdr->Destination.Byte[4] = DesMac[4];
+    //eth_hdr->Destination.Byte[5] = DesMac[5];
+    eth_hdr->Destination = *DesMac;
+
+    //eth_hdr->Source.Byte[0] = SrcMac[0];
+    //eth_hdr->Source.Byte[1] = SrcMac[1];
+    //eth_hdr->Source.Byte[2] = SrcMac[2];
+    //eth_hdr->Source.Byte[3] = SrcMac[3];
+    //eth_hdr->Source.Byte[4] = SrcMac[4];
+    //eth_hdr->Source.Byte[5] = SrcMac[5];
+    eth_hdr->Source = *SrcMac;
 
     eth_hdr->Type = ntohs(Type);
 }
@@ -370,7 +376,7 @@ void InitTcpSp(OUT TCP_OPT_SACK_PERMITTED * sp)
 
 EXTERN_C
 DLLEXPORT
-void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW_TCP buffer)
+void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW_TCP buffer)
 {
     ASSERT(SrcMac);
     ASSERT(buffer);
@@ -393,10 +399,9 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE 
 
 EXTERN_C
 DLLEXPORT
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT16 th_sport, IN UINT16 th_dport,
+void WINAPI PacketizeSyn4(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT16 th_sport, IN UINT16 th_dport,
                           OUT PBYTE buffer)
 /*
-SrcMac：6字节长的本地的MAC。
 th_sport：网络序。如果是主机序，请用htons转换下。
 th_dport：网络序。如果是主机序，请用htons转换下。
 buffer：长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
@@ -419,9 +424,8 @@ buffer：长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
 
 EXTERN_C
 DLLEXPORT
-void WINAPI packetize_icmpv4_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, OUT PBYTE buffer)
+void WINAPI packetize_icmpv4_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, OUT PBYTE buffer)
 /*
-SrcMac：6字节长的本地的MAC。
 buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE)
 */
 {
@@ -497,7 +501,7 @@ IsCopy：是复制还是回复。
 
 EXTERN_C
 DLLEXPORT
-void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer)
+void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW6_TCP buffer)
 {
     ASSERT(SrcMac);
     ASSERT(buffer);
@@ -520,7 +524,7 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE 
 
 EXTERN_C
 DLLEXPORT
-void WINAPI PacketizeSyn6(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT16 th_sport, IN UINT16 th_dport,
+void WINAPI PacketizeSyn6(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT16 th_sport, IN UINT16 th_dport,
                           OUT PBYTE buffer)
 /*
 th_sport：网络序。如果是主机序，请用htons转换下。
@@ -542,7 +546,7 @@ buffer：长度是sizeof(RAW6_TCP)。
 
 EXTERN_C
 DLLEXPORT
-void WINAPI packetize_icmpv6_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, OUT PBYTE buffer)
+void WINAPI packetize_icmpv6_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, OUT PBYTE buffer)
 /*
 SrcMac：6字节长的本地的MAC。
 buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
@@ -571,7 +575,7 @@ buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_ME
 
 EXTERN_C
 DLLEXPORT
-PVOID WINAPI PacketizeUdp4(PUINT8 SrcMac, PBYTE DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
+PVOID WINAPI PacketizeUdp4(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
                           WORD DataLen)
 /*
 AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
@@ -585,9 +589,7 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
         return eth_hdr;
     }
 
-    memcpy((void *)&eth_hdr->Source, (void *)SrcMac, sizeof(DL_EUI48));
-    memcpy((void *)&eth_hdr->Destination, (void *)DesMac, sizeof(DL_EUI48));
-    eth_hdr->Type = ntohs(ETHERNET_TYPE_IPV4);
+    InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, eth_hdr);
 
     PIPV4_HEADER ipv4_header = (PIPV4_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
     ipv4_header->VersionAndHeaderLength = 0x45;
@@ -618,7 +620,7 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
 
 EXTERN_C
 DLLEXPORT
-PVOID WINAPI PacketizeUdp6(PUINT8 SrcMac, PBYTE DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
+PVOID WINAPI PacketizeUdp6(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
                           WORD DataLen)
 /*
 AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
@@ -632,9 +634,7 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
         return eth_hdr;
     }
 
-    memcpy((void *)&eth_hdr->Source, (void *)SrcMac, sizeof(DL_EUI48));
-    memcpy((void *)&eth_hdr->Destination, (void *)DesMac, sizeof(DL_EUI48));
-    eth_hdr->Type = ntohs(ETHERNET_TYPE_IPV6);
+    InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, eth_hdr);
 
     PIPV6_HEADER ipv6_hdr = (PIPV6_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
 
