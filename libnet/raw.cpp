@@ -576,6 +576,26 @@ buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_ME
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+void InitUdpHeader(PETHERNET_HEADER eth_hdr, int Length, IN UINT16 SourcePort, IN UINT16 DestinationPort, OUT PUDP_HDR udp_hdr, PBYTE Data, WORD DataLen)
+/*
+功能：组装UDP头。
+
+只输入一个函数的返回类型，AI把函数的名字和参数都猜到了(不完全符合我的需求)，人工改进了，有待测试。
+*/
+{
+    PVOID udp_payload = (PUDP_HDR)((PBYTE)udp_hdr + sizeof(UDP_HDR));
+    if (Data && DataLen) {
+        memcpy(udp_payload, Data, DataLen);
+    }
+
+    udp_hdr->dst_portno = DestinationPort;
+    udp_hdr->src_portno = SourcePort;
+    udp_hdr->udp_length = htons(DataLen + sizeof(UDP_HDR));
+    udp_hdr->udp_checksum = 0;
+    udp_hdr->udp_checksum = calc_udp4_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？        
+}
+
+
 EXTERN_C
 DLLEXPORT
 PVOID WINAPI PacketizeUdp4(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
@@ -597,29 +617,8 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     PIPV4_HEADER ipv4_header = (PIPV4_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
     InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)Length - sizeof(ETHERNET_HEADER), ipv4_header);
 
-    // ipv4_header->VersionAndHeaderLength = 0x45;
-    // ipv4_header->TypeOfServiceAndEcnField = 0;
-    // ipv4_header->TotalLength = htons((UINT16)Length - sizeof(ETHERNET_HEADER));
-    // ipv4_header->Identification = htons((UINT16)rand()); // 最佳做法：ipv4->Identification + 1;
-    // ipv4_header->FlagsAndOffset = 0;
-    // ipv4_header->TimeToLive = 64;
-    // ipv4_header->Protocol = IPPROTO_UDP;
-    // ipv4_header->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr;
-    // ipv4_header->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
-    // ipv4_header->HeaderChecksum = 0;
-    // ipv4_header->HeaderChecksum = checksum((USHORT *)ipv4_header, sizeof(IPV4_HEADER)); // 要不要转换字节序？
-
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv4_header + sizeof(IPV4_HEADER));
-    PVOID udp_payload = (PUDP_HDR)((PBYTE)udp_hdr + sizeof(UDP_HDR));
-    if (Data && DataLen) {
-        memcpy(udp_payload, Data, DataLen);
-    }
-
-    udp_hdr->dst_portno = DestinationPort;
-    udp_hdr->src_portno = SourcePort;
-    udp_hdr->udp_length = htons(DataLen + sizeof(UDP_HDR));
-    udp_hdr->udp_checksum = 0;
-    udp_hdr->udp_checksum = calc_udp4_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？
+    InitUdpHeader(eth_hdr, Length, SourcePort, DestinationPort, udp_hdr, Data, DataLen);
 
     return eth_hdr;
 }
@@ -632,6 +631,8 @@ PVOID WINAPI PacketizeUdp6(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN6_ADDR SourceA
 /*
 AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
 功能：构造一个走IPv6的UDP包。
+
+备注：测试成功了，把这些注释的代码全部删除掉。
 */
 {
     int Length = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(UDP_HDR) + DataLen;
@@ -646,25 +647,8 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     PIPV6_HEADER ipv6_hdr = (PIPV6_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
     InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)(sizeof(UDP_HDR) + DataLen), ipv6_hdr);
 
-    //// 99.9% 的情况下，直接写死 0x60000000 就完事了，连随机 Flow Label 都不需要，除非你做反检测、扫描器之类的高级用途。
-    // ipv6_hdr->VersionClassFlow = htonl(0x60000000); // 高优先级（WebRTC、游戏加速）htonl(0x60B80000UL) // DSCP=46
-    // ipv6_hdr->PayloadLength = htons((UINT16)(sizeof(UDP_HDR) + DataLen));
-    // ipv6_hdr->NextHeader = IPPROTO_UDP;
-    // ipv6_hdr->HopLimit = 64;
-    // ipv6_hdr->SourceAddress = *SourceAddress;
-    // ipv6_hdr->DestinationAddress = *DestinationAddress;
-
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv6_hdr + sizeof(IPV6_HEADER));
-    PVOID udp_payload = (PUDP_HDR)((PBYTE)udp_hdr + sizeof(UDP_HDR));
-    if (Data && DataLen) {
-        memcpy(udp_payload, Data, DataLen);
-    }
-
-    udp_hdr->dst_portno = DestinationPort;
-    udp_hdr->src_portno = SourcePort;
-    udp_hdr->udp_length = htons(DataLen + sizeof(UDP_HDR));
-    udp_hdr->udp_checksum = 0;
-    udp_hdr->udp_checksum = calc_udp4_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？
+    InitUdpHeader(eth_hdr, Length, SourcePort, DestinationPort, udp_hdr, Data, DataLen);
 
     return eth_hdr;
 }
