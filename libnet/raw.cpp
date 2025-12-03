@@ -40,7 +40,9 @@ USHORT WINAPI checksum(USHORT * buffer, int size)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
+EXTERN_C
+DLLEXPORT
+void WINAPI InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr)
 /*
 功能：填写以太头。
 
@@ -71,12 +73,11 @@ Type，取值，如：ETHERNET_TYPE_IPV4，ETHERNET_TYPE_IPV6， ETHERNET_TYPE_A
 }
 
 
-void InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress,
-                    IN UINT8 Protocol,     //取值，如：IPPROTO_TCP等。
-                    IN UINT16 TotalLength, //严格计算数据的大小。
-                    OUT PIPV4_HEADER IPv4Header)
+void InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT8 Protocol, IN UINT16 TotalLength, OUT PIPV4_HEADER IPv4Header)
 /*
 功能：组装IPv4头。
+
+TotalLength 严格计算数据的大小。
 */
 {
     IPv4Header->VersionAndHeaderLength = (4 << 4) | (sizeof(IPV4_HEADER) / sizeof(unsigned long));
@@ -84,7 +85,7 @@ void InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress,
     IPv4Header->Identification = ntohs(0);
     IPv4Header->DontFragment = TRUE;
     IPv4Header->TimeToLive = 128;
-    IPv4Header->Protocol = Protocol;
+    IPv4Header->Protocol = Protocol;//取值，如：IPPROTO_TCP等。
     IPv4Header->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr;
     IPv4Header->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
     IPv4Header->HeaderChecksum = checksum(reinterpret_cast<unsigned short *>(IPv4Header), sizeof(IPV4_HEADER));
@@ -213,9 +214,7 @@ void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
 /*
 功能：计算并设置tcp的校验和。
 
-参数：
-OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)，
-        不包括ETHERNET_HEADER，IPV4_HEADER，TCP_HDR。
+参数：OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)， 不包括ETHERNET_HEADER，IPV4_HEADER，TCP_HDR。
 */
 {
     PRAW_TCP tcp4 = reinterpret_cast<PRAW_TCP>(buffer);

@@ -399,6 +399,8 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size);
 __declspec(dllimport)
 USHORT WINAPI checksum(USHORT * buffer, int size);
 
+__declspec(dllimport) void WINAPI InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr);
+
 __declspec(dllimport) PVOID WINAPI PacketizeUdp4(PUINT8 SrcMac, PBYTE DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort,
                                                  PBYTE Data, WORD DataLen);
 
