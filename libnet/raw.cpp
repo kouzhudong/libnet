@@ -7,14 +7,14 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// 计算校验和相关的函数。
 
 
 EXTERN_C
 DLLEXPORT
 USHORT WINAPI checksum(USHORT * buffer, int size)
 //摘自Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
-// Description:
-//    This function calculates the 16-bit one's complement sum for the supplied buffer.
+// Description:This function calculates the 16-bit one's complement sum for the supplied buffer.
 {
     unsigned long cksum = 0;
 
@@ -22,18 +22,180 @@ USHORT WINAPI checksum(USHORT * buffer, int size)
         cksum += *buffer++;
         size -= sizeof(USHORT);
     }
-
-    // If the buffer was not a multiple of 16-bits, add the last byte
-    if (size) {
+    
+    if (size) {// If the buffer was not a multiple of 16-bits, add the last byte
         cksum += *(UCHAR *)buffer;
     }
 
     // Add the low order 16-bits to the high order 16-bits
     cksum = (cksum >> 16) + (cksum & 0xffff);
     cksum += (cksum >> 16);
+    
+    return (USHORT)(~cksum);// Take the 1's complement
+}
 
-    // Take the 1's complement
-    return (USHORT)(~cksum);
+
+void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
+/*
+功能：计算并设置tcp的校验和。
+
+参数：OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)， 不包括ETHERNET_HEADER，IPV4_HEADER，TCP_HDR。
+*/
+{
+    PRAW_TCP tcp4 = reinterpret_cast<PRAW_TCP>(buffer);
+
+    PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen));
+    _ASSERTE(temp);
+
+    PSD_HEADER * PseudoHeader = reinterpret_cast<PSD_HEADER *>(temp);
+
+    PseudoHeader->saddr = tcp4->ip_hdr.SourceAddress.S_un.S_addr;
+    PseudoHeader->daddr = tcp4->ip_hdr.DestinationAddress.S_un.S_addr;
+    PseudoHeader->mbz = 0;
+    PseudoHeader->ptcl = IPPROTO_TCP;
+    PseudoHeader->tcpl = ntohs(sizeof(TCP_HDR) + OptLen);
+
+    PBYTE test = &temp[0] + sizeof(PSD_HEADER);
+    RtlCopyMemory(test, &tcp4->tcp_hdr, sizeof(TCP_HDR));
+
+    test = test + sizeof(TCP_HDR);
+    RtlCopyMemory(test, (PBYTE)&tcp4->tcp_hdr + sizeof(TCP_HDR), OptLen);
+
+    tcp4->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
+
+    FREE(temp);
+}
+
+
+void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
+{
+    PRAW6_TCP tcp6 = reinterpret_cast<PRAW6_TCP>(buffer);
+
+    PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen));
+    _ASSERTE(temp);
+
+    PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
+
+    RtlCopyMemory(&PseudoHeader->saddr, &tcp6->ip_hdr.SourceAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&PseudoHeader->daddr, &tcp6->ip_hdr.DestinationAddress, sizeof(IN6_ADDR));
+    PseudoHeader->length = ntohl(sizeof(TCP_HDR) + OptLen);
+    PseudoHeader->unused1 = 0;
+    PseudoHeader->unused2 = 0;
+    PseudoHeader->unused3 = 0;
+    PseudoHeader->proto = IPPROTO_TCP;
+
+    PBYTE test = &temp[0] + sizeof(PSD6_HEADER);
+    RtlCopyMemory(test, &tcp6->tcp_hdr, sizeof(TCP_HDR));
+
+    test = test + sizeof(TCP_HDR);
+    RtlCopyMemory(test, (PBYTE)&tcp6->tcp_hdr + sizeof(TCP_HDR), OptLen);
+
+    tcp6->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
+
+    FREE(temp);
+}
+
+
+EXTERN_C
+DLLEXPORT
+void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen)
+/*
+
+
+数据结构的布局是：sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
+*/
+{
+    UNREFERENCED_PARAMETER(OptLen);
+
+    PIPV6_HEADER ip_hdr = (PIPV6_HEADER)(buffer + sizeof(ETHERNET_HEADER));
+    PICMP_MESSAGE icmp_message = (PICMP_MESSAGE)(buffer + sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER));
+
+    BYTE temp[sizeof(PSD6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20]{};
+
+    PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
+    RtlCopyMemory(&PseudoHeader->saddr, &ip_hdr->SourceAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&PseudoHeader->daddr, &ip_hdr->DestinationAddress, sizeof(IN6_ADDR));
+    PseudoHeader->length = ntohl(sizeof(ICMP_MESSAGE) + 0x20);
+    PseudoHeader->unused1 = 0;
+    PseudoHeader->unused2 = 0;
+    PseudoHeader->unused3 = 0;
+    PseudoHeader->proto = IPPROTO_ICMPV6;
+
+    PBYTE test = temp + sizeof(PSD6_HEADER);
+    RtlCopyMemory(test, icmp_message, sizeof(ICMP_MESSAGE) + 0x20);
+
+    icmp_message->Header.Checksum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(temp));
+}
+
+
+EXTERN_C
+DLLEXPORT
+USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size)
+/*
+功能：获取IPv4下的udp的校验和。
+
+参考：
+Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c的ComputeUdpPseudoHeaderChecksumV4。
+*/
+{
+    USHORT sum = 0;
+    // PETHERNET_HEADER peh = (PETHERNET_HEADER)buffer;
+    PIPV4_HEADER IPv4 = (PIPV4_HEADER)((PBYTE)buffer + ETH_LENGTH_OF_HEADER);
+    PUDP_HDR udp = (PUDP_HDR)((PBYTE)IPv4 + Ip4HeaderLengthInBytes(IPv4));
+
+    int len = size - ETH_LENGTH_OF_HEADER;
+    len -= Ip4HeaderLengthInBytes(IPv4);
+    len -= sizeof(UDP_HDR);
+
+    PSD_HEADER * buf = (PSD_HEADER *)MALLOC(sizeof(PSD_HEADER) + sizeof(UDP_HDR) + len);
+    if (!buf) {
+
+        return sum;
+    }
+
+    buf->saddr = IPv4->SourceAddress.S_un.S_addr;
+    buf->daddr = IPv4->DestinationAddress.S_un.S_addr;
+    buf->mbz = 0;
+    buf->ptcl = IPPROTO_UDP;
+    buf->tcpl = udp->udp_length; // ntohs(sizeof(UDP_HDR) + (u_short)len);
+
+    PUDP_HDR tmp = (PUDP_HDR)((PBYTE)buf + sizeof(PSD_HEADER));
+    RtlCopyMemory(tmp, udp, sizeof(UDP_HDR));
+    tmp->udp_checksum = 0;
+
+    RtlCopyMemory((PBYTE)buf + sizeof(PSD_HEADER) + sizeof(UDP_HDR), (PBYTE)udp + sizeof(UDP_HDR), len);
+
+    sum = checksum((USHORT *)buf, sizeof(PSD_HEADER) + sizeof(UDP_HDR) + len);
+
+    FREE(buf);
+
+    return sum;
+}
+
+
+EXTERN_C
+DLLEXPORT
+USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
+/*
+功能：计算ICMPv4的校验和。
+
+适用场景：修改了ICMPv4（头部及后面的内容）的情况。
+*/
+{
+    PICMP_HEADER buf = (PICMP_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
+    if (!buf) {
+
+        return 0;
+    }
+
+    RtlCopyMemory(buf, icmp, size);
+    buf->Checksum = 0;
+
+    USHORT sum = checksum((USHORT *)buf, size);
+
+    HeapFree(GetProcessHeap(), 0, buf);
+
+    return sum;
 }
 
 
@@ -114,13 +276,15 @@ IsCopy：是复制还是回复。
 }
 
 
-void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
-                   IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
-                   IN SEQ_NUM th_ack,  //网络序。如果是主机序，请用htonl转换下。
-                   IN UINT8 th_flags,  // TH_ACK, TH_SYN等值的组合。
-                   IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
+void InitTcpHeader(IN UINT16 th_sport, IN UINT16 th_dport, IN SEQ_NUM th_ack, IN UINT8 th_flags, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
 /*
 功能：组装TCP头（总共十个成员）。
+
+参数：
+th_sport：源端口。网络序。如果是主机序，请用htons转换下。
+th_dport：目的端口。网络序。如果是主机序，请用htons转换下。
+th_ack：确认号。网络序。如果是主机序，请用htonl转换下。
+th_flags：TH_ACK, TH_SYN等值的组合。   
 
 注意：
 1.不重要的值，默认为0.
@@ -149,9 +313,11 @@ void InitTcpHeader(IN UINT16 th_sport, //网络序。如果是主机序，请用
 }
 
 
-void InitTcpHeaderBySyn(IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
-                        IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
-                        IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
+void InitTcpHeaderBySyn(IN UINT16 th_sport, IN UINT16 th_dport, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
+/*
+th_sport, //网络序。如果是主机序，请用htons转换下。
+th_dport, //网络序。如果是主机序，请用htons转换下。
+*/
 {
     InitTcpHeader(th_sport, th_dport, 0, TH_SYN, OptLen, tcp_hdr);
 }
@@ -163,19 +329,9 @@ void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
 */
 {
     if (IsCopy) {
-        InitTcpHeader(tcp->th_sport,
-                      tcp->th_dport,
-                      tcp->th_seq + 1, //收到的号加一。
-                      TH_ACK | TH_SYN,
-                      0,
-                      tcp_hdr);
+        InitTcpHeader(tcp->th_sport, tcp->th_dport, tcp->th_seq + 1,  TH_ACK | TH_SYN, 0, tcp_hdr);
     } else {
-        InitTcpHeader(tcp->th_dport,
-                      tcp->th_sport,
-                      tcp->th_seq + 1, //收到的号加一。
-                      TH_ACK | TH_SYN,
-                      0,
-                      tcp_hdr);
+        InitTcpHeader(tcp->th_dport, tcp->th_sport, tcp->th_seq + 1,  TH_ACK | TH_SYN, 0, tcp_hdr);
     }
 }
 
@@ -212,38 +368,6 @@ void InitTcpSp(OUT TCP_OPT_SACK_PERMITTED * sp)
 }
 
 
-void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
-/*
-功能：计算并设置tcp的校验和。
-
-参数：OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)， 不包括ETHERNET_HEADER，IPV4_HEADER，TCP_HDR。
-*/
-{
-    PRAW_TCP tcp4 = reinterpret_cast<PRAW_TCP>(buffer);
-
-    PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen));
-    _ASSERTE(temp);
-
-    PSD_HEADER * PseudoHeader = reinterpret_cast<PSD_HEADER *>(temp);
-
-    PseudoHeader->saddr = tcp4->ip_hdr.SourceAddress.S_un.S_addr;
-    PseudoHeader->daddr = tcp4->ip_hdr.DestinationAddress.S_un.S_addr;
-    PseudoHeader->mbz = 0;
-    PseudoHeader->ptcl = IPPROTO_TCP;
-    PseudoHeader->tcpl = ntohs(sizeof(TCP_HDR) + OptLen);
-
-    PBYTE test = &temp[0] + sizeof(PSD_HEADER);
-    RtlCopyMemory(test, &tcp4->tcp_hdr, sizeof(TCP_HDR));
-
-    test = test + sizeof(TCP_HDR);
-    RtlCopyMemory(test, (PBYTE)&tcp4->tcp_hdr + sizeof(TCP_HDR), OptLen);
-
-    tcp4->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
-
-    FREE(temp);
-}
-
-
 EXTERN_C
 DLLEXPORT
 void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW_TCP buffer)
@@ -269,12 +393,14 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE 
 
 EXTERN_C
 DLLEXPORT
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac, // 6字节长的本地的MAC。
-                          IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress,
-                          IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
-                          IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
-                          OUT PBYTE buffer    //长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
-)
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT16 th_sport, IN UINT16 th_dport,
+                          OUT PBYTE buffer)
+/*
+SrcMac：6字节长的本地的MAC。
+th_sport：网络序。如果是主机序，请用htons转换下。
+th_dport：网络序。如果是主机序，请用htons转换下。
+buffer：长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
+*/
 {
     PRAW_TCP tcp4 = (PRAW_TCP)buffer;
 
@@ -293,11 +419,11 @@ void WINAPI PacketizeSyn4(IN PBYTE SrcMac, // 6字节长的本地的MAC。
 
 EXTERN_C
 DLLEXPORT
-void WINAPI packetize_icmpv4_echo_request(
-    IN PBYTE SrcMac, // 6字节长的本地的MAC。
-    IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress,
-    OUT PBYTE buffer //长度是sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE)
-)
+void WINAPI packetize_icmpv4_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, OUT PBYTE buffer)
+/*
+SrcMac：6字节长的本地的MAC。
+buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE)
+*/
 {
     // BYTE icmpv4_echo_request[sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) +
     // sizeof(ICMP_MESSAGE)]{};//可以再附加数据。
@@ -369,67 +495,6 @@ IsCopy：是复制还是回复。
 }
 
 
-void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
-{
-    PRAW6_TCP tcp6 = reinterpret_cast<PRAW6_TCP>(buffer);
-
-    PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen));
-    _ASSERTE(temp);
-
-    PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
-
-    RtlCopyMemory(&PseudoHeader->saddr, &tcp6->ip_hdr.SourceAddress, sizeof(IN6_ADDR));
-    RtlCopyMemory(&PseudoHeader->daddr, &tcp6->ip_hdr.DestinationAddress, sizeof(IN6_ADDR));
-    PseudoHeader->length = ntohl(sizeof(TCP_HDR) + OptLen);
-    PseudoHeader->unused1 = 0;
-    PseudoHeader->unused2 = 0;
-    PseudoHeader->unused3 = 0;
-    PseudoHeader->proto = IPPROTO_TCP;
-
-    PBYTE test = &temp[0] + sizeof(PSD6_HEADER);
-    RtlCopyMemory(test, &tcp6->tcp_hdr, sizeof(TCP_HDR));
-
-    test = test + sizeof(TCP_HDR);
-    RtlCopyMemory(test, (PBYTE)&tcp6->tcp_hdr + sizeof(TCP_HDR), OptLen);
-
-    tcp6->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
-
-    FREE(temp);
-}
-
-
-EXTERN_C
-DLLEXPORT
-void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen)
-/*
-
-
-数据结构的布局是：sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
-*/
-{
-    UNREFERENCED_PARAMETER(OptLen);
-
-    PIPV6_HEADER ip_hdr = (PIPV6_HEADER)(buffer + sizeof(ETHERNET_HEADER));
-    PICMP_MESSAGE icmp_message = (PICMP_MESSAGE)(buffer + sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER));
-
-    BYTE temp[sizeof(PSD6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20]{};
-
-    PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
-    RtlCopyMemory(&PseudoHeader->saddr, &ip_hdr->SourceAddress, sizeof(IN6_ADDR));
-    RtlCopyMemory(&PseudoHeader->daddr, &ip_hdr->DestinationAddress, sizeof(IN6_ADDR));
-    PseudoHeader->length = ntohl(sizeof(ICMP_MESSAGE) + 0x20);
-    PseudoHeader->unused1 = 0;
-    PseudoHeader->unused2 = 0;
-    PseudoHeader->unused3 = 0;
-    PseudoHeader->proto = IPPROTO_ICMPV6;
-
-    PBYTE test = temp + sizeof(PSD6_HEADER);
-    RtlCopyMemory(test, icmp_message, sizeof(ICMP_MESSAGE) + 0x20);
-
-    icmp_message->Header.Checksum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(temp));
-}
-
-
 EXTERN_C
 DLLEXPORT
 void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer)
@@ -455,12 +520,13 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE 
 
 EXTERN_C
 DLLEXPORT
-void WINAPI PacketizeSyn6(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceAddress,
-                          IN PIN6_ADDR DestinationAddress,
-                          IN UINT16 th_sport, //网络序。如果是主机序，请用htons转换下。
-                          IN UINT16 th_dport, //网络序。如果是主机序，请用htons转换下。
-                          OUT PBYTE buffer    //长度是sizeof(RAW6_TCP)。
-)
+void WINAPI PacketizeSyn6(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT16 th_sport, IN UINT16 th_dport,
+                          OUT PBYTE buffer)
+/*
+th_sport：网络序。如果是主机序，请用htons转换下。
+th_dport：网络序。如果是主机序，请用htons转换下。
+buffer：长度是sizeof(RAW6_TCP)。
+*/
 {
     PRAW6_TCP tcp6 = (PRAW6_TCP)buffer;
 
@@ -476,11 +542,11 @@ void WINAPI PacketizeSyn6(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceA
 
 EXTERN_C
 DLLEXPORT
-void WINAPI packetize_icmpv6_echo_request(
-    IN PBYTE SrcMac, // 6字节长的本地的MAC。
-    IN PBYTE DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress,
-    OUT PBYTE buffer //长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
-)
+void WINAPI packetize_icmpv6_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, OUT PBYTE buffer)
+/*
+SrcMac：6字节长的本地的MAC。
+buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
+*/
 {
     // BYTE icmpv4_echo_request[sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) +
     // sizeof(ICMP_MESSAGE)]{};//可以再附加数据。
@@ -497,83 +563,6 @@ void WINAPI packetize_icmpv6_echo_request(
     icmp_message->icmp6_seq = (USHORT)GetTickCount64();
     // icmp_message->Header.Checksum =
     calculation_icmpv6_echo_request_checksum(buffer, sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20);
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-EXTERN_C
-DLLEXPORT
-USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size)
-/*
-功能：获取IPv4下的udp的校验和。
-
-参考：
-Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c的ComputeUdpPseudoHeaderChecksumV4。
-*/
-{
-    USHORT sum = 0;
-    // PETHERNET_HEADER peh = (PETHERNET_HEADER)buffer;
-    PIPV4_HEADER IPv4 = (PIPV4_HEADER)((PBYTE)buffer + ETH_LENGTH_OF_HEADER);
-    PUDP_HDR udp = (PUDP_HDR)((PBYTE)IPv4 + Ip4HeaderLengthInBytes(IPv4));
-
-    int len = size - ETH_LENGTH_OF_HEADER;
-    len -= Ip4HeaderLengthInBytes(IPv4);
-    len -= sizeof(UDP_HDR);
-
-    PSD_HEADER * buf = (PSD_HEADER *)MALLOC(sizeof(PSD_HEADER) + sizeof(UDP_HDR) + len);
-    if (!buf) {
-
-        return sum;
-    }
-
-    buf->saddr = IPv4->SourceAddress.S_un.S_addr;
-    buf->daddr = IPv4->DestinationAddress.S_un.S_addr;
-    buf->mbz = 0;
-    buf->ptcl = IPPROTO_UDP;
-    buf->tcpl = udp->udp_length; // ntohs(sizeof(UDP_HDR) + (u_short)len);
-
-    PUDP_HDR tmp = (PUDP_HDR)((PBYTE)buf + sizeof(PSD_HEADER));
-    RtlCopyMemory(tmp, udp, sizeof(UDP_HDR));
-    tmp->udp_checksum = 0;
-
-    RtlCopyMemory((PBYTE)buf + sizeof(PSD_HEADER) + sizeof(UDP_HDR), (PBYTE)udp + sizeof(UDP_HDR), len);
-
-    sum = checksum((USHORT *)buf, sizeof(PSD_HEADER) + sizeof(UDP_HDR) + len);
-
-    FREE(buf);
-
-    return sum;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-EXTERN_C
-DLLEXPORT
-USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
-/*
-功能：计算ICMPv4的校验和。
-
-适用场景：修改了ICMPv4（头部及后面的内容）的情况。
-*/
-{
-    PICMP_HEADER buf = (PICMP_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
-    if (!buf) {
-
-        return 0;
-    }
-
-    RtlCopyMemory(buf, icmp, size);
-    buf->Checksum = 0;
-
-    USHORT sum = checksum((USHORT *)buf, size);
-
-    HeapFree(GetProcessHeap(), 0, buf);
-
-    return sum;
 }
 
 

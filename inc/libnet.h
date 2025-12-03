@@ -354,43 +354,31 @@ __declspec(dllimport)
 void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer);
 
 __declspec(dllimport)
-void WINAPI PacketizeSyn4(IN PBYTE SrcMac,   //6字节长的本地的MAC。
+void WINAPI PacketizeSyn4(IN PBYTE SrcMac,  
                           IN PBYTE DesMac,
                           IN PIN_ADDR SourceAddress,
                           IN PIN_ADDR DestinationAddress,
-                          IN UINT16 th_sport,//网络序。如果是主机序，请用htons转换下。
-                          IN UINT16 th_dport,//网络序。如果是主机序，请用htons转换下。
-                          OUT PBYTE buffer   //长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
-);
+                          IN UINT16 th_sport, 
+                          IN UINT16 th_dport, 
+                          OUT PBYTE buffer);
 
 __declspec(dllimport)
 void WINAPI PacketizeSyn6(IN PBYTE SrcMac,
                           IN PBYTE DesMac,
                           IN PIN6_ADDR SourceAddress,
                           IN PIN6_ADDR DestinationAddress,
-                          IN UINT16 th_sport,//网络序。如果是主机序，请用htons转换下。
-                          IN UINT16 th_dport,//网络序。如果是主机序，请用htons转换下。
-                          OUT PBYTE buffer    //长度是sizeof(RAW6_TCP)。
-);
+                          IN UINT16 th_sport, 
+                          IN UINT16 th_dport, 
+                          OUT PBYTE buffer);
 
 __declspec(dllimport)
-void WINAPI packetize_icmpv4_echo_request(IN PBYTE SrcMac,    //6字节长的本地的MAC。
-                                          IN PBYTE DesMac,
-                                          IN PIN_ADDR SourceAddress,
-                                          IN PIN_ADDR DestinationAddress,
-                                          OUT PBYTE buffer//长度是sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE)
-);
+void WINAPI packetize_icmpv4_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, OUT PBYTE buffer);
 
 __declspec(dllimport) 
 void WINAPI InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header);
 
 __declspec(dllimport)
-void WINAPI packetize_icmpv6_echo_request(IN PBYTE SrcMac,    //6字节长的本地的MAC。
-                                          IN PBYTE DesMac,
-                                          IN PIN6_ADDR SourceAddress,
-                                          IN PIN6_ADDR DestinationAddress,
-                                          OUT PBYTE buffer//长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
-);
+void WINAPI packetize_icmpv6_echo_request(IN PBYTE SrcMac, IN PBYTE DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, OUT PBYTE buffer);
 
 __declspec(dllimport)
 USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size);
