@@ -16,8 +16,7 @@ int WINAPI EnumIpAddrTable()
 interface–to–IPv4 address mapping table
 
 The GetIpAddrTable function retrieves the interface–to–IPv4 address mapping table.
-The following example retrieves the IP address table,
-then prints some members of the IP address entries in the table.
+The following example retrieves the IP address table, then prints some members of the IP address entries in the table.
 
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa365949(v=vs.85).aspx
 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
@@ -117,7 +116,7 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
     printf("Number of IPv4 table entries: %lu\n\n", IpNetTable->dwNumEntries);
 
     for (DWORD i = 0; i < IpNetTable->dwNumEntries; i++) {
-        printf("Index: %02u\t", IpNetTable->table[i].dwIndex); //类似于arp -a的接口。
+        printf("Index: %02u\t", IpNetTable->table[i].dwIndex); // 类似于arp -a的接口。
 
         in_addr in;
         in.S_un.S_addr = IpNetTable->table[i].dwAddr;
@@ -169,7 +168,7 @@ BOOL WINAPI GetIPv4ByMac(_In_ PDL_EUI48 Mac, _Inout_ PIN_ADDR IPv4)
         if (0 == memcmp(&IpNetTable->table[i].bPhysAddr, Mac, sizeof(DL_EUI48))) {
             IPv4->S_un.S_addr = IpNetTable->table[i].dwAddr;
             ret = true;
-            break; //有可能是多个。可考虑用stl的string存储。
+            break; // 有可能是多个。可考虑用stl的string存储。
         }
     }
 
@@ -190,9 +189,7 @@ int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family)
 Parameters：
 [in] Family
 The values currently supported are AF_INET, AF_INET6, and AF_UNSPEC.
-
 The following example retrieves the IP neighbor table, then prints the values for IP neighbor row entries in the table.
-
 The GetIpNetTable2 function retrieves the IP neighbor table on the local computer.
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnettable2
@@ -254,7 +251,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
         printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i, pipTable->Table[i].ReachabilityTime.LastReachable, pipTable->Table[i].ReachabilityTime.LastUnreachable);
 
-        status = ResolveIpNetEntry2(&pipTable->Table[i], nullptr); //此函数会改变LastUnreachable的值。
+        status = ResolveIpNetEntry2(&pipTable->Table[i], nullptr); // 此函数会改变LastUnreachable的值。
     }
 
     FreeMibTable(pipTable);
@@ -303,21 +300,18 @@ ip的取值可以是：
 2.对于IPv6的网关地址，操作之前最好先ping一下。
 3.本地链接 IPv6 地址不要带%符号。否则，返回0x57（参数错误），可能是某个成员没有设置。
 
-The ResolveIpNetEntry2 function resolves the physical address for a neighbor IP address entry on the local
-computer.
+The ResolveIpNetEntry2 function resolves the physical address for a neighbor IP address entry on the local computer.
 
 The ResolveIpNetEntry2 function is used to resolve the physical address for a neighbor IP address entry on a local
 computer. This function flushes any existing neighbor entry that matches the IP address on the interface and then
-resolves the physical address (MAC) address by sending ARP requests for an IPv4 address or neighbor solicitation
-requests for an IPv6 address.
+resolves the physical address (MAC) address by sending ARP requests for an IPv4 address or neighbor solicitation requests for an IPv6 address.
 
 In addition, at least one of the following members in the MIB_IPNET_ROW2 structure pointed to the Row parameter
 must be initialized to the interface: the InterfaceLuid or InterfaceIndex.
 
 The fields are used in the order listed above. So if the InterfaceLuid is specified,
 then this member is used to determine the interface on which to add the unicast IP address.
-If no value was set for the InterfaceLuid member (the values of this member was set to zero),
-then the InterfaceIndex member is next used to determine the interface.
+If no value was set for the InterfaceLuid member (the values of this member was set to zero), then the InterfaceIndex member is next used to determine the interface.
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-resolveipnetentry2
 */
@@ -401,7 +395,6 @@ int WINAPI EnumIpForwardTable()
 IPv4 routing table
 
 The GetIpForwardTable function retrieves the IPv4 routing table.
-
 The following example retrieves the IP routing table then prints some fields for each route in the table.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipforwardtable
@@ -508,9 +501,7 @@ DLLEXPORT
 int WINAPI EnumIfTable()
 /*
 The GetIfTable function retrieves the MIB-II interface table.
-
-The following example retrieves the interface table and prints the number of entries in the table and
-some data on each entry.
+The following example retrieves the interface table and prints the number of entries in the table and some data on each entry.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftable
 */
@@ -524,8 +515,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getiftab
     MIB_IFTABLE * pIfTable{};
     MIB_IFROW * pIfRow{};
 
-    // Allocate memory for our pointers.
-    pIfTable = (MIB_IFTABLE *)MALLOC(sizeof(MIB_IFTABLE));
+    pIfTable = (MIB_IFTABLE *)MALLOC(sizeof(MIB_IFTABLE)); // Allocate memory for our pointers.
     if (pIfTable == nullptr) {
         printf("Error allocating memory needed to call GetIfTable\n");
         return 1;
@@ -689,11 +679,8 @@ int WINAPI GetMacByIPv4Test(int argc, char ** argv)
 /*
 功能：获取(局域网，不能是互联网)IPv4对应的MAC地址。
 
-The SendARP function sends an Address Resolution Protocol (ARP) request to
-obtain the physical address that corresponds to the specified destination IPv4 address.
-
-The following code demonstrates how to obtain the hardware or media access control (MAC) address associated with a
-specified IPv4 address.
+The SendARP function sends an Address Resolution Protocol (ARP) request to obtain the physical address that corresponds to the specified destination IPv4 address.
+The following code demonstrates how to obtain the hardware or media access control (MAC) address associated with a specified IPv4 address.
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-sendarp
 https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
@@ -1039,7 +1026,7 @@ The following example retrieves a unicast IP address table and prints some value
 
 https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunicastipaddresstable
 */
-{   
+{
     PMIB_UNICASTIPADDRESS_TABLE pipTable = nullptr;
     DWORD Result = GetUnicastIpAddressTable(AF_UNSPEC, &pipTable);
     if (Result != NO_ERROR) {
@@ -1642,8 +1629,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
     }
 
 #pragma warning(push)
-#pragma warning(disable : 28020) //表达式“_Param_(7)>=sizeof(struct icmp_echo_reply
-                                 //ICMP_ECHO_REPLY)+_Param_(4)+8”对此调用无效。
+#pragma warning(disable : 28020) // 表达式“_Param_(7)>=sizeof(struct icmp_echo_reply
+                                 // ICMP_ECHO_REPLY)+_Param_(4)+8”对此调用无效。
     dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), NULL, ReplyBuffer, ReplySize, 1000);
 #pragma warning(pop)
     if (dwRetVal != 0) {
@@ -1717,8 +1704,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
         return 1;
     }
 
-    dwRetVal = IcmpSendEcho2(
-        hIcmpFile, NULL, NULL, NULL, ipaddr, SendData, sizeof(SendData), NULL, ReplyBuffer, ReplySize, 1000);
+    dwRetVal = IcmpSendEcho2(hIcmpFile, NULL, NULL, NULL, ipaddr, SendData, sizeof(SendData), NULL, ReplyBuffer, ReplySize, 1000);
     if (dwRetVal != 0) {
         PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
         in_addr ReplyAddr;
