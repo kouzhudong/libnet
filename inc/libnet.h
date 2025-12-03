@@ -328,8 +328,7 @@ int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family);
 __declspec(dllimport)
 void WINAPI ResolveIpNetEntry2Test(const char * ip);
 
-__declspec(dllimport)
-void WINAPI GetMacByIPv6(const char * IPv6, PBYTE Mac);
+__declspec(dllimport) void WINAPI GetMacByIPv6(const char * IPv6, PDL_EUI48 Mac);
 
 __declspec(dllimport) BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac); // c√ª”–bool.
 

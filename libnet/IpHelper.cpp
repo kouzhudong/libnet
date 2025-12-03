@@ -252,10 +252,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
         printf("IsRouter[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].IsRouter);
         printf("IsUnreachable[%d]:\t\t %u\n", (int)i, (unsigned char)pipTable->Table[i].IsUnreachable);
 
-        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", 
-               (int)i,
-               pipTable->Table[i].ReachabilityTime.LastReachable,
-               pipTable->Table[i].ReachabilityTime.LastUnreachable);
+        printf("ReachabilityTime[%d]:\t %lu, %lu\n\n", (int)i, pipTable->Table[i].ReachabilityTime.LastReachable, pipTable->Table[i].ReachabilityTime.LastUnreachable);
 
         status = ResolveIpNetEntry2(&pipTable->Table[i], nullptr); //此函数会改变LastUnreachable的值。
     }
@@ -268,7 +265,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
 EXTERN_C
 DLLEXPORT
-void WINAPI GetMacByIPv6(const char * IPv6, PBYTE Mac)
+void WINAPI GetMacByIPv6(const char * IPv6, PDL_EUI48 Mac)
 {
     MIB_IPNET_ROW2 Row{};
 
