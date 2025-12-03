@@ -73,7 +73,9 @@ Type，取值，如：ETHERNET_TYPE_IPV4，ETHERNET_TYPE_IPV6， ETHERNET_TYPE_A
 }
 
 
-void InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT8 Protocol, IN UINT16 TotalLength, OUT PIPV4_HEADER IPv4Header)
+EXTERN_C
+DLLEXPORT
+void WINAPI InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT8 Protocol, IN UINT16 TotalLength, OUT PIPV4_HEADER IPv4Header)
 /*
 功能：组装IPv4头。
 
@@ -396,7 +398,9 @@ void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
 }
 
 
-void calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen)
+EXTERN_C
+DLLEXPORT
+void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen)
 /*
 
 

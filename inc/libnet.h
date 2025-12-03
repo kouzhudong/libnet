@@ -348,6 +348,8 @@ int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 __declspec(dllimport)
 void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW_TCP buffer);
 
+__declspec(dllimport) void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen);
+
 __declspec(dllimport)
 void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PBYTE SrcMac, IN PBYTE DesMac, OUT PRAW6_TCP buffer);
 
@@ -400,6 +402,9 @@ __declspec(dllimport)
 USHORT WINAPI checksum(USHORT * buffer, int size);
 
 __declspec(dllimport) void WINAPI InitEthernetHeader(IN PBYTE SrcMac, IN PBYTE DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr);
+
+__declspec(dllimport) void WINAPI InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT8 Protocol, IN UINT16 TotalLength,
+                                                 OUT PIPV4_HEADER IPv4Header);
 
 __declspec(dllimport) PVOID WINAPI PacketizeUdp4(PUINT8 SrcMac, PBYTE DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort,
                                                  PBYTE Data, WORD DataLen);
