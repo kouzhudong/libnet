@@ -3,7 +3,7 @@
 #include "udp.h"
 
 
-#pragma warning(disable : 4366) //一元“&”运算符的结果可能是未对齐的
+#pragma warning(disable : 4366) // 一元“&”运算符的结果可能是未对齐的
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,8 +13,8 @@
 EXTERN_C
 DLLEXPORT
 USHORT WINAPI checksum(USHORT * buffer, int size)
-//摘自Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
-// Description:This function calculates the 16-bit one's complement sum for the supplied buffer.
+// 摘自Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
+//  Description:This function calculates the 16-bit one's complement sum for the supplied buffer.
 {
     unsigned long cksum = 0;
 
@@ -22,16 +22,16 @@ USHORT WINAPI checksum(USHORT * buffer, int size)
         cksum += *buffer++;
         size -= sizeof(USHORT);
     }
-    
-    if (size) {// If the buffer was not a multiple of 16-bits, add the last byte
+
+    if (size) { // If the buffer was not a multiple of 16-bits, add the last byte
         cksum += *(UCHAR *)buffer;
     }
 
     // Add the low order 16-bits to the high order 16-bits
     cksum = (cksum >> 16) + (cksum & 0xffff);
     cksum += (cksum >> 16);
-    
-    return (USHORT)(~cksum);// Take the 1's complement
+
+    return (USHORT)(~cksum); // Take the 1's complement
 }
 
 
@@ -221,20 +221,20 @@ Type，取值，如：ETHERNET_TYPE_IPV4，ETHERNET_TYPE_IPV6， ETHERNET_TYPE_A
         return;
     }
 
-    //eth_hdr->Destination.Byte[0] = DesMac[0];
-    //eth_hdr->Destination.Byte[1] = DesMac[1];
-    //eth_hdr->Destination.Byte[2] = DesMac[2];
-    //eth_hdr->Destination.Byte[3] = DesMac[3];
-    //eth_hdr->Destination.Byte[4] = DesMac[4];
-    //eth_hdr->Destination.Byte[5] = DesMac[5];
+    // eth_hdr->Destination.Byte[0] = DesMac[0];
+    // eth_hdr->Destination.Byte[1] = DesMac[1];
+    // eth_hdr->Destination.Byte[2] = DesMac[2];
+    // eth_hdr->Destination.Byte[3] = DesMac[3];
+    // eth_hdr->Destination.Byte[4] = DesMac[4];
+    // eth_hdr->Destination.Byte[5] = DesMac[5];
     eth_hdr->Destination = *DesMac;
 
-    //eth_hdr->Source.Byte[0] = SrcMac[0];
-    //eth_hdr->Source.Byte[1] = SrcMac[1];
-    //eth_hdr->Source.Byte[2] = SrcMac[2];
-    //eth_hdr->Source.Byte[3] = SrcMac[3];
-    //eth_hdr->Source.Byte[4] = SrcMac[4];
-    //eth_hdr->Source.Byte[5] = SrcMac[5];
+    // eth_hdr->Source.Byte[0] = SrcMac[0];
+    // eth_hdr->Source.Byte[1] = SrcMac[1];
+    // eth_hdr->Source.Byte[2] = SrcMac[2];
+    // eth_hdr->Source.Byte[3] = SrcMac[3];
+    // eth_hdr->Source.Byte[4] = SrcMac[4];
+    // eth_hdr->Source.Byte[5] = SrcMac[5];
     eth_hdr->Source = *SrcMac;
 
     eth_hdr->Type = ntohs(Type);
@@ -252,10 +252,10 @@ TotalLength 严格计算数据的大小。
 {
     IPv4Header->VersionAndHeaderLength = (4 << 4) | (sizeof(IPV4_HEADER) / sizeof(unsigned long));
     IPv4Header->TotalLength = ntohs(TotalLength);
-    IPv4Header->Identification = ntohs(0);
+    IPv4Header->Identification = htons((UINT16)rand()); // 最佳做法：ipv4->Identification + 1; 不建议：ntohs(0);
     IPv4Header->DontFragment = TRUE;
     IPv4Header->TimeToLive = 128;
-    IPv4Header->Protocol = Protocol;//取值，如：IPPROTO_TCP等。
+    IPv4Header->Protocol = Protocol; // 取值，如：IPPROTO_TCP等。
     IPv4Header->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr;
     IPv4Header->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
     IPv4Header->HeaderChecksum = checksum(reinterpret_cast<unsigned short *>(IPv4Header), sizeof(IPV4_HEADER));
@@ -290,7 +290,7 @@ void InitTcpHeader(IN UINT16 th_sport, IN UINT16 th_dport, IN SEQ_NUM th_ack, IN
 th_sport：源端口。网络序。如果是主机序，请用htons转换下。
 th_dport：目的端口。网络序。如果是主机序，请用htons转换下。
 th_ack：确认号。网络序。如果是主机序，请用htonl转换下。
-th_flags：TH_ACK, TH_SYN等值的组合。   
+th_flags：TH_ACK, TH_SYN等值的组合。
 
 注意：
 1.不重要的值，默认为0.
@@ -307,7 +307,7 @@ th_flags：TH_ACK, TH_SYN等值的组合。
     tcp_hdr->th_ack = th_ack;
 
     UINT8 x = (sizeof(TCP_HDR) + OptLen) / 4;
-    ASSERT(x <= 0xf); //大于这个数会发生溢出，有想不到的结果。
+    ASSERT(x <= 0xf); // 大于这个数会发生溢出，有想不到的结果。
     tcp_hdr->th_len = x;
 
     tcp_hdr->th_flags = th_flags;
@@ -335,9 +335,9 @@ void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
 */
 {
     if (IsCopy) {
-        InitTcpHeader(tcp->th_sport, tcp->th_dport, tcp->th_seq + 1,  TH_ACK | TH_SYN, 0, tcp_hdr);
+        InitTcpHeader(tcp->th_sport, tcp->th_dport, tcp->th_seq + 1, TH_ACK | TH_SYN, 0, tcp_hdr);
     } else {
-        InitTcpHeader(tcp->th_dport, tcp->th_sport, tcp->th_seq + 1,  TH_ACK | TH_SYN, 0, tcp_hdr);
+        InitTcpHeader(tcp->th_dport, tcp->th_sport, tcp->th_seq + 1, TH_ACK | TH_SYN, 0, tcp_hdr);
     }
 }
 
@@ -453,14 +453,17 @@ EXTERN_C
 DLLEXPORT
 void WINAPI InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
 {
+    // 99.9% 的情况下，直接写死 0x60000000 就完事了，连随机 Flow Label 都不需要，除非你做反检测、扫描器之类的高级用途。
+    // IPv6Header->VersionClassFlow = htonl(0x60000000); // 高优先级（WebRTC、游戏加速）htonl(0x60B80000UL) // DSCP=46
+
     IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
     IPv6Header->PayloadLength = ntohs(OptLen);
-    IPv6Header->NextHeader = NextHeader;//取值，如：IPPROTO_TCP等。
+    IPv6Header->NextHeader = NextHeader; // 取值，如：IPPROTO_TCP等。
     IPv6Header->HopLimit = 128;
     IPv6Header->SourceAddress = *SourceAddress;
     IPv6Header->DestinationAddress = *DestinationAddress;
-    //RtlCopyMemory(&IPv6Header->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
-    //RtlCopyMemory(&IPv6Header->DestinationAddress, DestinationAddress, sizeof(IN6_ADDR));
+    // RtlCopyMemory(&IPv6Header->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
+    // RtlCopyMemory(&IPv6Header->DestinationAddress, DestinationAddress, sizeof(IN6_ADDR));
 }
 
 
@@ -471,7 +474,7 @@ void InitIpv6HeaderForTcp(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAd
 {
     IPv6Header->VersionClassFlow = ntohl((6 << 28) | (0 << 20) | 0); // IPv6 version (4 bits), Traffic class (8 bits), Flow label (20 bits)
     IPv6Header->PayloadLength = ntohs(sizeof(TCP_HDR) + OptLen);
-    IPv6Header->NextHeader = NextHeader;//取值，如：IPPROTO_TCP等。
+    IPv6Header->NextHeader = NextHeader; // 取值，如：IPPROTO_TCP等。
     IPv6Header->HopLimit = 128;
 
     RtlCopyMemory(&IPv6Header->SourceAddress, SourceAddress, sizeof(IN6_ADDR));
@@ -576,7 +579,7 @@ buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_ME
 EXTERN_C
 DLLEXPORT
 PVOID WINAPI PacketizeUdp4(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
-                          WORD DataLen)
+                           WORD DataLen)
 /*
 AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
 功能：构造一个走IPv4的UDP包。
@@ -592,21 +595,25 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, eth_hdr);
 
     PIPV4_HEADER ipv4_header = (PIPV4_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
-    ipv4_header->VersionAndHeaderLength = 0x45;
-    ipv4_header->TypeOfServiceAndEcnField = 0;
-    ipv4_header->TotalLength = htons((UINT16)Length - sizeof(ETHERNET_HEADER));
-    ipv4_header->Identification = htons((UINT16)rand()); // 最佳做法：ipv4->Identification + 1;
-    ipv4_header->FlagsAndOffset = 0;
-    ipv4_header->TimeToLive = 64;
-    ipv4_header->Protocol = IPPROTO_UDP;
-    ipv4_header->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr;
-    ipv4_header->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
-    ipv4_header->HeaderChecksum = 0;
-    ipv4_header->HeaderChecksum = checksum((USHORT *)ipv4_header, sizeof(IPV4_HEADER)); // 要不要转换字节序？
+    InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)Length - sizeof(ETHERNET_HEADER), ipv4_header);
+
+    // ipv4_header->VersionAndHeaderLength = 0x45;
+    // ipv4_header->TypeOfServiceAndEcnField = 0;
+    // ipv4_header->TotalLength = htons((UINT16)Length - sizeof(ETHERNET_HEADER));
+    // ipv4_header->Identification = htons((UINT16)rand()); // 最佳做法：ipv4->Identification + 1;
+    // ipv4_header->FlagsAndOffset = 0;
+    // ipv4_header->TimeToLive = 64;
+    // ipv4_header->Protocol = IPPROTO_UDP;
+    // ipv4_header->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr;
+    // ipv4_header->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
+    // ipv4_header->HeaderChecksum = 0;
+    // ipv4_header->HeaderChecksum = checksum((USHORT *)ipv4_header, sizeof(IPV4_HEADER)); // 要不要转换字节序？
 
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv4_header + sizeof(IPV4_HEADER));
     PVOID udp_payload = (PUDP_HDR)((PBYTE)udp_hdr + sizeof(UDP_HDR));
-    memcpy(udp_payload, Data, DataLen);
+    if (Data && DataLen) {
+        memcpy(udp_payload, Data, DataLen);
+    }
 
     udp_hdr->dst_portno = DestinationPort;
     udp_hdr->src_portno = SourcePort;
@@ -621,7 +628,7 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
 EXTERN_C
 DLLEXPORT
 PVOID WINAPI PacketizeUdp6(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
-                          WORD DataLen)
+                           WORD DataLen)
 /*
 AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
 功能：构造一个走IPv6的UDP包。
@@ -637,19 +644,21 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, eth_hdr);
 
     PIPV6_HEADER ipv6_hdr = (PIPV6_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
+    InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)(sizeof(UDP_HDR) + DataLen), ipv6_hdr);
 
-    // 99.9% 的情况下，直接写死 0x60000000 就完事了，连随机 Flow Label 都不需要，除非你做反检测、扫描器之类的高级用途。
-    ipv6_hdr->VersionClassFlow = htonl(0x60000000); // 高优先级（WebRTC、游戏加速）htonl(0x60B80000UL) // DSCP=46
-
-    ipv6_hdr->PayloadLength = htons((UINT16)(sizeof(UDP_HDR) + DataLen));
-    ipv6_hdr->NextHeader = IPPROTO_UDP;
-    ipv6_hdr->HopLimit = 64;
-    ipv6_hdr->SourceAddress = *SourceAddress;
-    ipv6_hdr->DestinationAddress = *DestinationAddress;
+    //// 99.9% 的情况下，直接写死 0x60000000 就完事了，连随机 Flow Label 都不需要，除非你做反检测、扫描器之类的高级用途。
+    // ipv6_hdr->VersionClassFlow = htonl(0x60000000); // 高优先级（WebRTC、游戏加速）htonl(0x60B80000UL) // DSCP=46
+    // ipv6_hdr->PayloadLength = htons((UINT16)(sizeof(UDP_HDR) + DataLen));
+    // ipv6_hdr->NextHeader = IPPROTO_UDP;
+    // ipv6_hdr->HopLimit = 64;
+    // ipv6_hdr->SourceAddress = *SourceAddress;
+    // ipv6_hdr->DestinationAddress = *DestinationAddress;
 
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv6_hdr + sizeof(IPV6_HEADER));
     PVOID udp_payload = (PUDP_HDR)((PBYTE)udp_hdr + sizeof(UDP_HDR));
-    memcpy(udp_payload, Data, DataLen);
+    if (Data && DataLen) {
+        memcpy(udp_payload, Data, DataLen);
+    }
 
     udp_hdr->dst_portno = DestinationPort;
     udp_hdr->src_portno = SourcePort;
