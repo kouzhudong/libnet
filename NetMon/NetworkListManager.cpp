@@ -13,16 +13,16 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
 {
     VARIANT_BOOL IsConnected;
     HRESULT hr = NetworkConnection.get_IsConnected(&IsConnected);
-    //printf("IsConnected:%d.\r\n", IsConnected);
+    // printf("IsConnected:%d.\r\n", IsConnected);
 
     hr = NetworkConnection.get_IsConnectedToInternet(&IsConnected);
-    //printf("IsConnectedToInternet:%d.\r\n", IsConnected);
+    // printf("IsConnectedToInternet:%d.\r\n", IsConnected);
 
     GUID AdapterId;
     hr = NetworkConnection.GetAdapterId(&AdapterId);
-    //printf("AdapterId:%s.\r\n", AdapterId);
+    // printf("AdapterId:%s.\r\n", AdapterId);
 
-    GUID  ConnectionId;
+    GUID ConnectionId;
     hr = NetworkConnection.GetConnectionId(&ConnectionId);
 
     NLM_CONNECTIVITY Connectivity;
@@ -34,7 +34,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
     INetwork * pNetwork;
     hr = NetworkConnection.GetNetwork(&pNetwork);
     if (hr == S_OK && pNetwork) {
-        //TestNetwork(*pNetwork);//不能再枚举了，否则，递归了。
+        // TestNetwork(*pNetwork);//不能再枚举了，否则，递归了。
     }
 }
 
@@ -47,7 +47,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ien
 {
     for (;;) {
         INetworkConnection * rgelt{};
-        ULONG  pceltFetched = 0;
+        ULONG pceltFetched = 0;
         HRESULT hr = EnumNetworkConnection.Next(1, &rgelt, &pceltFetched);
         if (hr != S_OK) {
             break;
@@ -83,12 +83,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
     hr = Network.GetDescription(&Description);
     SysFreeString(Description);
 
-    NLM_DOMAIN_TYPE  NetworkType;
+    NLM_DOMAIN_TYPE NetworkType;
     hr = Network.GetDomainType(&NetworkType);
 
-    BSTR  NetworkName = nullptr;
+    BSTR NetworkName = nullptr;
     hr = Network.GetName(&NetworkName);
-    //SysFreeString(Description);//文档没说要执行这个，否则出问题。
+    // SysFreeString(Description);//文档没说要执行这个，否则出问题。
 
     IEnumNetworkConnections * pEnumNetworkConnection = nullptr;
     hr = Network.GetNetworkConnections(&pEnumNetworkConnection);
@@ -96,7 +96,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
         TestIEnumNetworkConnections(*pEnumNetworkConnection);
     }
 
-    GUID  GuidNetworkId;
+    GUID GuidNetworkId;
     hr = Network.GetNetworkId(&GuidNetworkId);
 
     DWORD LowDateTimeCreated;
@@ -105,15 +105,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
     DWORD HighDateTimeConnected;
     hr = Network.GetTimeCreatedAndConnected(&LowDateTimeCreated, &HighDateTimeCreated, &LowDateTimeConnected, &HighDateTimeConnected);
 
-    //INetwork：：SetCategory
-    //INetwork：：SetDescription
-    //INetwork：：SetName
+    // INetwork：：SetCategory
+    // INetwork：：SetDescription
+    // INetwork：：SetName
 }
 
 
 EXTERN_C
-__declspec(dllexport)
-void WINAPI TestNetworkListManager()
+__declspec(dllexport) void WINAPI TestNetworkListManager()
 /*
 
 
@@ -121,7 +120,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
 */
 {
     HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    if (FAILED(hr)) {//COM initialize failed        
+    if (FAILED(hr)) { // COM initialize failed
         wprintf(L"CoInitialize failed: 0x%08lx\n", hr);
         return;
     }
@@ -131,14 +130,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
 
     VARIANT_BOOL IsConnected = 0;
     hr = pNetworkListManager->get_IsConnected(&IsConnected);
-    //IsConnected == -1
+    // IsConnected == -1
 
     hr = pNetworkListManager->get_IsConnectedToInternet(&IsConnected);
-    //IsConnected == -1
+    // IsConnected == -1
 
     NLM_CONNECTIVITY Connectivity;
     hr = pNetworkListManager->GetConnectivity(&Connectivity);
-    //Connectivity ==	NLM_CONNECTIVITY_IPV4_INTERNET | NLM_CONNECTIVITY_IPV6_INTERNET (1088)	NLM_CONNECTIVITY
+    // Connectivity ==	NLM_CONNECTIVITY_IPV4_INTERNET | NLM_CONNECTIVITY_IPV6_INTERNET (1088)	NLM_CONNECTIVITY
 
     IEnumNetworkConnections * pEnum;
     hr = pNetworkListManager->GetNetworkConnections(&pEnum);
@@ -162,7 +161,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
     */
     for (;;) {
         INetwork * rgelt{};
-        ULONG  pceltFetched = 0;
+        ULONG pceltFetched = 0;
         hr = pEnumNetwork->Next(1, &rgelt, &pceltFetched);
         if (hr != S_OK) {
             break;
@@ -171,9 +170,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
         TestNetwork(*rgelt);
     }
 
-    //GetNetwork, GetNetworkConnection.
+    // GetNetwork, GetNetworkConnection.
 
-    //SetSimulatedProfileInfo和ClearSimulatedProfileInfo暂不演示。
+    // SetSimulatedProfileInfo和ClearSimulatedProfileInfo暂不演示。
 
     CoUninitialize();
 }
@@ -183,7 +182,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
 
 
 class MyNetWorkEvent : public INetworkListManagerEvents {
-public:
+  public:
     MyNetWorkEvent()
     {
         m_ref = 1;
@@ -222,14 +221,13 @@ public:
         return Result;
     }
 
-private:
+  private:
     LONG m_ref;
 };
 
 
 EXTERN_C
-__declspec(dllexport)
-void WINAPI TestNetworkListManagerEvents()
+__declspec(dllexport) void WINAPI TestNetworkListManagerEvents()
 /*
 
 
@@ -275,128 +273,124 @@ https://www.cxyzjd.com/article/chouhuan1877/100808606
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-namespace Utility
+namespace Utility {
+enum class CostGuidance { Normal, OptIn, Conservative };
+
+CostGuidance GetNetworkCostGuidance(NLM_CONNECTION_COST cost)
 {
-    enum class CostGuidance {
-        Normal,
-        OptIn,
-        Conservative
-    };
-
-    CostGuidance GetNetworkCostGuidance(NLM_CONNECTION_COST cost)
-    {
-        if (WI_IsAnyFlagSet(cost, NLM_CONNECTION_COST_ROAMING | NLM_CONNECTION_COST_OVERDATALIMIT)) {
-            if (WI_IsFlagSet(cost, NLM_CONNECTION_COST_ROAMING)) {
-                std::wcout << "Connection is roaming; using the connection may result in additional charge." << std::endl;
-            } else {
-                std::wcout << "Connection has exceeded the usage cap limit." << std::endl;
-            }
-            return CostGuidance::OptIn;
-        } else if (WI_IsAnyFlagSet(cost, NLM_CONNECTION_COST_FIXED | NLM_CONNECTION_COST_VARIABLE)) {
-            if (WI_IsFlagSet(cost, NLM_CONNECTION_COST_FIXED)) {
-                std::wcout << "Connection has limited allowed usage." << std::endl;
-            } else {
-                std::wcout << "Connection is charged based on usage." << std::endl;
-            }
-            return CostGuidance::Conservative;
+    if (WI_IsAnyFlagSet(cost, NLM_CONNECTION_COST_ROAMING | NLM_CONNECTION_COST_OVERDATALIMIT)) {
+        if (WI_IsFlagSet(cost, NLM_CONNECTION_COST_ROAMING)) {
+            std::wcout << "Connection is roaming; using the connection may result in additional charge." << std::endl;
         } else {
-            if (WI_IsFlagSet(cost, NLM_CONNECTION_COST_UNRESTRICTED)) {
-                std::wcout << "Connection cost is unrestricted." << std::endl;
-            } else {
-                std::wcout << "Connection cost is unknown." << std::endl;
-            }
-            return CostGuidance::Normal;
+            std::wcout << "Connection has exceeded the usage cap limit." << std::endl;
         }
-    }
-
-    bool ShouldAttemptToConnectToInternet(NLM_CONNECTIVITY connectivity, INetworkListManager * networkListManager)
-    {
-        // check internet connectivity
-        if (WI_IsAnyFlagSet(connectivity, NLM_CONNECTIVITY_IPV4_INTERNET | NLM_CONNECTIVITY_IPV6_INTERNET)) {
-            std::wcout << "Machine has internet connectivity." << std::endl;
-            return true;
-        } else if (WI_IsAnyFlagSet(connectivity, NLM_CONNECTIVITY_IPV4_LOCALNETWORK | NLM_CONNECTIVITY_IPV6_LOCALNETWORK)) {
-            // we are local connected, check if we're behind a captive portal before attempting to connect to the Internet.
-            //
-            // note: being behind a captive portal means connectivity is local and there is at least one interface(network)
-            // behind a captive portal.
-
-            bool localConnectedBehindCaptivePortal = false;
-            wil::com_ptr<IEnumNetworks> enumConnectedNetworks;
-            THROW_IF_FAILED(networkListManager->GetNetworks(NLM_ENUM_NETWORK_CONNECTED, enumConnectedNetworks.put()));
-
-            // Enumeration returns S_FALSE when there are no more items.
-            wil::com_ptr<INetwork> networkConnection;
-            while (THROW_IF_FAILED(enumConnectedNetworks->Next(1, networkConnection.put(), nullptr)) == S_OK) {
-                wil::com_ptr<IPropertyBag> networkProperties = networkConnection.query<IPropertyBag>();
-
-                // these might fail if there's no value
-                wil::unique_variant variantInternetConnectivityV4;
-                networkProperties->Read(NA_InternetConnectivityV4, variantInternetConnectivityV4.addressof(), nullptr);
-                wil::unique_variant variantInternetConnectivityV6;
-                networkProperties->Read(NA_InternetConnectivityV6, variantInternetConnectivityV6.addressof(), nullptr);
-
-                // read the VT_UI4 from the VARIANT and cast it to a NLM_INTERNET_CONNECTIVITY
-                // If there is no value, then assume no special treatment.
-                NLM_INTERNET_CONNECTIVITY v4Connectivity = static_cast<NLM_INTERNET_CONNECTIVITY>(variantInternetConnectivityV6.vt == VT_UI4 ? variantInternetConnectivityV4.ulVal : 0);
-                NLM_INTERNET_CONNECTIVITY v6Connectivity = static_cast<NLM_INTERNET_CONNECTIVITY>(variantInternetConnectivityV6.vt == VT_UI4 ? variantInternetConnectivityV6.ulVal : 0);
-
-                if (WI_IsFlagSet(v4Connectivity, NLM_INTERNET_CONNECTIVITY_WEBHIJACK) || WI_IsFlagSet(v6Connectivity, NLM_INTERNET_CONNECTIVITY_WEBHIJACK)) {
-                    // at least one connected interface is behind a captive portal
-                    // we should assume that the device is behind it
-                    localConnectedBehindCaptivePortal = true;
-                }
-            }
-
-            if (!localConnectedBehindCaptivePortal) {
-                std::wcout << "Machine has local connectivity and not behind a captive portal." << std::endl;
-                return true;
-            } else {
-                std::wcout << "Machine is behind a captive portal." << std::endl;
-            }
+        return CostGuidance::OptIn;
+    } else if (WI_IsAnyFlagSet(cost, NLM_CONNECTION_COST_FIXED | NLM_CONNECTION_COST_VARIABLE)) {
+        if (WI_IsFlagSet(cost, NLM_CONNECTION_COST_FIXED)) {
+            std::wcout << "Connection has limited allowed usage." << std::endl;
         } else {
-            std::wcout << "Machine is not connected." << std::endl;
+            std::wcout << "Connection is charged based on usage." << std::endl;
         }
-
-        return false;
-    }
-
-    void EvaluateAndReportConnectivity(bool optedIn, NLM_CONNECTIVITY connectivity, INetworkListManager * networkListManager)
-    {
-        if (Utility::ShouldAttemptToConnectToInternet(connectivity, networkListManager)) {
-            //Utility::EvaluateCostAndConnect(optedIn, networkListManager);
-            UNREFERENCED_PARAMETER(optedIn);
+        return CostGuidance::Conservative;
+    } else {
+        if (WI_IsFlagSet(cost, NLM_CONNECTION_COST_UNRESTRICTED)) {
+            std::wcout << "Connection cost is unrestricted." << std::endl;
         } else {
-            std::wcout << "Not attempting to connect to the Internet." << std::endl;
+            std::wcout << "Connection cost is unknown." << std::endl;
         }
-    }
-
-    void EvaluateAndReportConnectionCost(NLM_CONNECTION_COST connectionCost)
-    {
-        const auto costGuidance = Utility::GetNetworkCostGuidance(connectionCost);
-        switch (costGuidance) {
-        case Utility::CostGuidance::OptIn:
-            // In opt-in scenarios, apps handle cases where the network access cost is significantly higher than the plan cost.
-            // For example, when a user is roaming, a mobile carrier may charge a higher rate data usage.
-            std::wcout << "Apps should implement opt-in behavior." << std::endl;
-            break;
-        case Utility::CostGuidance::Conservative:
-            // In conservative scenarios, apps implement restrictions for optimizing network usage to handle transfers over metered networks.
-            std::wcout << "Apps should implement conservative behavior." << std::endl;
-            break;
-        case Utility::CostGuidance::Normal:
-        default:
-            // In normal scenarios, apps do not implement restrictions. Apps treat the connection as unlimited in cost.
-            std::wcout << "Apps should implement normal behavior." << std::endl;
-            break;
-        }
+        return CostGuidance::Normal;
     }
 }
 
+bool ShouldAttemptToConnectToInternet(NLM_CONNECTIVITY connectivity, INetworkListManager * networkListManager)
+{
+    // check internet connectivity
+    if (WI_IsAnyFlagSet(connectivity, NLM_CONNECTIVITY_IPV4_INTERNET | NLM_CONNECTIVITY_IPV6_INTERNET)) {
+        std::wcout << "Machine has internet connectivity." << std::endl;
+        return true;
+    } else if (WI_IsAnyFlagSet(connectivity, NLM_CONNECTIVITY_IPV4_LOCALNETWORK | NLM_CONNECTIVITY_IPV6_LOCALNETWORK)) {
+        // we are local connected, check if we're behind a captive portal before attempting to connect to the Internet.
+        //
+        // note: being behind a captive portal means connectivity is local and there is at least one interface(network)
+        // behind a captive portal.
+
+        bool localConnectedBehindCaptivePortal = false;
+        wil::com_ptr<IEnumNetworks> enumConnectedNetworks;
+        THROW_IF_FAILED(networkListManager->GetNetworks(NLM_ENUM_NETWORK_CONNECTED, enumConnectedNetworks.put()));
+
+        // Enumeration returns S_FALSE when there are no more items.
+        wil::com_ptr<INetwork> networkConnection;
+        while (THROW_IF_FAILED(enumConnectedNetworks->Next(1, networkConnection.put(), nullptr)) == S_OK) {
+            wil::com_ptr<IPropertyBag> networkProperties = networkConnection.query<IPropertyBag>();
+
+            // these might fail if there's no value
+            wil::unique_variant variantInternetConnectivityV4;
+            networkProperties->Read(NA_InternetConnectivityV4, variantInternetConnectivityV4.addressof(), nullptr);
+            wil::unique_variant variantInternetConnectivityV6;
+            networkProperties->Read(NA_InternetConnectivityV6, variantInternetConnectivityV6.addressof(), nullptr);
+
+            // read the VT_UI4 from the VARIANT and cast it to a NLM_INTERNET_CONNECTIVITY
+            // If there is no value, then assume no special treatment.
+            NLM_INTERNET_CONNECTIVITY v4Connectivity =
+                static_cast<NLM_INTERNET_CONNECTIVITY>(variantInternetConnectivityV6.vt == VT_UI4 ? variantInternetConnectivityV4.ulVal : 0);
+            NLM_INTERNET_CONNECTIVITY v6Connectivity =
+                static_cast<NLM_INTERNET_CONNECTIVITY>(variantInternetConnectivityV6.vt == VT_UI4 ? variantInternetConnectivityV6.ulVal : 0);
+
+            if (WI_IsFlagSet(v4Connectivity, NLM_INTERNET_CONNECTIVITY_WEBHIJACK) || WI_IsFlagSet(v6Connectivity, NLM_INTERNET_CONNECTIVITY_WEBHIJACK)) {
+                // at least one connected interface is behind a captive portal
+                // we should assume that the device is behind it
+                localConnectedBehindCaptivePortal = true;
+            }
+        }
+
+        if (!localConnectedBehindCaptivePortal) {
+            std::wcout << "Machine has local connectivity and not behind a captive portal." << std::endl;
+            return true;
+        } else {
+            std::wcout << "Machine is behind a captive portal." << std::endl;
+        }
+    } else {
+        std::wcout << "Machine is not connected." << std::endl;
+    }
+
+    return false;
+}
+
+void EvaluateAndReportConnectivity(bool optedIn, NLM_CONNECTIVITY connectivity, INetworkListManager * networkListManager)
+{
+    if (Utility::ShouldAttemptToConnectToInternet(connectivity, networkListManager)) {
+        // Utility::EvaluateCostAndConnect(optedIn, networkListManager);
+        UNREFERENCED_PARAMETER(optedIn);
+    } else {
+        std::wcout << "Not attempting to connect to the Internet." << std::endl;
+    }
+}
+
+void EvaluateAndReportConnectionCost(NLM_CONNECTION_COST connectionCost)
+{
+    const auto costGuidance = Utility::GetNetworkCostGuidance(connectionCost);
+    switch (costGuidance) {
+    case Utility::CostGuidance::OptIn:
+        // In opt-in scenarios, apps handle cases where the network access cost is significantly higher than the plan cost.
+        // For example, when a user is roaming, a mobile carrier may charge a higher rate data usage.
+        std::wcout << "Apps should implement opt-in behavior." << std::endl;
+        break;
+    case Utility::CostGuidance::Conservative:
+        // In conservative scenarios, apps implement restrictions for optimizing network usage to handle transfers over metered networks.
+        std::wcout << "Apps should implement conservative behavior." << std::endl;
+        break;
+    case Utility::CostGuidance::Normal:
+    default:
+        // In normal scenarios, apps do not implement restrictions. Apps treat the connection as unlimited in cost.
+        std::wcout << "Apps should implement normal behavior." << std::endl;
+        break;
+    }
+}
+} // namespace Utility
+
 
 #pragma region COM helpers
-using unique_connectionpoint_token = wil::unique_com_token<IConnectionPoint,
-    DWORD, decltype(&IConnectionPoint::Unadvise), &IConnectionPoint::Unadvise>;
+using unique_connectionpoint_token = wil::unique_com_token<IConnectionPoint, DWORD, decltype(&IConnectionPoint::Unadvise), &IConnectionPoint::Unadvise>;
 
 unique_connectionpoint_token FindConnectionPointAndAdvise(REFIID itf, IUnknown * source, IUnknown * sink)
 {
@@ -410,8 +404,7 @@ unique_connectionpoint_token FindConnectionPointAndAdvise(REFIID itf, IUnknown *
 }
 
 // typename T is the connection point interface we are connecting to.
-template <typename T>
-unique_connectionpoint_token FindConnectionPointAndAdvise(IUnknown * source, IUnknown * sink)
+template <typename T> unique_connectionpoint_token FindConnectionPointAndAdvise(IUnknown * source, IUnknown * sink)
 {
     return FindConnectionPointAndAdvise(__uuidof(T), source, sink);
 }
@@ -419,33 +412,31 @@ unique_connectionpoint_token FindConnectionPointAndAdvise(IUnknown * source, IUn
 
 
 #pragma region ListenToNetworkConnectivityChangesSample
-class NetworkConnectivityListener final
-    : public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, INetworkListManagerEvents> {
-public:
-    NetworkConnectivityListener(bool optedIn, INetworkListManager * networkListManager)
-        : m_optedIn(optedIn), m_networkListManager(networkListManager)
+class NetworkConnectivityListener final : public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, INetworkListManagerEvents> {
+  public:
+    NetworkConnectivityListener(bool optedIn, INetworkListManager * networkListManager) : m_optedIn(optedIn), m_networkListManager(networkListManager)
     {
     }
 
     NetworkConnectivityListener(const NetworkConnectivityListener &) = delete;
     NetworkConnectivityListener & operator=(const NetworkConnectivityListener &) = delete;
 
-    IFACEMETHODIMP ConnectivityChanged(NLM_CONNECTIVITY connectivity) noexcept override try {
+    IFACEMETHODIMP ConnectivityChanged(NLM_CONNECTIVITY connectivity) noexcept override
+    try {
         std::wcout << L"INetworkListManagerEvents::ConnectivityChanged" << std::endl;
         Utility::EvaluateAndReportConnectivity(m_optedIn, connectivity, m_networkListManager.get());
         return S_OK;
     }
     CATCH_RETURN();
 
-private:
+  private:
     wil::com_ptr<INetworkListManager> m_networkListManager;
     bool m_optedIn;
 };
 
 
 EXTERN_C
-__declspec(dllexport)
-void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn)
+__declspec(dllexport) void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn)
 /*
 
 有待改进。
@@ -462,9 +453,8 @@ void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn)
 
     const auto networkListManager = wil::CoCreateInstance<NetworkListManager, INetworkListManager>();
 
-    auto token = FindConnectionPointAndAdvise<INetworkListManagerEvents>(
-        networkListManager.get(),
-        Microsoft::WRL::Make<NetworkConnectivityListener>(optedIn, networkListManager.get()).Get());
+    auto token = FindConnectionPointAndAdvise<INetworkListManagerEvents>(networkListManager.get(),
+                                                                         Microsoft::WRL::Make<NetworkConnectivityListener>(optedIn, networkListManager.get()).Get());
 
     std::wcout << "Press Enter to stop." << std::endl;
     static_cast<void>(getchar());

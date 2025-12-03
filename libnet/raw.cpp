@@ -631,8 +631,6 @@ PVOID WINAPI PacketizeUdp6(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN6_ADDR SourceA
 /*
 AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
 功能：构造一个走IPv6的UDP包。
-
-备注：测试成功了，把这些注释的代码全部删除掉。
 */
 {
     int Length = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(UDP_HDR) + DataLen;

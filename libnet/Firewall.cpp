@@ -172,12 +172,11 @@ HRESULT AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
         goto Cleanup;
     }
 
-    hr = CoCreateInstance(
-        __uuidof(NetFwRule), // CLSID of the class whose object is to be created
-        nullptr,
-        CLSCTX_INPROC_SERVER,
-        __uuidof(INetFwRule), // Identifier of the Interface used for communicating with the object
-        (void **)&pNetFwRule);
+    hr = CoCreateInstance(__uuidof(NetFwRule), // CLSID of the class whose object is to be created
+                          nullptr,
+                          CLSCTX_INPROC_SERVER,
+                          __uuidof(INetFwRule), // Identifier of the Interface used for communicating with the object
+                          (void **)&pNetFwRule);
     if (FAILED(hr)) {
         wprintf(L"CoCreateInstance for INetFwRule failed: 0x%08lx\n", hr);
         goto Cleanup;
@@ -517,8 +516,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
                 hr = (V_DISPATCH(&var))->QueryInterface(__uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
             }
 
-            if (SUCCEEDED(hr)) {                
-                DumpFWRulesInCollection(pFwRule);// Output the properties of this rule
+            if (SUCCEEDED(hr)) {
+                DumpFWRulesInCollection(pFwRule); // Output the properties of this rule
             }
         }
     }
@@ -865,8 +864,7 @@ void Get_FirewallSettings_PerProfileType(NET_FW_PROFILE_TYPE2 ProfileTypePassed,
         printf("Notifications are %s\n", bIsEnabled ? "disabled" : "enabled");
     }
 
-    if (SUCCEEDED(
-            pNetFwPolicy2->get_UnicastResponsesToMulticastBroadcastDisabled(ProfileTypePassed, &bIsEnabled))) {
+    if (SUCCEEDED(pNetFwPolicy2->get_UnicastResponsesToMulticastBroadcastDisabled(ProfileTypePassed, &bIsEnabled))) {
         printf("UnicastResponsesToMulticastBroadcast is %s\n", bIsEnabled ? "disabled" : "enabled");
     }
 
@@ -1440,7 +1438,7 @@ Cleanup:
 Copyright (C) Microsoft. All Rights Reserved.
 
 Abstract:
-    This C++ file includes sample code that adds a outbound rule for 
+    This C++ file includes sample code that adds a outbound rule for
     the currently active profiles to allow a TCP connection using the Microsoft Windows Firewall APIs.
 */
 
@@ -1824,7 +1822,7 @@ Copyright (C) Microsoft. All Rights Reserved.
 Abstract:
   This C++ file includes sample code that takes ownership of the NET_FW_RULE_CATEGORY_FIREWALL using the Microsoft Windows Firewall APIs.
 
-    The API to register for NET_FW_RULE_CATEGORY_FIREWALL 
+    The API to register for NET_FW_RULE_CATEGORY_FIREWALL
     needs the binary that is making this call to be linked with /integritycheck option to ensure code integrity.
     Failure to do so can lead to error SEC_E_CANNOT_INSTALL at runtime.
 
@@ -1833,11 +1831,11 @@ Abstract:
 */
 
 
-#define BAIL_ON_ALLOC_FAILURE(ptr, fnName)                                                                        \
-    if ((ptr) == nullptr) {                                                                                       \
-        result = ERROR_NOT_ENOUGH_MEMORY;                                                                         \
-        printf(#fnName " = ERROR_NOT_ENOUGH_MEMORY\n");                                                           \
-        goto CLEANUP;                                                                                             \
+#define BAIL_ON_ALLOC_FAILURE(ptr, fnName)                                                                                                                               \
+    if ((ptr) == nullptr) {                                                                                                                                              \
+        result = ERROR_NOT_ENOUGH_MEMORY;                                                                                                                                \
+        printf(#fnName " = ERROR_NOT_ENOUGH_MEMORY\n");                                                                                                                  \
+        goto CLEANUP;                                                                                                                                                    \
     }
 
 
@@ -1863,7 +1861,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     IUnknown * registration = nullptr;
     long * categories = nullptr;
     BSTR displayName = nullptr;
-    VARIANT varCategories{};//VT_EMPTY
+    VARIANT varCategories{}; // VT_EMPTY
     int numberOfCategories = 1;
     long count = 0;
     BOOL comInit = FALSE;
@@ -2009,10 +2007,10 @@ Abstract:
 */
 
 
-#define BAIL_ON_ALLOC_FAILURE_2(ptr, fnName)                                                                      \
-    if ((ptr) == nullptr) {                                                                                       \
-        printf(#fnName " = ERROR_NOT_ENOUGH_MEMORY\n");                                                           \
-        goto CLEANUP;                                                                                             \
+#define BAIL_ON_ALLOC_FAILURE_2(ptr, fnName)                                                                                                                             \
+    if ((ptr) == nullptr) {                                                                                                                                              \
+        printf(#fnName " = ERROR_NOT_ENOUGH_MEMORY\n");                                                                                                                  \
+        goto CLEANUP;                                                                                                                                                    \
     }
 
 
@@ -2164,11 +2162,11 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/working-w
     if (FAILED(hr)) {
         goto Cleanup;
     }
-    
-    GetCurrentFirewallState(pNetFwPolicy2);// Show Firewall ON/OFF state on current profiles    
-    IsRuleGroupCurrentlyEnabled(pNetFwPolicy2);// Show status of 'File and Printer Sharing' rule group on current profiles    
-    IsRuleGroupEnabled(pNetFwPolicy2);// Show status of 'File and Printer Sharing' rule group on specified profiles    
-    GetLocalPolicyModifyState(pNetFwPolicy2);// For the current firewall profiles display whether the changes to firewall rules will take effect or not
+
+    GetCurrentFirewallState(pNetFwPolicy2);     // Show Firewall ON/OFF state on current profiles
+    IsRuleGroupCurrentlyEnabled(pNetFwPolicy2); // Show status of 'File and Printer Sharing' rule group on current profiles
+    IsRuleGroupEnabled(pNetFwPolicy2);          // Show status of 'File and Printer Sharing' rule group on specified profiles
+    GetLocalPolicyModifyState(pNetFwPolicy2);   // For the current firewall profiles display whether the changes to firewall rules will take effect or not
 
 Cleanup:
 
@@ -2212,8 +2210,8 @@ HRESULT GetCurrentFirewallState(__in INetFwPolicy2 * pNetFwPolicy2)
     // The returned 'CurrentProfiles' bitmask can have more than 1 bit set if multiple profiles are active or current at the same time
 
     for (int i = 0; i < 3; i++) {
-        if (CurrentProfilesBitMask & ProfileMap[i].Id) {            
-            hr = pNetFwPolicy2->get_FirewallEnabled(ProfileMap[i].Id, &bActualFirewallEnabled);/*Is Firewall Enabled?*/
+        if (CurrentProfilesBitMask & ProfileMap[i].Id) {
+            hr = pNetFwPolicy2->get_FirewallEnabled(ProfileMap[i].Id, &bActualFirewallEnabled); /*Is Firewall Enabled?*/
             if (FAILED(hr)) {
                 wprintf(L"Failed to get FirewallEnabled settings for %s profile. Error: %x.\n", ProfileMap[i].Name, hr);
                 goto CLEANUP;
@@ -2569,11 +2567,8 @@ HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * f
         }
 
         // Create an instance of an authorized application.
-        hr = CoCreateInstance(__uuidof(NetFwAuthorizedApplication), 
-                              nullptr,
-                              CLSCTX_INPROC_SERVER,
-                              __uuidof(INetFwAuthorizedApplication),
-                              reinterpret_cast<void **>(&fwApp));
+        hr = CoCreateInstance(
+            __uuidof(NetFwAuthorizedApplication), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwAuthorizedApplication), reinterpret_cast<void **>(&fwApp));
         if (FAILED(hr)) {
             printf("CoCreateInstance failed: 0x%08lx\n", hr);
             goto error;
