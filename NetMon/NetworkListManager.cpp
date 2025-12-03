@@ -112,7 +112,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
 
 
 EXTERN_C
-__declspec(dllexport) void WINAPI TestNetworkListManager()
+DLLEXPORT
+void WINAPI TestNetworkListManager()
 /*
 
 
@@ -227,7 +228,8 @@ class MyNetWorkEvent : public INetworkListManagerEvents {
 
 
 EXTERN_C
-__declspec(dllexport) void WINAPI TestNetworkListManagerEvents()
+DLLEXPORT
+void WINAPI TestNetworkListManagerEvents()
 /*
 
 
@@ -436,7 +438,8 @@ class NetworkConnectivityListener final : public Microsoft::WRL::RuntimeClass<Mi
 
 
 EXTERN_C
-__declspec(dllexport) void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn)
+DLLEXPORT
+void WINAPI ListenToNetworkConnectivityChangesSample(BOOL optedIn)
 /*
 
 ÓÐ´ý¸Ä½ø¡£
