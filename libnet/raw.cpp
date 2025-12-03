@@ -575,3 +575,98 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+EXTERN_C
+DLLEXPORT
+PVOID WINAPI PacketizeUdp4(PUINT8 SrcMac, PBYTE DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
+                          WORD DataLen)
+/*
+AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
+功能：构造一个走IPv4的UDP包。
+*/
+{
+    int Length = sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(UDP_HDR) + DataLen;
+    PETHERNET_HEADER eth_hdr = (PETHERNET_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Length);
+    if (!eth_hdr) {
+        fprintf(stderr, "FILE:%hs, LINE:%d，申请内存失败:%d。\n", __FILE__, __LINE__, Length);
+        return eth_hdr;
+    }
+
+    memcpy((void *)&eth_hdr->Source, (void *)SrcMac, sizeof(DL_EUI48));
+    memcpy((void *)&eth_hdr->Destination, (void *)DesMac, sizeof(DL_EUI48));
+    eth_hdr->Type = ntohs(ETHERNET_TYPE_IPV4);
+
+    PIPV4_HEADER ipv4_header = (PIPV4_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
+    ipv4_header->VersionAndHeaderLength = 0x45;
+    ipv4_header->TypeOfServiceAndEcnField = 0;
+    ipv4_header->TotalLength = htons((UINT16)Length - sizeof(ETHERNET_HEADER));
+    ipv4_header->Identification = htons((UINT16)rand()); // 最佳做法：ipv4->Identification + 1;
+    ipv4_header->FlagsAndOffset = 0;
+    ipv4_header->TimeToLive = 64;
+    ipv4_header->Protocol = IPPROTO_UDP;
+    ipv4_header->SourceAddress.S_un.S_addr = SourceAddress->S_un.S_addr;
+    ipv4_header->DestinationAddress.S_un.S_addr = DestinationAddress->S_un.S_addr;
+    ipv4_header->HeaderChecksum = 0;
+    ipv4_header->HeaderChecksum = checksum((USHORT *)ipv4_header, sizeof(IPV4_HEADER)); // 要不要转换字节序？
+
+    PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv4_header + sizeof(IPV4_HEADER));
+    PVOID udp_payload = (PUDP_HDR)((PBYTE)udp_hdr + sizeof(UDP_HDR));
+    memcpy(udp_payload, Data, DataLen);
+
+    udp_hdr->dst_portno = DestinationPort;
+    udp_hdr->src_portno = SourcePort;
+    udp_hdr->udp_length = htons(DataLen + sizeof(UDP_HDR));
+    udp_hdr->udp_checksum = 0;
+    udp_hdr->udp_checksum = calc_udp4_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？
+
+    return eth_hdr;
+}
+
+
+EXTERN_C
+DLLEXPORT
+PVOID WINAPI PacketizeUdp6(PUINT8 SrcMac, PBYTE DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort, PBYTE Data,
+                          WORD DataLen)
+/*
+AI生成的函数：名字是自己起的，参数和代码及注释都是AI生成的，甚至名字都猜到了。人工改进了，有待测试。
+功能：构造一个走IPv6的UDP包。
+*/
+{
+    int Length = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(UDP_HDR) + DataLen;
+    PETHERNET_HEADER eth_hdr = (PETHERNET_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Length);
+    if (!eth_hdr) {
+        fprintf(stderr, "FILE:%hs, LINE:%d，申请内存失败:%d。\n", __FILE__, __LINE__, Length);
+        return eth_hdr;
+    }
+
+    memcpy((void *)&eth_hdr->Source, (void *)SrcMac, sizeof(DL_EUI48));
+    memcpy((void *)&eth_hdr->Destination, (void *)DesMac, sizeof(DL_EUI48));
+    eth_hdr->Type = ntohs(ETHERNET_TYPE_IPV6);
+
+    PIPV6_HEADER ipv6_hdr = (PIPV6_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
+
+    // 99.9% 的情况下，直接写死 0x60000000 就完事了，连随机 Flow Label 都不需要，除非你做反检测、扫描器之类的高级用途。
+    ipv6_hdr->VersionClassFlow = htonl(0x60000000); // 高优先级（WebRTC、游戏加速）htonl(0x60B80000UL) // DSCP=46
+
+    ipv6_hdr->PayloadLength = htons((UINT16)(sizeof(UDP_HDR) + DataLen));
+    ipv6_hdr->NextHeader = IPPROTO_UDP;
+    ipv6_hdr->HopLimit = 64;
+    ipv6_hdr->SourceAddress = *SourceAddress;
+    ipv6_hdr->DestinationAddress = *DestinationAddress;
+
+    PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv6_hdr + sizeof(IPV6_HEADER));
+    PVOID udp_payload = (PUDP_HDR)((PBYTE)udp_hdr + sizeof(UDP_HDR));
+    memcpy(udp_payload, Data, DataLen);
+
+    udp_hdr->dst_portno = DestinationPort;
+    udp_hdr->src_portno = SourcePort;
+    udp_hdr->udp_length = htons(DataLen + sizeof(UDP_HDR));
+    udp_hdr->udp_checksum = 0;
+    udp_hdr->udp_checksum = calc_udp4_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？
+
+    return eth_hdr;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////

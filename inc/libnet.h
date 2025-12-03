@@ -399,6 +399,12 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size);
 __declspec(dllimport)
 USHORT WINAPI checksum(USHORT * buffer, int size);
 
+__declspec(dllimport) PVOID WINAPI PacketizeUdp4(PUINT8 SrcMac, PBYTE DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort, WORD DestinationPort,
+                                                 PBYTE Data, WORD DataLen);
+
+__declspec(dllimport) PVOID WINAPI PacketizeUdp6(PUINT8 SrcMac, PBYTE DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort,
+                                                 WORD DestinationPort, PBYTE Data, WORD DataLen);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //·À»ðÇ½Ïà¹ØµÄ¡£
