@@ -83,18 +83,14 @@ Search for the term RAW/IP or RAW/IPv6 in the Description field to find those pr
 
 Creating a Raw Socket
 
-To create a socket of type SOCK_RAW,
-call the socket or WSASocket function with the af parameter (address family) set to AF_INET or AF_INET6,
-the type parameter set to SOCK_RAW,
-and the protocol parameter set to the protocol number required.
+To create a socket of type SOCK_RAW, call the socket or WSASocket function with the af parameter (address family) set to AF_INET or AF_INET6,
+the type parameter set to SOCK_RAW, and the protocol parameter set to the protocol number required.
 The protocol parameter becomes the protocol value in the IP header (SCTP is 132, for example).
 
  Note
-An application may not specify zero (0) as the protocol parameter for the socket, WSASocket,
-and WSPSocket functions if the type parameter is set to SOCK_RAW.
+An application may not specify zero (0) as the protocol parameter for the socket, WSASocket, and WSPSocket functions if the type parameter is set to SOCK_RAW.
 
-Raw sockets offer the capability to manipulate the underlying transport,
-so they can be used for malicious purposes that pose a security threat.
+Raw sockets offer the capability to manipulate the underlying transport, so they can be used for malicious purposes that pose a security threat.
 Therefore, only members of the Administrators group can create sockets of type SOCK_RAW on Windows 2000 and later.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,21 +110,18 @@ For IP, an application can send to any multicast address (without becoming a gro
 
 When sending IPv4 data,
 an application has a choice on whether to specify the IPv4 header at the front of the outgoing datagram for the packet.
-If the IP_HDRINCL socket option is set to true for an IPv4 socket (address family of AF_INET),
+If the IP_HDRINCL socket option is set to true for an IPv4 socket (address family of AF_INET), 
 the application must supply the IPv4 header in the outgoing data for send operations.
-If this socket option is false (the default setting),
-then the IPv4 header should not be in included the outgoing data for send operations.
+If this socket option is false (the default setting), then the IPv4 header should not be in included the outgoing data for send operations.
 
 When sending IPv6 data,
 an application has a choice on whether to specify the IPv6 header at the front of the outgoing datagram for the packet.
 If the IPV6_HDRINCL socket option is set to true for an IPv6 socket (address family of AF_INET6),
 the application must supply the IPv6 header in the outgoing data for send operations.
 The default setting for this option is false.
-If this socket option is false (the default setting),
-then the IPv6 header should not be included in the outgoing data for send operations.
+If this socket option is false (the default setting), then the IPv6 header should not be included in the outgoing data for send operations.
 For IPv6, there should be no need to include the IPv6 header.
-If information is available using socket functions,
-then the IPv6 header should not be included to avoid compatibility problems in the future.
+If information is available using socket functions, then the IPv6 header should not be included to avoid compatibility problems in the future.
 These issues are discussed in RFC 3542 published by the IETF.
 Using the IPV6_HDRINCL socket option is not recommended and may be deprecated in future.
 
@@ -139,22 +132,20 @@ The received data is a datagram from an unconnected socket.
 For IPv4 (address family of AF_INET),
 an application receives the IP header at the front of each received datagram regardless of the IP_HDRINCL socket option.
 
-For IPv6 (address family of AF_INET6),
+For IPv6 (address family of AF_INET6), 
 an application receives everything after the last IPv6 header in each received datagram regardless of the IPV6_HDRINCL socket option.
 The application does not receive any IPv6 headers using a raw socket.
 
 Received datagrams are copied into all SOCK_RAW sockets that satisfy the following conditions:
 
 The protocol number specified in the protocol parameter when the socket was created should match the protocol number in the IP header of the received datagram.
-If a local IP address is defined for the socket,
-it should correspond to the destination address as specified in the IP header of the received datagram.
+If a local IP address is defined for the socket, it should correspond to the destination address as specified in the IP header of the received datagram.
 An application may specify the local IP address by calling the bind function.
-If no local IP address is specified for the socket,
+If no local IP address is specified for the socket, 
 the datagrams are copied into the socket regardless of the destination IP address in the IP header of the received datagram.
-If a foreign address is defined for the socket,
-it should correspond to the source address as specified in the IP header of the received datagram.
+If a foreign address is defined for the socket, it should correspond to the source address as specified in the IP header of the received datagram.
 An application may specify the foreign IP address by calling the connect or WSAConnect function.
-If no foreign IP address is specified for the socket,
+If no foreign IP address is specified for the socket, 
 the datagrams are copied into the socket regardless of the source IP address in the IP header of the received datagram.
 It is important to understand that some sockets of type SOCK_RAW may receive many unexpected datagrams.
 For example, a PING program may create a socket of type SOCK_RAW to send ICMP echo requests and receive responses.
@@ -208,17 +199,13 @@ There are further limitations for applications that use a socket of type SOCK_RA
 For example, all applications listening for a specific protocol will receive all packets received for this protocol.
 This may not be what is desired for multiple applications using a protocol.
 This is also not suitable for high-performance applications.
-To get around these issues,
-it may be required to write a Windows network protocol driver (device driver) for the specific network protocol.
+To get around these issues, it may be required to write a Windows network protocol driver (device driver) for the specific network protocol.
 On Windows Vista and later, Winsock Kernel (WSK),
 a new transport-independent kernel mode Network Programming Interface can be used to write a network protocol driver.
-On Windows Server 2003 and earlier,
-a Transport Driver Interface (TDI) provider and a Winsock helper DLL can be written to support the network protocol.
+On Windows Server 2003 and earlier, a Transport Driver Interface (TDI) provider and a Winsock helper DLL can be written to support the network protocol.
 The network protocol would then be added to the Winsock catalog as a supported protocol.
-This allows multiple applications to open sockets for this specific protocol and
-the device driver can keep track of which socket receives specific packets and errors.
-For information on writing a network protocol provider,
-see the sections on WSK and TDI in the Windows Driver Kit (WDK).
+This allows multiple applications to open sockets for this specific protocol and the device driver can keep track of which socket receives specific packets and errors.
+For information on writing a network protocol provider, see the sections on WSK and TDI in the Windows Driver Kit (WDK).
 
 Applications also need to be aware of the impact that firewall settings may have on sending and receiving packets using raw sockets.
 
@@ -313,10 +300,8 @@ https://www.microsoftpressstore.com/articles/article.aspx?p=2225063&seqNum=6
 深入解析IPv6(第三版)的4.6章节。
 
 亦可参考：
-\Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c
-的ComputeUdpPseudoHeaderChecksumV6函数。
-或者\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
-的ComputeIcmp6PseudoHeaderChecksum函数。
+\Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c的ComputeUdpPseudoHeaderChecksumV6函数。
+或者\Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp的ComputeIcmp6PseudoHeaderChecksum函数。
 */
 typedef struct tsd6_hdr {
     IN6_ADDR      saddr;//Source Address

@@ -133,9 +133,7 @@ DLLEXPORT
 USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size)
 /*
 功能：获取IPv4下的udp的校验和。
-
-参考：
-Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c的ComputeUdpPseudoHeaderChecksumV4。
+参考：Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c的ComputeUdpPseudoHeaderChecksumV4。
 */
 {
     USHORT sum = 0;
@@ -166,6 +164,51 @@ Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c的Co
     RtlCopyMemory((PBYTE)buf + sizeof(PSD_HEADER) + sizeof(UDP_HDR), (PBYTE)udp + sizeof(UDP_HDR), len);
 
     sum = checksum((USHORT *)buf, sizeof(PSD_HEADER) + sizeof(UDP_HDR) + len);
+
+    FREE(buf);
+
+    return sum;
+}
+
+
+EXTERN_C
+DLLEXPORT
+USHORT WINAPI calc_udp6_sum(USHORT * buffer, int size)
+/*
+功能：获取IPv6下的udp的校验和。
+参考：Windows-classic-samples\Samples\Win7Samples\netds\winsock\iphdrinc\rawudp.c的ComputeUdpPseudoHeaderChecksumV6。
+*/
+{
+    USHORT sum = 0;
+    // PETHERNET_HEADER peh = (PETHERNET_HEADER)buffer;
+    PIPV6_HEADER ipv6_hdr = (PIPV6_HEADER)((PBYTE)buffer + ETH_LENGTH_OF_HEADER);
+    PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv6_hdr + sizeof(IPV6_HEADER));
+
+    int len = size - ETH_LENGTH_OF_HEADER;
+    len -= sizeof(IPV6_HEADER);
+    len -= sizeof(UDP_HDR);
+
+    PSD6_HEADER * buf = (PSD6_HEADER *)MALLOC(sizeof(PSD6_HEADER) + sizeof(UDP_HDR) + len);
+    if (!buf) {
+
+        return sum;
+    }
+
+    RtlCopyMemory(&buf->saddr, &ipv6_hdr->SourceAddress, sizeof(IN6_ADDR));
+    RtlCopyMemory(&buf->daddr, &ipv6_hdr->DestinationAddress, sizeof(IN6_ADDR));
+    buf->length = udp_hdr->udp_length;
+    buf->unused1 = 0;
+    buf->unused2 = 0;
+    buf->unused3 = 0;
+    buf->proto = IPPROTO_UDP;
+
+    PUDP_HDR tmp = (PUDP_HDR)((PBYTE)buf + sizeof(PSD6_HEADER));
+    RtlCopyMemory(tmp, udp_hdr, sizeof(UDP_HDR));
+    tmp->udp_checksum = 0;
+
+    RtlCopyMemory((PBYTE)buf + sizeof(PSD6_HEADER) + sizeof(UDP_HDR), (PBYTE)udp_hdr + sizeof(UDP_HDR), len);
+
+    sum = checksum((USHORT *)buf, sizeof(PSD6_HEADER) + sizeof(UDP_HDR) + len);
 
     FREE(buf);
 
@@ -576,7 +619,7 @@ buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_ME
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void InitUdpHeader(PETHERNET_HEADER eth_hdr, int Length, IN UINT16 SourcePort, IN UINT16 DestinationPort, OUT PUDP_HDR udp_hdr, PBYTE Data, WORD DataLen)
+void InitUdpHeader(PETHERNET_HEADER eth_hdr, int Length, IN UINT16 SourcePort, IN UINT16 DestinationPort, OUT PUDP_HDR udp_hdr, PBYTE Data, WORD DataLen, bool IsIpv4)
 /*
 功能：组装UDP头。
 
@@ -592,7 +635,11 @@ void InitUdpHeader(PETHERNET_HEADER eth_hdr, int Length, IN UINT16 SourcePort, I
     udp_hdr->src_portno = SourcePort;
     udp_hdr->udp_length = htons(DataLen + sizeof(UDP_HDR));
     udp_hdr->udp_checksum = 0;
-    udp_hdr->udp_checksum = calc_udp4_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？        
+    if (IsIpv4) {
+        udp_hdr->udp_checksum = calc_udp4_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？
+    } else {
+        udp_hdr->udp_checksum = calc_udp6_sum((USHORT *)eth_hdr, Length); // 要不要转换字节序？
+    }
 }
 
 
@@ -618,7 +665,7 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)Length - sizeof(ETHERNET_HEADER), ipv4_header);
 
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv4_header + sizeof(IPV4_HEADER));
-    InitUdpHeader(eth_hdr, Length, SourcePort, DestinationPort, udp_hdr, Data, DataLen);
+    InitUdpHeader(eth_hdr, Length, SourcePort, DestinationPort, udp_hdr, Data, DataLen, true);
 
     return eth_hdr;
 }
@@ -646,7 +693,7 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     InitIpv6Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)(sizeof(UDP_HDR) + DataLen), ipv6_hdr);
 
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv6_hdr + sizeof(IPV6_HEADER));
-    InitUdpHeader(eth_hdr, Length, SourcePort, DestinationPort, udp_hdr, Data, DataLen);
+    InitUdpHeader(eth_hdr, Length, SourcePort, DestinationPort, udp_hdr, Data, DataLen, false);
 
     return eth_hdr;
 }

@@ -370,14 +370,13 @@ void WINAPI InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationA
 __declspec(dllimport) void WINAPI packetize_icmpv6_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress,
                                                                 OUT PBYTE buffer);
 
-__declspec(dllimport)
-USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size);
+__declspec(dllimport) USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size);
 
-__declspec(dllimport)
-USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size);
+__declspec(dllimport) USHORT WINAPI calc_udp6_sum(USHORT * buffer, int size);
 
-__declspec(dllimport)
-USHORT WINAPI checksum(USHORT * buffer, int size);
+__declspec(dllimport) USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size);
+
+__declspec(dllimport) USHORT WINAPI checksum(USHORT * buffer, int size);
 
 __declspec(dllimport) void WINAPI InitEthernetHeader(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr);
 
