@@ -138,6 +138,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
     get_all_sock_opt(s6);
 
     closesocket(s4);
+    closesocket(s6);
 
     // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
@@ -803,6 +804,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-tcp-socket-optio
     get_tcp_sock_opt(s6);
 
     closesocket(s4);
+    closesocket(s6);
 
     // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
@@ -901,6 +903,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-udp-socket-optio
     get_udp_sock_opt(s6);
 
     closesocket(s4);
+    closesocket(s6);
 
     // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
@@ -1493,6 +1496,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sol-socket-socket-option
     get_sol_sock_opt(s6);
 
     closesocket(s4);
+    closesocket(s6);
 
     // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
