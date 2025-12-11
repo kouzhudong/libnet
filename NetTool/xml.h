@@ -2,4 +2,4 @@
 
 #include "pch.h"
 
-int ParseXml(LPWSTR pProfileXml, wstring & keyMaterial);
+int ParseXml(LPWSTR pProfileXml, std::wstring & keyMaterial);

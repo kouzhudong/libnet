@@ -1,5 +1,9 @@
 #include "xml.h"
 
+
+using namespace std;
+
+
 //-----------------------------------------------------------------------
 // This file is part of the Windows SDK Code Samples.
 //

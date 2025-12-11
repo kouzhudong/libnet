@@ -174,8 +174,6 @@
 #include <map>
 #include <set>
 
-using namespace std;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef BOOL(WINAPI * EnumerateProcessCallBack) (_In_ LPPROCESSENTRY32W lppe, _In_opt_ PVOID Context);

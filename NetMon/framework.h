@@ -195,8 +195,6 @@
 #include <map>
 #include <set>
 
-using namespace std;
-
 #include <wil/result_macros.h>
 #include <wil/stl.h>
 #include <wil/resource.h>
