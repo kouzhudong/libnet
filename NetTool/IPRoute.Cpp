@@ -82,7 +82,7 @@ void _cdecl IpRoute(int argc, char ** argv)
         DoGetIpForwardTable();
         break;
     case 'a':
-        //Adds an entry into routing table
+        // Adds an entry into routing table
         if (argc == 6)
             DoSetIpForwardEntry(argv[2], argv[3], argv[4], argv[5]); // dest mask gateway if
         else if (argc == 7) {
@@ -96,7 +96,7 @@ void _cdecl IpRoute(int argc, char ** argv)
 
         break;
     case 'd':
-        //Delete an entry from the routing table
+        // Delete an entry from the routing table
         if (argc == 3)
             DoDeleteIpForwardEntry(argv[2]);
         else
@@ -287,7 +287,7 @@ DWORD MyGetIpForwardTable(PMIB_IPFORWARDTABLE & pIpRouteTab, BOOL fOrder)
 
 void PrintIpForwardTable(PMIB_IPFORWARDTABLE pIpRouteTable)
 // Print out ip routing table in the following format:
-//Active Routes:
+// Active Routes:
 //
 //  Network Address          Netmask  Gateway Address        Interface  Metric
 //          0.0.0.0          0.0.0.0     157.54.176.1   157.54.177.149       1
@@ -381,8 +381,7 @@ static bool InterfaceIdxToInterfaceIp(PMIB_IPADDRTABLE pIpAddrTable, DWORD dwInd
 bool InterfaceIpToIdxAndMask(PMIB_IPADDRTABLE pIpAddrTable, char str[], DWORD & dwIndex, DWORD & dwMask)
 // Inputs: pIpAddrTable is the IP address table
 //         str is the Interface Ip address in dotted decimal format
-// Output: If it returns TRUE, dwIndex contains the interface index number
-//         and dwMask contains the corresponding subnet mask.
+// Output: If it returns TRUE, dwIndex contains the interface index number and dwMask contains the corresponding subnet mask.
 {
     DWORD dwIfIpAddr; // Interface Ip Address
 

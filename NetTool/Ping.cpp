@@ -3,16 +3,16 @@
 
 
 int gAddressFamily = AF_UNSPEC,    // Address family to use
-gProtocol = IPPROTO_ICMP,      // Protocol value
-gTtl = DEFAULT_TTL;            // Default TTL value
+    gProtocol = IPPROTO_ICMP,      // Protocol value
+    gTtl = DEFAULT_TTL;            // Default TTL value
 int gDataSize = DEFAULT_DATA_SIZE; // Amount of data to send
 BOOL bRecordRoute = FALSE;         // Use IPv4 record route?
-char * gDestination = NULL,         // Destination
-recvbuf[MAX_RECV_BUF_LEN];     // For received packets
+char *gDestination = NULL,         // Destination
+    recvbuf[MAX_RECV_BUF_LEN];     // For received packets
 int recvbuflen = MAX_RECV_BUF_LEN; // Length of received packets.
 
 
-#pragma warning(disable : 28159) //考虑使用“GetTickCount64”而不是“GetTickCount”
+#pragma warning(disable : 28159) // 考虑使用“GetTickCount64”而不是“GetTickCount”
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ int PrintAddress(SOCKADDR * sa, int salen)
 
 int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 // Description:
-//    This is similar to the PrintAddress function except that instead of 
+//    This is similar to the PrintAddress function except that instead of
 //    printing the string address to the console, it is formatted into the supplied string buffer.
 {
     char host[NI_MAXHOST], serv[NI_MAXSERV];
@@ -82,11 +82,11 @@ int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 
 
 struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int proto)
-    // Description:
-    //    This routine resolves the specified address and returns a list of addrinfo structure containing SOCKADDR structures representing the resolved addresses.
-    //    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether it is a string listeral address or a hostname.
+// Description:
+//    This routine resolves the specified address and returns a list of addrinfo structure containing SOCKADDR structures representing the resolved addresses.
+//    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether it is a string listeral address or a hostname.
 {
-    struct addrinfo hints, * res = NULL;
+    struct addrinfo hints, *res = NULL;
     int rc;
 
     memset(&hints, 0, sizeof(hints));
@@ -308,7 +308,7 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
 {
     SOCKADDR_STORAGE localif;
     DWORD bytes;
-    char * ptr = NULL, proto = 0;
+    char *ptr = NULL, proto = 0;
     int rc, total, length, i;
 
     // Find out which local interface for the destination
@@ -509,7 +509,7 @@ int ping(int argc, char ** argv)
     WSAOVERLAPPED recvol;
     SOCKET s = INVALID_SOCKET;
     char * icmpbuf = NULL;
-    struct addrinfo * dest = NULL, * local = NULL;
+    struct addrinfo *dest = NULL, *local = NULL;
     IPV4_OPTION_HDR ipopt;
     SOCKADDR_STORAGE from;
     DWORD bytes, flags;

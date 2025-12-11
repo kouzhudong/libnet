@@ -38,7 +38,7 @@
 
 #include "whois.h"
 
-#pragma warning(disable : 6011) //取消对 NULL 指针“XXX”的引用
+#pragma warning(disable : 6011) // 取消对 NULL 指针“XXX”的引用
 
 static char NICHOST[] = "whois.internic.net";
 char * host = NULL;

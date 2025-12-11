@@ -267,7 +267,7 @@ void ReverseIP(PCHAR pIP, PCHAR pReturn)
     /* We have A.B.C.D
        We will turn this into D.C.B.A and stick it in pReturn */
 
-       /* A */
+    /* A */
     for (; i > 0; i -= 1)
         if ('.' == pIP[i])
             break;
@@ -494,7 +494,7 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
         printf((", want recursion"));
     printf(("\n"));
 
-    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"), 
+    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"),
            (int)NumQuestions,
            (int)NumAnswers,
            (int)NumAuthority,
@@ -781,7 +781,7 @@ PCHAR TypeIDtoTypeName(USHORT TypeID)
     case TYPE_ANY:
         return (PCHAR)TypeAny;
     default:
-        return (PCHAR)"Unknown";
+        return (PCHAR) "Unknown";
     }
 }
 
@@ -817,7 +817,7 @@ PCHAR ClassIDtoClassName(USHORT ClassID)
     case CLASS_ANY:
         return (PCHAR)ClassAny;
     default:
-        return (PCHAR)"Unknown";
+        return (PCHAR) "Unknown";
     }
 }
 
@@ -1408,8 +1408,8 @@ BOOL ParseCommandLine(int argc, char * argv[])
             return 0;
         }
     }
-    
-    PerformInternalLookup(State.DefaultServerAddress, State.DefaultServer);/* Get the FQDN of the DNS server. */
+
+    PerformInternalLookup(State.DefaultServerAddress, State.DefaultServer); /* Get the FQDN of the DNS server. */
 
     return 1;
 }

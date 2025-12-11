@@ -66,7 +66,7 @@ void _cdecl IpArp(int argc, char ** argv)
         DoGetIpNetTable(); // Print arp table
         break;
     case 's':
-        //Update or add an ARP Internet/Ethernet Address entry
+        // Update or add an ARP Internet/Ethernet Address entry
         if (argc == 4)
             DoSetIpNetEntry(argv[2], argv[3]);
         else if (argc == 5)
@@ -75,7 +75,7 @@ void _cdecl IpArp(int argc, char ** argv)
             Usage("IpArp");
         break;
     case 'd':
-        //Delete an Internet/Ethernet Address pair from the ARP table
+        // Delete an Internet/Ethernet Address pair from the ARP table
         if (argc == 3)
             DoDeleteIpNetEntry(argv[2]);
         else if (argc == 4)
@@ -157,7 +157,7 @@ void DoSetIpNetEntry(char * pszDottedInetAddr, char * pszPhysAddr, char * pszInt
     arpEntry.dwPhysAddrLen = 6;
     memcpy(arpEntry.bPhysAddr, bPhysAddr, 6);
     arpEntry.dwAddr = dwInetAddr;
-    arpEntry.dwType = MIB_IPNET_TYPE_STATIC; //static arp entry
+    arpEntry.dwType = MIB_IPNET_TYPE_STATIC; // static arp entry
     dwStatus = SetIpNetEntry(&arpEntry);
     if (dwStatus != NO_ERROR) {
         printf("IpArp: couldn't add (%s, %s), dwStatus = %lu.\n", pszDottedInetAddr, pszPhysAddr, dwStatus);
@@ -248,19 +248,16 @@ int StringToPhysAddr(char * szInEther, char * szOutEther)
     if (szInEther[2] != DASH || szInEther[5] != DASH || szInEther[8] != DASH || szInEther[14] != DASH)
         return (-1);
 
-    if (!isxdigit(szInEther[0]) || !isxdigit(szInEther[1]) ||
-        !isxdigit(szInEther[3]) || !isxdigit(szInEther[4]) ||
-        !isxdigit(szInEther[6]) || !isxdigit(szInEther[7]) ||
-        !isxdigit(szInEther[9]) || !isxdigit(szInEther[10]) ||
-        !isxdigit(szInEther[12]) || !isxdigit(szInEther[13]) ||
-        !isxdigit(szInEther[15]) || !isxdigit(szInEther[16]))
+    if (!isxdigit(szInEther[0]) || !isxdigit(szInEther[1]) || !isxdigit(szInEther[3]) || !isxdigit(szInEther[4]) || !isxdigit(szInEther[6]) || !isxdigit(szInEther[7]) ||
+        !isxdigit(szInEther[9]) || !isxdigit(szInEther[10]) || !isxdigit(szInEther[12]) || !isxdigit(szInEther[13]) || !isxdigit(szInEther[15]) ||
+        !isxdigit(szInEther[16]))
         return (-1);
 
     // convert the 12 hex decimals back to 6 digit decimals
     for (int i = 0; i < 6; i++) {
         val = 0;
         c = toupper(szInEther[i * 3]);
-        c = c - (isdigit(c) ? '0' : ('A' - 10)); //offset adjustment
+        c = c - (isdigit(c) ? '0' : ('A' - 10)); // offset adjustment
         val += c;
         val = (val << 4); // val * 16
         c = toupper(szInEther[i * 3 + 1]);
@@ -344,8 +341,7 @@ void PrintIpNetTable(PMIB_IPNETTABLE pIpNetTable)
                 printf("Interface: %s on Interface 0x%X\n", szIpAddr, dwCurrIndex);
                 printf("  Internet Address      Physical Address      Type\n");
             } else {
-                printf("Error: Could not convert Interface number 0x%X to IP address.\n",
-                       pIpNetTable->table[0].dwIndex);
+                printf("Error: Could not convert Interface number 0x%X to IP address.\n", pIpNetTable->table[0].dwIndex);
                 return;
             }
         }
@@ -450,17 +446,17 @@ DWORD MyGetIpNetTable(PMIB_IPNETTABLE & pIpNetTable, bool fOrder)
 
         statusRetry = GetIpNetTable(pIpNetTable, &dwActualSize, fOrder);
         if (statusRetry != NO_ERROR) {
-        #ifdef _DEBUG
+#ifdef _DEBUG
             printf("Retry failed.\n");
-        #endif
+#endif
             return statusRetry;
         } else {
             return statusRetry;
         }
     } else {
-    #ifdef _DEBUG
+#ifdef _DEBUG
         printf("first getipnettable call failed\n");
-    #endif
+#endif
         return status;
     }
 }

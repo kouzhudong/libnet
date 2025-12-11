@@ -10,8 +10,8 @@ int lflag, mflag, pplan, sflag;
  * get option letter from argument vector
  */
 int opterr = 1,      /* if error message should be printed */
-optind = 1,      /* index into parent argv vector */
-optopt;          /* character checked for validity */
+    optind = 1,      /* index into parent argv vector */
+    optopt;          /* character checked for validity */
 const char * optarg; /* argument associated with option */
 
 
@@ -132,11 +132,11 @@ void netfinger(char * name)
     extern int lflag;
     char c, lastc;
     struct in_addr defaddr;
-    struct hostent * hp, def;
+    struct hostent *hp, def;
     struct servent * sp;
     struct sockaddr_in sin;
     SOCKET s;
-    char * alist[1], * host;
+    char *alist[1], *host;
 
     /* If this is a local request */
     if (!(host = rindex(name, '@')))
@@ -223,13 +223,12 @@ void netfinger(char * name)
 static void userlist(int argc, char ** argv)
 {
     int * used = NULL;
-    char ** ap, ** nargv, ** np, ** p;
+    char **ap, **nargv, **np, **p;
     WORD wVersionRequested;
     WSADATA wsaData;
     int iErr;
 
-    if ((nargv = (char **)malloc(((size_t)argc + 1) * sizeof(char *))) == NULL ||
-        (used = (int *)calloc(argc, sizeof(int))) == NULL)
+    if ((nargv = (char **)malloc(((size_t)argc + 1) * sizeof(char *))) == NULL || (used = (int *)calloc(argc, sizeof(int))) == NULL)
         err(1, NULL);
 
     /* Pull out all network requests into nargv. */
