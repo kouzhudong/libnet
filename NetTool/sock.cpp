@@ -1,4 +1,5 @@
 #include "sock.h"
+#include "common_utils.h"
 
 
 static int Usage(__in const wchar_t * name)
@@ -27,7 +28,7 @@ Arguments:
 int get_one_sock_opt(_In_ SOCKET s, _In_ int optname)
 /*
 
-¾­IDA·¢ÏÖlevelÖ»ÄÜÈ¡SOL_SOCKET¡£
+ï¿½ï¿½IDAï¿½ï¿½ï¿½ï¿½levelÖ»ï¿½ï¿½È¡SOL_SOCKETï¿½ï¿½
 */
 {
     int ret = ERROR_SUCCESS;
@@ -121,9 +122,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
 {
     int ret = ERROR_SUCCESS;
 
-    WSADATA wsaData{};
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    _ASSERTE(iResult == NO_ERROR);
+    WinsockInitializer winsock(MAKEWORD(2, 2));
+    _ASSERTE(winsock.IsInitialized());
+    
 
     SOCKET s4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     _ASSERTE(s4 != INVALID_SOCKET);
@@ -131,14 +132,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
     SOCKET s6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
     _ASSERTE(s6 != INVALID_SOCKET);
 
-    //»¹¿ÉÒÔ¸ãÕìÌý°ó¶¨µÄ¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¶¨µÄ¡ï¿½
 
     get_all_sock_opt(s4);
     get_all_sock_opt(s6);
 
     closesocket(s4);
 
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
     return ret;
 }
@@ -147,7 +148,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
 int get_ipv4_sock_opt(_In_ SOCKET s, _In_ int level)
 /*
 
-ÓÐµÄµØ·½È¡ÖµÊÇIPPROTO_IP¡£
+ï¿½ÐµÄµØ·ï¿½È¡Öµï¿½ï¿½IPPROTO_IPï¿½ï¿½
 
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-options
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
@@ -156,8 +157,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     int ret = ERROR_SUCCESS;
 
     /*
-    ½«½Ó¿ÚË÷ÒýÌí¼Óµ½Óë IP_IFLIST Ñ¡Ïî¹ØÁªµÄ IFLIST¡£
-    Õâ¸öÖ»Ö§³ÖÉèÖÃ²»Ö§³Ö»ñÈ¡¡£
+    ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ IP_IFLIST Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ IFLISTï¿½ï¿½
+    ï¿½ï¿½ï¿½Ö»Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Ö§ï¿½Ö»ï¿½È¡ï¿½ï¿½
     */
     int optVal{};//IF_INDEX
     int optLen = sizeof(int);
@@ -169,8 +170,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    ½«Ì×½Ó×Ö¼ÓÈëÖ¸¶¨½Ó¿ÚÉÏÌá¹©µÄ¶à²¥×é¡£
-    Õâ¸öÖ»Ö§³ÖÉèÖÃ²»Ö§³Ö»ñÈ¡¡£
+    ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½á¹©ï¿½Ä¶à²¥ï¿½é¡£
+    ï¿½ï¿½ï¿½Ö»Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Ö§ï¿½Ö»ï¿½È¡ï¿½ï¿½
     */
     ip_mreq tmp{};
     //optLen = sizeof(ip_mreq);
@@ -182,8 +183,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //}
 
     /*
-    ¼ÓÈë¸ø¶¨½Ó¿ÚÉÏÌá¹©µÄ¶à²¥×é£¬²¢½ÓÊÜÀ´×ÔÌá¹©µÄÔ´µØÖ·µÄÊý¾Ý¡£
-    Õâ¸öÖ»Ö§³ÖÉèÖÃ²»Ö§³Ö»ñÈ¡¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½á¹©ï¿½Ä¶à²¥ï¿½é£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½Ô´ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½
+    ï¿½ï¿½ï¿½Ö»Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Ö§ï¿½Ö»ï¿½È¡ï¿½ï¿½
     */
     ip_mreq_source IpMreqSource{};
     //optLen = sizeof(ip_mreq_source);
@@ -194,8 +195,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //    DisplayError(WSAGetLastError());
     //}
 
-    //É¾³ý¸ø¶¨Ô´×÷ÎªÌá¹©µÄ¶à²¥×éºÍ½Ó¿ÚµÄ·¢ËÍ·½¡£
-    //Õâ¸öÖ»Ö§³ÖÉèÖÃ²»Ö§³Ö»ñÈ¡¡£
+    //É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Îªï¿½á¹©ï¿½Ä¶à²¥ï¿½ï¿½Í½Ó¿ÚµÄ·ï¿½ï¿½Í·ï¿½ï¿½ï¿½
+    //ï¿½ï¿½ï¿½Ö»Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Ö§ï¿½Ö»ï¿½È¡ï¿½ï¿½
     //optLen = sizeof(ip_mreq_source);
     //iResult = getsockopt(s, level, IP_BLOCK_SOURCE, reinterpret_cast<char *>(&IpMreqSource), &optLen);
     //if (iResult != SOCKET_ERROR) {
@@ -205,9 +206,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //}
 
     /*
-    ´ÓÓë IP_IFLIST Ñ¡Ïî¹ØÁªµÄ IFLIST ÖÐÉ¾³ý½Ó¿ÚË÷Òý¡£ 
-    ÌõÄ¿Ö»ÄÜÓÉÓ¦ÓÃ³ÌÐòÉ¾³ý£¬Òò´ËÇë×¢Òâ£¬Ò»µ©É¾³ý½Ó¿Ú£¬ÌõÄ¿¿ÉÄÜ»á¹ýÊ±¡£
-    Õâ¸öÖ»Ö§³ÖÉèÖÃ²»Ö§³Ö»ñÈ¡¡£
+    ï¿½ï¿½ï¿½ï¿½ IP_IFLIST Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ IFLIST ï¿½ï¿½É¾ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    ï¿½ï¿½Ä¿Ö»ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½â£¬Ò»ï¿½ï¿½É¾ï¿½ï¿½ï¿½Ó¿Ú£ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Ü»ï¿½ï¿½Ê±ï¿½ï¿½
+    ï¿½ï¿½ï¿½Ö»Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Ö§ï¿½Ö»ï¿½È¡ï¿½ï¿½
     */
     //optLen = sizeof(int);
     //iResult = getsockopt(s, level, IP_DEL_IFLIST, reinterpret_cast<char *>(&optVal), &optLen);
@@ -218,9 +219,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //}
 
     /*
-    Ö¸Ê¾ÎÞÂÛ±¾µØ MTU ÈçºÎ£¬¶¼²»Ó¦¶ÔÊý¾Ý½øÐÐËéÆ¬´¦Àí¡£ ½ö¶ÔÃæÏòÏûÏ¢µÄÐ­ÒéÓÐÐ§¡£
-    ¶ÔÓÚ UDP ºÍ ICMP£¬Microsoft TCP/IP Ìá¹©³ÌÐò×ñÑ­´ËÑ¡Ïî¡£
-    Õâ¸ö¼ÈÖ§³Ö»ñÈ¡Ò²Ö§³ÖÉèÖÃ¡£
+    Ö¸Ê¾ï¿½ï¿½ï¿½Û±ï¿½ï¿½ï¿½ MTU ï¿½ï¿½Î£ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ð­ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ UDP ï¿½ï¿½ ICMPï¿½ï¿½Microsoft TCP/IP ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½Ñ¡ï¿½î¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö»ï¿½È¡Ò²Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_DONTFRAGMENT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -231,10 +232,10 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    Àë¿ªÖ¸¶¨½Ó¿ÚÖÐµÄÖ¸¶¨¶à²¥×é¡£ Ö§³Ö¶à²¥Ê±£¬·þÎñÌá¹©ÉÌ±ØÐëÖ§³Ö´ËÑ¡Ïî¡£ 
-    Ö§³ÖÔÚ WSAEnumProtocols º¯Êýµ÷ÓÃ·µ»ØµÄWSAPROTOCOL_INFO½á¹¹ÖÐÖ¸Ê¾£ºXPI_SUPPORT_MULTIPOINT=1¡¢XP1_MULTIPOINT_CONTROL_PLANE=0¡¢XP1_MULTIPOINT_DATA_PLANE=0¡£
+    ï¿½ë¿ªÖ¸ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½Ðµï¿½Ö¸ï¿½ï¿½ï¿½à²¥ï¿½é¡£ Ö§ï¿½Ö¶à²¥Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½Ì±ï¿½ï¿½ï¿½Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£ 
+    Ö§ï¿½ï¿½ï¿½ï¿½ WSAEnumProtocols ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½Øµï¿½WSAPROTOCOL_INFOï¿½á¹¹ï¿½ï¿½Ö¸Ê¾ï¿½ï¿½XPI_SUPPORT_MULTIPOINT=1ï¿½ï¿½XP1_MULTIPOINT_CONTROL_PLANE=0ï¿½ï¿½XP1_MULTIPOINT_DATA_PLANE=0ï¿½ï¿½
     */
-    //Õâ¸öÖ»Ö§³ÖÉèÖÃ²»Ö§³Ö»ñÈ¡¡£
+    //ï¿½ï¿½ï¿½Ö»Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Ö§ï¿½Ö»ï¿½È¡ï¿½ï¿½
     //optLen = sizeof(ip_mreq);
     //iResult = getsockopt(s, level, IP_DROP_MEMBERSHIP, reinterpret_cast<char *>(&tmp), &optLen);
     //if (iResult != SOCKET_ERROR) {
@@ -243,8 +244,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //    DisplayError(WSAGetLastError());
     //}
 
-    //É¾³ý¸ø¶¨¶à²¥×é¡¢½Ó¿ÚºÍÔ´µØÖ·µÄ³ÉÔ±Éí·Ý¡£
-    //Õâ¸öÖ»Ö§³ÖÉèÖÃ²»Ö§³Ö»ñÈ¡¡£
+    //É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à²¥ï¿½é¡¢ï¿½Ó¿Úºï¿½Ô´ï¿½ï¿½Ö·ï¿½Ä³ï¿½Ô±ï¿½ï¿½ï¿½Ý¡ï¿½
+    //ï¿½ï¿½ï¿½Ö»Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Ö§ï¿½Ö»ï¿½È¡ï¿½ï¿½
     //optLen = sizeof(ip_mreq_source);
     //iResult = getsockopt(s, level, IP_DROP_SOURCE_MEMBERSHIP, reinterpret_cast<char *>(&IpMreqSource), &optLen);
     //if (iResult != SOCKET_ERROR) {
@@ -253,8 +254,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //    DisplayError(WSAGetLastError());
     //}
 
-    //»ñÈ¡Óë IP_IFLIST Ñ¡Ïî¹ØÁªµÄµ±Ç° IFLIST¡£ Èç¹ûÎ´ÆôÓÃ IP_IFLIST £¬Ôò·µ»Ø´íÎó¡£
-    //Õâ¸öÖ»ÄÜ»ñÈ¡²»ÄÜÉèÖÃ¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ IP_IFLIST Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Ç° IFLISTï¿½ï¿½ ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ IP_IFLIST ï¿½ï¿½ï¿½ò·µ»Ø´ï¿½ï¿½ï¿½
+    //ï¿½ï¿½ï¿½Ö»ï¿½Ü»ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_GET_IFLIST, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -264,11 +265,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    ÉèÖÃÎª TRUE Ê±£¬Ö¸Ê¾Ó¦ÓÃ³ÌÐòÌá¹© IP ±êÍ·¡£ ½öÊÊÓÃÓÚSOCK_RAWÌ×½Ó×Ö¡£
-    Èç¹ûÓ¦ÓÃ³ÌÐòÌá¹©µÄÖµÎªÁã£¬TCP/IP ·þÎñÌá¹©³ÌÐò¿ÉÄÜ»áÉèÖÃ ID ×Ö¶Î¡£
-    IP_HDRINCLÑ¡Ïî½öÊÊÓÃÓÚSOCK_RAWÀàÐÍµÄÐ­Òé¡£ 
-    Ö§³ÖSOCK_RAWµÄ TCP/IP ·þÎñÌá¹©³ÌÐò»¹Ó¦Ö§³ÖIP_HDRINCL¡£
-    Õâ¸ö¼ÈÖ§³Ö»ñÈ¡Ò²Ö§³ÖÉèÖÃ¡£
+    ï¿½ï¿½ï¿½ï¿½Îª TRUE Ê±ï¿½ï¿½Ö¸Ê¾Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½á¹© IP ï¿½ï¿½Í·ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½SOCK_RAWï¿½×½ï¿½ï¿½Ö¡ï¿½
+    ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ÖµÎªï¿½ã£¬TCP/IP ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½ï¿½ ID ï¿½Ö¶Î¡ï¿½
+    IP_HDRINCLÑ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½SOCK_RAWï¿½ï¿½ï¿½Íµï¿½Ð­ï¿½é¡£ 
+    Ö§ï¿½ï¿½SOCK_RAWï¿½ï¿½ TCP/IP ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½Ó¦Ö§ï¿½ï¿½IP_HDRINCLï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö»ï¿½È¡Ò²Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_HDRINCL, reinterpret_cast<char *>(&optVal), &optLen);
@@ -279,9 +280,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    »ñÈ¡»òÉèÖÃ Ì×½Ó×ÖIP_IFLIST ×´Ì¬¡£ Èç¹û´ËÑ¡ÏîÉèÖÃÎª true£¬ÔòÊý¾Ý±¨½ÓÊÕ½öÏÞÓÚ IFLIST ÖÐµÄ½Ó¿Ú¡£ 
-    ºöÂÔÔÚÈÎºÎÆäËû½Ó¿ÚÉÏÊÕµ½µÄÊý¾Ý±¨¡£ IFLIST ¿ªÊ¼Îª¿Õ¡£ Ê¹ÓÃ IP_ADD_IFLIST ºÍ IP_DEL_IFLIST ±à¼­ IFLIST¡£
-    Õâ¸ö¼°Ö§³Ö»ñÈ¡Ò²Ö§³ÖÉèÖÃ¡£
+    ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×½ï¿½ï¿½ï¿½IP_IFLIST ×´Ì¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª trueï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½ IFLIST ï¿½ÐµÄ½Ó¿Ú¡ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ IFLIST ï¿½ï¿½Ê¼Îªï¿½Õ¡ï¿½ Ê¹ï¿½ï¿½ IP_ADD_IFLIST ï¿½ï¿½ IP_DEL_IFLIST ï¿½à¼­ IFLISTï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö»ï¿½È¡Ò²Ö§ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_IFLIST, reinterpret_cast<char *>(&optVal), &optLen);
@@ -291,8 +292,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
         DisplayError(WSAGetLastError());
     }
 
-    //»ñÈ¡ÏµÍ³¶ÔÂ·¾¶ MTU µÄ¹À¼ÆÖµ¡£ Ì×½Ó×Ö±ØÐëÒÑÁ¬½Ó¡£
-    //Õâ¸öÖ»ÄÜ»ñÈ¡£¬²»ÄÜÉèÖÃ¡£
+    //ï¿½ï¿½È¡ÏµÍ³ï¿½ï¿½Â·ï¿½ï¿½ MTU ï¿½Ä¹ï¿½ï¿½ï¿½Öµï¿½ï¿½ ï¿½×½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½
+    //ï¿½ï¿½ï¿½Ö»ï¿½Ü»ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_MTU, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -302,14 +303,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    »ñÈ¡»òÉèÖÃÌ×½Ó×ÖµÄÂ·¾¶ MTU ·¢ÏÖ×´Ì¬¡£ Ä¬ÈÏÖµÎª IP_PMTUDISC_NOT_SET¡£ 
-    ¶ÔÓÚÁ÷Ì×½Ó×Ö£¬ IP_PMTUDISC_NOT_SET ºÍ IP_PMTUDISC_DO ½«Ö´ÐÐÂ·¾¶ MTU ·¢ÏÖ¡£ 
-    IP_PMTUDISC_DONT ºÍ IP_PMTUDISC_PROBE ½«¹Ø±ÕÂ·¾¶ MTU ·¢ÏÖ¡£ 
-    ¶ÔÓÚÊý¾Ý±¨Ì×½Ó×Ö£¬ IP_PMTUDISC_DO ½«Ç¿ÖÆËùÓÐ´«³öÊý¾Ý°üÉèÖÃ DF Î»£¬²¢ÇÒ³¢ÊÔ·¢ËÍ´óÓÚÂ·¾¶ MTU µÄÊý¾Ý°ü½«µ¼ÖÂ´íÎó¡£
-    IP_PMTUDISC_DONT ½«Ç¿ÖÆËùÓÐ´«³öÊý¾Ý°üÎ´ÉèÖÃ DF Î»£¬²¢ÇÒÊý¾Ý°ü½«¸ù¾Ý½Ó¿Ú MTU ½øÐÐ·Ö¶Î¡£ 
-    IP_PMTUDISC_PROBE ½«Ç¿ÖÆËùÓÐ´«³öÊý¾Ý°üÉèÖÃ DF Î»£¬²¢ÇÒ³¢ÊÔ·¢ËÍ´óÓÚ½Ó¿Ú MTU µÄÊý¾Ý°ü½«µ¼ÖÂ´íÎó¡£
+    ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Öµï¿½Â·ï¿½ï¿½ MTU ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ Ä¬ï¿½ï¿½ÖµÎª IP_PMTUDISC_NOT_SETï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö£ï¿½ IP_PMTUDISC_NOT_SET ï¿½ï¿½ IP_PMTUDISC_DO ï¿½ï¿½Ö´ï¿½ï¿½Â·ï¿½ï¿½ MTU ï¿½ï¿½ï¿½Ö¡ï¿½ 
+    IP_PMTUDISC_DONT ï¿½ï¿½ IP_PMTUDISC_PROBE ï¿½ï¿½ï¿½Ø±ï¿½Â·ï¿½ï¿½ MTU ï¿½ï¿½ï¿½Ö¡ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½×½ï¿½ï¿½Ö£ï¿½ IP_PMTUDISC_DO ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ DF Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½Ô·ï¿½ï¿½Í´ï¿½ï¿½ï¿½Â·ï¿½ï¿½ MTU ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½
+    IP_PMTUDISC_DONT ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½Î´ï¿½ï¿½ï¿½ï¿½ DF Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½Ó¿ï¿½ MTU ï¿½ï¿½ï¿½Ð·Ö¶Î¡ï¿½ 
+    IP_PMTUDISC_PROBE ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ DF Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½Ô·ï¿½ï¿½Í´ï¿½ï¿½Ú½Ó¿ï¿½ MTU ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);//PMTUD_STATE
     iResult = getsockopt(s, level, IP_MTU_DISCOVER, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -319,15 +320,15 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    »ñÈ¡»òÉèÖÃÓÃÓÚ·¢ËÍ IPv4 ¶à²¥Á÷Á¿µÄ´«³ö½Ó¿Ú¡£ ´ËÑ¡Ïî²»»á¸ü¸ÄÓÃÓÚ½ÓÊÕ IPv4 ¶à²¥Á÷Á¿µÄÄ¬ÈÏ½Ó¿Ú¡£ 
-    ÉèÖÃ´ËÑ¡ÏîµÄÊäÈëÖµÊÇ°´ÍøÂç×Ö½ÚË³ÐòÅÅÁÐµÄ 4 ×Ö½Ú IPv4 µØÖ·¡£ 
-    ´Ë DWORD ²ÎÊýÒ²¿ÉÒÔÊÇ°´ÍøÂç×Ö½ÚË³ÐòÅÅÁÐµÄ½Ó¿ÚË÷Òý¡£
-    ³ý IPv4 µØÖ· 0.0.) 0.0 Ö®Íâ£¬0.x.x ¿é (µÚÒ»¸ö°ËÎ»×Ö½Ú£¨0.0.0.0 ³ýÍâ£©µÄÈÎºÎ IP µØÖ·¶¼±»ÊÓÎª½Ó¿ÚË÷Òý¡£ 
-    ½Ó¿ÚË÷ÒýÊÇÒ»¸ö 24 Î»Êý×Ö£¬ (´Ë·¶Î§±£Áô) £¬Ôò²»Ê¹ÓÃ 0.0.0.0/8 IPv4 µØÖ·¿é¡£ 
-    ½Ó¿ÚË÷Òý¿ÉÓÃÓÚÖ¸¶¨ IPv4 µÄ¶à²¥Á÷Á¿µÄÄ¬ÈÏ½Ó¿Ú¡£ Èç¹û optval ÎªÁã£¬ÔòÎª·¢ËÍ¶à²¥Á÷Á¿Ö¸¶¨ÓÃÓÚ½ÓÊÕ¶à²¥µÄÄ¬ÈÏ½Ó¿Ú¡£ 
-    »ñÈ¡´ËÑ¡ÏîÊ±£¬ optval ½«·µ»Øµ±Ç°Ä¬ÈÏ½Ó¿ÚË÷Òý£¬ÓÃÓÚ°´Ö÷»ú×Ö½ÚË³Ðò·¢ËÍ¶à²¥ IPv4 Á÷Á¿¡£
+    ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ IPv4 ï¿½à²¥ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½Ó¿Ú¡ï¿½ ï¿½ï¿½Ñ¡ï¿½î²»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ IPv4 ï¿½à²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½Ï½Ó¿Ú¡ï¿½ 
+    ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ 4 ï¿½Ö½ï¿½ IPv4 ï¿½ï¿½Ö·ï¿½ï¿½ 
+    ï¿½ï¿½ DWORD ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ IPv4 ï¿½ï¿½Ö· 0.0.) 0.0 Ö®ï¿½â£¬0.x.x ï¿½ï¿½ (ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ö½Ú£ï¿½0.0.0.0 ï¿½ï¿½ï¿½â£©ï¿½ï¿½ï¿½Îºï¿½ IP ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ 24 Î»ï¿½ï¿½ï¿½Ö£ï¿½ (ï¿½Ë·ï¿½Î§ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ 0.0.0.0/8 IPv4 ï¿½ï¿½Ö·ï¿½é¡£ 
+    ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ IPv4 ï¿½Ä¶à²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½Ï½Ó¿Ú¡ï¿½ ï¿½ï¿½ï¿½ optval Îªï¿½ã£¬ï¿½ï¿½Îªï¿½ï¿½ï¿½Í¶à²¥ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Õ¶à²¥ï¿½ï¿½Ä¬ï¿½Ï½Ó¿Ú¡ï¿½ 
+    ï¿½ï¿½È¡ï¿½ï¿½Ñ¡ï¿½ï¿½Ê±ï¿½ï¿½ optval ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Ç°Ä¬ï¿½Ï½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Ë³ï¿½ï¿½ï¿½Í¶à²¥ IPv4 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_MULTICAST_IF, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -337,13 +338,13 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    ¶ÔÓÚÁª½Óµ½Ò»¸ö»ò¶à¸ö¶à²¥×éµÄÌ×½Ó×Ö£¬´Ë¿ØÖÆÊÇ·ñ½ÓÊÕÍ¨¹ýËùÑ¡¶à²¥½Ó¿Ú·¢ËÍµ½ÕâÐ©¶à²¥×éµÄ ´«³ö Êý¾Ý°üµÄ¸±±¾¡£
-    Ä¬ÈÏÇé¿öÏÂ£¬ IP_MULTICAST_LOOP ÆôÓÃ (Öµ 1/TRUE) £¬Òò´ËÌ×½Ó×Ö ½« ½ÓÊÕµ±Ç°¼ÆËã»ú·¢ËÍµÄÆ¥Åä¶à²¥Êý¾Ý°ü¡£ 
-    Í¨¹ý½«´ËÑ¡ÏîÉèÖÃÎª 0/FALSE) À´½ûÓÃ´ËÑ¡Ïî (ÒâÎ¶×Å£¬¼´Ê¹¸ÃÌ×½Ó×ÖÔÚ»·»Ø½Ó¿ÚÉÏ´ò¿ª£¬Ò²²»»á½ÓÊÕ´Ó±¾µØ¼ÆËã»ú·¢ËÍµÄ¶à²¥¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à²¥ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö£ï¿½ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½à²¥ï¿½Ó¿Ú·ï¿½ï¿½Íµï¿½ï¿½ï¿½Ð©ï¿½à²¥ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ý°ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½
+    Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â£ï¿½ IP_MULTICAST_LOOP ï¿½ï¿½ï¿½ï¿½ (Öµ 1/TRUE) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Õµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½Æ¥ï¿½ï¿½à²¥ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ 
+    Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª 0/FALSE) ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½ï¿½ (ï¿½ï¿½Î¶ï¿½Å£ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½Ø½Ó¿ï¿½ï¿½Ï´ò¿ª£ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ó±ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍµÄ¶à²¥ï¿½ï¿½
 
-    ÕâÓë POSIX °æ±¾µÄ IP_MULTICAST_LOOP ²»¼æÈÝ - ±ØÐëÔÚ½ÓÊÕÌ×½Ó×ÖÉÏÉèÖÃ Ñ¡Ïî;¶ø±ØÐëÔÚ·¢ËÍÌ×½Ó×ÖÉÏÉèÖÃ POSIX Ñ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ POSIX ï¿½æ±¾ï¿½ï¿½ IP_MULTICAST_LOOP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ñ¡ï¿½ï¿½;ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ POSIX Ñ¡ï¿½î¡£
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_MULTICAST_LOOP, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -352,8 +353,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
         DisplayError(WSAGetLastError());
     }
 
-    //ÉèÖÃ/»ñÈ¡ÓëÌ×½Ó×ÖÉÏµÄ IP ¶à²¥Á÷Á¿¹ØÁªµÄ TTL Öµ¡£
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½È¡ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ IP ï¿½à²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TTL Öµï¿½ï¿½
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_MULTICAST_TTL, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -363,12 +364,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    Ö¸¶¨Òª²åÈë´«³öÊý¾Ý°üµÄ IP Ñ¡Ïî¡£ ÉèÖÃÐÂÑ¡Ïî½«¸²¸ÇÒÔÇ°Ö¸¶¨µÄËùÓÐÑ¡Ïî¡£ 
-    ½« optval ÉèÖÃÎªÁã»áÉ¾³ýÒÔÇ°Ö¸¶¨µÄËùÓÐÑ¡Ïî¡£ 
-    ²»ÐèÒªIP_OPTIONSÖ§³Ö;ÈôÒª¼ì²éÊÇ·ñÖ§³ÖIP_OPTIONS£¬ÇëÊ¹ÓÃ getockopt »ñÈ¡µ±Ç°Ñ¡Ïî¡£
-    Èç¹û getsockopt Ê§°Ü£¬Ôò²»Ö§³ÖIP_OPTIONS¡£
+    Ö¸ï¿½ï¿½Òªï¿½ï¿½ï¿½ë´«ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ IP Ñ¡ï¿½î¡£ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½î½«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£ 
+    ï¿½ï¿½ optval ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½Ç°Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£ 
+    ï¿½ï¿½ï¿½ï¿½ÒªIP_OPTIONSÖ§ï¿½ï¿½;ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ç·ï¿½Ö§ï¿½ï¿½IP_OPTIONSï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ getockopt ï¿½ï¿½È¡ï¿½ï¿½Ç°Ñ¡ï¿½î¡£
+    ï¿½ï¿½ï¿½ getsockopt Ê§ï¿½Ü£ï¿½ï¿½ï¿½Ö§ï¿½ï¿½IP_OPTIONSï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     //optLen = sizeof(int);
     //iResult = getsockopt(s, level, IP_OPTIONS, reinterpret_cast<char *>(&optVal), &optLen);
     //if (iResult != SOCKET_ERROR) {
@@ -378,11 +379,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //}
 
     /*
-    Ö¸Ê¾ LPFN_WSARECVMSG (WSARecvMsg) º¯ÊýÊÇ·ñÓ¦·µ»Ø¿ÉÑ¡¿ØÖÆÊý¾Ý£¬ÆäÖÐ°üº¬ÎªÊý¾Ý±¨Ì×½Ó×Ö½ÓÊÕÊý¾Ý°üµÄµ½´ï½Ó¿Ú¡£
-    ´ËÑ¡ÏîÔÊÐíÔÚ WSAMSG ½á¹¹ÖÐ·µ»Ø½ÓÊÕÊý¾Ý°üµÄ IPv4 ½Ó¿Ú¡£ 
-    ´ËÑ¡Ïî½öÔÚÊý¾Ý±¨ºÍÔ­Ê¼Ì×½Ó×ÖÉÏÓÐÐ§£¬ (Ì×½Ó×ÖÀàÐÍ±ØÐëSOCK_DGRAM»òSOCK_RAW) ¡£
+    Ö¸Ê¾ LPFN_WSARECVMSG (WSARecvMsg) ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Ó¦ï¿½ï¿½ï¿½Ø¿ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½Ð°ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Ý±ï¿½ï¿½×½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½Äµï¿½ï¿½ï¿½Ó¿Ú¡ï¿½
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ WSAMSG ï¿½á¹¹ï¿½Ð·ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ IPv4 ï¿½Ó¿Ú¡ï¿½ 
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ô­Ê¼ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ (ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½SOCK_DGRAMï¿½ï¿½SOCK_RAW) ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_ORIGINAL_ARRIVAL_IF, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -391,8 +392,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
         DisplayError(WSAGetLastError());
     }
 
-    //Ö¸Ê¾ WSARecvMsg º¯ÊýÓ¦·µ»ØÊý¾Ý°üÐÅÏ¢¡£
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //Ö¸Ê¾ WSARecvMsg ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_PKTINFO, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -401,8 +402,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
         DisplayError(WSAGetLastError());
     }
 
-    //ÔÊÐí»ò×èÖ¹¹ã²¥½ÓÊÕ¡£
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ã²¥ï¿½ï¿½ï¿½Õ¡ï¿½
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_RECEIVE_BROADCAST, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -412,12 +413,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    Ö¸Ê¾ IP ¶ÑÕ»ÊÇ·ñÓ¦Ê¹ÓÃÓÐ¹ØÄÄ¸ö½Ó¿ÚÊ¹ÓÃÊý¾Ý±¨Ì×½Ó×Ö½ÓÊÕÊý¾Ý°üµÄÏêÏ¸ÐÅÏ¢Ìî³ä¿ØÖÆ»º³åÇø¡£
-    Èç¹û´ËÖµÎª true£¬ LPFN_WSARECVMSG (WSARecvMsg) º¯Êý½«·µ»Ø¿ÉÑ¡¿ØÖÆÊý¾Ý£¬ÆäÖÐ°üº¬½Ó¿Ú£¬ÆäÖÐÎªÊý¾Ý±¨Ì×½Ó×Ö½ÓÊÕÁËÊý¾Ý°ü¡£
-    ´ËÑ¡ÏîÔÊÐíÔÚ WSAMSG ½á¹¹ÖÐ·µ»Ø½ÓÊÕÊý¾Ý°üµÄ IPv4 ½Ó¿Ú¡£ 
-    ´ËÑ¡Ïî½öÔÚÊý¾Ý±¨ºÍÔ­Ê¼Ì×½Ó×ÖÉÏÓÐÐ§£¬ (Ì×½Ó×ÖÀàÐÍ±ØÐëSOCK_DGRAM»òSOCK_RAW) ¡£
+    Ö¸Ê¾ IP ï¿½ï¿½Õ»ï¿½Ç·ï¿½Ó¦Ê¹ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½Ä¸ï¿½ï¿½Ó¿ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½×½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎª trueï¿½ï¿½ LPFN_WSARECVMSG (WSARecvMsg) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¿ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½Ð°ï¿½ï¿½ï¿½ï¿½Ó¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Ý±ï¿½ï¿½×½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ WSAMSG ï¿½á¹¹ï¿½Ð·ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ IPv4 ï¿½Ó¿Ú¡ï¿½ 
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ô­Ê¼ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ (ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½SOCK_DGRAMï¿½ï¿½SOCK_RAW) ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_RECVIF, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -427,12 +428,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    Ö¸Ê¾ IP ¶ÑÕ»ÊÇ·ñÓ¦Ê¹ÓÃ°üº¬ÒÑ½ÓÊÕÊý¾Ý±¨ÉÏµÄ·þÎñÀàÐÍ (TOS) IPv4 ±êÍ·×Ö¶ÎµÄÏûÏ¢Ìî³ä¿ØÖÆ»º³åÇø¡£
-    Èç¹û´ËÖµÎª true£¬ LPFN_WSARECVMSG (WSARecvMsg) º¯Êý½«·µ»Ø¿ÉÑ¡µÄ¿ØÖÆÊý¾Ý£¬ÆäÖÐ°üº¬½ÓÊÕµÄÊý¾Ý±¨µÄ TOS IPv4 ±êÍ·×Ö¶ÎÖµ¡£
-    ´ËÑ¡ÏîÔÊÐíÔÚ WSAMSG ½á¹¹ÖÐ·µ»Ø½ÓÊÕµÄÊý¾Ý±¨µÄ TOS IPv4 ±êÍ·×Ö¶Î¡£ ½«IP_TOS·µ»ØµÄÏûÏ¢ÀàÐÍ¡£ 
-    ½«·µ»Ø TOS ×Ö¶ÎµÄËùÓÐ DSCP ºÍ ECN Î»¡£ ´ËÑ¡Ïî½öÔÚÊý¾Ý±¨Ì×½Ó×ÖÉÏÓÐÐ§£¬ (Ì×½Ó×ÖÀàÐÍ±ØÐëSOCK_DGRAM) ¡£
+    Ö¸Ê¾ IP ï¿½ï¿½Õ»ï¿½Ç·ï¿½Ó¦Ê¹ï¿½Ã°ï¿½ï¿½ï¿½ï¿½Ñ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ÏµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (TOS) IPv4 ï¿½ï¿½Í·ï¿½Ö¶Îµï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎª trueï¿½ï¿½ LPFN_WSARECVMSG (WSARecvMsg) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¿ï¿½Ñ¡ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½Ð°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ TOS IPv4 ï¿½ï¿½Í·ï¿½Ö¶ï¿½Öµï¿½ï¿½
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ WSAMSG ï¿½á¹¹ï¿½Ð·ï¿½ï¿½Ø½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ TOS IPv4 ï¿½ï¿½Í·ï¿½Ö¶Î¡ï¿½ ï¿½ï¿½IP_TOSï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Í¡ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TOS ï¿½Ö¶Îµï¿½ï¿½ï¿½ï¿½ï¿½ DSCP ï¿½ï¿½ ECN Î»ï¿½ï¿½ ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ (ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½SOCK_DGRAM) ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_RECVTOS, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -442,12 +443,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    Ö¸Ê¾Ó¦ÔÚ LPFN_WSARECVMSG (WSARecvMsg ) º¯ÊýÖÐ·µ»ØÔ¾µã (TTL) ÐÅÏ¢¡£ 
-    Èç¹ûÔÚµ÷ÓÃ setsockopt Ê±½« optval ÉèÖÃÎª 1£¬ÔòÆôÓÃ¸ÃÑ¡Ïî¡£
-    Èç¹ûÉèÖÃÎª 0£¬Ôò½ûÓÃ¸ÃÑ¡Ïî¡£
-    ´ËÑ¡Ïî½ö¶ÔÊý¾Ý±¨ºÍÔ­Ê¼Ì×½Ó×ÖÓÐÐ§£¬ (Ì×½Ó×ÖÀàÐÍ±ØÐëSOCK_DGRAM»òSOCK_RAW) ¡£
+    Ö¸Ê¾Ó¦ï¿½ï¿½ LPFN_WSARECVMSG (WSARecvMsg ) ï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½Ô¾ï¿½ï¿½ (TTL) ï¿½ï¿½Ï¢ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ setsockopt Ê±ï¿½ï¿½ optval ï¿½ï¿½ï¿½ï¿½Îª 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½Ñ¡ï¿½î¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª 0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½Ñ¡ï¿½î¡£
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ô­Ê¼ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ (ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½SOCK_DGRAMï¿½ï¿½SOCK_RAW) ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_RECVTTL, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -457,10 +458,10 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    ÇëÎðÊ¹ÓÃ¡£ ·þÎñÀàÐÍ (TOS) ÉèÖÃÓ¦½öÊ¹ÓÃ·þÎñÖÊÁ¿ API ½øÐÐÉèÖÃ¡£ 
-    ÓÐ¹ØÏêÏ¸ÐÅÏ¢£¬Çë²ÎÔÄÆ½Ì¨ SDK µÄ·þÎñÖÊÁ¿²¿·ÖÖÐµÄ Çø·Ö ·þÎñ¡£
+    ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¡ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (TOS) ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Ê¹ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ API ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½ 
+    ï¿½Ð¹ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ½Ì¨ SDK ï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_TOS, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -470,11 +471,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    ¸ü¸Ä TCP/IP ·þÎñÌá¹©³ÌÐòÔÚ´«³öÊý¾Ý±¨ÖÐ IP ±êÍ·µÄ TTL ×Ö¶ÎÖÐÉèÖÃµÄÄ¬ÈÏÖµ¡£ 
-    ²»ÐèÒªIP_TTLÖ§³Ö;ÈôÒª¼ì²éÊÇ·ñÖ§³ÖIP_TTL£¬ÇëÊ¹ÓÃ getockopt »ñÈ¡µ±Ç°Ñ¡Ïî¡£ 
-    Èç¹û getsockopt Ê§°Ü£¬Ôò²»Ö§³ÖIP_TTL¡£
+    ï¿½ï¿½ï¿½ï¿½ TCP/IP ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ IP ï¿½ï¿½Í·ï¿½ï¿½ TTL ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ä¬ï¿½ï¿½Öµï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ÒªIP_TTLÖ§ï¿½ï¿½;ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ç·ï¿½Ö§ï¿½ï¿½IP_TTLï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ getockopt ï¿½ï¿½È¡ï¿½ï¿½Ç°Ñ¡ï¿½î¡£ 
+    ï¿½ï¿½ï¿½ getsockopt Ê§ï¿½Ü£ï¿½ï¿½ï¿½Ö§ï¿½ï¿½IP_TTLï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_TTL, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -483,8 +484,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
         DisplayError(WSAGetLastError());
     }
 
-    //½«¸ø¶¨Ô´×÷Îª·¢ËÍ·½Ìí¼Óµ½Ìá¹©µÄ¶à²¥×éºÍ½Ó¿Ú¡£
-    //Ö»ÄÜÉèÖÃ²»ÄÜ»ñÈ¡¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Îªï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½á¹©ï¿½Ä¶à²¥ï¿½ï¿½Í½Ó¿Ú¡ï¿½
+    //Ö»ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½Ü»ï¿½È¡ï¿½ï¿½
     //optLen = sizeof(ip_mreq_source);
     //iResult = getsockopt(s, level, IP_UNBLOCK_SOURCE, reinterpret_cast<char *>(&IpMreqSource), &optLen);
     //if (iResult != SOCKET_ERROR) {
@@ -494,16 +495,16 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //}
 
     /*
-    »ñÈ¡»òÉèÖÃÓÃÓÚ·¢ËÍ IPv4 Á÷Á¿µÄ´«³ö½Ó¿Ú¡£ ´ËÑ¡Ïî²»»á¸ü¸ÄÓÃÓÚ½ÓÊÕ IPv4 Á÷Á¿µÄÄ¬ÈÏ½Ó¿Ú¡£ 
-    ´ËÑ¡Ïî¶ÔÓÚ¶àËÞÖ÷¼ÆËã»ú·Ç³£ÖØÒª¡£ ÉèÖÃ´ËÑ¡ÏîµÄÊäÈëÖµÊÇ°´ÍøÂç×Ö½ÚË³ÐòÅÅÁÐµÄ 4 ×Ö½Ú IPv4 µØÖ·¡£
-    ´Ë DWORD ²ÎÊý±ØÐëÊÇ°´ÍøÂç×Ö½ÚË³ÐòÅÅÁÐµÄ½Ó¿ÚË÷Òý¡£
-    ³ý IPv4 µØÖ· 0.0.0.0 Ö®Íâ£¬) 0.x.x ¿é (µÚÒ»¸ö°ËÎ»×Ö½Ú 0.x.x.x ÖÐµÄÈÎºÎ IP µØÖ·¶¼±»ÊÓÎª½Ó¿ÚË÷Òý¡£
-    ½Ó¿ÚË÷ÒýÊÇÒ»¸ö 24 Î»Êý×Ö£¬ (´Ë·¶Î§±£Áô) £¬Ôò²»Ê¹ÓÃ 0.0.0.0/8 IPv4 µØÖ·¿é¡£ 
-    ½Ó¿ÚË÷Òý¿ÉÓÃÓÚÖ¸¶¨ÓÃÓÚ·¢ËÍ IPv4 Á÷Á¿µÄÄ¬ÈÏ½Ó¿Ú¡£ GetAdaptersAddresses º¯Êý¿ÉÓÃÓÚ»ñÈ¡½Ó¿ÚË÷ÒýÐÅÏ¢¡£ 
-    Èç¹û optval ÎªÁã£¬ÔòÓÃÓÚ·¢ËÍÁ÷Á¿µÄÄ¬ÈÏ½Ó¿ÚÉèÖÃÎª¡°Î´Ö¸¶¨¡±¡£
-    »ñÈ¡´ËÑ¡ÏîÊ±£¬ optval ½«·µ»Øµ±Ç°Ä¬ÈÏ½Ó¿ÚË÷Òý£¬ÓÃÓÚ°´Ö÷»ú×Ö½ÚË³Ðò·¢ËÍ IPv4 Á÷Á¿¡£
+    ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ IPv4 ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½Ó¿Ú¡ï¿½ ï¿½ï¿½Ñ¡ï¿½î²»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ IPv4 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½Ï½Ó¿Ú¡ï¿½ 
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½Òªï¿½ï¿½ ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ 4 ï¿½Ö½ï¿½ IPv4 ï¿½ï¿½Ö·ï¿½ï¿½
+    ï¿½ï¿½ DWORD ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ IPv4 ï¿½ï¿½Ö· 0.0.0.0 Ö®ï¿½â£¬) 0.x.x ï¿½ï¿½ (ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ö½ï¿½ 0.x.x.x ï¿½Ðµï¿½ï¿½Îºï¿½ IP ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ 24 Î»ï¿½ï¿½ï¿½Ö£ï¿½ (ï¿½Ë·ï¿½Î§ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ 0.0.0.0/8 IPv4 ï¿½ï¿½Ö·ï¿½é¡£ 
+    ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ IPv4 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½Ï½Ó¿Ú¡ï¿½ GetAdaptersAddresses ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½È¡ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ optval Îªï¿½ã£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½Ï½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î´Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½È¡ï¿½ï¿½Ñ¡ï¿½ï¿½Ê±ï¿½ï¿½ optval ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Ç°Ä¬ï¿½Ï½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ IPv4 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_UNICAST_IF, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -513,13 +514,13 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    	»ñÈ¡»òÉèÖÃ¸ø¶¨Ì×½Ó×ÖµÄ IP ²ã MTU (µÄÉÏÏÞ£¨ÒÔ×Ö½Ú) Îªµ¥Î»£©¡£
-        Èç¹û¸ÃÖµ¸ßÓÚÏµÍ³¶ÔÂ·¾¶ MTU (µÄ¹À¼ÆÖµ£¬¿ÉÒÔÍ¨¹ý²éÑ¯ IP_MTU Ì×½Ó×ÖÑ¡Ïî) ÔÚÁ¬½ÓµÄÌ×½Ó×ÖÉÏ¼ìË÷£¬ÔòÑ¡ÏîÎÞÐ§¡£
-        Èç¹û¸ÃÖµ½ÏµÍ£¬Ôò´óÓÚ´ËÖµµÄ³öÕ¾Êý¾Ý°ü½«±»·Ö¶Î£¬»òÕßÎÞ·¨·¢ËÍ£¬¾ßÌåÈ¡¾öÓÚ IP_DONTFRAGMENTµÄÖµ¡£
-        Ä¬ÈÏÖµÎª MAXULONG) (IP_UNSPECIFIED_USER_MTU¡£ 
-        ÎªÁË±£»¤ÀàÐÍ°²È«£¬Ó¦Ê¹ÓÃ WSAGetIPUserMtu ºÍ WSASetIPUserMtu º¯Êý£¬¶ø²»ÊÇÖ±½ÓÊ¹ÓÃÌ×½Ó×ÖÑ¡Ïî¡£
+    	ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Öµï¿½ IP ï¿½ï¿½ MTU (ï¿½ï¿½ï¿½ï¿½ï¿½Þ£ï¿½ï¿½ï¿½ï¿½Ö½ï¿½) Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
+        ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½Â·ï¿½ï¿½ MTU (ï¿½Ä¹ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½Ñ¯ IP_MTU ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
+        ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ÏµÍ£ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½Öµï¿½Ä³ï¿½Õ¾ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶Î£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ IP_DONTFRAGMENTï¿½ï¿½Öµï¿½ï¿½
+        Ä¬ï¿½ï¿½ÖµÎª MAXULONG) (IP_UNSPECIFIED_USER_MTUï¿½ï¿½ 
+        Îªï¿½Ë±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½È«ï¿½ï¿½Ó¦Ê¹ï¿½ï¿½ WSAGetIPUserMtu ï¿½ï¿½ WSASetIPUserMtu ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, level, IP_USER_MTU, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -529,10 +530,10 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     }
 
     /*
-    Êý¾Ý±¨Ì×½Ó×Ö¸¨ÖúÊý¾ÝÀàÐÍ (cmsg_type) Ö¸Ê¾ÓÃ»§Ä£Ê½ Windows É¸Ñ¡Æ½Ì¨ (WFP) ÖØ¶¨Ïò·þÎñÊ¹ÓÃµÄ UDP Ì×½Ó×ÖµÄÖØ¶¨ÏòÉÏÏÂÎÄ¡£
+    ï¿½ï¿½ï¿½Ý±ï¿½ï¿½×½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (cmsg_type) Ö¸Ê¾ï¿½Ã»ï¿½Ä£Ê½ Windows É¸Ñ¡Æ½Ì¨ (WFP) ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ UDP ï¿½×½ï¿½ï¿½Öµï¿½ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
-    //¾ßÓÐ¿ØÖÆÊý¾ÝµÄ WSACMSGHDR
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
+    //ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ WSACMSGHDR
     //optLen = sizeof(int);
     //iResult = getsockopt(s, level, IP_WFP_REDIRECT_CONTEXT, reinterpret_cast<char *>(&optVal), &optLen);
     //if (iResult != SOCKET_ERROR) {
@@ -542,10 +543,10 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ip-pktinfo
     //}
 
     /*
-    Êý¾Ý±¨Ì×½Ó×Ö¸¨ÖúÊý¾ÝÀàÐÍ (cmsg_type) Ö¸Ê¾ÓÃ»§Ä£Ê½ Windows É¸Ñ¡Æ½Ì¨ (WFP) ÖØ¶¨Ïò·þÎñÊ¹ÓÃµÄ UDP Ì×½Ó×ÖµÄÖØ¶¨Ïò¼ÇÂ¼¡£
+    ï¿½ï¿½ï¿½Ý±ï¿½ï¿½×½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (cmsg_type) Ö¸Ê¾ï¿½Ã»ï¿½Ä£Ê½ Windows É¸Ñ¡Æ½Ì¨ (WFP) ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ UDP ï¿½×½ï¿½ï¿½Öµï¿½ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½
     */
-    //»ñÈ¡ºÍÉèÖÃ¶¼Ö§³Ö¡£
-    //¾ßÓÐ¿ØÖÆÊý¾ÝµÄ WSACMSGHDR
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ö§ï¿½Ö¡ï¿½
+    //ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ WSACMSGHDR
     //optLen = sizeof(int);
     //iResult = getsockopt(s, level, IP_WFP_REDIRECT_RECORDS, reinterpret_cast<char *>(&optVal), &optLen);
     //if (iResult != SOCKET_ERROR) {
@@ -567,9 +568,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
 {
     int ret = ERROR_SUCCESS;
 
-    WSADATA wsaData{};
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    _ASSERTE(iResult == NO_ERROR);
+    WinsockInitializer winsock(MAKEWORD(2, 2));
+    _ASSERTE(winsock.IsInitialized());
 
     SOCKET tcp = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     _ASSERTE(tcp != INVALID_SOCKET);
@@ -580,7 +580,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
     SOCKET ipv4 = socket(AF_INET, SOCK_RAW, IPPROTO_IPV4);
     _ASSERTE(udp != INVALID_SOCKET);
 
-    //»¹¿ÉÒÔ¸ãÕìÌý°ó¶¨µÄ¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¶¨µÄ¡ï¿½
 
     get_ipv4_sock_opt(tcp, SOL_SOCKET); printf("\r\n\r\n\r\n");
     get_ipv4_sock_opt(udp, SOL_SOCKET); printf("\r\n\r\n\r\n");
@@ -590,13 +590,13 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ip-socket-option
     get_ipv4_sock_opt(udp, IPPROTO_IP); printf("\r\n\r\n\r\n");
     get_ipv4_sock_opt(ipv4, IPPROTO_IP); printf("\r\n\r\n\r\n");
 
-    //ÒÔÉÏ×éºÏ²âÊÔ×ÜÄÜ·¢ÏÖÒ»Ð©ÕýÈ·³É¹¦µÄµ÷ÓÃ¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü·ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½È·ï¿½É¹ï¿½ï¿½Äµï¿½ï¿½Ã¡ï¿½
 
     closesocket(tcp);
     closesocket(udp);
     closesocket(ipv4);
 
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
     return ret;
 }
@@ -617,8 +617,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-ipv6-socket-opti
 
 int get_rm_sock_opt()
 /*
-ÏÂ±í½éÉÜÁËIPPROTO_RMÌ×½Ó×ÖÑ¡Ïî£¬ÕâÐ©Ñ¡ÏîÊÊÓÃÓÚÎª IPv4 µØÖ·ÏµÁÐ (AF_INET) ´´½¨µÄÌ×½Ó×Ö£¬
-ÕâÐ©Ì×½Ó×Ö¾ßÓÐÖ¸¶¨Îª¿É¿¿¶à²¥ (IPPROTO_RM) µÄÌ×½Ó×Öº¯ÊýµÄÐ­Òé²ÎÊý¡£
+ï¿½Â±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IPPROTO_RMï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î£¬ï¿½ï¿½Ð©Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª IPv4 ï¿½ï¿½Ö·Ïµï¿½ï¿½ (AF_INET) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö£ï¿½
+ï¿½ï¿½Ð©ï¿½×½ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Îªï¿½É¿ï¿½ï¿½à²¥ (IPPROTO_RM) ï¿½ï¿½ï¿½×½ï¿½ï¿½Öºï¿½ï¿½ï¿½ï¿½ï¿½Ð­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-rm-socket-options
 */
@@ -634,9 +634,9 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     int ret = ERROR_SUCCESS;
 
     /*
-    Èç¹û Îª TRUE£¬Ôò·þÎñÌá¹©ÉÌÊµÏÖ Berkeley Software Distribution (BSD) ÑùÊ½£¬ (ÓÃÓÚ´¦Àí¼ÓËÙÊý¾ÝµÄÄ¬ÈÏ) ¡£
-    ´ËÑ¡ÏîÓë TCP_EXPEDITED_1122 Ñ¡ÏîÏà·´¡£ ´ËÑ¡ÏîÖ»ÄÜÔÚÁ¬½ÓÉÏÉèÖÃÒ»´Î¡£ ÉèÖÃ´ËÑ¡Ïîºó£¬ÎÞ·¨¹Ø±Õ´ËÑ¡Ïî¡£ 
-    ·þÎñÌá¹©ÉÌ²»ÐèÒªÊµÏÖ´ËÑ¡Ïî¡£ Ä¬ÈÏÇé¿öÏÂ£¬ (ÉèÖÃÎª TRUE) ÆôÓÃ´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ Îª TRUEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½Êµï¿½ï¿½ Berkeley Software Distribution (BSD) ï¿½ï¿½Ê½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½Ä¬ï¿½ï¿½) ï¿½ï¿½
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ TCP_EXPEDITED_1122 Ñ¡ï¿½ï¿½ï¿½à·´ï¿½ï¿½ ï¿½ï¿½Ñ¡ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Î¡ï¿½ ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½Ø±Õ´ï¿½Ñ¡ï¿½î¡£ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½Ì²ï¿½ï¿½ï¿½ÒªÊµï¿½Ö´ï¿½Ñ¡ï¿½î¡£ Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â£ï¿½ (ï¿½ï¿½ï¿½ï¿½Îª TRUE) ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½î¡£
     */
     int optVal{};
     int optLen = sizeof(int);
@@ -648,10 +648,10 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Èç¹û Îª TRUE£¬Ôò·þÎñÌá¹©ÉÌÊµÏÖ RFC-1222 ÖÐÖ¸¶¨µÄ¼ÓËÙÊý¾Ý¡£ 
-    ·ñÔò£¬½«Ê¹ÓÃ Berkeley Software Distribution (BSD) ÑùÊ½ (Ä¬ÈÏ) ¡£ 
-    ´ËÑ¡ÏîÖ»ÄÜÔÚÁ¬½ÓÉÏÉèÖÃÒ»´Î¡£
-    ÉèÖÃ´ËÑ¡Ïîºó£¬ÎÞ·¨¹Ø±Õ´ËÑ¡Ïî¡£ ·þÎñÌá¹©ÉÌ²»ÐèÒªÊµÏÖ´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ Îª TRUEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½Êµï¿½ï¿½ RFC-1222 ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½ 
+    ï¿½ï¿½ï¿½ò£¬½ï¿½Ê¹ï¿½ï¿½ Berkeley Software Distribution (BSD) ï¿½ï¿½Ê½ (Ä¬ï¿½ï¿½) ï¿½ï¿½ 
+    ï¿½ï¿½Ñ¡ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Î¡ï¿½
+    ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½Ø±Õ´ï¿½Ñ¡ï¿½î¡£ ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½Ì²ï¿½ï¿½ï¿½ÒªÊµï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_EXPEDITED_1122, reinterpret_cast<char *>(&optVal), &optLen);
@@ -662,25 +662,25 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Èç¹û Îª TRUE£¬ÔòÊÕµ½ÖµÎª WSAEHOSTUNREACH µÄ ICMP ´íÎóÊ±£¬½«·µ»ØÁ¬½Ó API µ÷ÓÃ¡£
-    È»ºó£¬½«Í¨¹ý¡°TCP_ICMP_ERROR_INFOÌ×½Ó×Ö¡±Ñ¡Ïî»ñÈ¡´íÎóµÄÔ´µØÖ·¡£ 
-    Èç¹û Îª FALSE£¬ÔòÌ×½Ó×ÖµÄÐÐÎªÕý³£¡£ Ä¬ÈÏÖµÎª½ûÓÃ£¬ (ÉèÖÃÎª FALSE) ¡£ 
-    ¶ÔÓÚÀàÐÍ°²È«ÐÔ£¬Ó¦Ê¹ÓÃ WSAGetFailConnectOnIcmpError ºÍ WSASetFailConnectOnIcmpError º¯Êý£¬¶ø²»ÊÇÖ±½ÓÊ¹ÓÃÌ×½Ó×ÖÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ Îª TRUEï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ÖµÎª WSAEHOSTUNREACH ï¿½ï¿½ ICMP ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ API ï¿½ï¿½ï¿½Ã¡ï¿½
+    È»ï¿½ó£¬½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½TCP_ICMP_ERROR_INFOï¿½×½ï¿½ï¿½Ö¡ï¿½Ñ¡ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Ö·ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ Îª FALSEï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Öµï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä¬ï¿½ï¿½ÖµÎªï¿½ï¿½ï¿½Ã£ï¿½ (ï¿½ï¿½ï¿½ï¿½Îª FALSE) ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½È«ï¿½Ô£ï¿½Ó¦Ê¹ï¿½ï¿½ WSAGetFailConnectOnIcmpError ï¿½ï¿½ WSASetFailConnectOnIcmpError ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_FAIL_CONNECT_ON_ICMP_ERROR, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
         printf("BSD Urgent: %ld\n", optVal);
-    } else {//ÔÚ getsockopt »ò setsockopt µ÷ÓÃÖÐÖ¸¶¨µÄÒ»¸öÎ´ÖªµÄ¡¢ÎÞÐ§µÄ»ò²»ÊÜÖ§³ÖµÄÑ¡Ïî»ò²ã´Î¡£
+    } else {//ï¿½ï¿½ getsockopt ï¿½ï¿½ setsockopt ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Î´Öªï¿½Ä¡ï¿½ï¿½ï¿½Ð§ï¿½Ä»ï¿½ï¿½ï¿½Ö§ï¿½Öµï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Î¡ï¿½
         DisplayError(WSAGetLastError());
     }
 
     /*
-    ¼ìË÷ TCP Ì×½Ó×ÖÔÚÁ¬½Óµ÷ÓÃÊ§°ÜÆÚ¼äÊÕµ½µÄ ICMP ´íÎóµÄÐÅÏ¢¡£ 
-    ½öÔÚÒÔÇ°ÆôÓÃÁË TCP_FAIL_CONNECT_ON_ICMP_ERROR ÇÒ Á¬½Ó ÒÑ·µ»Ø WSAEHOSTUNREACH µÄ TCP Ì×½Ó×ÖÉÏÓÐÐ§¡£
-    ²éÑ¯ÊÇ·Ç×èÈûµÄ¡£ Èç¹û²éÑ¯³É¹¦ÇÒ·µ»ØµÄ optlen ÖµÎª 0£¬Ôò×ÔÉÏ´ÎÁ¬½Óµ÷ÓÃÒÔÀ´Î´ÊÕµ½ÈÎºÎ ICMP ´íÎó¡£ 
-    Èç¹ûÊÕµ½ ICMP ´íÎó£¬ÔòÆäÐÅÏ¢½«¿ÉÓÃ£¬Ö±µ½ÔÙ´Îµ÷ÓÃ Á¬½Ó ¡£ ÐÅÏ¢×÷Îª ICMP_ERROR_INFO ½á¹¹·µ»Ø¡£ 
-    ¶ÔÓÚÀàÐÍ°²È«£¬Ó¦Ê¹ÓÃ WSAGetIcmpErrorInfo º¯Êý£¬¶ø²»ÊÇÖ±½ÓÊ¹ÓÃÌ×½Ó×ÖÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ TCP ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Õµï¿½ï¿½ï¿½ ICMP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TCP_FAIL_CONNECT_ON_ICMP_ERROR ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ·ï¿½ï¿½ï¿½ WSAEHOSTUNREACH ï¿½ï¿½ TCP ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
+    ï¿½ï¿½Ñ¯ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½É¹ï¿½ï¿½Ò·ï¿½ï¿½Øµï¿½ optlen ÖµÎª 0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½Õµï¿½ï¿½Îºï¿½ ICMP ï¿½ï¿½ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½Õµï¿½ ICMP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½Ö±ï¿½ï¿½ï¿½Ù´Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ï¢ï¿½ï¿½Îª ICMP_ERROR_INFO ï¿½á¹¹ï¿½ï¿½ï¿½Ø¡ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½È«ï¿½ï¿½Ó¦Ê¹ï¿½ï¿½ WSAGetIcmpErrorInfo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£
     */
     ICMP_ERROR_INFO IcmpErrorInfo{};
     optLen = sizeof(ICMP_ERROR_INFO);
@@ -692,7 +692,7 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    »ñÈ¡»òÉèÖÃÔÚÁ¬½ÓÖÕÖ¹Ç°½«·¢ËÍµÄ TCP ±£³Ö»î¶¯Ì½²âÊý¡£ ½«TCP_KEEPCNTÉèÖÃÎª´óÓÚ 255 µÄÖµÊÇ·Ç·¨µÄ¡£
+    ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ TCP ï¿½ï¿½ï¿½Ö»î¶¯Ì½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½TCP_KEEPCNTï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ 255 ï¿½ï¿½Öµï¿½Ç·Ç·ï¿½ï¿½Ä¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_KEEPCNT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -703,9 +703,9 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Èç¹û´ËÖµÎª·Ç¸ºÖµ£¬Ôò±íÊ¾ËùÐèµÄÁ¬½Ó³¬Ê±£¨ÒÔÃëÎªµ¥Î»£©¡£
-    Èç¹ûÎª -1£¬Ôò±íÊ¾ÇëÇó½ûÓÃÁ¬½Ó³¬Ê± (¼´Á¬½Ó½«ÓÀ¾ÃÖØÐÂ´«Êä) ¡£ 
-    Èç¹û½ûÓÃÁ¬½Ó³¬Ê±£¬ÔòÃ¿´ÎÖØÐÂ´«ÊäµÄÖØÐÂ´«Êä³¬Ê±¶¼»á³ÊÖ¸Êý¼¶Ôö³¤£¬×î´óÖµÎª 60 Ãë£¬È»ºó±£Áô¸Ã³¬Ê±¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎªï¿½Ç¸ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ï¿½Îª -1ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½Ê± (ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½) ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ä³¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎª 60 ï¿½ë£¬È»ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½Ê±ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_MAXRT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -716,7 +716,7 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÆôÓÃ»ò½ûÓÃ TCP Ì×½Ó×ÖµÄ Nagle Ëã·¨¡£ Ä¬ÈÏÇé¿öÏÂ£¬´ËÑ¡Ïî (ÉèÖÃÎª FALSE) ½ûÓÃ¡£
+    ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ TCP ï¿½×½ï¿½ï¿½Öµï¿½ Nagle ï¿½ã·¨ï¿½ï¿½ Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½Îª FALSE) ï¿½ï¿½ï¿½Ã¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_NODELAY, reinterpret_cast<char *>(&optVal), &optLen);
@@ -727,9 +727,9 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÆôÓÃ»ò½ûÓÃ RFC 1323 Ê±¼ä´Á¡£ 
-    Çë×¢Òâ£¬Ê±¼ä´ÁµÄÈ«¾ÖÅäÖÃ (Ä¬ÈÏÖµÎª¹Ø±Õ) £¬ (set/get) -nettcpsetting ÖÐµÄ¡°Ê±¼ä´Á¡±¡£ 
-    ÉèÖÃ´ËÌ×½Ó×ÖÑ¡Ïî½«¸²¸Ç¸ÃÈ«¾ÖÅäÖÃÉèÖÃ¡£
+    ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ RFC 1323 Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    ï¿½ï¿½×¢ï¿½â£¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Ä¬ï¿½ï¿½ÖµÎªï¿½Ø±ï¿½) ï¿½ï¿½ (set/get) -nettcpsetting ï¿½ÐµÄ¡ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½Ã´ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î½«ï¿½ï¿½ï¿½Ç¸ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_TIMESTAMPS, reinterpret_cast<char *>(&optVal), &optLen);
@@ -740,9 +740,9 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÆôÓÃ»ò½ûÓÃ RFC 7413 TCP ¿ìËÙ´ò¿ª£¬ÕâÊ¹Äã¿ÉÒÔÔÚ´ò¿ªÁ¬½ÓµÄÈýÏòÎÕÊÖ½×¶Î¿ªÊ¼·¢ËÍÊý¾Ý¡£
-    Çë×¢Òâ£¬ÈôÒªÀûÓÃ¿ìËÙ´ò¿ª£¬Ó¦Ê¹ÓÃ ConnectEx ½øÐÐ³õÊ¼Á¬½Ó£¬²¢ÔÚ¸Ãº¯ÊýµÄ lpSendBuffer ²ÎÊýÖÐÖ¸¶¨ÒªÔÚÎÕÊÖ¹ý³ÌÖÐ´«ÊäµÄÊý¾Ý¡£
-    lpSendBuffer ÖÐµÄÄ³Ð©Êý¾Ý½«¸ù¾Ý¿ìËÙ´ò¿ªÐ­Òé´«Êä¡£
+    ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ RFC 7413 TCP ï¿½ï¿½ï¿½Ù´ò¿ª£ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½×¶Î¿ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½
+    ï¿½ï¿½×¢ï¿½â£¬ï¿½ï¿½Òªï¿½ï¿½ï¿½Ã¿ï¿½ï¿½Ù´ò¿ª£ï¿½Ó¦Ê¹ï¿½ï¿½ ConnectEx ï¿½ï¿½ï¿½Ð³ï¿½Ê¼ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½Ú¸Ãºï¿½ï¿½ï¿½ï¿½ï¿½ lpSendBuffer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½
+    lpSendBuffer ï¿½Ðµï¿½Ä³Ð©ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Ù´ï¿½Ð­ï¿½é´«ï¿½ä¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_FASTOPEN, reinterpret_cast<char *>(&optVal), &optLen);
@@ -753,8 +753,8 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    »ñÈ¡»òÉèÖÃ TCP Á¬½ÓÔÚ½«±£ÁôÌ½²â·¢ËÍµ½Ô¶³ÌÖ®Ç°±£³Ö¿ÕÏÐ×´Ì¬µÄÃëÊý¡£
-    ×¢Òâ£º´ËÑ¡Ïî´Ó Windows 10 °æ±¾ 1709 ¿ªÊ¼¿ÉÓÃ¡£
+    ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TCP ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½â·¢ï¿½Íµï¿½Ô¶ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½Ö¿ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ×¢ï¿½â£ºï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ Windows 10 ï¿½æ±¾ 1709 ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ã¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_KEEPIDLE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -765,8 +765,8 @@ int get_tcp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    »ñÈ¡»òÉèÖÃ TCP Á¬½ÓÔÚ·¢ËÍÁíÒ»¸ö keepalive Ì½²âÖ®Ç°µÈ´ý±£³ÖÏìÓ¦µÄÃëÊý¡£
-    ×¢Òâ£º´ËÑ¡Ïî´Ó Windows 10 °æ±¾ 1709 ¿ªÊ¼¿ÉÓÃ¡£
+    ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TCP ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ keepalive Ì½ï¿½ï¿½Ö®Ç°ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ×¢ï¿½â£ºï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ Windows 10 ï¿½æ±¾ 1709 ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ã¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, TCP_KEEPINTVL, reinterpret_cast<char *>(&optVal), &optLen);
@@ -788,9 +788,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-tcp-socket-optio
 {
     int ret = ERROR_SUCCESS;
 
-    WSADATA wsaData{};
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    _ASSERTE(iResult == NO_ERROR);
+    WinsockInitializer winsock(MAKEWORD(2, 2));
+    _ASSERTE(winsock.IsInitialized());
 
     SOCKET s4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     _ASSERTE(s4 != INVALID_SOCKET);
@@ -798,14 +797,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-tcp-socket-optio
     SOCKET s6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
     _ASSERTE(s6 != INVALID_SOCKET);
 
-    //»¹¿ÉÒÔ¸ãÕìÌý°ó¶¨µÄ¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¶¨µÄ¡ï¿½
 
     get_tcp_sock_opt(s4);
     get_tcp_sock_opt(s6);
 
     closesocket(s4);
 
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
     return ret;
 }
@@ -816,7 +815,7 @@ int get_udp_sock_opt(_In_ SOCKET s)
     int ret = ERROR_SUCCESS;
 
     /*
-    Èç¹û Îª TRUE£¬Ôò UDP Êý¾Ý±¨»áËæÐ£ÑéºÍÒ»Æð·¢ËÍ¡£
+    ï¿½ï¿½ï¿½ Îª TRUEï¿½ï¿½ï¿½ï¿½ UDP ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Í¡ï¿½
     */
     int optVal{};
     int optLen = sizeof(int);
@@ -828,8 +827,8 @@ int get_udp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Èç¹û Îª TRUE£¬Ôò·¢ËÍ UDP Êý¾Ý±¨£¬Ð£ÑéºÍÎªÁã¡£ ¶ÔÓÚ·þÎñÌá¹©ÉÌÊÇ±ØÐèµÄ¡£ 
-    Èç¹û·þÎñÌá¹©ÉÌÃ»ÓÐ½ûÓÃ UDP Ð£ÑéºÍ¼ÆËãµÄ»úÖÆ£¬Ëü¿ÉÄÜÖ»´æ´¢´ËÑ¡Ïî¶ø²»Ö´ÐÐÈÎºÎ²Ù×÷¡£ IPv6 ²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ Îª TRUEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UDP ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½Îªï¿½ã¡£ ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½Ä¡ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½Ã»ï¿½Ð½ï¿½ï¿½ï¿½ UDP Ð£ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½æ´¢ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ÎºÎ²ï¿½ï¿½ï¿½ï¿½ï¿½ IPv6 ï¿½ï¿½Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, UDP_NOCHECKSUM, reinterpret_cast<char *>(&optVal), &optLen);
@@ -840,16 +839,16 @@ int get_udp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÉèÖÃÎª·ÇÁãÖµÊ±£¬¶à¸ö½ÓÊÕµÄÊý¾Ý±¨¿ÉÄÜ»áÔÚÏòÓ¦ÓÃ³ÌÐòÖ¸Ê¾Ö®Ç°ºÏ²¢³Éµ¥¸öÏûÏ¢»º³åÇø¡£ 
-    Ñ¡ÏîÖµ±íÊ¾¿ÉÒÔÏòÓ¦ÓÃ³ÌÐòÖ¸Ê¾µÄºÏ²¢ÏûÏ¢µÄ×î´óÏûÏ¢´óÐ¡£¨ÒÔ×Ö½ÚÎªµ¥Î»£©¡£ 
-    ¿ÉÄÜÈÔ»áÖ¸Ê¾´óÓÚÑ¡ÏîÖµµÄÎ´ºÏ²¢ÏûÏ¢¡£ Ä¬ÈÏÖµÎª 0 (ÎÞºÏ²¢) ¡£ 
-    ½öµ±Êý¾Ý±¨Ô´×ÔÍ¬Ò»Ô´µØÖ·ºÍ¶Ë¿ÚÊ±£¬²Å»áºÏ²¢Êý¾Ý±¨¡£ 
-    ºÏ²¢µÄËùÓÐÊý¾Ý±¨µÄ´óÐ¡¶¼ÏàÍ¬£¬µ«×îºóÒ»¸öÊý¾Ý±¨¿ÉÄÜ¸üÐ¡¡£ 
-    Èç¹ûÓ¦ÓÃ³ÌÐòÏëÒª¼ìË÷³ý×îºóÒ»¸öÊý¾Ý±¨ÒÔÍâµÄ (Êý¾Ý±¨´óÐ¡£¨) ¿ÉÄÜÓÐËù²»Í¬£©£¬
-    Ôò±ØÐëÊ¹ÓÃÖ§³Ö¿ØÖÆÐÅÏ¢ (µÄ½ÓÊÕ API£¬ÀýÈç LPFN_WSARECVMSG (WSARecvMsg) ) ¡£ 
-    ³ý×îºóÒ»ÌõÏûÏ¢Ö®ÍâµÄËùÓÐÏûÏ¢µÄ´óÐ¡¶¼¿ÉÒÔÔÚ UDP_COALESCED_INFO ¿Ø¼þÏûÏ¢ÖÐÕÒµ½£¬¸ÃÏûÏ¢µÄÀàÐÍÎª DWORD¡£ 
-    Îª±£»¤ÀàÐÍ£¬Ó¦ÓÃ³ÌÐòÓ¦Ö±½ÓÊ¹ÓÃ WSAGetUdpRecvMaxCoalescedSize ºÍ WSASetUdpRecvMaxCoalescedSize º¯Êý£¬
-    ¶ø²»ÊÇÖ±½ÓÊ¹ÓÃÌ×½Ó×ÖÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ÖµÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½Ö¸Ê¾Ö®Ç°ï¿½Ï²ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    Ñ¡ï¿½ï¿½Öµï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½Ö¸Ê¾ï¿½ÄºÏ²ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ô»ï¿½Ö¸Ê¾ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Öµï¿½ï¿½Î´ï¿½Ï²ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ Ä¬ï¿½ï¿½ÖµÎª 0 (ï¿½ÞºÏ²ï¿½) ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½Ô´ï¿½ï¿½Í¬Ò»Ô´ï¿½ï¿½Ö·ï¿½Í¶Ë¿ï¿½Ê±ï¿½ï¿½ï¿½Å»ï¿½Ï²ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ 
+    ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½Ä´ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½Ü¸ï¿½Ð¡ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ö§ï¿½Ö¿ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ (ï¿½Ä½ï¿½ï¿½ï¿½ APIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ LPFN_WSARECVMSG (WSARecvMsg) ) ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ï¢Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Ä´ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UDP_COALESCED_INFO ï¿½Ø¼ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª DWORDï¿½ï¿½ 
+    Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½Ó¦Ö±ï¿½ï¿½Ê¹ï¿½ï¿½ WSAGetUdpRecvMaxCoalescedSize ï¿½ï¿½ WSASetUdpRecvMaxCoalescedSize ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, UDP_RECV_MAX_COALESCED_SIZE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -860,10 +859,10 @@ int get_udp_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    µ±ÉèÖÃÎª·ÇÁãÖµÊ±£¬Ó¦ÓÃ³ÌÐò·¢ËÍµÄ»º³åÇø½«°´ÍøÂç¶ÑÕ»Ï¸·ÖÎª¶à¸öÏûÏ¢¡£ Ñ¡ÏîÖµ±íÊ¾Ã¿¸ö·Ö½âÏûÏ¢µÄ´óÐ¡¡£ 
-    Ñ¡ÏîÖµÒÔ×Ö½Ú±íÊ¾¡£ ×îºóÒ»¸ö¶ÎµÄ´óÐ¡¿ÉÄÜÐ¡ÓÚÑ¡ÏîµÄÖµ¡£ Ä¬ÈÏÖµÎª 0 (ÎÞ·Ö¶Î) ¡£ 
-    Ó¦ÓÃ³ÌÐòÓ¦ÉèÖÃÒ»¸öÐ¡ÓÚÄ¿±êÂ·¾¶µÄ MTU µÄÖµ£¬ () £¬ÒÔ±ÜÃâ IP ËéÆ¬¡£ 
-    Îª±£»¤ÀàÐÍ£¬Ó¦ÓÃ³ÌÐòÓ¦Ê¹ÓÃ WSAGetUdpSendMessageSize ºÍ WSASetUdpSendMessageSize º¯Êý£¬¶ø²»ÊÇÖ±½ÓÊ¹ÓÃÌ×½Ó×ÖÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ÖµÊ±ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ÍµÄ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ»Ï¸ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ Ñ¡ï¿½ï¿½Öµï¿½ï¿½Ê¾Ã¿ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½Ï¢ï¿½Ä´ï¿½Ð¡ï¿½ï¿½ 
+    Ñ¡ï¿½ï¿½Öµï¿½ï¿½ï¿½Ö½Ú±ï¿½Ê¾ï¿½ï¿½ ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ÎµÄ´ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Öµï¿½ï¿½ Ä¬ï¿½ï¿½ÖµÎª 0 (ï¿½Þ·Ö¶ï¿½) ï¿½ï¿½ 
+    Ó¦ï¿½Ã³ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ð¡ï¿½ï¿½Ä¿ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ MTU ï¿½ï¿½Öµï¿½ï¿½ () ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ IP ï¿½ï¿½Æ¬ï¿½ï¿½ 
+    Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½Ó¦Ê¹ï¿½ï¿½ WSAGetUdpSendMessageSize ï¿½ï¿½ WSASetUdpSendMessageSize ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, UDP_SEND_MSG_SIZE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -879,17 +878,16 @@ int get_udp_sock_opt(_In_ SOCKET s)
 
 int get_udp_sock_opt()
 /*
-ÏÂ±íÃèÊöÁË IPPROTO_UDP Ì×½Ó×ÖÑ¡Ïî£¬ÕâÐ©Ñ¡ÏîÊÊÓÃÓÚÎª IPv4 ºÍ IPv6 µØÖ·ÏµÁÐ´´½¨µÄÌ×½Ó×Ö£¬
-(AF_INET²¢½« Ð­Òé ²ÎÊýAF_INET6) Ö¸¶¨Îª UDP (IPPROTO_UDP) µÄ Ì×½Ó×Ö º¯Êý¡£
+ï¿½Â±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ IPPROTO_UDP ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î£¬ï¿½ï¿½Ð©Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª IPv4 ï¿½ï¿½ IPv6 ï¿½ï¿½Ö·Ïµï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö£ï¿½
+(AF_INETï¿½ï¿½ï¿½ï¿½ Ð­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½AF_INET6) Ö¸ï¿½ï¿½Îª UDP (IPPROTO_UDP) ï¿½ï¿½ ï¿½×½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-udp-socket-options
 */
 {
     int ret = ERROR_SUCCESS;
 
-    WSADATA wsaData{};
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    _ASSERTE(iResult == NO_ERROR);
+    WinsockInitializer winsock(MAKEWORD(2, 2));
+    _ASSERTE(winsock.IsInitialized());
 
     SOCKET s4 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     _ASSERTE(s4 != INVALID_SOCKET);
@@ -897,14 +895,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-udp-socket-optio
     SOCKET s6 = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
     _ASSERTE(s6 != INVALID_SOCKET);
 
-    //»¹¿ÉÒÔ¸ãÕìÌý°ó¶¨µÄ¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¶¨µÄ¡ï¿½
 
     get_udp_sock_opt(s4);
     get_udp_sock_opt(s6);
 
     closesocket(s4);
 
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
     return ret;
 }
@@ -913,7 +911,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/ipproto-udp-socket-optio
 int get_ipx_sock_opt()
 /*
 
-µ± level ²ÎÊýÉèÖÃÎª NSPROTO_IPX Ê±£¬optname ²ÎÊýµÄÈ¡Öµ¿ÉÒÔÊÇIPX_PTYPEµÈ¡£
+ï¿½ï¿½ level ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª NSPROTO_IPX Ê±ï¿½ï¿½optname ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IPX_PTYPEï¿½È¡ï¿½
 
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/nsproto-ipx-socket-options
 */
@@ -955,7 +953,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     int ret = ERROR_SUCCESS;
 
     /*
-    Ì×½Ó×ÖÕýÔÚÕìÌý¡£
+    ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     */
     int optVal{};
     int optLen = sizeof(int);
@@ -967,7 +965,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Ì×½Ó×ÖÅäÖÃÎªÓÃÓÚ´«ÊäºÍ½ÓÊÕ¹ã²¥ÏûÏ¢¡£
+    ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½Í½ï¿½ï¿½Õ¹ã²¥ï¿½ï¿½Ï¢ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char *>(&optVal), &optLen);
@@ -978,7 +976,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ·µ»ØÌ×½Ó×ÖÊ¹ÓÃµÄ±¾µØµØÖ·¡¢±¾µØ¶Ë¿Ú¡¢Ô¶³ÌµØÖ·¡¢Ô¶³Ì¶Ë¿Ú¡¢Ì×½Ó×ÖÀàÐÍºÍÐ­Òé¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ê¹ï¿½ÃµÄ±ï¿½ï¿½Øµï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶Ë¿Ú¡ï¿½Ô¶ï¿½Ìµï¿½Ö·ï¿½ï¿½Ô¶ï¿½Ì¶Ë¿Ú¡ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íºï¿½Ð­ï¿½é¡£
     */
     CSADDR_INFO AddrInfo{};
     optLen = sizeof(CSADDR_INFO);
@@ -990,7 +988,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ´ÓÉÏÒ»´Îµ÷ÓÃ setsockopt »òÏµÍ³Ä¬ÈÏÖµ·µ»Øµ±Ç°Ì×½Ó×Ö×´Ì¬¡£
+    ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Îµï¿½ï¿½ï¿½ setsockopt ï¿½ï¿½ÏµÍ³Ä¬ï¿½ï¿½Öµï¿½ï¿½ï¿½Øµï¿½Ç°ï¿½×½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_CONDITIONAL_ACCEPT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1001,7 +999,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ·µ»ØÒÑÁ¬½ÓÌ×½Ó×ÖµÄÃëÊý¡£ ´ËÌ×½Ó×ÖÑ¡Ïî½öÊÊÓÃÓÚÃæÏòÁ¬½ÓµÄÐ­Òé¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ð­ï¿½é¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_CONNECT_TIME, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1011,7 +1009,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //ÒÑÆôÓÃµ÷ÊÔ¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½Ô¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_DEBUG, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -1020,7 +1018,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //Èç¹û Îª TRUE£¬Ôò½ûÓÃSO_LINGERÑ¡Ïî¡£
+    //ï¿½ï¿½ï¿½ Îª TRUEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½SO_LINGERÑ¡ï¿½î¡£
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_DONTLINGER, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -1030,9 +1028,9 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Â·ÓÉ¹¦ÄÜ±»½ûÓÃ¡£ 
-    ´ËÉèÖÃ³É¹¦£¬µ«ÔÚAF_INETÌ×½Ó×ÖÉÏ½«±»ºöÂÔ;Ê¹ÓÃ WSAENOPROTOOPT AF_INET6Ì×½Ó×ÖÊ§°Ü¡£ 
-    ATM Ì×½Ó×Ö²»Ö§³Ö´ËÑ¡Ïî¡£
+    Â·ï¿½É¹ï¿½ï¿½Ü±ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ã³É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½AF_INETï¿½×½ï¿½ï¿½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½;Ê¹ï¿½ï¿½ WSAENOPROTOOPT AF_INET6ï¿½×½ï¿½ï¿½ï¿½Ê§ï¿½Ü¡ï¿½ 
+    ATM ï¿½×½ï¿½ï¿½Ö²ï¿½Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_DONTROUTE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1042,7 +1040,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //¼ìË÷´íÎó×´Ì¬²¢Çå³ý¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -1052,7 +1050,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ×èÖ¹ÈÎºÎÆäËûÌ×½Ó×Ö°ó¶¨µ½Í¬Ò»µØÖ·ºÍ¶Ë¿Ú¡£ ÔÚµ÷ÓÃ °ó¶¨ º¯ÊýÖ®Ç°£¬±ØÐëÉèÖÃ´ËÑ¡Ïî¡£
+    ï¿½ï¿½Ö¹ï¿½Îºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö°ó¶¨µï¿½Í¬Ò»ï¿½ï¿½Ö·ï¿½Í¶Ë¿Ú¡ï¿½ ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1062,7 +1060,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //±£Áô¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     GROUP Group{};
     optLen = sizeof(GROUP);
     iResult = getsockopt(s, SOL_SOCKET, SO_GROUP_ID, reinterpret_cast<char *>(&Group), &optLen);
@@ -1072,7 +1070,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //±£Áô¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_GROUP_PRIORITY, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -1081,7 +1079,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //ÕýÔÚ·¢ËÍ¡°±£³ÖÁ¬½Ó¡±¡£ ATM Ì×½Ó×Ö²»Ö§³Ö¡£
+    //ï¿½ï¿½ï¿½Ú·ï¿½ï¿½Í¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ ATM ï¿½×½ï¿½ï¿½Ö²ï¿½Ö§ï¿½Ö¡ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -1090,7 +1088,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //·µ»Øµ±Ç°µÄ¶ºÁôÑ¡Ïî¡£
+    //ï¿½ï¿½ï¿½Øµï¿½Ç°ï¿½Ä¶ï¿½ï¿½ï¿½Ñ¡ï¿½î¡£
     LINGER Linger{};
     optLen = sizeof(LINGER);
     iResult = getsockopt(s, SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&Linger), &optLen);
@@ -1101,7 +1099,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÃæÏòÏûÏ¢µÄÌ×½Ó×ÖÀàÐÍµÄÏûÏ¢µÄ×î´ó´óÐ¡ (ÀýÈç£¬SOCK_DGRAM) ¡£ ¶ÔÓÚÃæÏòÁ÷µÄÌ×½Ó×ÖÃ»ÓÐÒâÒå¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ (ï¿½ï¿½ï¿½ç£¬SOCK_DGRAM) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½å¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_MAX_MSG_SIZE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1112,7 +1110,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÕýÔÚÕý³£Êý¾ÝÁ÷ÖÐ½ÓÊÕ OOB Êý¾Ý¡£ (ÓÐ¹Ø±¾Ö÷ÌâµÄÌÖÂÛ£¬Çë²ÎÔÄ Windows Ì×½Ó×Ö 1.1 ×èÖ¹Àý³ÌºÍ EINPROGRESS ²¿·Ö¡£)
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ OOB ï¿½ï¿½ï¿½Ý¡ï¿½ (ï¿½Ð¹Ø±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Windows ï¿½×½ï¿½ï¿½ï¿½ 1.1 ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Ìºï¿½ EINPROGRESS ï¿½ï¿½ï¿½Ö¡ï¿½)
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_OOBINLINE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1123,7 +1121,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Í¨¹ýÎª±¾µØ¼ÆËã»úÉÏµÄ²»Í¬±¾µØµØÖ·¶Ë¿Ú¶Ô¶à´Î·ÖÅäÍ¨Åä·û¶Ë¿Ú£¬ÔÊÐí×î´ó»¯¶Ë¿Ú·ÖÅä£¬´Ó¶øÎªÌ×½Ó×ÖÆôÓÃ±¾µØ¶Ë¿Ú¿ÉÉìËõÐÔ¡£
+    Í¨ï¿½ï¿½Îªï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ï¿½ï¿½ÏµÄ²ï¿½Í¬ï¿½ï¿½ï¿½Øµï¿½Ö·ï¿½Ë¿Ú¶Ô¶ï¿½Î·ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½Ë¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó»¯¶Ë¿Ú·ï¿½ï¿½ä£¬ï¿½Ó¶ï¿½Îªï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã±ï¿½ï¿½Ø¶Ë¿Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_PORT_SCALABILITY, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1133,7 +1131,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //°ó¶¨µ½´ËÌ×½Ó×ÖµÄÐ­ÒéµÄÐ­ÒéÐÅÏ¢µÄËµÃ÷¡£
+    //ï¿½ó¶¨µï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Öµï¿½Ð­ï¿½ï¿½ï¿½Ð­ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½
     WSAPROTOCOL_INFO ProtocalInfo{};
     optLen = sizeof(WSAPROTOCOL_INFO);
     iResult = getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFO, reinterpret_cast<char *>(&ProtocalInfo), &optLen);
@@ -1144,7 +1142,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Îª½ÓÊÕ±£ÁôµÄÃ¿¸öÌ×½Ó×ÖµÄ×Ü»º³åÇø¿Õ¼ä¡£ ÕâÓëSO_MAX_MSG_SIZEÎÞ¹Ø£¬Ò²²»Ò»¶¨¶ÔÓ¦ÓÚ TCP ½ÓÊÕ´°¿ÚµÄ´óÐ¡¡£
+    Îªï¿½ï¿½ï¿½Õ±ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½×½ï¿½ï¿½Öµï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ä¡£ ï¿½ï¿½ï¿½ï¿½SO_MAX_MSG_SIZEï¿½Þ¹Ø£ï¿½Ò²ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ TCP ï¿½ï¿½ï¿½Õ´ï¿½ï¿½ÚµÄ´ï¿½Ð¡ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1154,7 +1152,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //¿ÉÒÔ½«Ì×½Ó×Ö°ó¶¨µ½ÒÑÔÚÊ¹ÓÃÖÐµÄµØÖ·¡£ ²»ÊÊÓÃÓÚ ATM ²å×ù¡£
+    //ï¿½ï¿½ï¿½Ô½ï¿½ï¿½×½ï¿½ï¿½Ö°ó¶¨µï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ÐµÄµï¿½Ö·ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ATM ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -1164,7 +1162,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Îª·¢ËÍ±£ÁôµÄÃ¿¸öÌ×½Ó×Ö»º³åÇø×Ü¿Õ¼ä¡£ ÕâÓëSO_MAX_MSG_SIZEÎÞ¹Ø£¬Ò²²»Ò»¶¨¶ÔÓ¦ÓÚ TCP ·¢ËÍ´°¿ÚµÄ´óÐ¡¡£
+    Îªï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¿Õ¼ä¡£ ï¿½ï¿½ï¿½ï¿½SO_MAX_MSG_SIZEï¿½Þ¹Ø£ï¿½Ò²ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ TCP ï¿½ï¿½ï¿½Í´ï¿½ï¿½ÚµÄ´ï¿½Ð¡ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1174,7 +1172,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //Ì×½Ó×ÖµÄÀàÐÍ (ÀýÈç£¬SOCK_STREAM) ¡£
+    //ï¿½×½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ç£¬SOCK_STREAM) ï¿½ï¿½
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_TYPE, reinterpret_cast<char *>(&optVal), &optLen);
     if (iResult != SOCKET_ERROR) {
@@ -1184,8 +1182,8 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Óë Ì×½Ó×Ö¹ØÁªµÄ·þÎñÌá¹©³ÌÐòÖÐµÄ²»Í¸Ã÷Êý¾Ý½á¹¹¶ÔÏó¡£ ´Ë¶ÔÏó´æ´¢·þÎñÌá¹©³ÌÐòµÄµ±Ç°ÅäÖÃÐÅÏ¢¡£ 
-    ´ËÊý¾Ý½á¹¹µÄÈ·ÇÐ¸ñÊ½ÌØ¶¨ÓÚ·þÎñÌá¹©³ÌÐò¡£
+    ï¿½ï¿½ ï¿½×½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ²ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½Äµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ 
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½È·ï¿½Ð¸ï¿½Ê½ï¿½Ø¶ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½
     */
     //optLen = sizeof(int);
     //iResult = getsockopt(s, SOL_SOCKET, PVD_CONFIG, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1196,10 +1194,10 @@ int get_sol_sock_opt(_In_ SOCKET s)
     //}
 
      /*
-    ´Ó´ËÌ×½Ó×Ö·¢ËÍÊý¾ÝÊ±£¬ÇëÊ¹ÓÃ±¾µØ»·»ØµØÖ·¡£ ½öµ±·¢ËÍµÄËùÓÐÊý¾ÝÒ²½«ÔÚ±¾µØ½ÓÊÕÊ±£¬²ÅÓ¦Ê¹ÓÃ´ËÑ¡Ïî¡£
-    Windows TCP/IP Ìá¹©³ÌÐò²»Ö§³Ö´ËÑ¡Ïî¡£
-    Èç¹ûÔÚ Windows Vista ¼°¸ü¸ß°æ±¾ÉÏÊ¹ÓÃ´ËÑ¡Ïî£¬ Ôò getsockopt ºÍ setsockopt º¯Êý½«Ê§°Ü²¢ÏÔÊ¾ WSAEINVAL¡£
-    ÔÚÔçÆÚ°æ±¾µÄ Windows ÉÏ£¬ÕâÐ©º¯ÊýÊ§°Ü²¢ÏÔÊ¾ WSAENOPROTOOPT¡£
+    ï¿½Ó´ï¿½ï¿½×½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã±ï¿½ï¿½Ø»ï¿½ï¿½Øµï¿½Ö·ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ú±ï¿½ï¿½Ø½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ó¦Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£
+    Windows TCP/IP ï¿½á¹©ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ Windows Vista ï¿½ï¿½ï¿½ï¿½ï¿½ß°æ±¾ï¿½ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î£¬ ï¿½ï¿½ getsockopt ï¿½ï¿½ setsockopt ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü²ï¿½ï¿½ï¿½Ê¾ WSAEINVALï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ú°æ±¾ï¿½ï¿½ Windows ï¿½Ï£ï¿½ï¿½ï¿½Ð©ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü²ï¿½ï¿½ï¿½Ê¾ WSAENOPROTOOPTï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_USELOOPBACK, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1210,10 +1208,10 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    °üº¬ BSD UNIX ÖÐµÄÌ×½Ó×ÖÑ¡Ïî£¬ÓÃÓÚÏòºó¼æÈÝ¡£
-    ´ËÑ¡ÏîÉèÖÃÒª´¦ÀíµÄÌ×½Ó×ÖÊä³ö²Ù×÷µÄ×îÐ¡×Ö½ÚÊý¡£ Windows TCP/IP Ìá¹©³ÌÐò²»Ö§³Ö´ËÑ¡Ïî¡£
-    Èç¹ûÔÚ Windows Vista ¼°¸ü¸ß°æ±¾ÉÏÊ¹ÓÃ´ËÑ¡Ïî£¬ Ôò getsockopt ºÍ setsockopt º¯Êý½«Ê§°Ü²¢³öÏÖ WSAEINVAL¡£
-    ÔÚÔçÆÚ°æ±¾µÄ Windows ÉÏ£¬ÕâÐ©º¯ÊýÊ§°Ü²¢³öÏÖ WSAENOPROTOOPT¡£
+    ï¿½ï¿½ï¿½ï¿½ BSD UNIX ï¿½Ðµï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ Windows TCP/IP ï¿½á¹©ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ Windows Vista ï¿½ï¿½ï¿½ï¿½ï¿½ß°æ±¾ï¿½ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î£¬ ï¿½ï¿½ getsockopt ï¿½ï¿½ setsockopt ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü²ï¿½ï¿½ï¿½ï¿½ï¿½ WSAEINVALï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ú°æ±¾ï¿½ï¿½ Windows ï¿½Ï£ï¿½ï¿½ï¿½Ð©ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü²ï¿½ï¿½ï¿½ï¿½ï¿½ WSAENOPROTOOPTï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_SNDLOWAT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1224,10 +1222,10 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    °üº¬ BSD UNIX ÖÐµÄÌ×½Ó×ÖÑ¡Ïî£¬ÓÃÓÚÏòºó¼æÈÝ¡£ ´ËÑ¡ÏîÉèÖÃÌ×½Ó×ÖÊäÈë²Ù×÷Òª´¦ÀíµÄ×îÐ¡×Ö½ÚÊý¡£
-    Windows TCP/IP Ìá¹©³ÌÐò²»Ö§³Ö´ËÑ¡Ïî¡£
-    Èç¹ûÔÚ Windows Vista ¼°¸ü¸ß°æ±¾ÉÏÊ¹ÓÃ´ËÑ¡Ïî£¬ Ôò getsockopt ºÍ setsockopt º¯Êý½«Ê§°Ü²¢³öÏÖ WSAEINVAL¡£
-    ÔÚÔçÆÚ°æ±¾µÄ Windows ÉÏ£¬ÕâÐ©º¯ÊýÊ§°Ü²¢³öÏÖ WSAENOPROTOOPT¡£
+    ï¿½ï¿½ï¿½ï¿½ BSD UNIX ï¿½Ðµï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½î£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½ ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½
+    Windows TCP/IP ï¿½á¹©ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ Windows Vista ï¿½ï¿½ï¿½ï¿½ï¿½ß°æ±¾ï¿½ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î£¬ ï¿½ï¿½ getsockopt ï¿½ï¿½ setsockopt ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü²ï¿½ï¿½ï¿½ï¿½ï¿½ WSAEINVALï¿½ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ú°æ±¾ï¿½ï¿½ Windows ï¿½Ï£ï¿½ï¿½ï¿½Ð©ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü²ï¿½ï¿½ï¿½ï¿½ï¿½ WSAENOPROTOOPTï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_RCVLOWAT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1238,10 +1236,10 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ×èÖ¹·¢ËÍµ÷ÓÃµÄ³¬Ê±£¨ÒÔºÁÃëÎªµ¥Î»£©¡£
-    ´ËÑ¡ÏîµÄÄ¬ÈÏÖµÎªÁã£¬±íÊ¾·¢ËÍ²Ù×÷²»»á³¬Ê±¡£Èç¹û×èÖ¹·¢ËÍµ÷ÓÃ³¬Ê±£¬ÔòÁ¬½Ó´¦ÓÚ²»È·¶¨×´Ì¬£¬Ó¦¹Ø±Õ¡£
-    Èç¹ûÊ¹ÓÃ WSASocket º¯Êý´´½¨Ì×½Ó×Ö£¬Ôò dwFlags ²ÎÊý±ØÐëÉèÖÃ WSA_FLAG_OVERLAPPED ÊôÐÔ²ÅÄÜÊ¹³¬Ê±Õý³£¹¤×÷¡£
-    ·ñÔò£¬³¬Ê±ÓÀÔ¶²»»áÉúÐ§¡£
+    ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Íµï¿½ï¿½ÃµÄ³ï¿½Ê±ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½ÖµÎªï¿½ã£¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á³¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Íµï¿½ï¿½Ã³ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½Ú²ï¿½È·ï¿½ï¿½×´Ì¬ï¿½ï¿½Ó¦ï¿½Ø±Õ¡ï¿½
+    ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ WSASocket ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ dwFlags ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ WSA_FLAG_OVERLAPPED ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ï¿½ò£¬³ï¿½Ê±ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1252,10 +1250,10 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ×èÖ¹½ÓÊÕµ÷ÓÃµÄ³¬Ê±£¨ÒÔºÁÃëÎªµ¥Î»£©¡£
-    ´ËÑ¡ÏîµÄÄ¬ÈÏÖµÎªÁã£¬±íÊ¾½ÓÊÕ²Ù×÷²»»á³¬Ê±¡£Èç¹û×èÖ¹½ÓÊÕµ÷ÓÃ³¬Ê±£¬ÔòÁ¬½Ó´¦ÓÚ²»È·¶¨×´Ì¬£¬Ó¦¹Ø±Õ¡£
-    Èç¹ûÊ¹ÓÃ WSASocket º¯Êý´´½¨Ì×½Ó×Ö£¬Ôò dwFlags ²ÎÊý±ØÐëÉèÖÃ WSA_FLAG_OVERLAPPED ÊôÐÔ²ÅÄÜÊ¹³¬Ê±Õý³£¹¤×÷¡£
-    ·ñÔò£¬³¬Ê±ÓÀÔ¶²»»áÉúÐ§¡£
+    ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Õµï¿½ï¿½ÃµÄ³ï¿½Ê±ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½ÖµÎªï¿½ã£¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Õ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á³¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Õµï¿½ï¿½Ã³ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½Ú²ï¿½È·ï¿½ï¿½×´Ì¬ï¿½ï¿½Ó¦ï¿½Ø±Õ¡ï¿½
+    ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ WSASocket ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ dwFlags ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ WSA_FLAG_OVERLAPPED ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½ï¿½ò£¬³ï¿½Ê±ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1265,7 +1263,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //·µ»Ø¸ø¶¨Ì×½Ó×Ö µÄWSAPROTOCOL_INFOA ½á¹¹
+    //ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ ï¿½ï¿½WSAPROTOCOL_INFOA ï¿½á¹¹
     WSAPROTOCOL_INFOA ProtocalInfoA{};
     optLen = sizeof(WSAPROTOCOL_INFOA);
     iResult = getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFOA, reinterpret_cast<char *>(&ProtocalInfoA), &optLen);
@@ -1275,7 +1273,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
         DisplayError(WSAGetLastError());
     }
 
-    //·µ»Ø¸ø¶¨Ì×½Ó×Ö µÄWSAPROTOCOL_INFOW ½á¹¹
+    //ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ ï¿½ï¿½WSAPROTOCOL_INFOW ï¿½á¹¹
     WSAPROTOCOL_INFOW ProtocalInfoW{};
     optLen = sizeof(WSAPROTOCOL_INFOW);
     iResult = getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFOW, reinterpret_cast<char *>(&ProtocalInfoW), &optLen);
@@ -1286,15 +1284,15 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÆäËûÊý¾Ý£¨²»ÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£©ÓëÍøÂçÇëÇóÒ»Æð·¢ËÍÒÔ½¨Á¢Á¬½Ó¡£ ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ 
-    Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ 
+    Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     //SO_CONNDATA
 
 
     /*
-    ¸½¼ÓÊý¾ÝµÄ³¤¶È£¬ÒÔ×Ö½ÚÎªµ¥Î»£¬¶ø²»ÊÇÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£¬ÓëÍøÂçÇëÇóÒ»Æð·¢ËÍÒÔ½¨Á¢Á¬½Ó¡£
-    ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ³ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½
+    ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_CONNDATALEN, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1305,15 +1303,15 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÆäËûÁ¬½ÓÑ¡ÏîÊý¾Ý£¨²»ÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£©ÓëÍøÂçÇëÇóÒ»Æð·¢ËÍÒÔ½¨Á¢Á¬½Ó¡£ 
-    ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ 
+    ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     //SO_CONNOPT
 
 
     /*
-    Á¬½ÓÑ¡ÏîÊý¾ÝµÄ³¤¶È£¨ÒÔ×Ö½ÚÎªµ¥Î»£©£¬¶ø²»ÊÇÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£¬¸ÃÊý¾ÝËæÍøÂçÇëÇóÒ»Æð·¢ËÍÒÔ½¨Á¢Á¬½Ó¡£ 
-    ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ³ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ 
+    ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_CONNOPTLEN, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1324,15 +1322,15 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÆäËûÊý¾Ý£¨²»ÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£©ÓëÍøÂçÇëÇóÒ»Æð·¢ËÍ£¬ÒÔ¶Ï¿ªÁ¬½Ó¡£
-    ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Í£ï¿½ï¿½Ô¶Ï¿ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½
+    ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     //SO_DISCDATA
 
 
     /*
-    	¸½¼ÓÊý¾ÝµÄ³¤¶È£¨ÒÔ×Ö½ÚÎªµ¥Î»£©£¬¸Ã³¤¶È²»ÊÇÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£¬ËæÍøÂçÇëÇóÒ»Æð·¢ËÍ£¬ÒÔ¶Ï¿ªÁ¬½Ó¡£ 
-        ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ³ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½È²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Í£ï¿½ï¿½Ô¶Ï¿ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ 
+        ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_DISCDATALEN, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1343,14 +1341,14 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÆäËû¶Ï¿ªÁ¬½ÓÑ¡ÏîÊý¾Ý£¬¶ø²»ÊÇÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£¬ËæÍøÂçÇëÇóÒ»Æð·¢ËÍ£¬ÒÔ¶Ï¿ªÁ¬½Ó¡£ 
-    ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Í£ï¿½ï¿½Ô¶Ï¿ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ 
+    ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     //SO_DISCOPT
 
     /*
-    ¸½¼Ó¶Ï¿ªÁ¬½ÓÑ¡ÏîÊý¾Ý£¨¶ø²»ÊÇÔÚÕý³£ÍøÂçÊý¾ÝÁ÷ÖÐ£©µÄ³¤¶È£¨ÒÔ×Ö½ÚÎªµ¥Î»£©£¬¸ÃÊý¾ÝËæÍøÂçÇëÇóÒ»Æð·¢ËÍÒÔ¶Ï¿ªÁ¬½Ó¡£
-    ¾É°æÐ­Òé£¨Èç DECNet¡¢OSI TP4 µÈ£©Ê¹ÓÃ´ËÑ¡Ïî¡£ Windows ÖÐµÄ TCP/IP Ð­Òé²»Ö§³Ö´ËÑ¡Ïî¡£
+    ï¿½ï¿½ï¿½Ó¶Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½Ä³ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶Ï¿ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½
+    ï¿½É°ï¿½Ð­ï¿½é£¨ï¿½ï¿½ DECNetï¿½ï¿½OSI TP4 ï¿½È£ï¿½Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ Windows ï¿½Ðµï¿½ TCP/IP Ð­ï¿½é²»Ö§ï¿½Ö´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_DISCOPTLEN, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1361,7 +1359,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ·µ»ØÐ­ÒéÖ§³ÖµÄ³öÕ¾Êý¾Ý±¨µÄ×î´ó´óÐ¡£¨ÒÔ×Ö½ÚÎªµ¥Î»£©¡£ ´ËÌ×½Ó×ÖÑ¡Ïî¶ÔÓÚÃæÏòÁ÷µÄÌ×½Ó×ÖÃ»ÓÐÒâÒå¡£
+    ï¿½ï¿½ï¿½ï¿½Ð­ï¿½ï¿½Ö§ï¿½ÖµÄ³ï¿½Õ¾ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½å¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_MAXDG, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1372,8 +1370,8 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ·µ»ØÐ­ÒéÖ§³Öµ½¸ø¶¨Ä¿±êµØÖ·µÄ³öÕ¾Êý¾Ý±¨µÄ×î´ó´óÐ¡£¨ÒÔ×Ö½ÚÎªµ¥Î»£©¡£ ´ËÌ×½Ó×ÖÑ¡Ïî¶ÔÓÚÃæÏòÁ÷µÄÌ×½Ó×ÖÃ»ÓÐÒâÒå¡£
-    Microsoft Ìá¹©ÉÌ¿ÉÄÜ»áÒÔÎÞÌáÊ¾·½Ê½½«´ËÊÓÎªSO_MAXDG¡£
+    ï¿½ï¿½ï¿½ï¿½Ð­ï¿½ï¿½Ö§ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Ö·ï¿½Ä³ï¿½Õ¾ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½å¡£
+    Microsoft ï¿½á¹©ï¿½Ì¿ï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªSO_MAXDGï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_MAXPATHDG, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1384,8 +1382,8 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÉèÖÃºó£¬½«Ó°Ïì´´½¨µÄºóÐøÌ×½Ó×ÖÊÇ·ñ²»ÖØµþ¡£ ´ËÑ¡ÏîµÄ¿ÉÄÜÖµÎªSO_SYNCHRONOUS_ALERTºÍSO_SYNCHRONOUS_NONALERT¡£ 
-    ²»Ó¦Ê¹ÓÃ´ËÑ¡Ïî¡£ Çë¸ÄÓÃ WSASocket º¯Êý²¢¹Ø±Õ dwFlags ²ÎÊýÖÐµÄWSA_FLAG_OVERLAPPEDÎ»¡£
+    ï¿½ï¿½ï¿½Ãºó£¬½ï¿½Ó°ï¿½ì´´ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Øµï¿½ï¿½ï¿½ ï¿½ï¿½Ñ¡ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ÖµÎªSO_SYNCHRONOUS_ALERTï¿½ï¿½SO_SYNCHRONOUS_NONALERTï¿½ï¿½ 
+    ï¿½ï¿½Ó¦Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ ï¿½ï¿½ï¿½ï¿½ï¿½ WSASocket ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ dwFlags ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½WSA_FLAG_OVERLAPPEDÎ»ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_OPENTYPE, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1396,7 +1394,7 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Ê¹ÓÃ´ËÑ¡ÏîÕìÌýÌ×½Ó×Ö¡£ ÉèÖÃ Ñ¡Ïîºó£¬Ì×½Ó×Ö½«Ê¹ÓÃ RST ÏìÓ¦ËùÓÐ´«ÈëÁ¬½Ó£¬¶ø²»ÊÇ½ÓÊÜËüÃÇ¡£
+    Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö¡ï¿½ ï¿½ï¿½ï¿½ï¿½ Ñ¡ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö½ï¿½Ê¹ï¿½ï¿½ RST ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_PAUSE_ACCEPT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1407,8 +1405,8 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    Ó¦ÔÚÎ´°ó¶¨µÄÌ×½Ó×ÖÉÏÉèÖÃ´ËÑ¡Ïî¡£ ÉèÖÃSO_RANDOMIZE_PORT²¢ÔÚÌ×½Ó×ÖÉÏÑ¡ÔñÁÙÊ±¶Ë¿ÚÊ±£¬½«°ó¶¨Ëæ»ú¶Ë¿ÚºÅ¡£
-    Ê¹ÓÃ SO_REUSE_UNICASTPORT) Ñ¡ÔñµÄ¶Ë¿Ú (×Ô¶¯ÖØÓÃ¶Ë¿ÚÒ²»áËæ»ú»¯·µ»ØµÄ¶Ë¿Ú£¬Òò´Ë£¬Èç¹ûÓ¦ÓÃ³ÌÐòSO_REUSE_UNICASTPORTÈ»ºó³¢ÊÔÉèÖÃSO_RANDOMIZE_PORT£¬ÔòµÚ¶þ ¸ö setockopt µ÷ÓÃ½«Ê§°Ü¡£
+    Ó¦ï¿½ï¿½Î´ï¿½ó¶¨µï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½î¡£ ï¿½ï¿½ï¿½ï¿½SO_RANDOMIZE_PORTï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ë¿ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ÚºÅ¡ï¿½
+    Ê¹ï¿½ï¿½ SO_REUSE_UNICASTPORT) Ñ¡ï¿½ï¿½Ä¶Ë¿ï¿½ (ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Ã¶Ë¿ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ØµÄ¶Ë¿Ú£ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½SO_REUSE_UNICASTPORTÈ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½SO_RANDOMIZE_PORTï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ ï¿½ï¿½ setockopt ï¿½ï¿½ï¿½Ã½ï¿½Ê§ï¿½Ü¡ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_RANDOMIZE_PORT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1419,9 +1417,9 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÉèÖÃºó£¬ÔÊÐí Winsock API Á¬½Óº¯ÊýÖØ¸´Ê¹ÓÃÐèÒªÏÔÊ½°ó¶¨µÄÁÙÊ±¶Ë¿Ú£¬ÀýÈç ConnectEx¡£ 
-    Çë×¢Òâ£¬¾ßÓÐÒþÊ½°ó¶¨ (µÄÁ¬½Óº¯Êý£¨ÀýÈç£¬ÔÚÃ»ÓÐÏÔÊ½°ó¶¨µÄÇé¿öÏÂ½øÐÐÁ¬½Ó) Ä¬ÈÏÉèÖÃÁË´ËÑ¡Ïî¡£ 
-    Ê¹ÓÃ´ËÑ¡Ïî£¬¶ø²»ÊÇÔÚÁ½Õß¶¼¿ÉÓÃµÄÆ½Ì¨ÉÏ SO_PORT_SCALABILITY ¡£
+    ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ Winsock API ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ï¿½Ø¸ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ê½ï¿½ó¶¨µï¿½ï¿½ï¿½Ê±ï¿½Ë¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ ConnectExï¿½ï¿½ 
+    ï¿½ï¿½×¢ï¿½â£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç£¬ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ó¶¨µï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë´ï¿½Ñ¡ï¿½î¡£ 
+    Ê¹ï¿½Ã´ï¿½Ñ¡ï¿½î£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¶ï¿½ï¿½ï¿½ï¿½Ãµï¿½Æ½Ì¨ï¿½ï¿½ SO_PORT_SCALABILITY ï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_REUSE_UNICASTPORT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1432,8 +1430,8 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ÔÚÌ×½Ó×ÖÉÏÉèÖÃ´ËÑ¡ÏîÊ±£¬±íÊ¾ÓÀÔ¶²»»áÊ¹ÓÃ¸ÃÌ×½Ó×Ö½ÓÊÕµ¥²¥Êý¾Ý°ü£¬Òò´Ë£¬Æä¶Ë¿Ú¿ÉÒÔÓëÆäËû½ö¶à²¥Ó¦ÓÃ³ÌÐò¹²Ïí¡£
-    ½«ÖµÉèÖÃÎª 1 ¿ÉÊ¼ÖÕÔÚ¶Ë¿ÚÉÏ¹²Ïí¶à²¥Á÷Á¿¡£ ½«ÖµÉèÖÃÎª 0 (Ä¬ÈÏ) »á½ûÓÃ´ËÐÐÎª¡£
+    ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¸ï¿½ï¿½×½ï¿½ï¿½Ö½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½Ë¿Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à²¥Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Îª 1 ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ú¶Ë¿ï¿½ï¿½Ï¹ï¿½ï¿½ï¿½ï¿½à²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Îª 0 (Ä¬ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½Îªï¿½ï¿½
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_REUSE_MULTICASTPORT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1444,8 +1442,8 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ´ËÑ¡ÏîÓë AcceptEx º¯ÊýÒ»ÆðÊ¹ÓÃ¡£ ´ËÑ¡Ïî¸üÐÂ´ÓÕìÌýÌ×½Ó×Ö¼Ì³ÐµÄÌ×½Ó×ÖµÄÊôÐÔ¡£ 
-    Èç¹ûÒªÔÚ½ÓÊÜµÄÌ×½Ó×ÖÉÏÊ¹ÓÃ getpeername¡¢ getockname¡¢ getockopt »ò setsockopt º¯Êý£¬ÔòÓ¦ÉèÖÃ´ËÑ¡Ïî¡£
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ AcceptEx ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ê¹ï¿½Ã¡ï¿½ ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Ö¼Ì³Ðµï¿½ï¿½×½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ô¡ï¿½ 
+    ï¿½ï¿½ï¿½Òªï¿½Ú½ï¿½ï¿½Üµï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ getpeernameï¿½ï¿½ getocknameï¿½ï¿½ getockopt ï¿½ï¿½ setsockopt ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1456,8 +1454,8 @@ int get_sol_sock_opt(_In_ SOCKET s)
     }
 
     /*
-    ´ËÑ¡ÏîÓë ConnectEx¡¢ WSAConnectByList ºÍ WSAConnectByName º¯ÊýÒ»ÆðÊ¹ÓÃ¡£ ½¨Á¢Á¬½Óºó£¬´ËÑ¡Ïî½«¸üÐÂÌ×½Ó×ÖµÄÊôÐÔ¡£
-    Èç¹ûÒªÔÚÁ¬½ÓµÄÌ×½Ó×ÖÉÏÊ¹ÓÃ getpeername¡¢ getockname¡¢ getockopt¡¢ setsockopt »ò shutdown º¯Êý£¬ÔòÓ¦ÉèÖÃ´ËÑ¡Ïî¡£
+    ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ ConnectExï¿½ï¿½ WSAConnectByList ï¿½ï¿½ WSAConnectByName ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ê¹ï¿½Ã¡ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óºó£¬´ï¿½Ñ¡ï¿½î½«ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ô¡ï¿½
+    ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½×½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ getpeernameï¿½ï¿½ getocknameï¿½ï¿½ getockoptï¿½ï¿½ setsockopt ï¿½ï¿½ shutdown ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ã´ï¿½Ñ¡ï¿½î¡£
     */
     optLen = sizeof(int);
     iResult = getsockopt(s, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT, reinterpret_cast<char *>(&optVal), &optLen);
@@ -1480,9 +1478,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sol-socket-socket-option
 {
     int ret = ERROR_SUCCESS;
 
-    WSADATA wsaData{};
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    _ASSERTE(iResult == NO_ERROR);
+    WinsockInitializer winsock(MAKEWORD(2, 2));
+    _ASSERTE(winsock.IsInitialized());
 
     SOCKET s4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     _ASSERTE(s4 != INVALID_SOCKET);
@@ -1490,14 +1487,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sol-socket-socket-option
     SOCKET s6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
     _ASSERTE(s6 != INVALID_SOCKET);
 
-    //»¹¿ÉÒÔ¸ãÕìÌý°ó¶¨µÄ¡£
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¶¨µÄ¡ï¿½
 
     get_sol_sock_opt(s4);
     get_sol_sock_opt(s6);
 
     closesocket(s4);
 
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
     return ret;
 }
@@ -1505,7 +1502,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sol-socket-socket-option
 
 int sock(int argc, wchar_t * argv[])
 /*
-Ä¿µÄ£º»ñÈ¡Ì×½Ó×ÖµÄÊôÐÔ£¬Ïê¾¡Ê¹ÓÃgetsockopt¡£
+Ä¿ï¿½Ä£ï¿½ï¿½ï¿½È¡ï¿½×½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ê¾¡Ê¹ï¿½ï¿½getsockoptï¿½ï¿½
 
 https://learn.microsoft.com/zh-cn/windows/win32/api/winsock/nf-winsock-getsockopt
 https://learn.microsoft.com/zh-cn/windows/win32/winsock/socket-options

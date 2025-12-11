@@ -1,5 +1,6 @@
 #include "ping.h"
 #include "iphdr.h"
+#include "common_utils.h"
 
 
 int gAddressFamily = AF_UNSPEC,    // Address family to use
@@ -12,7 +13,7 @@ recvbuf[MAX_RECV_BUF_LEN];     // For received packets
 int recvbuflen = MAX_RECV_BUF_LEN; // Length of received packets.
 
 
-#pragma warning(disable : 28159) //¿¼ÂÇÊ¹ÓÃ¡°GetTickCount64¡±¶ø²»ÊÇ¡°GetTickCount¡±
+#pragma warning(disable : 28159) //ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¡ï¿½GetTickCount64ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¡ï¿½GetTickCountï¿½ï¿½
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -505,7 +506,6 @@ int ping(int argc, char ** argv)
 \Windows-classic-samples\Samples\Win7Samples\netds\winsock\ping\Ping.cpp
 */
 {
-    WSADATA wsd;
     WSAOVERLAPPED recvol;
     SOCKET s = INVALID_SOCKET;
     char * icmpbuf = NULL;
@@ -524,9 +524,10 @@ int ping(int argc, char ** argv)
         goto EXIT;
     }
 
-    // Load Winsock
-    if ((rc = WSAStartup(MAKEWORD(2, 2), &wsd)) != 0) {
-        printf("WSAStartup() failed: %d\n", rc);
+    // Load Winsock using RAII wrapper
+    WinsockInitializer winsock(MAKEWORD(2, 2));
+    if (!winsock.IsInitialized()) {
+        printf("WSAStartup() failed: %d\n", winsock.GetErrorCode());
         status = -1;
         goto EXIT;
     }
@@ -687,7 +688,7 @@ CLEANUP:
     if (icmpbuf)
         HeapFree(GetProcessHeap(), 0, icmpbuf);
 
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
 
 EXIT:
     return status;
