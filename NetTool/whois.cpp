@@ -38,7 +38,7 @@
 
 #include "whois.h"
 
-#pragma warning(disable : 6011) //È¡Ïû¶Ô NULL Ö¸Õë¡°XXX¡±µÄÒýÓÃ
+#pragma warning(disable : 6011) //È¡ï¿½ï¿½ï¿½ï¿½ NULL Ö¸ï¿½ë¡°XXXï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 static char NICHOST[] = "whois.internic.net";
 char * host = NULL;
@@ -75,10 +75,6 @@ int whois(int argc, char ** argv)
     struct servent * sp;
     SOCKET s;
 
-    WORD wVersionRequested;
-    WSADATA wsaData;
-    int err;
-
     getwhoisserver(argc, argv);
     argc -= optset;
     argv += optset;
@@ -86,10 +82,9 @@ int whois(int argc, char ** argv)
     if (!host || !argc)
         usage();
 
-    /* Start winsock */
-    wVersionRequested = MAKEWORD(1, 1);
-    err = WSAStartup(wVersionRequested, &wsaData);
-    if (err != 0) {
+    /* Start winsock using RAII wrapper */
+    WinsockInitializer winsock(MAKEWORD(1, 1));
+    if (!winsock.IsInitialized()) {
         /* Tell the user that we couldn't find a usable */
         /* WinSock DLL.                                 */
         perror("whois: WSAStartup failed");
@@ -163,6 +158,6 @@ static void usage()
 
 static void cleanup(int iExitCode)
 {
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
     exit(iExitCode);
 }

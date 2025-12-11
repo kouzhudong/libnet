@@ -7,6 +7,7 @@
  */
 
 #include "nslookup.h"
+#include "common_utils.h"
 
 #include <winbase.h>
 #include <iphlpapi.h>
@@ -1432,8 +1433,6 @@ int nslookup(int argc, char * argv[])
     ULONG Status;
     PFIXED_INFO pNetInfo = NULL;
     ULONG NetBufLen = 0;
-    WSADATA wsaData;
-    int ret;
 
     ProcessHeap = GetProcessHeap();
     RequestID = 1;
@@ -1490,10 +1489,11 @@ int nslookup(int argc, char * argv[])
 
     HeapFree(ProcessHeap, 0, pNetInfo);
 
-    ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (ret != 0) {
-        printf(("Winsock initialization failed: %d\n"), ret);
-        return ret;
+    // Use RAII wrapper for Winsock initialization
+    WinsockInitializer winsock(MAKEWORD(2, 2));
+    if (!winsock.IsInitialized()) {
+        printf(("Winsock initialization failed: %d\n"), winsock.GetErrorCode());
+        return winsock.GetErrorCode();
     }
 
     switch (ParseCommandLine(argc, argv)) {
@@ -1505,6 +1505,6 @@ int nslookup(int argc, char * argv[])
         InteractiveMode();
     }
 
-    WSACleanup();
+    // Winsock cleanup is handled automatically by WinsockInitializer destructor
     return 0;
 }
