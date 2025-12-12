@@ -49,6 +49,30 @@ void PrintNodeType(UINT NodeType);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// Helper functions to reduce code duplication
+
+
+inline void PrintIpv4AddrAndPort(DWORD dwAddr, DWORD dwPort, DWORD index, const char* prefix)
+{
+    char szAddr[128]{};
+    in_addr IpAddr{};
+    IpAddr.S_un.S_addr = dwAddr;
+    strcpy_s(szAddr, sizeof(szAddr), inet_ntoa(IpAddr));
+    printf("\t%s[%lu] Addr: %s\n", prefix, index, szAddr);
+    printf("\t%s[%lu] Port: %u\n", prefix, index, ntohs(static_cast<u_short>(dwPort)));
+}
+
+
+inline void PrintIpv6AddrAndPort(const BYTE* ucAddr, DWORD dwPort, DWORD index, const char* prefix)
+{
+    char szAddr[128]{};
+    InetNtopA(AF_INET6, ucAddr, szAddr, _ARRAYSIZE(szAddr));
+    printf("\t%s[%lu] Addr: %s\n", prefix, index, szAddr);
+    printf("\t%s[%lu] Port: %u\n", prefix, index, ntohs(static_cast<u_short>(dwPort)));
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper template for GetOwnerModule functions to reduce code duplication
 
 
