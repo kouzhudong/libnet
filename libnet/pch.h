@@ -46,3 +46,77 @@ void PrintPrefixOrigin(NL_PREFIX_ORIGIN PrefixOrigin);
 void PrintSuffixOrigin(NL_SUFFIX_ORIGIN SuffixOrigin);
 void PrintDadState(NL_DAD_STATE DadState);
 void PrintNodeType(UINT NodeType);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// Helper template for GetOwnerModule functions to reduce code duplication
+
+
+template<typename TRow, typename TGetFunc>
+inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc)
+{
+    TCPIP_OWNER_MODULE_BASIC_INFO Buffer = {};
+    DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
+    DWORD ret = getFunc(pEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &Buffer, &Size);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls\n", Buffer.pModuleName);
+        printf("\tModulePath: %ls\n", Buffer.pModulePath);
+        return;
+    }
+
+    if (ERROR_NOT_FOUND == ret) {
+        return;
+    }
+
+    auto pBuffer = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
+    if (!pBuffer) {
+        return;
+    }
+
+    ret = getFunc(pEntry, TCPIP_OWNER_MODULE_INFO_BASIC, pBuffer, &Size);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls\n", pBuffer->pModuleName);
+        printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+    }
+
+    FREE(pBuffer);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// Helper template for allocating table with ERROR_INSUFFICIENT_BUFFER retry pattern
+
+
+template<typename TTable>
+inline TTable* AllocateTableWithRetry(DWORD initialSize, DWORD* pActualSize, int* pErrorCode)
+{
+    *pErrorCode = 0;
+    
+    TTable* pTable = reinterpret_cast<TTable*>(MALLOC(initialSize));
+    if (pTable == nullptr) {
+        *pErrorCode = ERROR_OUTOFMEMORY;
+        return nullptr;
+    }
+    
+    *pActualSize = initialSize;
+    return pTable;
+}
+
+
+template<typename TTable>
+inline TTable* ReallocateTable(TTable* pOldTable, DWORD newSize, int* pErrorCode)
+{
+    *pErrorCode = 0;
+    
+    if (pOldTable) {
+        FREE(pOldTable);
+    }
+    
+    TTable* pTable = reinterpret_cast<TTable*>(MALLOC(newSize));
+    if (pTable == nullptr) {
+        *pErrorCode = ERROR_OUTOFMEMORY;
+        return nullptr;
+    }
+    
+    return pTable;
+}
