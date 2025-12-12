@@ -72,8 +72,8 @@ inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc, bool e
         }
     } else {
         // UDP behavior: expect ERROR_INSUFFICIENT_BUFFER on first call
+        _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
         if (ERROR_INSUFFICIENT_BUFFER != ret) {
-            _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
             return;
         }
     }
