@@ -416,28 +416,20 @@ int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
 
 int ExtractIP(PCHAR pBuffer, PCHAR pOutput, USHORT Offset)
 {
-    int l = 0, i = 0;
     int v1, v2, v3, v4;
 
-    i = Offset;
-
-    v1 = (UCHAR)pBuffer[i++];
-    l++;
-
-    v2 = (UCHAR)pBuffer[i++];
-    l++;
-
-    v3 = (UCHAR)pBuffer[i++];
-    l++;
-
-    v4 = (UCHAR)pBuffer[i++];
-    l++;
+    // Extract 4 bytes for IPv4 address
+    v1 = (UCHAR)pBuffer[Offset];
+    v2 = (UCHAR)pBuffer[Offset + 1];
+    v3 = (UCHAR)pBuffer[Offset + 2];
+    v4 = (UCHAR)pBuffer[Offset + 3];
 
     // Use single sprintf instead of 4 separate sprintf+strlen calls
     // This is much more efficient
     sprintf(pOutput, "%d.%d.%d.%d", v1, v2, v3, v4);
 
-    return l;
+    // Always returns 4 (bytes read)
+    return 4;
 }
 
 
