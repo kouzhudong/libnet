@@ -136,7 +136,7 @@ MSDN没有例子。
 
 void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
 {
-    GetOwnerModuleFromEntryEx(pTcpEntry, GetOwnerModuleFromUdpEntry);
+    GetOwnerModuleFromEntryEx(pTcpEntry, GetOwnerModuleFromUdpEntry, true);
 
     /*
     pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
@@ -215,7 +215,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
 void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
 {
-    GetOwnerModuleFromEntryEx(pTcpEntry, GetOwnerModuleFromUdp6Entry);
+    GetOwnerModuleFromEntryEx(pTcpEntry, GetOwnerModuleFromUdp6Entry, true);
 
     /*
     pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。

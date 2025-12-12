@@ -77,19 +77,26 @@ inline void PrintIpv6AddrAndPort(const BYTE* ucAddr, DWORD dwPort, DWORD index, 
 
 
 template<typename TRow, typename TGetFunc>
-inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc)
+inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc, bool expectInsufficientBuffer = false)
 {
     TCPIP_OWNER_MODULE_BASIC_INFO Buffer = {};
     DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
     DWORD ret = getFunc(pEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &Buffer, &Size);
-    if (NO_ERROR == ret) {
-        printf("\tModuleName: %ls\n", Buffer.pModuleName);
-        printf("\tModulePath: %ls\n", Buffer.pModulePath);
-        return;
-    }
+    
+    if (!expectInsufficientBuffer) {
+        // TCP behavior: handle NO_ERROR case on first call
+        if (NO_ERROR == ret) {
+            printf("\tModuleName: %ls\n", Buffer.pModuleName);
+            printf("\tModulePath: %ls\n", Buffer.pModulePath);
+            return;
+        }
 
-    if (ERROR_NOT_FOUND == ret) {
-        return;
+        if (ERROR_NOT_FOUND == ret) {
+            return;
+        }
+    } else {
+        // UDP behavior: expect ERROR_INSUFFICIENT_BUFFER on first call
+        _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
     }
 
     auto pBuffer = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
@@ -101,8 +108,14 @@ inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc)
     ret = getFunc(pEntry, TCPIP_OWNER_MODULE_INFO_BASIC, pBuffer, &Size);
     _ASSERTE(NO_ERROR == ret);
     if (NO_ERROR == ret) {
-        printf("\tModuleName: %ls\n", pBuffer->pModuleName);
-        printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+        if (expectInsufficientBuffer) {
+            // UDP format: single line
+            printf("\tModuleName: %ls, ModulePath: %ls \n", pBuffer->pModuleName, pBuffer->pModulePath);
+        } else {
+            // TCP format: separate lines
+            printf("\tModuleName: %ls\n", pBuffer->pModuleName);
+            printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+        }
     }
 
     FREE(pBuffer);
