@@ -49,30 +49,6 @@ void PrintNodeType(UINT NodeType);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-// Helper functions to reduce code duplication
-
-
-inline void PrintIpv4AddrAndPort(DWORD dwAddr, DWORD dwPort, DWORD index, const char* prefix)
-{
-    char szAddr[128]{};
-    in_addr IpAddr{};
-    IpAddr.S_un.S_addr = dwAddr;
-    strcpy_s(szAddr, sizeof(szAddr), inet_ntoa(IpAddr));
-    printf("\t%s[%lu] Addr: %s\n", prefix, index, szAddr);
-    printf("\t%s[%lu] Port: %u\n", prefix, index, ntohs(static_cast<u_short>(dwPort)));
-}
-
-
-inline void PrintIpv6AddrAndPort(const BYTE* ucAddr, DWORD dwPort, DWORD index, const char* prefix)
-{
-    char szAddr[128]{};
-    InetNtopA(AF_INET6, ucAddr, szAddr, _ARRAYSIZE(szAddr));
-    printf("\t%s[%lu] Addr: %s\n", prefix, index, szAddr);
-    printf("\t%s[%lu] Port: %u\n", prefix, index, ntohs(static_cast<u_short>(dwPort)));
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper template for GetOwnerModule functions to reduce code duplication
 
 
@@ -96,7 +72,10 @@ inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc, bool e
         }
     } else {
         // UDP behavior: expect ERROR_INSUFFICIENT_BUFFER on first call
-        _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+        if (ERROR_INSUFFICIENT_BUFFER != ret) {
+            _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+            return;
+        }
     }
 
     auto pBuffer = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
@@ -119,43 +98,4 @@ inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc, bool e
     }
 
     FREE(pBuffer);
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// Helper template for allocating table with ERROR_INSUFFICIENT_BUFFER retry pattern
-
-
-template<typename TTable>
-inline TTable* AllocateTableWithRetry(DWORD initialSize, DWORD* pActualSize, int* pErrorCode)
-{
-    *pErrorCode = 0;
-    
-    TTable* pTable = reinterpret_cast<TTable*>(MALLOC(initialSize));
-    if (pTable == nullptr) {
-        *pErrorCode = ERROR_OUTOFMEMORY;
-        return nullptr;
-    }
-    
-    *pActualSize = initialSize;
-    return pTable;
-}
-
-
-template<typename TTable>
-inline TTable* ReallocateTable(TTable* pOldTable, DWORD newSize, int* pErrorCode)
-{
-    *pErrorCode = 0;
-    
-    if (pOldTable) {
-        FREE(pOldTable);
-    }
-    
-    TTable* pTable = reinterpret_cast<TTable*>(MALLOC(newSize));
-    if (pTable == nullptr) {
-        *pErrorCode = ERROR_OUTOFMEMORY;
-        return nullptr;
-    }
-    
-    return pTable;
 }
