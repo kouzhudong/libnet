@@ -416,39 +416,26 @@ int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
 
 int ExtractIP(PCHAR pBuffer, PCHAR pOutput, USHORT Offset)
 {
-    int c = 0, l = 0, i = 0, v = 0;
+    int l = 0, i = 0;
+    int v1, v2, v3, v4;
 
     i = Offset;
 
-    v = (UCHAR)pBuffer[i];
-    l += 1;
-    i += 1;
+    v1 = (UCHAR)pBuffer[i++];
+    l++;
 
-    sprintf(&pOutput[c], "%d.", v);
-    c += strlen(&pOutput[c]);
+    v2 = (UCHAR)pBuffer[i++];
+    l++;
 
-    v = (UCHAR)pBuffer[i];
-    l += 1;
-    i += 1;
+    v3 = (UCHAR)pBuffer[i++];
+    l++;
 
-    sprintf(&pOutput[c], "%d.", v);
-    c += strlen(&pOutput[c]);
+    v4 = (UCHAR)pBuffer[i++];
+    l++;
 
-    v = (UCHAR)pBuffer[i];
-    l += 1;
-    i += 1;
-
-    sprintf(&pOutput[c], "%d.", v);
-    c += strlen(&pOutput[c]);
-
-    v = (UCHAR)pBuffer[i];
-    l += 1;
-    i += 1;
-
-    sprintf(&pOutput[c], "%d", v);
-    c += strlen(&pOutput[c]);
-
-    pOutput[c] = '\0';
+    // Use single sprintf instead of 4 separate sprintf+strlen calls
+    // This is much more efficient
+    sprintf(pOutput, "%d.%d.%d.%d", v1, v2, v3, v4);
 
     return l;
 }

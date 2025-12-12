@@ -593,7 +593,8 @@ bool ParseCIDR(const std::string & cidr, std::string & ip, int & prefix)
     // IPv4 CIDR 的正则表达式
     // 匹配格式：xxx.xxx.xxx.xxx/yy
     // xxx: 0-255, yy: 0-32
-    const std::regex cidr_regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})$");
+    // Use static to compile regex only once
+    static const std::regex cidr_regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})$");
 
     std::smatch match;
     if (std::regex_match(cidr, match, cidr_regex)) {
@@ -612,8 +613,10 @@ bool ParseCIDR(const std::string & cidr, std::string & ip, int & prefix)
         if (prefix < 0 || prefix > 32) {
             return false;
         }
-        // 拼接 IP 地址
-        ip = match[1].str() + "." + match[2].str() + "." + match[3].str() + "." + match[4].str();
+        // 拼接 IP 地址 - use stringstream to avoid multiple allocations
+        std::stringstream ss;
+        ss << match[1].str() << "." << match[2].str() << "." << match[3].str() << "." << match[4].str();
+        ip = ss.str();
         return true;
     }
     return false;
@@ -645,7 +648,8 @@ bool ParseIPv6CIDR(const std::string & cidr, std::string & ip, int & prefix)
     // IPv6 CIDR 正则表达式
     // 匹配格式：xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/yy
     // 支持压缩格式（如 ::）和省略前导零
-    const std::regex ipv6_cidr_regex("^((?:[0-9a-fA-F]{1,4}:){0,7}[0-9a-fA-F]{1,4}::?|"
+    // Use static to compile regex only once
+    static const std::regex ipv6_cidr_regex("^((?:[0-9a-fA-F]{1,4}:){0,7}[0-9a-fA-F]{1,4}::?|"
                                      "(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4})/(\\d{1,3})$");
 
     std::smatch match;
@@ -704,7 +708,8 @@ std::string prefixToIPv4Mask(int prefix)
     }
 
     uint32_t mask = 0xffffffff << (32 - prefix);
-    std::vector<int> octets(4);
+    // Use array instead of vector for better performance
+    int octets[4];
     octets[0] = (mask >> 24) & 0xff;
     octets[1] = (mask >> 16) & 0xff;
     octets[2] = (mask >> 8) & 0xff;
@@ -722,7 +727,8 @@ std::string prefixToIPv6Mask(int prefix)
         return "Invalid prefix";
     }
 
-    std::vector<uint16_t> segments(8, 0);
+    // Use array instead of vector for better performance
+    uint16_t segments[8] = {0};
     int full_segments = prefix / 16;
     int remaining_bits = prefix % 16;
 
