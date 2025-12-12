@@ -93,11 +93,13 @@ inline void GetOwnerModuleFromEntryEx(_In_ TRow pEntry, TGetFunc getFunc)
     }
 
     auto pBuffer = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
+    _ASSERTE(pBuffer);
     if (!pBuffer) {
         return;
     }
 
     ret = getFunc(pEntry, TCPIP_OWNER_MODULE_INFO_BASIC, pBuffer, &Size);
+    _ASSERTE(NO_ERROR == ret);
     if (NO_ERROR == ret) {
         printf("\tModuleName: %ls\n", pBuffer->pModuleName);
         printf("\tModulePath: %ls\n", pBuffer->pModulePath);
