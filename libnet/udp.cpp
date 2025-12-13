@@ -48,7 +48,7 @@ MSDN没有例子。
             in_addr IpAddr{};
 
             IpAddr.S_un.S_addr = (u_long)pUdpTable->table[i].dwLocalAddr;
-            strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
 
             printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tUdp[%d] Local Port: %u \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
@@ -201,7 +201,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
             in_addr IpAddr{};
 
             IpAddr.S_un.S_addr = (u_long)pUdpTable->table[i].dwLocalAddr;
-            strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
 
             printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tUdp[%d] Local Port: %u \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));

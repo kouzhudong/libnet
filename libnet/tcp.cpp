@@ -56,9 +56,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
         printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
         for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
-            strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
-            strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szRemoteAddr, sizeof(szRemoteAddr));
 
             printf("\n\tTCP[%d] State: %lu - ", i, pTcpTable->table[i].dwState);
             PrintTcpConnectionState(pTcpTable->table[i].dwState);
@@ -121,12 +121,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
-            strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
             printf("\tTCP[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tTCP[%d] Local Port: %u \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
 
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
-            strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szRemoteAddr, sizeof(szRemoteAddr));
             printf("\tTCP[%d] Remote Addr: %s\n", i, szRemoteAddr);
             printf("\tTCP[%d] Remote Port: %u\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
 
@@ -396,13 +396,13 @@ void DumpBasicExtendedTcp4Table(_In_ PMIB_TCPTABLE pTcpTable)
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwLocalAddr;
-        strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+        InetNtopA(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
         printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
         printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwRemoteAddr;
-        strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+        InetNtopA(AF_INET, &IpAddr, szRemoteAddr, sizeof(szRemoteAddr));
         printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
         printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
@@ -452,13 +452,13 @@ void DumpModuleExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_MODULE pTcpTable)
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwLocalAddr;
-        strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+        InetNtopA(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
         printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
         printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwRemoteAddr;
-        strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+        InetNtopA(AF_INET, &IpAddr, szRemoteAddr, sizeof(szRemoteAddr));
         printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
         printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));
@@ -488,13 +488,13 @@ void DumpPidExtendedTcp4Table(_In_ PMIB_TCPTABLE_OWNER_PID pTcpTable)
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwLocalAddr;
-        strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+        InetNtopA(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
         printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
         printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
         IpAddr.S_un.S_addr = pTcpTable->table[i].dwRemoteAddr;
-        strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr));
+        InetNtopA(AF_INET, &IpAddr, szRemoteAddr, sizeof(szRemoteAddr));
         printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
         printf("\tTCP[%lu] Remote Port: %u\n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwRemotePort)));

@@ -53,14 +53,18 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
         IN_ADDR IPAddr{};
         printf("\n\tInterface Index[%d]:\t%lu\n", i, pIPAddrTable->table[i].dwIndex);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwAddr;
-        printf("\tIP Address[%d]:     \t%s\n", i, inet_ntoa(IPAddr));
+        char szAddr[INET_ADDRSTRLEN];
+        InetNtopA(AF_INET, &IPAddr, szAddr, sizeof(szAddr));
+        printf("\tIP Address[%d]:     \t%s\n", i, szAddr);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwMask;
-        printf("\tSubnet Mask[%d]:    \t%s\n", i, inet_ntoa(IPAddr));
+        InetNtopA(AF_INET, &IPAddr, szAddr, sizeof(szAddr));
+        printf("\tSubnet Mask[%d]:    \t%s\n", i, szAddr);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwBCastAddr;
+        InetNtopA(AF_INET, &IPAddr, szAddr, sizeof(szAddr));
 
 #pragma warning(push)
 #pragma warning(disable : 4476) //"printf": 格式说明符中的类型字段字符“)”未知
-        printf("\tBroadCast[%d]:      \t%s (%lu%)\n", i, inet_ntoa(IPAddr), pIPAddrTable->table[i].dwBCastAddr);
+        printf("\tBroadCast[%d]:      \t%s (%lu%)\n", i, szAddr, pIPAddrTable->table[i].dwBCastAddr);
 #pragma warning(pop)
 
         printf("\tReassembly size[%d]:\t%lu\n", i, pIPAddrTable->table[i].dwReasmSize);
@@ -120,7 +124,9 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
 
         in_addr in;
         in.S_un.S_addr = IpNetTable->table[i].dwAddr;
-        printf("IPv4:%-16s\t", inet_ntoa(in));
+        char szAddr[INET_ADDRSTRLEN];
+        InetNtopA(AF_INET, &in, szAddr, sizeof(szAddr));
+        printf("IPv4:%-16s\t", szAddr);
 
         printf("MAC:"); // Physical Address
         for (DWORD j = 0; j < IpNetTable->table[i].dwPhysAddrLen; j++) {
@@ -437,11 +443,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
         for (i = 0; i < (int)pIpForwardTable->dwNumEntries; i++) {
             /* Convert IPv4 addresses to strings */
             IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardDest;
-            strcpy_s(szDestIp, sizeof(szDestIp), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szDestIp, sizeof(szDestIp));
             IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardMask;
-            strcpy_s(szMaskIp, sizeof(szMaskIp), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szMaskIp, sizeof(szMaskIp));
             IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardNextHop;
-            strcpy_s(szGatewayIp, sizeof(szGatewayIp), inet_ntoa(IpAddr));
+            InetNtopA(AF_INET, &IpAddr, szGatewayIp, sizeof(szGatewayIp));
 
             printf("\n\tRoute[%d] Dest IP: %s\n", i, szDestIp);
             printf("\tRoute[%d] Subnet Mask: %s\n", i, szMaskIp);
@@ -1645,7 +1651,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
             printf("\tReceived %ld icmp message response\n", dwRetVal);
             printf("\tInformation from this response:\n");
         }
-        printf("\t  Received from %s\n", inet_ntoa(ReplyAddr));
+        char szAddr[INET_ADDRSTRLEN];
+        InetNtopA(AF_INET, &ReplyAddr, szAddr, sizeof(szAddr));
+        printf("\t  Received from %s\n", szAddr);
         printf("\t  Status = %ld\n", pEchoReply->Status);
         printf("\t  Roundtrip time = %ld milliseconds\n", pEchoReply->RoundTripTime);
     } else {
@@ -1717,7 +1725,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
             printf("\tReceived %ld icmp message response\n", dwRetVal);
             printf("\tInformation from this response:\n");
         }
-        printf("\t  Received from %s\n", inet_ntoa(ReplyAddr));
+        char szAddr[INET_ADDRSTRLEN];
+        InetNtopA(AF_INET, &ReplyAddr, szAddr, sizeof(szAddr));
+        printf("\t  Received from %s\n", szAddr);
         printf("\t  Status = %ld  ", pEchoReply->Status);
         switch (pEchoReply->Status) {
         case IP_DEST_HOST_UNREACHABLE:
