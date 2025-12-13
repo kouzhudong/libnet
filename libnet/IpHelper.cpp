@@ -1651,7 +1651,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
             printf("\tReceived %ld icmp message response\n", dwRetVal);
             printf("\tInformation from this response:\n");
         }
-        printf("\t  Received from %s\n", inet_ntoa(ReplyAddr));
+        char szAddr[INET_ADDRSTRLEN];
+        InetNtopA(AF_INET, &ReplyAddr, szAddr, sizeof(szAddr));
+        printf("\t  Received from %s\n", szAddr);
         printf("\t  Status = %ld\n", pEchoReply->Status);
         printf("\t  Roundtrip time = %ld milliseconds\n", pEchoReply->RoundTripTime);
     } else {
@@ -1723,7 +1725,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
             printf("\tReceived %ld icmp message response\n", dwRetVal);
             printf("\tInformation from this response:\n");
         }
-        printf("\t  Received from %s\n", inet_ntoa(ReplyAddr));
+        char szAddr[INET_ADDRSTRLEN];
+        InetNtopA(AF_INET, &ReplyAddr, szAddr, sizeof(szAddr));
+        printf("\t  Received from %s\n", szAddr);
         printf("\t  Status = %ld  ", pEchoReply->Status);
         switch (pEchoReply->Status) {
         case IP_DEST_HOST_UNREACHABLE:
