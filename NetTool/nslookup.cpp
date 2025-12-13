@@ -416,6 +416,7 @@ int ExtractName(PCHAR pBuffer, PCHAR pOutput, USHORT Offset, UCHAR Limit)
 
 int ExtractIP(PCHAR pBuffer, PCHAR pOutput, USHORT Offset)
 {
+    const int OUTPUT_BUFFER_SIZE = 255;  // Buffer size for IP address string (matches pName buffer size)
     int c = 0, l = 0, i = 0, v = 0;
     int written = 0;
 
@@ -425,29 +426,33 @@ int ExtractIP(PCHAR pBuffer, PCHAR pOutput, USHORT Offset)
     l += 1;
     i += 1;
 
-    written = sprintf_s(&pOutput[c], 256 - c, "%d.", v);
-    if (written > 0) c += written;
+    written = sprintf_s(&pOutput[c], OUTPUT_BUFFER_SIZE - c, "%d.", v);
+    if (written < 0) return l;  // Error handling
+    c += written;
 
     v = (UCHAR)pBuffer[i];
     l += 1;
     i += 1;
 
-    written = sprintf_s(&pOutput[c], 256 - c, "%d.", v);
-    if (written > 0) c += written;
+    written = sprintf_s(&pOutput[c], OUTPUT_BUFFER_SIZE - c, "%d.", v);
+    if (written < 0) return l;  // Error handling
+    c += written;
 
     v = (UCHAR)pBuffer[i];
     l += 1;
     i += 1;
 
-    written = sprintf_s(&pOutput[c], 256 - c, "%d.", v);
-    if (written > 0) c += written;
+    written = sprintf_s(&pOutput[c], OUTPUT_BUFFER_SIZE - c, "%d.", v);
+    if (written < 0) return l;  // Error handling
+    c += written;
 
     v = (UCHAR)pBuffer[i];
     l += 1;
     i += 1;
 
-    written = sprintf_s(&pOutput[c], 256 - c, "%d", v);
-    if (written > 0) c += written;
+    written = sprintf_s(&pOutput[c], OUTPUT_BUFFER_SIZE - c, "%d", v);
+    if (written < 0) return l;  // Error handling
+    c += written;
 
     pOutput[c] = '\0';
 
