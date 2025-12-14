@@ -48,15 +48,13 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
     RtlZeroMemory(&RecAddr2, sizeof(SOCKADDR_IN));
     RtlZeroMemory(&SendAddr, sizeof(SOCKADDR_IN));
 
-    /* Pull the request ID from the buffer. */
-    RequestID = ntohs(((PSHORT)&pInBuffer[0])[0]);
+    RequestID = ntohs(((PSHORT)&pInBuffer[0])[0]);/* Pull the request ID from the buffer. */
 
     /* If D2 flags is enabled, then display D2 information. */
     if (State.d2)
         PrintD2(pInBuffer, InBufferLength);
-
-    /* Create the sockets for both send and receive. */
-    s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    
+    s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);/* Create the sockets for both send and receive. */
     if (s == INVALID_SOCKET)
         return FALSE;
 
@@ -70,8 +68,7 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
     RecAddr2.sin_port = htons(State.port);
     RecAddr2.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    /* Bind the receive socket. */
-    bind(s, (SOCKADDR *)&RecAddr2, sizeof(RecAddr2));
+    bind(s, (SOCKADDR *)&RecAddr2, sizeof(RecAddr2));/* Bind the receive socket. */
 
     /* Send the datagram to the DNS server. */
     j = sendto(s, pInBuffer, InBufferLength, 0, (SOCKADDR *)&RecAddr, sizeof(RecAddr));
@@ -239,7 +236,6 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
         }
 
         ResponseID = ntohs(((PSHORT)&pOutBuffer[0])[0]);
-
         if (ResponseID == RequestID)
             bWait = FALSE;
     }
@@ -494,7 +490,7 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
         printf((", want recursion"));
     printf(("\n"));
 
-    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"),
+    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"), 
            (int)NumQuestions,
            (int)NumAnswers,
            (int)NumAuthority,
@@ -594,9 +590,8 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
 
         for (k = 0; k < NumAnswers; k += 1) {
             printf(("    ->  "));
-
-            /* Print out the name. */
-            i += ExtractName(pBuffer, pName, i, 0);
+            
+            i += ExtractName(pBuffer, pName, i, 0);/* Print out the name. */
 
             printf(("%s\n"), pName);
 
@@ -1008,9 +1003,8 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
     bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
     if (!bOk)
         goto cleanup;
-
-    /* Start parsing the received packet. */
-    NumQuestions = ntohs(((PSHORT)&RecBuffer[4])[0]);
+    
+    NumQuestions = ntohs(((PSHORT)&RecBuffer[4])[0]);/* Start parsing the received packet. */
 
     k = 12;
 
@@ -1022,9 +1016,8 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
             k += 4;
         }
     }
-
-    /* Skip the answer name. */
-    k += ExtractName(RecBuffer, pResult, k, 0);
+    
+    k += ExtractName(RecBuffer, pResult, k, 0);/* Skip the answer name. */
 
     Type = ntohs(((PUSHORT)&RecBuffer[k])[0]);
     k += 8;
@@ -1088,19 +1081,16 @@ void PerformLookup(PCHAR pAddr)
     } else {
         strcpy(pResolve, pAddr);
     }
-
-    /* Base header length + length of QNAME + length of QTYPE and QCLASS */
-    BufferLength = 12 + (strlen(pResolve) + 2) + 4;
-
-    /* Allocate memory for the buffer. */
-    Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength);
+    
+    BufferLength = 12 + (strlen(pResolve) + 2) + 4;/* Base header length + length of QNAME + length of QTYPE and QCLASS */
+    
+    Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength);/* Allocate memory for the buffer. */
     if (!Buffer) {
         printf(("ERROR: Out of memory\n"));
         goto cleanup;
     }
-
-    /* Allocate memory for the return buffer. */
-    RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength);
+    
+    RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength);/* Allocate memory for the return buffer. */
     if (!RecBuffer) {
         printf(("ERROR: Out of memory\n"));
         goto cleanup;
@@ -1271,8 +1261,7 @@ BOOL ParseCommandLine(int argc, char * argv[])
             if (NoMoreOptions) {
                 strncpy(Server, argv[i], 255);
 
-                /* Determine which one to resolve. This is based on whether the
-                   DNS server provided was an IP or an FQDN. */
+                /* Determine which one to resolve. This is based on whether the DNS server provided was an IP or an FQDN. */
                 if (IsValidIP(Server)) {
                     strncpy(State.DefaultServerAddress, Server, 16);
 

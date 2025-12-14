@@ -720,8 +720,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/wlanapi/ns-wlanapi-wlan_bss_
             wprintf(L"  Interface Index[%u]:\t %lu\n", i, i);
             iRet = StringFromGUID2(pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
-            //     sizeof(GuidString)/sizeof(*GuidString));
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString));
             if (iRet == 0)
                 wprintf(L"StringFromGUID2 failed\n");
             else {

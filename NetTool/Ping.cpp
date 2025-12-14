@@ -19,7 +19,6 @@ int recvbuflen = MAX_RECV_BUF_LEN; // Length of received packets.
 
 
 int PrintAddress(SOCKADDR * sa, int salen)
-// Description:
 //    This routine takes a SOCKADDR structure and its length and prints converts it to a string representation.
 //    This string is printed to the console via stdout.
 {
@@ -46,7 +45,6 @@ int PrintAddress(SOCKADDR * sa, int salen)
 
 
 int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
-// Description:
 //    This is similar to the PrintAddress function except that instead of
 //    printing the string address to the console, it is formatted into the supplied string buffer.
 {
@@ -82,7 +80,6 @@ int FormatAddress(SOCKADDR * sa, int salen, char * addrbuf, int addrbuflen)
 
 
 struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int proto)
-// Description:
 //    This routine resolves the specified address and returns a list of addrinfo structure containing SOCKADDR structures representing the resolved addresses.
 //    Note that if 'addr' is non-NULL, then getaddrinfo will resolve it whether it is a string listeral address or a hostname.
 {
@@ -106,8 +103,7 @@ struct addrinfo * ResolveAddress(char * addr, char * port, int af, int type, int
 
 
 int ReverseLookup(SOCKADDR * sa, int salen, char * buf, int buflen)
-// Description:
-//    This routine takes a SOCKADDR and does a reverse lookup for the name corresponding to that address.
+// Description:This routine takes a SOCKADDR and does a reverse lookup for the name corresponding to that address.
 {
     char host[NI_MAXHOST];
     int hostlen = NI_MAXHOST, rc;
@@ -133,8 +129,7 @@ int ReverseLookup(SOCKADDR * sa, int salen, char * buf, int buflen)
 
 
 static void usage(char * progname)
-// Description:
-//    Print usage information.
+// Description:Print usage information.
 {
     printf("usage: %s [options] <host> \n", progname);
     printf("        host        Remote machine to ping\n");
@@ -147,8 +142,7 @@ static void usage(char * progname)
 
 
 void InitIcmpHeader(char * buf, int datasize)
-// Description:
-//    Helper function to fill in various stuff in our ICMP request.
+// Description:Helper function to fill in various stuff in our ICMP request.
 {
     ICMP_HDR * icmp_hdr = NULL;
     char * datapart = NULL;
@@ -167,8 +161,7 @@ void InitIcmpHeader(char * buf, int datasize)
 
 
 int InitIcmp6Header(char * buf, int datasize)
-// Description:
-//    Initialize the ICMP6 header as well as the echo request header.
+// Description:Initialize the ICMP6 header as well as the echo request header.
 {
     ICMPV6_HDR * icmp6_hdr = NULL;
     ICMPV6_ECHO_REQUEST * icmp6_req = NULL;
@@ -194,8 +187,7 @@ int InitIcmp6Header(char * buf, int datasize)
 
 
 USHORT checksum(USHORT * buffer, int size)
-// Description:
-//    This function calculates the 16-bit one's complement sum of the supplied buffer (ICMP) header.
+// Description:This function calculates the 16-bit one's complement sum of the supplied buffer (ICMP) header.
 {
     unsigned long cksum = 0;
 
@@ -215,8 +207,7 @@ USHORT checksum(USHORT * buffer, int size)
 
 
 BOOL ValidateArgs(int argc, char ** argv)
-// Description:
-//    Parse the command line arguments.
+// Description:Parse the command line arguments.
 {
     int i;
     BOOL isValid = FALSE;
@@ -276,8 +267,7 @@ CLEANUP:
 
 
 void SetIcmpSequence(char * buf)
-// Description:
-//    This routine sets the sequence number of the ICMP request packet.
+// Description:This routine sets the sequence number of the ICMP request packet.
 {
     ULONG sequence = GetTickCount();
 
@@ -301,7 +291,6 @@ void SetIcmpSequence(char * buf)
 
 char tmp[MAX_RECV_BUF_LEN] = {'\0'};
 USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen, struct addrinfo * dest)
-// Description:
 //    This routine computes the ICMP6 checksum which includes the pseudo header of the IPv6 header (see RFC2460 and RFC2463). The one difficulty
 //    here is we have to know the source and destination IPv6 addresses which will be contained in the IPv6 header in order to compute the checksum.
 //    To do this we call the SIO_ROUTING_INTERFACE_QUERY ioctl to find which local interface for the outgoing packet.
@@ -375,7 +364,6 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
 
 
 void ComputeIcmpChecksum(SOCKET s, char * buf, int packetlen, struct addrinfo * dest)
-// Description:
 //    This routine computes the checksum for the ICMP request. For IPv4 its easy, just compute the checksum for the ICMP packet and data. For IPv6,
 //    its more complicated. The pseudo checksum has to be computed for IPv6
 //    which includes the ICMP6 packet and data plus portions of the IPv6 header which is difficult since we aren't building our own IPv6 header.
@@ -397,8 +385,7 @@ void ComputeIcmpChecksum(SOCKET s, char * buf, int packetlen, struct addrinfo * 
 
 
 int PostRecvfrom(SOCKET s, char * buf, int buflen, SOCKADDR * from, int * fromlen, WSAOVERLAPPED * ol)
-// Description:
-//    This routine posts an overlapped WSARecvFrom on the raw socket.
+// Description:This routine posts an overlapped WSARecvFrom on the raw socket.
 {
     WSABUF wbuf;
     DWORD flags, bytes;
@@ -422,7 +409,6 @@ int PostRecvfrom(SOCKET s, char * buf, int buflen, SOCKADDR * from, int * fromle
 
 
 void PrintPayload(char * buf, int bytes)
-// Description:
 //    This routine is for IPv4 only. It determines if there are any IP options
 //    present (by seeing if the IP header length is greater than 20 bytes) and if so it prints the IP record route options.
 {
@@ -466,8 +452,7 @@ void PrintPayload(char * buf, int bytes)
 
 
 int SetTtl(SOCKET s, int ttl)
-// Description:
-//    Sets the TTL on the socket.
+// Description:Sets the TTL on the socket.
 {
     int optlevel = 0, option = 0, rc;
 
