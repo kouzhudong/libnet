@@ -1,3 +1,5 @@
+// SO_REUSEADDR 和 SO_REUSEPORT 是针对远端不同的IP和PORT的，这个是前提，然后才可重复利用本地的IP和PORT。四元组唯一性还是要保证的。
+
 /*
 数据包流向
 

@@ -205,7 +205,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 
             printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tUdp[%d] Local Port: %u \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
-            printf("\tUdp[%d] OwningPid: %u \n", i, (u_short)pUdpTable->table[i].dwOwningPid);
+            printf("\tUdp[%d] OwningPid: %lu \n", i, pUdpTable->table[i].dwOwningPid);
 
             GetOwnerModuleFromUdpEntryEx(&pUdpTable->table[i]);
 
