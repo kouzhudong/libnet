@@ -41,13 +41,13 @@ MSDN没有例子。
     // Make a second call to GetUdpTable to get the actual data we require
     if ((dwRetVal = GetUdpTable(pUdpTable, &dwSize, TRUE)) == NO_ERROR) {
 
-        printf("\tUdpV4的侦听总数:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
+        printf("\tUdpV4的侦听总数:Number of entries: %u\n", pUdpTable->dwNumEntries);
 
-        for (int i = 0; i < (int)pUdpTable->dwNumEntries; i++) {
+        for (DWORD i = 0; i < pUdpTable->dwNumEntries; i++) {
             char szLocalAddr[128]{};
             in_addr IpAddr{};
 
-            IpAddr.S_un.S_addr = (u_long)pUdpTable->table[i].dwLocalAddr;
+            IpAddr.S_un.S_addr = pUdpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
 
             printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
@@ -105,9 +105,9 @@ MSDN没有例子。
     // Make a second call to GetUdpTable to get the actual data we require
     if ((dwRetVal = GetUdp6Table(pUdp6Table, &dwSize, TRUE)) == NO_ERROR) {
 
-        printf("\tUdpV6的侦听总数:Number of entries: %d\n", (int)pUdp6Table->dwNumEntries);
+        printf("\tUdpV6的侦听总数:Number of entries: %u\n", pUdp6Table->dwNumEntries);
 
-        for (int i = 0; i < (int)pUdp6Table->dwNumEntries; i++) {
+        for (DWORD i = 0; i < pUdp6Table->dwNumEntries; i++) {
             wchar_t ipstringbuffer[46];
 
             if (InetNtop(AF_INET6, &pUdp6Table->table[i].dwLocalAddr, ipstringbuffer, 46) == nullptr)
@@ -193,14 +193,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET, UDP_TABLE_OWNER_MODULE, 0);
     if (dwRetVal == NO_ERROR) {
 
-        printf("\tUdpV4的总数:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
+        printf("\tUdpV4的总数:Number of entries: %u\n", pUdpTable->dwNumEntries);
         printf("\n");
 
-        for (int i = 0; i < (int)pUdpTable->dwNumEntries; i++) {
+        for (DWORD i = 0; i < pUdpTable->dwNumEntries; i++) {
             char szLocalAddr[128]{};
             in_addr IpAddr{};
 
-            IpAddr.S_un.S_addr = (u_long)pUdpTable->table[i].dwLocalAddr;
+            IpAddr.S_un.S_addr = pUdpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
 
             printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
@@ -284,10 +284,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
     // Make a second call to GetUdpTable to get the actual data we require
     dwRetVal = GetExtendedUdpTable(pUdpTable, &dwSize, TRUE, AF_INET6, UDP_TABLE_OWNER_MODULE, 0);
     if (dwRetVal == NO_ERROR) {
-        printf("\tUdpV6的总数:Number of entries: %d\n", (int)pUdpTable->dwNumEntries);
+        printf("\tUdpV6的总数:Number of entries: %u\n", pUdpTable->dwNumEntries);
         printf("\n");
 
-        for (int i = 0; i < (int)pUdpTable->dwNumEntries; i++) {
+        for (DWORD i = 0; i < pUdpTable->dwNumEntries; i++) {
             char szLocalAddr[128];
 
             InetNtopA(AF_INET6, &pUdpTable->table[i].ucLocalAddr, szLocalAddr, 46);
