@@ -71,8 +71,7 @@ SUPPORTED PLATFORMS:
     char DnsServIp[BUFFER_LEN]{};  // DNS server ip address
 #pragma warning(push)
 #pragma warning(disable : 4189) //“freetype”: 局部变量已初始化但不引用
-    DNS_FREE_TYPE freetype =
-        DnsFreeRecordListDeep; //编译器瞎眼了，没看到下面有两处调用吗？估计是优化导致的，DEBUG也是这样啊！
+    DNS_FREE_TYPE freetype = DnsFreeRecordListDeep; //编译器瞎眼了，没看到下面有两处调用吗？估计是优化导致的，DEBUG也是这样啊！
 #pragma warning(pop)
     IN_ADDR ipaddr{};
 
@@ -265,8 +264,7 @@ SUPPORTED PLATFORMS:
                         pmyDnsRecord->wDataLength = sizeof(DNS_A_DATA); // data structure for A records
                         wcsncpy_s(HostipAddress, _countof(HostipAddress), argv[++i], _TRUNCATE); // strncpy_s
                         HostipAddress[_ARRAYSIZE(HostipAddress) - 1] = '\0';
-                        pmyDnsRecord->Data.A.IpAddress =
-                            inet_addr(W2A(HostipAddress)); // convert string to proper address
+                        pmyDnsRecord->Data.A.IpAddress = inet_addr(W2A(HostipAddress)); // convert string to proper address
                         if (pmyDnsRecord->Data.A.IpAddress == INADDR_NONE) {
                             printf("Invalid IP address in A record data \n");
                             Usage(argv[0]);

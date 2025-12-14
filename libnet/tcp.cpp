@@ -26,21 +26,18 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
 */
 {
     // Declare and initialize variables
-    PMIB_TCPTABLE pTcpTable{};
-    DWORD dwSize = 0;
     DWORD dwRetVal = 0;
     char szLocalAddr[128]{};
     char szRemoteAddr[128]{};
     in_addr IpAddr{};
-    int i{};
 
-    pTcpTable = (MIB_TCPTABLE *)MALLOC(sizeof(MIB_TCPTABLE));
+    PMIB_TCPTABLE pTcpTable = (MIB_TCPTABLE *)MALLOC(sizeof(MIB_TCPTABLE));
     if (pTcpTable == nullptr) {
         printf("Error allocating memory\n");
         return 1;
     }
 
-    dwSize = sizeof(MIB_TCPTABLE);
+    DWORD dwSize = sizeof(MIB_TCPTABLE);
     // Make an initial call to GetTcpTable to get the necessary size into the dwSize variable
     if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
@@ -53,8 +50,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
 
     // Make a second call to GetTcpTable to get the actual data we require
     if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
-        printf("\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
-        for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        printf("\tNumber of entries: %u\n", pTcpTable->dwNumEntries);
+        for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
@@ -134,8 +131,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
 
             char szModName[MAX_PATH] = {0};
             DWORD Size = _countof(szModName);
-            HANDLE hProcess =
-                OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pTcpTable->table[i].dwOwningPid);
+            HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pTcpTable->table[i].dwOwningPid);
             if (hProcess) {
                 if (4 == pTcpTable->table[i].dwOwningPid) {
                     lstrcpyA(szModName, "System");
@@ -193,19 +189,16 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
 */
 {
     // Declare and initialize variables
-    PMIB_TCP6TABLE pTcpTable{};
-    DWORD dwSize = 0;
     DWORD dwRetVal = 0;
     wchar_t ipstringbuffer[46]{};
-    int i{};
 
-    pTcpTable = (MIB_TCP6TABLE *)MALLOC(sizeof(MIB_TCP6TABLE));
+    PMIB_TCP6TABLE pTcpTable = (MIB_TCP6TABLE *)MALLOC(sizeof(MIB_TCP6TABLE));
     if (pTcpTable == nullptr) {
         wprintf(L"Error allocating memory\n");
         return 1;
     }
 
-    dwSize = sizeof(MIB_TCP6TABLE);
+    DWORD dwSize = sizeof(MIB_TCP6TABLE);
     // Make an initial call to GetTcp6Table to get the necessary size into the dwSize variable
     if ((dwRetVal = GetTcp6Table(pTcpTable, &dwSize, TRUE)) == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
@@ -218,8 +211,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
 
     // Make a second call to GetTcp6Table to get the actual data we require
     if ((dwRetVal = GetTcp6Table(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
-        wprintf(L"\tNumber of entries: %d\n", (int)pTcpTable->dwNumEntries);
-        for (i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        wprintf(L"\tNumber of entries: %u\n", pTcpTable->dwNumEntries);
+        for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
             wprintf(L"\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].State);
             PrintTcpConnectionState(pTcpTable->table[i].State);
 
@@ -285,7 +278,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
     if ((dwRetVal = GetTcp6Table2(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
         int n = 0;
 
-        for (int i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+        for (DWORD i = 0; i < pTcpTable->dwNumEntries; i++) {
             if (MIB_TCP_STATE_LISTEN != pTcpTable->table[i].State) {
                 continue;
             }
@@ -357,10 +350,9 @@ GetTcpStatisticsEx
 GetTcpStatisticsEx2
 */
 {
-    PMIB_TCPSTATS pTCPStats{};
     DWORD dwRetVal = 0;
 
-    pTCPStats = (MIB_TCPSTATS *)MALLOC(sizeof(MIB_TCPSTATS));
+    PMIB_TCPSTATS pTCPStats = (MIB_TCPSTATS *)MALLOC(sizeof(MIB_TCPSTATS));
     if (pTCPStats == nullptr) {
         printf("Error allocating memory\n");
         return 1;
@@ -702,8 +694,7 @@ The version of IP used by the TCP endpoints.可选的取值有：AF_INET和AF_IN
 [in] TableClass
 This parameter can be one of the values from the TCP_TABLE_CLASS enumeration.
 
-The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and
-the TableClass set to TCP_TABLE_BASIC_LISTENER, TCP_TABLE_BASIC_CONNECTIONS,
+The GetExtendedTcpTable function called with the ulAf parameter set to AF_INET6 and the TableClass set to TCP_TABLE_BASIC_LISTENER, TCP_TABLE_BASIC_CONNECTIONS,
 or TCP_TABLE_BASIC_ALL is not supported and returns ERROR_NOT_SUPPORTED.
 
 调用示例：
@@ -742,10 +733,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
         }
     }
 
-#pragma prefast(push)
-#pragma prefast(disable : 28020, "XXXXX")
     dwRetVal = GetExtendedTcpTable(pTcpTable, &ulSize, TRUE, ulAf, TableClass, 0);
-#pragma prefast(pop)
     if (dwRetVal == NO_ERROR) {
         DumpExtendedTcpTable(ulAf, TableClass, pTcpTable);
     } else {
@@ -783,31 +771,19 @@ const wchar_t * estatsTypeNames[] = {L"TcpConnectionEstatsSynOpts",
 
 // Function prototypes
 
-// Run tests for IPv4 or IPv4 TCP extended stats
-DWORD RunEstatsTest(bool v6);
 
-// Get an IPv4 TCP row entry
-DWORD GetTcpRow(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __out PMIB_TCPROW row);
-
-// Get an IPv6 TCP row entry
-DWORD GetTcp6Row(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __out PMIB_TCP6ROW row);
-
-// Enable or disable the supplied Estat type on a TCP connection
-void ToggleEstat(PVOID row, TCP_ESTATS_TYPE type, bool enable, bool v6);
-
-// Toggle all Estats for a TCP connection
-void ToggleAllEstats(void * row, bool enable, bool v6);
-
-// Dump the supplied Estate type data on the given TCP connection row
-void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6);
-
+DWORD RunEstatsTest(bool v6);// Run tests for IPv4 or IPv4 TCP extended stats
+DWORD GetTcpRow(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __out PMIB_TCPROW row);// Get an IPv4 TCP row entry
+DWORD GetTcp6Row(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __out PMIB_TCP6ROW row);// Get an IPv6 TCP row entry
+void ToggleEstat(PVOID row, TCP_ESTATS_TYPE type, bool enable, bool v6);// Enable or disable the supplied Estat type on a TCP connection
+void ToggleAllEstats(void * row, bool enable, bool v6);// Toggle all Estats for a TCP connection
+void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6);// Dump the supplied Estate type data on the given TCP connection row
 void GetAllEstats(void * row, bool v6);
 
 // Creates a TCP server and client socket on the loopback address.
 // Binds the server socket to a port.
 // Establishes a client TCP connection to the server
-int CreateTcpConnection(bool v6, SOCKET * serviceSocket, SOCKET * clientSocket, SOCKET * acceptSocket,
-                        u_short * serverPort, u_short * clientPort);
+int CreateTcpConnection(bool v6, SOCKET * serviceSocket, SOCKET * clientSocket, SOCKET * acceptSocket, u_short * serverPort, u_short * clientPort);
 
 
 EXTERN_C
@@ -849,9 +825,8 @@ DWORD RunEstatsTest(bool v6)
         serverConnectRow = &server4ConnectRow;
         clientConnectRow = &client4ConnectRow;
     }
-
-    // Initialize Winsock.
-    winStatus = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    
+    winStatus = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock.
     if (winStatus != ERROR_SUCCESS) {
         wprintf(L"\nFailed to open winsock. Error %u", winStatus);
         goto bail;
