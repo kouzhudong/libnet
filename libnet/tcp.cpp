@@ -1272,21 +1272,21 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
     }
 
     if (rosSize != 0) {
-        ros = reinterpret_cast<PUCHAR>(malloc(rosSize));
+        // Use calloc instead of malloc+memset for better performance
+        ros = reinterpret_cast<PUCHAR>(calloc(1, rosSize));
         if (ros == nullptr) {
             wprintf(L"\nOut of memory");
             return;
-        } else
-            memset(ros, 0, rosSize); // zero the buffer
+        }
     }
     if (rodSize != 0) {
-        rod = reinterpret_cast<PUCHAR>(malloc(rodSize));
+        // Use calloc instead of malloc+memset for better performance
+        rod = reinterpret_cast<PUCHAR>(calloc(1, rodSize));
         if (rod == nullptr) {
             free(ros);
             wprintf(L"\nOut of memory");
             return;
-        } else
-            memset(rod, 0, rodSize); // zero the buffer
+        }
     }
 
     TCP_ESTATS_DATA_RW_v0 dataRw{};
