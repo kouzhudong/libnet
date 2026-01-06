@@ -183,14 +183,11 @@ void netfinger(char * name)
     send(s, "\r\n", 2, 0);
 
     /*
-     * Read from the remote system; once we're connected, we assume some
-     * data.  If none arrives, we hang until the user interrupts.
+     * Read from the remote system; once we're connected, we assume some data.  If none arrives, we hang until the user interrupts.
      *
-     * If we see a <CR> or a <CR> with the high bit set, treat it as
-     * a newline; if followed by a newline character, only output one newline.
+     * If we see a <CR> or a <CR> with the high bit set, treat it as a newline; if followed by a newline character, only output one newline.
      *
-     * Otherwise, all high bits are stripped; if it isn't printable and
-     * it isn't a space, we can simply set the 7th bit.
+     * Otherwise, all high bits are stripped; if it isn't printable and it isn't a space, we can simply set the 7th bit.
      * Every ASCII character with bit 7 set is printable.
      */
     lastc = 0;
@@ -310,9 +307,8 @@ int finger(int argc, char ** argv)
     } else {
         userlist(argc, argv);
         /*
-         * Assign explicit "large" format if names given and -s not
-         * explicitly stated.  Force the -l AFTER we get names so any
-         * remote finger attempts specified won't be mishandled.
+         * Assign explicit "large" format if names given and -s not explicitly stated. 
+         * Force the -l AFTER we get names so any remote finger attempts specified won't be mishandled.
          */
         if (!sflag)
             lflag = 1; /* if -s not explicit, force -l */

@@ -185,22 +185,19 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
 */
 {
     // Declare variables
-    WSADATA wsaData{};
-    SOCKET ListenSocket{};
-    sockaddr_in service{};
-    int iResult = 0;
+    WSADATA wsaData{};    
     BOOL bOptVal = FALSE;
     int bOptLen = sizeof(BOOL);
     int iOptVal = 0;
     int iOptLen = sizeof(int);
 
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
+    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
     if (iResult != NO_ERROR) {
         wprintf(L"Error at WSAStartup()\n");
         return 1;
     }
 
-    ListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // Create a listening socket
+    SOCKET ListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // Create a listening socket
     if (ListenSocket == INVALID_SOCKET) {
         wprintf(L"socket function failed with error: %d\n", WSAGetLastError());
         WSACleanup();
@@ -214,6 +211,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
     thisHost = gethostbyname("");
     ip = inet_ntoa(*reinterpret_cast<struct in_addr *>(*thisHost->h_addr_list));
 
+    sockaddr_in service{};
     service.sin_family = AF_INET;
     service.sin_addr.s_addr = inet_addr(ip);
     service.sin_port = htons(port);
@@ -256,6 +254,124 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
 }
 
 
+void EnableKeepAlive(SOCKET sock)
+/*
+功能：设置保活。
+
+AI生成的代码，没有测试。
+
+SO_KEEPALIVE 是干嘛的
+一句话：用来检测 TCP 连接是否“假死”。
+
+典型场景：
+1.对端已经断电/崩溃/网络断了
+2.本地 TCP 连接还显示是 ESTABLISHED
+3.你不读不写，永远发现不了连接已经废了
+
+开启 SO_KEEPALIVE 后，内核会定期发探测包，如果多次无响应，就判定连接已断，recv/send 会报错。
+
+只对 TCP 有效，对 UDP 没意义。
+
+KEEPALIVE 只检测空闲连接的存活，不能立即检测有数据传输时的掉线（例如，半开连接）。
+对于实时性要求高的应用，可能需要结合心跳机制（应用层自定义包）使用。
+
+注意事项局限性：
+1.KEEPALIVE 无法检测防火墙或 NAT 导致的半开连接（一方认为连接正常，另一方已关闭）。应用层心跳（如每几秒发送一个包）更可靠。
+2.跨平台：Windows 默认行为如上所述；Linux/macOS 可通过 TCP_KEEPIDLE、TCP_KEEPINTVL、TCP_KEEPCNT 更精细控制。
+3.测试：模拟掉线可拔网线或杀掉对端进程，观察检测时间。
+4.如果是服务器端，类似逻辑适用于接受的套接字。
+
+检测掉线：KEEPALIVE 本身不直接通知应用程序掉线，而是通过套接字的读/写操作返回错误来体现。
+常见方式：
+1.使用 select、poll 或 epoll（Windows 用 WSAPoll）监控套接字的可读/可写/异常事件。
+2.尝试读/写数据：如果连接已关闭，recv 返回 0（优雅关闭）或 -1（错误，如 WSAECONNRESET）。
+3.定期检查套接字状态。
+
+https://learn.microsoft.com/en-us/windows/win32/winsock/sio-keepalive-vals
+https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc782936(v=ws.10)
+https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc758083(v=ws.10)
+*/
+/*
+另一个AI的代码：
+
+tcp_keepalive ka;
+ka.onoff = 1;
+ka.keepalivetime = 30 * 1000;      // 30 秒无数据后开始探测
+ka.keepaliveinterval = 5 * 1000;  // 每 5 秒一次
+
+DWORD bytesReturned;
+WSAIoctl(sock, SIO_KEEPALIVE_VALS, &ka, sizeof(ka), NULL, 0, &bytesReturned, NULL, NULL);
+*/
+/*
+检测代码：
+
+int main() {
+    // ... WSAStartup, socket 创建, connect 连接 ...
+
+    enableKeepAlive(sock);  // 启用 KEEPALIVE
+
+    // 使用 select 监控（示例循环）
+    while (true) {
+        fd_set readfds;
+        FD_ZERO(&readfds);
+        FD_SET(sock, &readfds);
+
+        struct timeval timeout = {5, 0};  // 每 5 秒检查一次
+        int ret = select(0, &readfds, NULL, NULL, &timeout);
+
+        if (ret == SOCKET_ERROR) {
+            // select 错误
+            break;
+        } else if (ret == 0) {
+            // 超时，继续循环（可发送心跳如果需要）
+            continue;
+        }
+
+        if (FD_ISSET(sock, &readfds)) {
+            char buf[1024];
+            int bytes = recv(sock, buf, sizeof(buf), 0);
+            if (bytes > 0) {
+                // 收到数据，处理
+            } else if (bytes == 0) {
+                // 连接优雅关闭（对方调用 closesocket）
+                printf("对方已关闭连接\n");
+                break;
+            } else {
+                // 错误：如 WSAECONNRESET 表示连接重置（掉线）
+                int err = WSAGetLastError();
+                if (err == WSAECONNRESET || err == WSAECONNABORTED) {
+                    printf("检测到对方掉线\n");
+                }
+                break;
+            }
+        }
+    }
+
+    // ... 清理 ...
+    return 0;
+}
+*/
+{
+    // 启用 SO_KEEPALIVE
+    int optval = 1;
+    if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&optval, sizeof(optval)) == SOCKET_ERROR) {
+        // 处理错误
+        return;
+    }
+
+    // 自定义参数：空闲 30 秒后探测，每 1 秒一次
+    struct tcp_keepalive alive;
+    alive.onoff = 1;
+    alive.keepalivetime = 30000; // 毫秒
+    alive.keepaliveinterval = 1000;
+
+    DWORD bytesReturned;
+    if (WSAIoctl(sock, SIO_KEEPALIVE_VALS, &alive, sizeof(alive), NULL, 0, &bytesReturned, NULL, NULL) == SOCKET_ERROR) {
+        // 处理错误
+    }
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -268,10 +384,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocke
 {
     // Initialize Winsock
     WSADATA wsaData{};
-    int iResult{};
     u_long iMode = 0;
 
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != NO_ERROR)
         printf("Error at WSAStartup()\n");
 
@@ -391,8 +506,7 @@ Return Value:
     req.ID.toi_id = ENTITY_LIST_ID;
 
     // The loop below is defensively engineered:
-    // (1)  In the first place, it is unlikely that more
-    //     than MAX_TDI_ENTITIES of TCP/IP entities exist, so the loop should execute only once.
+    // (1)  In the first place, it is unlikely that more than MAX_TDI_ENTITIES of TCP/IP entities exist, so the loop should execute only once.
     // (2)  Execution is limited to 4 iterations to rule out infinite looping in case of parameter corruption.
     //     Only 2 iterations should ever be necessary unless entities are being added while the loop is running.
     for (i = 0; i < 4; ++i) {
@@ -734,7 +848,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/sio-acquire-port-reserva
             return 1;
         } else {
             wprintf(L"WSAIoctl(SIO_ACQUIRE_PORT_RESERVATION) succeeded, bytesReturned = %u\n", bytesReturned);
-            wprintf(L"  Starting port=%u,  Number of Ports=%u, Token=%I64u\n",
+            wprintf(L"  Starting port=%u,  Number of Ports=%u, Token=%I64u\n", 
                     htons(portRes.Reservation.StartPort),
                     portRes.Reservation.NumberOfPorts,
                     portRes.Token.Token);
