@@ -108,9 +108,9 @@ MSDN没有例子。
         printf("\tUdpV6的侦听总数:Number of entries: %u\n", pUdp6Table->dwNumEntries);
 
         for (DWORD i = 0; i < pUdp6Table->dwNumEntries; i++) {
-            wchar_t ipstringbuffer[46];
+            wchar_t ipstringbuffer[INET6_ADDRSTRLEN]{};
 
-            if (InetNtop(AF_INET6, &pUdp6Table->table[i].dwLocalAddr, ipstringbuffer, 46) == nullptr)
+            if (InetNtop(AF_INET6, &pUdp6Table->table[i].dwLocalAddr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
                 wprintf(L"  InetNtop function failed for local IPv6 address\n");
             else
                 wprintf(L"\tUdp[%d] Local Addr: %ls\n", i, ipstringbuffer);

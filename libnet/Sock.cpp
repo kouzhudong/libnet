@@ -359,8 +359,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     struct sockaddr_in * sockaddr_ipv4{};
     struct sockaddr_in6 * sockaddr_ipv6{};
 
-    // DWORD ipbufferlength = 46;
-    wchar_t ipstringbuffer[46]{};
+    wchar_t ipstringbuffer[INET6_ADDRSTRLEN]{};
 
     // variables needed to print namespace provider GUID
     int iRet = 0;
@@ -390,7 +389,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET (IPv4)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = reinterpret_cast<struct sockaddr_in *>(ptr->ai_addr);
-            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -407,7 +406,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = reinterpret_cast<struct sockaddr_in6 *>(ptr->ai_addr);
-            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -622,8 +621,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     struct sockaddr_in * sockaddr_ipv4{};
     struct sockaddr_in6 * sockaddr_ipv6{};
 
-    // DWORD ipbufferlength = 46;
-    wchar_t ipstringbuffer[46]{};
+    wchar_t ipstringbuffer[INET6_ADDRSTRLEN]{};
 
     // variables needed to print namespace provider GUID
     int iRet = 0;
@@ -683,7 +681,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET (IPv4)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = reinterpret_cast<struct sockaddr_in *>(ptr->ai_addr);
-            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -700,7 +698,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = reinterpret_cast<struct sockaddr_in6 *>(ptr->ai_addr);
-            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46));
+            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;

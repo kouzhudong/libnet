@@ -190,7 +190,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
 {
     // Declare and initialize variables
     DWORD dwRetVal = 0;
-    wchar_t ipstringbuffer[46]{};
+    wchar_t ipstringbuffer[INET6_ADDRSTRLEN]{};
 
     PMIB_TCP6TABLE pTcpTable = (MIB_TCP6TABLE *)MALLOC(sizeof(MIB_TCP6TABLE));
     if (pTcpTable == nullptr) {
@@ -216,7 +216,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
             wprintf(L"\n\tTCP[%d] State: %ld - ", i, pTcpTable->table[i].State);
             PrintTcpConnectionState(pTcpTable->table[i].State);
 
-            if (InetNtop(AF_INET6, &pTcpTable->table[i].LocalAddr, ipstringbuffer, 46) == nullptr)
+            if (InetNtop(AF_INET6, &pTcpTable->table[i].LocalAddr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
                 wprintf(L"  InetNtop function failed for local IPv6 address\n");
             else
                 wprintf(L"\tTCP[%d] Local Addr: %s\n", i, ipstringbuffer);
@@ -224,7 +224,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
             wprintf(L"\tTCP[%d] Local Scope ID: %u \n", i, ntohl(pTcpTable->table[i].dwLocalScopeId));
             wprintf(L"\tTCP[%d] Local Port: %u \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
 
-            if (InetNtop(AF_INET6, &pTcpTable->table[i].RemoteAddr, ipstringbuffer, 46) == nullptr)
+            if (InetNtop(AF_INET6, &pTcpTable->table[i].RemoteAddr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
                 wprintf(L"  InetNtop function failed for remote IPv6 address\n");
             else
                 wprintf(L"\tTCP[%d] Remote Addr: %s\n", i, ipstringbuffer);
@@ -283,8 +283,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
                 continue;
             }
 
-            wchar_t ipstringbuffer[46];
-            if (InetNtop(AF_INET6, &pTcpTable->table[i].LocalAddr, ipstringbuffer, 46) == nullptr)
+            wchar_t ipstringbuffer[INET6_ADDRSTRLEN];
+            if (InetNtop(AF_INET6, &pTcpTable->table[i].LocalAddr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
                 wprintf(L"  InetNtop function failed for local IPv6 address\n");
             else
                 wprintf(L"\tTCP[%d] Local Addr: %s\n", i, ipstringbuffer);
@@ -292,7 +292,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
             // wprintf(L"\tTCP[%d] Local Scope ID: %d \n", i, ntohl(pUdp6Table->table[i].dwLocalScopeId));
             wprintf(L"\tTCP[%d] Local Port: %u \n", i, ntohs((u_short)pTcpTable->table[i].dwLocalPort));
 
-            if (InetNtop(AF_INET6, &pTcpTable->table[i].RemoteAddr, ipstringbuffer, 46) == nullptr)
+            if (InetNtop(AF_INET6, &pTcpTable->table[i].RemoteAddr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
                 wprintf(L"  InetNtop function failed for remote IPv6 address\n");
             else
                 wprintf(L"\tTCP[%d] Remote Addr: %s\n", i, ipstringbuffer);

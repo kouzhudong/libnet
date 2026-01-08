@@ -17,11 +17,10 @@ void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
         break;
     }
     case AF_INET6: {
-        const DWORD ipbufferlength = 46;
-        char ipstringbuffer[46] = {0};
+        char ipstringbuffer[INET6_ADDRSTRLEN] = {0};
 
         const PSOCKADDR_IN6_LH sa_in6 = reinterpret_cast<const PSOCKADDR_IN6_LH>(Address->lpSockaddr);
-        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, ipbufferlength);
+        inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer));
 
         printf("\t%s:%s\n", Msg, ipstringbuffer);
 

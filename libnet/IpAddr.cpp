@@ -194,7 +194,7 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
     IN_ADDR base;
     base.S_un.S_addr = IPv4.S_un.S_addr & Mask.S_un.S_addr;
 
-    wchar_t Base[46] = {0};
+    wchar_t Base[INET_ADDRSTRLEN] = {0};
     InetNtop(AF_INET, &base, Base, _ARRAYSIZE(Base));
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
 
         start.S_un.S_addr = base.S_un.S_addr + ntohl(i);
 
-        wchar_t buf[46] = {0};
+        wchar_t buf[INET_ADDRSTRLEN] = {0};
         InetNtop(AF_INET, &start, buf, _ARRAYSIZE(buf));
 
         printf("%ls\n", buf);
@@ -272,7 +272,7 @@ EnumIPv4ByMasks("1.2.3.5", 32);
 
     Mask.S_un.S_addr = ntohl(Mask.S_un.S_addr);
 
-    wchar_t buffer[46] = {0};
+    wchar_t buffer[INET_ADDRSTRLEN] = {0};
     InetNtop(AF_INET, &Mask, buffer, _ARRAYSIZE(buffer));
     printf("mask:%ls\n", buffer);
 
@@ -282,7 +282,7 @@ EnumIPv4ByMasks("1.2.3.5", 32);
     IN_ADDR base;
     base.S_un.S_addr = IPv4.S_un.S_addr & Mask.S_un.S_addr;
 
-    wchar_t Base[46] = {0};
+    wchar_t Base[INET_ADDRSTRLEN] = {0};
     InetNtop(AF_INET, &base, Base, _ARRAYSIZE(Base));
     printf("BaseAddr:%ls\n", Base);
 
@@ -300,7 +300,7 @@ EnumIPv4ByMasks("1.2.3.5", 32);
 
         temp.S_un.S_addr = base.S_un.S_addr + ntohl(i);
 
-        wchar_t buf[46] = {0};
+        wchar_t buf[INET_ADDRSTRLEN] = {0};
         InetNtop(AF_INET, &temp, buf, _ARRAYSIZE(buf));
 
         printf("%ls\n", buf);

@@ -208,7 +208,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
     for (ULONG i = 0; (unsigned)i < pipTable->NumEntries; i++) {
         //        printf("Table entry: %d\n", i);
 
-        wchar_t IpStr[46] = {0};
+        wchar_t IpStr[INET6_ADDRSTRLEN] = {0};
         switch (pipTable->Table[i].Address.Ipv4.sin_family) {
         case AF_INET:
             InetNtop(AF_INET, &pipTable->Table[i].Address.Ipv4.sin_addr, IpStr, _ARRAYSIZE(IpStr));
@@ -824,20 +824,20 @@ int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac)
 
 void PrintUnicastIpAddress(PMIB_UNICASTIPADDRESS_ROW pipRow)
 {
-    WCHAR Ipv4String[16] = {0};
-    WCHAR Ipv6String[46] = {0};
+    WCHAR Ipv4String[INET_ADDRSTRLEN] = {0};
+    WCHAR Ipv6String[INET6_ADDRSTRLEN] = {0};
 
     // Print some variables from the rows in the table
     wprintf(L"AddressFamily:\t\t\t ");
     switch (pipRow->Address.si_family) {
     case AF_INET:
         wprintf(L"IPv4\n");
-        if (InetNtop(AF_INET, &pipRow->Address.Ipv4.sin_addr, Ipv4String, 16) != NULL)
+        if (InetNtop(AF_INET, &pipRow->Address.Ipv4.sin_addr, Ipv4String, _ARRAYSIZE(Ipv4String)) != NULL)
             wprintf(L"IPv4 Address:\t\t\t %ws\n", Ipv4String);
         break;
     case AF_INET6:
         wprintf(L"IPv6\n");
-        if (InetNtop(AF_INET6, &pipRow->Address.Ipv6.sin6_addr, Ipv6String, 46) != NULL)
+        if (InetNtop(AF_INET6, &pipRow->Address.Ipv6.sin6_addr, Ipv6String, _ARRAYSIZE(Ipv6String)) != NULL)
             wprintf(L"IPv6 Address:\t\t\t %s\n", Ipv6String);
         break;
     default:
