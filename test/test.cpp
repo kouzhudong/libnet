@@ -40,7 +40,9 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //GetAddrInfoW_test(Args, Arglist); //宽字符函数入口示例。
     //AddIPv4Address(argc, argv);       //单字符函数入口示例。
 
-    EnumUnicastIpAddressTable();
+    //EnumUnicastIpAddressTable();
+
+    GetPublicIPv4();
 
     LocalFree(Arglist);
 }

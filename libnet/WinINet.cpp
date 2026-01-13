@@ -93,3 +93,85 @@ homepage:http://correy.webs.com
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void GetPublicIPv4(_In_ LPCSTR lpszUrl)
+/*
+AI的代码。
+
+备用URL:
+https://checkip.amazonaws.com   不错，快，非代理。
+https://ipv4.icanhazip.com      不错，快，非代理。经测试https://icanhazip.com/也行。
+https://api.ipify.org           结果是代理的。有可能访问失败。
+https://api4.ipify.org          结果是代理的。有可能访问失败。
+https://ifconfig.me/ip          有可能是IPv6.
+*/
+{    
+    HINTERNET hInternet = InternetOpenA("IPFetcher", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);// 1. 初始化 Internet 环境
+    if (!hInternet) {
+        return;
+    }
+    
+    HINTERNET hUrl = InternetOpenUrlA(hInternet, lpszUrl, NULL, 0, INTERNET_FLAG_RELOAD, 0); // 2. 打开返回纯文本 IP 的 URL
+    if (hUrl) {
+        char buffer[64]{};
+        DWORD bytesRead{};        
+        if (InternetReadFile(hUrl, buffer, sizeof(buffer) - 1, &bytesRead)) {// 3. 读取响应内容
+            buffer[bytesRead] = '\0';
+            printf("你的公网 IPv4 是: %s\n", buffer);//包含\n.
+        }
+        InternetCloseHandle(hUrl);
+    } else {
+        printf("连接失败，错误代码: %lu\n", GetLastError());
+    }
+
+    InternetCloseHandle(hInternet);
+}
+
+
+EXTERN_C
+DLLEXPORT
+char * WINAPI GetPublicIPv4()
+/*
+AI的代码。
+*/
+{
+    static char ip[32] = {0};
+    HINTERNET hInternet = InternetOpenA("IPFetcher", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    if (!hInternet)
+        return NULL;
+
+    // 推荐几个稳定的服务，按顺序尝试
+    const char * urls[] = {"http://ipv4.icanhazip.com", "http://checkip.amazonaws.com", NULL};
+
+    for (int i = 0; urls[i]; i++) {
+        HINTERNET hConnect = InternetOpenUrlA(hInternet, urls[i], NULL, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+        if (!hConnect)
+            continue;
+
+        DWORD bytesRead = 0;
+        if (InternetReadFile(hConnect, ip, sizeof(ip) - 1, &bytesRead)) {
+            ip[bytesRead] = 0;
+
+            // 去除可能的换行符
+            char * p = ip;
+            while (*p) {
+                if (*p == '\r' || *p == '\n')
+                    *p = 0;
+                p++;
+            }
+
+            InternetCloseHandle(hConnect);
+            InternetCloseHandle(hInternet);
+            return ip;
+        }
+
+        InternetCloseHandle(hConnect);
+    }
+
+    InternetCloseHandle(hInternet);
+    return NULL;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
