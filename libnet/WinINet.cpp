@@ -143,7 +143,7 @@ AI的代码。
 
     // 推荐几个稳定的服务，按顺序尝试
     const char * urls[] = {
-        "http://ipv4.icanhazip.com", "http://checkip.amazonaws.com", "https://ipv4.myip.wtf/text", "https://ipv4.seeip.org", "https://4.ident.me", NULL};
+        "https://ipv4.icanhazip.com", "https://checkip.amazonaws.com", "https://ipv4.myip.wtf/text", "https://ipv4.seeip.org", "https://4.ident.me", NULL};
 
     for (int i = 0; urls[i]; i++) {
         HINTERNET hConnect = InternetOpenUrlA(hInternet, urls[i], NULL, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0);

@@ -1,14 +1,13 @@
 #include "WinHttp.h"
 
-
 void TestWinHttp()
 {
     //RegisterProxyChangeNotification();
-    GetDefaultProxyConfiguration();
-    GetIEProxyConfigForCurrentUser();
-    DetectAutoProxyConfigUrl();
+    //GetDefaultProxyConfiguration();
+    //GetIEProxyConfigForCurrentUser();
+    //DetectAutoProxyConfigUrl();
     //GetProxyForUrl();
-    SetDefaultProxyConfiguration();
+    //SetDefaultProxyConfiguration();
     //SetProxy();
-    WriteProxySettings();
+    //WriteProxySettings();
 }

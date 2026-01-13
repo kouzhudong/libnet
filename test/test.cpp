@@ -41,8 +41,8 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
     //AddIPv4Address(argc, argv);       //单字符函数入口示例。
 
     //EnumUnicastIpAddressTable();
-
     GetPublicIPv4();
+    TestWinHttp();
 
     LocalFree(Arglist);
 }
