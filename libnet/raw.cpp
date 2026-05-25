@@ -45,7 +45,9 @@ void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
     PRAW_TCP tcp4 = reinterpret_cast<PRAW_TCP>(buffer);
 
     PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen));
-    _ASSERTE(temp);
+    if (!temp) {
+        return;
+    }
 
     PSD_HEADER * PseudoHeader = reinterpret_cast<PSD_HEADER *>(temp);
 
@@ -72,7 +74,9 @@ void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
     PRAW6_TCP tcp6 = reinterpret_cast<PRAW6_TCP>(buffer);
 
     PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen));
-    _ASSERTE(temp);
+    if (!temp) {
+        return;
+    }
 
     PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
 
@@ -350,7 +354,9 @@ th_flags：TH_ACK, TH_SYN等值的组合。
     tcp_hdr->th_ack = th_ack;
 
     UINT8 x = (sizeof(TCP_HDR) + OptLen) / 4;
-    ASSERT(x <= 0xf); // 大于这个数会发生溢出，有想不到的结果。
+    if (x > 0xf) {
+        return;
+    }
     tcp_hdr->th_len = x;
 
     tcp_hdr->th_flags = th_flags;
@@ -421,8 +427,9 @@ EXTERN_C
 DLLEXPORT
 void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW_TCP buffer)
 {
-    ASSERT(SrcMac);
-    ASSERT(buffer);
+    if (!SrcMac || !buffer) {
+        return;
+    }
 
     PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv4Header + Ip4HeaderLengthInBytes(IPv4Header));
 
@@ -549,8 +556,9 @@ EXTERN_C
 DLLEXPORT
 void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW6_TCP buffer)
 {
-    ASSERT(SrcMac);
-    ASSERT(buffer);
+    if (!SrcMac || !buffer) {
+        return;
+    }
 
     PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv6Header + sizeof(IPV6_HEADER));
 

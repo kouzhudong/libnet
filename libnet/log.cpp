@@ -62,8 +62,6 @@ void LogA(IN LOG_LEVEL Level, IN char const * Format, ...)
         return;
     }
 
-    setlocale(0, "chs");//支持写汉字。
-
     EnterCriticalSection(&g_log_cs);
 
     va_list args;

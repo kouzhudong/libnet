@@ -23,15 +23,13 @@
 #define BUFFER_LEN 255
 
 
-void Usage(char * progname)
-// Usage of the program
+void UsageA(char * progname)
 {
     fprintf(stderr, "Usage\n%s -n [OwnerName] -t [Type]  -s [DnsServerIp]\n", progname);
     fprintf(stderr, "Where:\n\t\"OwnerName\" is name of the owner of the record set being queried\n");
     fprintf(stderr, "\t\"Type\" is the type of record set to be queried A or PTR\n");
     fprintf(stderr, "\t\"DnsServerIp\"is the IP address of DNS server (in dotted decimal notation)");
     fprintf(stderr, "to which the query should be sent\n");
-    exit(1);
 }
 
 
@@ -84,44 +82,53 @@ SUPPORTED PLATFORMS:
                     break;
                 case 't':
                     if (!_stricmp(argv[i + 1], "A"))
-                        wType = DNS_TYPE_A; // Query host records to resolve a name
+                        wType = DNS_TYPE_A;
                     else if (!_stricmp(argv[i + 1], "PTR"))
-                        wType = DNS_TYPE_PTR; // Query PTR records to resovle an IP address
-                    else
-                        Usage(argv[0]);
+                        wType = DNS_TYPE_PTR;
+                    else {
+                        UsageA(argv[0]);
+                        return;
+                    }
 
                     i++;
                     break;
                 case 's':
-                    // Allocate memory for IP4_ARRAY structure
                     pSrvList = (PIP4_ARRAY)LocalAlloc(LPTR, sizeof(IP4_ARRAY));
                     if (!pSrvList) {
                         printf("Memory allocation failed \n");
-                        exit(1);
+                        return;
                     }
 
                     if (argv[++i]) {
                         strncpy_s(DnsServIp, _countof(DnsServIp), argv[i], _TRUNCATE);
                         DnsServIp[sizeof(DnsServIp) - 1] = '\0';
                         pSrvList->AddrCount = 1;
-                        pSrvList->AddrArray[0] = inet_addr(DnsServIp); // DNS server IP address
+                        pSrvList->AddrArray[0] = inet_addr(DnsServIp);
                         if (pSrvList->AddrArray[0] == INADDR_NONE) {
                             printf("Invalid DNS server IP address \n");
-                            Usage(argv[0]);
+                            UsageA(argv[0]);
+                            LocalFree(pSrvList);
+                            return;
                         }
                         break;
                     }
 
-                    break; //少了这个？
-                default:
-                    Usage(argv[0]);
                     break;
+                default:
+                    UsageA(argv[0]);
+                    LocalFree(pSrvList);
+                    return;
                 }
-            } else
-                Usage(argv[0]);
+            } else {
+                UsageA(argv[0]);
+                LocalFree(pSrvList);
+                return;
+            }
         }
-    } else
-        Usage(argv[0]);
+    } else {
+        UsageA(argv[0]);
+        return;
+    }
 
     // Calling function DnsQuery_A() to query Host or PTR records
     status = DnsQuery_A(pOwnerName,             // pointer to OwnerName
@@ -162,8 +169,7 @@ SUPPORTED PLATFORMS:
 /***************************************************************/
 
 
-// Usage of the program
-void Usage(wchar_t * progname)
+void UsageW(wchar_t * progname)
 {
     fprintf(stderr, "Usage\n%ws -n [OwnerName] - t [Type] -l [Ttl] -d [Data] -s [DnsServerIp]\n", progname);
     fprintf(stderr, "Where:\n\tOwnerName is the owner field to be added\n");
@@ -171,7 +177,6 @@ void Usage(wchar_t * progname)
     fprintf(stderr, "\tData is the data corresponding to RR to be added\n");
     fprintf(stderr, "\tTtl is the time to live value in seconds \n");
     fprintf(stderr, "\tDnsServerIp is the ipaddress of DNS server (in dotted decimal notation)\n");
-    exit(1);
 }
 
 
@@ -232,11 +237,10 @@ SUPPORTED PLATFORMS:
     memset(HostipAddress, 0, sizeof(HostipAddress));
     memset(DnsServIp, 0, sizeof(DnsServIp));
 
-    // Allocate memory for DNS_RECORD structure.
     pmyDnsRecord = (PDNS_RECORD)LocalAlloc(LPTR, sizeof(DNS_RECORD));
     if (!pmyDnsRecord) {
         printf("Memory allocaltion failed\n");
-        exit(1);
+        return;
     }
 
     if (argc > 8) {
@@ -245,66 +249,82 @@ SUPPORTED PLATFORMS:
                 switch (tolower(argv[i][1])) {
                 case 'n':
                     pOwnerName = argv[++i];
-                    pmyDnsRecord->pName = pOwnerName; // copy the Owner name information
+                    pmyDnsRecord->pName = pOwnerName;
                     break;
                 case 't':
                     if (!_wcsicmp(argv[i + 1], L"A"))
-                        pmyDnsRecord->wType = DNS_TYPE_A; // add host records
+                        pmyDnsRecord->wType = DNS_TYPE_A;
                     else if (!_wcsicmp(argv[i + 1], L"CNAME"))
-                        pmyDnsRecord->wType = DNS_TYPE_CNAME; // add CNAME records
-                    else
-                        Usage(argv[0]);
+                        pmyDnsRecord->wType = DNS_TYPE_CNAME;
+                    else {
+                        UsageW(argv[0]);
+                        LocalFree(pmyDnsRecord);
+                        return;
+                    }
                     i++;
                     break;
                 case 'l':
-                    pmyDnsRecord->dwTtl = _wtoi(argv[++i]); // time to live value in seconds
+                    pmyDnsRecord->dwTtl = _wtoi(argv[++i]);
                     break;
                 case 'd':
                     if (pmyDnsRecord->wType == DNS_TYPE_A) {
-                        pmyDnsRecord->wDataLength = sizeof(DNS_A_DATA); // data structure for A records
-                        wcsncpy_s(HostipAddress, _countof(HostipAddress), argv[++i], _TRUNCATE); // strncpy_s
+                        pmyDnsRecord->wDataLength = sizeof(DNS_A_DATA);
+                        wcsncpy_s(HostipAddress, _countof(HostipAddress), argv[++i], _TRUNCATE);
                         HostipAddress[_ARRAYSIZE(HostipAddress) - 1] = '\0';
-                        pmyDnsRecord->Data.A.IpAddress = inet_addr(W2A(HostipAddress)); // convert string to proper address
+                        pmyDnsRecord->Data.A.IpAddress = inet_addr(W2A(HostipAddress));
                         if (pmyDnsRecord->Data.A.IpAddress == INADDR_NONE) {
                             printf("Invalid IP address in A record data \n");
-                            Usage(argv[0]);
+                            UsageW(argv[0]);
+                            LocalFree(pmyDnsRecord);
+                            return;
                         }
                         break;
                     } else {
-                        pmyDnsRecord->wDataLength = sizeof(DNS_PTR_DATA); // data structure for CNAME records
+                        pmyDnsRecord->wDataLength = sizeof(DNS_PTR_DATA);
                         pNameData = argv[++i];
                         pmyDnsRecord->Data.Cname.pNameHost = (PWSTR)pNameData;
                         break;
                     }
                 case 's':
-                    // Allocate memory for IP4_ARRAY structure
                     pSrvList = (PIP4_ARRAY)LocalAlloc(LPTR, sizeof(IP4_ARRAY));
                     if (!pSrvList) {
                         printf("Memory allocation failed \n");
-                        exit(1);
+                        LocalFree(pmyDnsRecord);
+                        return;
                     }
                     if (argv[++i]) {
-                        wcsncpy_s(DnsServIp, _countof(DnsServIp), argv[i], _TRUNCATE); // strncpy_s
+                        wcsncpy_s(DnsServIp, _countof(DnsServIp), argv[i], _TRUNCATE);
                         DnsServIp[_ARRAYSIZE(DnsServIp) - 1] = '\0';
                         pSrvList->AddrCount = 1;
-                        pSrvList->AddrArray[0] = inet_addr(W2A(DnsServIp)); // DNS server IP address
+                        pSrvList->AddrArray[0] = inet_addr(W2A(DnsServIp));
                         if (pSrvList->AddrArray[0] == INADDR_NONE) {
                             printf("Invalid DNS server IP address\n");
-                            Usage(argv[0]);
+                            UsageW(argv[0]);
+                            LocalFree(pmyDnsRecord);
+                            LocalFree(pSrvList);
+                            return;
                         }
                         break;
                     }
 
-                    break; //少了这个？
-                default:
-                    Usage(argv[0]);
                     break;
+                default:
+                    UsageW(argv[0]);
+                    LocalFree(pmyDnsRecord);
+                    LocalFree(pSrvList);
+                    return;
                 }
-            } else
-                Usage(argv[0]);
+            } else {
+                UsageW(argv[0]);
+                LocalFree(pmyDnsRecord);
+                LocalFree(pSrvList);
+                return;
+            }
         }
     } else {
-        Usage(argv[0]);
+        UsageW(argv[0]);
+        LocalFree(pmyDnsRecord);
+        return;
     }
 
     // Calling function DNSModifyRecordsInSet_A to add Host or CNAME records

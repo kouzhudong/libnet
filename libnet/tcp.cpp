@@ -813,78 +813,74 @@ DWORD RunEstatsTest(bool v6)
     WSADATA wsaData{};
 
     char * buff = reinterpret_cast<char *>(malloc(1000));
-    if (buff == nullptr) {
-        wprintf(L"\nFailed to allocate memory.");
-        goto bail;
-    }
 
-    if (v6) {
-        serverConnectRow = &server6ConnectRow;
-        clientConnectRow = &client6ConnectRow;
-    } else {
-        serverConnectRow = &server4ConnectRow;
-        clientConnectRow = &client4ConnectRow;
-    }
-    
-    winStatus = WSAStartup(MAKEWORD(2, 2), &wsaData);// Initialize Winsock.
-    if (winStatus != ERROR_SUCCESS) {
-        wprintf(L"\nFailed to open winsock. Error %u", winStatus);
-        goto bail;
-    }
-
-    bWSAStartup = true;
-
-    // Create TCP connection on which Estats information will be collected.
-    // Obtain port numbers of created connections.
-    winStatus = CreateTcpConnection(v6, &serviceSocket, &clientSocket, &acceptSocket, &serverPort, &clientPort);
-    if (winStatus != ERROR_SUCCESS) {
-        wprintf(L"\nFailed to create TCP connection. Error %u", winStatus);
-        goto bail;
-    }
-
-    // Obtain MIB_TCPROW corresponding to the TCP connection.
-    winStatus = v6 ? GetTcp6Row(serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(serverConnectRow)) :
-             GetTcpRow(serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(serverConnectRow));
-    if (winStatus != ERROR_SUCCESS) {
-        wprintf(L"\nGetTcpRow failed on the server established connection with %u", winStatus);
-        goto bail;
-    }
-
-    winStatus = v6 ? GetTcp6Row(clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(clientConnectRow)) :
-             GetTcpRow(clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(clientConnectRow));
-    if (winStatus != ERROR_SUCCESS) {
-        wprintf(L"\nGetTcpRow failed on the client established connection with %u", winStatus);
-        goto bail;
-    }
-
-    // Enable Estats collection and dump current stats.
-    ToggleAllEstats(serverConnectRow, TRUE, v6);
-    ToggleAllEstats(clientConnectRow, TRUE, v6);
-    wprintf(L"\n\n\nDumping Estats for server socket:\n");
-    GetAllEstats(serverConnectRow, v6);
-    wprintf(L"\n\n\nDumping Estats for client connect socket:\n");
-    GetAllEstats(clientConnectRow, v6);
-
-    // Initiate TCP data transfers to see effect on Estats counters.
-    sockStatus = send(clientSocket, buff, (1000 * sizeof(char)), 0);
-    if (sockStatus == SOCKET_ERROR) {
-        wprintf(L"\nFailed to send from client to server %d", WSAGetLastError());
-    } else {
-        sockStatus = recv(acceptSocket, buff, (1000 * sizeof(char)), 0);
-        if (sockStatus == SOCKET_ERROR) {
-            wprintf(L"\nFailed to receive data on the server %d", WSAGetLastError());
+    do {
+        if (buff == nullptr) {
+            wprintf(L"\nFailed to allocate memory.");
+            break;
         }
-    }
 
-    // Dump updated Estats and disable Estats collection.
-    wprintf(L"\n\n\nDumping Estats for server socket after client sends data:\n");
-    GetAllEstats(serverConnectRow, v6);
-    wprintf(L"\n\n\nDumping Estats for client socket after client sends data:\n");
-    GetAllEstats(clientConnectRow, v6);
-    ToggleAllEstats(serverConnectRow, FALSE, v6);
-    ToggleAllEstats(clientConnectRow, FALSE, v6);
+        if (v6) {
+            serverConnectRow = &server6ConnectRow;
+            clientConnectRow = &client6ConnectRow;
+        } else {
+            serverConnectRow = &server4ConnectRow;
+            clientConnectRow = &client4ConnectRow;
+        }
 
-bail:
+        winStatus = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        if (winStatus != ERROR_SUCCESS) {
+            wprintf(L"\nFailed to open winsock. Error %u", winStatus);
+            break;
+        }
+
+        bWSAStartup = true;
+
+        winStatus = CreateTcpConnection(v6, &serviceSocket, &clientSocket, &acceptSocket, &serverPort, &clientPort);
+        if (winStatus != ERROR_SUCCESS) {
+            wprintf(L"\nFailed to create TCP connection. Error %u", winStatus);
+            break;
+        }
+
+        winStatus = v6 ? GetTcp6Row(serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(serverConnectRow))
+                       : GetTcpRow(serverPort, clientPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(serverConnectRow));
+        if (winStatus != ERROR_SUCCESS) {
+            wprintf(L"\nGetTcpRow failed on the server established connection with %u", winStatus);
+            break;
+        }
+
+        winStatus = v6 ? GetTcp6Row(clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCP6ROW>(clientConnectRow))
+                       : GetTcpRow(clientPort, serverPort, MIB_TCP_STATE_ESTAB, reinterpret_cast<PMIB_TCPROW>(clientConnectRow));
+        if (winStatus != ERROR_SUCCESS) {
+            wprintf(L"\nGetTcpRow failed on the client established connection with %u", winStatus);
+            break;
+        }
+
+        ToggleAllEstats(serverConnectRow, TRUE, v6);
+        ToggleAllEstats(clientConnectRow, TRUE, v6);
+        wprintf(L"\n\n\nDumping Estats for server socket:\n");
+        GetAllEstats(serverConnectRow, v6);
+        wprintf(L"\n\n\nDumping Estats for client connect socket:\n");
+        GetAllEstats(clientConnectRow, v6);
+
+        sockStatus = send(clientSocket, buff, (1000 * sizeof(char)), 0);
+        if (sockStatus == SOCKET_ERROR) {
+            wprintf(L"\nFailed to send from client to server %d", WSAGetLastError());
+        } else {
+            sockStatus = recv(acceptSocket, buff, (1000 * sizeof(char)), 0);
+            if (sockStatus == SOCKET_ERROR) {
+                wprintf(L"\nFailed to receive data on the server %d", WSAGetLastError());
+            }
+        }
+
+        wprintf(L"\n\n\nDumping Estats for server socket after client sends data:\n");
+        GetAllEstats(serverConnectRow, v6);
+        wprintf(L"\n\n\nDumping Estats for client socket after client sends data:\n");
+        GetAllEstats(clientConnectRow, v6);
+        ToggleAllEstats(serverConnectRow, FALSE, v6);
+        ToggleAllEstats(clientConnectRow, FALSE, v6);
+    } while (0);
+
     if (serviceSocket != INVALID_SOCKET)
         closesocket(serviceSocket);
     if (clientSocket != INVALID_SOCKET)
@@ -913,83 +909,84 @@ int CreateTcpConnection(bool v6, SOCKET * serviceSocket, SOCKET * clientSocket, 
     *clientSocket = INVALID_SOCKET;
     *acceptSocket = INVALID_SOCKET;
 
-    ZeroMemory(&hints, sizeof(hints));
-    hints.ai_family = aiFamily;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
+    do {
+        ZeroMemory(&hints, sizeof(hints));
+        hints.ai_family = aiFamily;
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_protocol = IPPROTO_TCP;
 
-    status = GetAddrInfoW(loopback, L"", &hints, &localhost);
-    if (status != ERROR_SUCCESS) {
-        wprintf(L"\nFailed to open localhost. Error %d", status);
-        goto bail;
-    }
+        status = GetAddrInfoW(loopback, L"", &hints, &localhost);
+        if (status != ERROR_SUCCESS) {
+            wprintf(L"\nFailed to open localhost. Error %d", status);
+            break;
+        }
 
-    *serviceSocket = socket(aiFamily, SOCK_STREAM, IPPROTO_TCP);
-    if (*serviceSocket == INVALID_SOCKET) {
-        wprintf(L"\nFailed to create server socket. Error %d", WSAGetLastError());
-        goto bail;
-    }
+        *serviceSocket = socket(aiFamily, SOCK_STREAM, IPPROTO_TCP);
+        if (*serviceSocket == INVALID_SOCKET) {
+            wprintf(L"\nFailed to create server socket. Error %d", WSAGetLastError());
+            break;
+        }
 
-    *clientSocket = socket(aiFamily, SOCK_STREAM, IPPROTO_TCP);
-    if (*clientSocket == INVALID_SOCKET) {
-        wprintf(L"\nFailed to create client socket. Error %d", WSAGetLastError());
-        goto bail;
-    }
+        *clientSocket = socket(aiFamily, SOCK_STREAM, IPPROTO_TCP);
+        if (*clientSocket == INVALID_SOCKET) {
+            wprintf(L"\nFailed to create client socket. Error %d", WSAGetLastError());
+            break;
+        }
 
-    status = bind(*serviceSocket, localhost->ai_addr, static_cast<int>(localhost->ai_addrlen));
-    if (status == SOCKET_ERROR) {
-        wprintf(L"\nFailed to bind server socket to loopback. Error %d", WSAGetLastError());
-        goto bail;
-    }
+        status = bind(*serviceSocket, localhost->ai_addr, static_cast<int>(localhost->ai_addrlen));
+        if (status == SOCKET_ERROR) {
+            wprintf(L"\nFailed to bind server socket to loopback. Error %d", WSAGetLastError());
+            break;
+        }
 
-    if (localhost != nullptr) {
-        FreeAddrInfoW(localhost);
-        localhost = nullptr;
-    }
+        if (localhost != nullptr) {
+            FreeAddrInfoW(localhost);
+            localhost = nullptr;
+        }
 
-    status = getsockname(*serviceSocket, reinterpret_cast<sockaddr *>(&serverSockName), &nameLen);
-    if (status == SOCKET_ERROR) {
-        wprintf(L"\ngetsockname failed %d", WSAGetLastError());
-        goto bail;
-    }
-    if (v6) {
-        *serverPort = (reinterpret_cast<sockaddr_in6 *>(&serverSockName))->sin6_port;
-    } else {
-        *serverPort = (reinterpret_cast<sockaddr_in *>(&serverSockName))->sin_port;
-    }
+        status = getsockname(*serviceSocket, reinterpret_cast<sockaddr *>(&serverSockName), &nameLen);
+        if (status == SOCKET_ERROR) {
+            wprintf(L"\ngetsockname failed %d", WSAGetLastError());
+            break;
+        }
+        if (v6) {
+            *serverPort = (reinterpret_cast<sockaddr_in6 *>(&serverSockName))->sin6_port;
+        } else {
+            *serverPort = (reinterpret_cast<sockaddr_in *>(&serverSockName))->sin_port;
+        }
 
-    status = listen(*serviceSocket, SOMAXCONN);
-    if (status == SOCKET_ERROR) {
-        wprintf(L"\nFailed to listen on server socket. Error %d", WSAGetLastError());
-        goto bail;
-    }
+        status = listen(*serviceSocket, SOMAXCONN);
+        if (status == SOCKET_ERROR) {
+            wprintf(L"\nFailed to listen on server socket. Error %d", WSAGetLastError());
+            break;
+        }
 
-    status = connect(*clientSocket, reinterpret_cast<sockaddr *>(&serverSockName), sizeof(SOCKADDR_STORAGE));
-    if (status == SOCKET_ERROR) {
-        wprintf(L"\nCould not connect client and server sockets %d", WSAGetLastError());
-        goto bail;
-    }
+        status = connect(*clientSocket, reinterpret_cast<sockaddr *>(&serverSockName), sizeof(SOCKADDR_STORAGE));
+        if (status == SOCKET_ERROR) {
+            wprintf(L"\nCould not connect client and server sockets %d", WSAGetLastError());
+            break;
+        }
 
-    status = getsockname(*clientSocket, reinterpret_cast<sockaddr *>(&clientSockName), &nameLen);
-    if (status == SOCKET_ERROR) {
-        wprintf(L"\ngetsockname failed %d", WSAGetLastError());
-        goto bail;
-    }
-    if (v6) {
-        *clientPort = (reinterpret_cast<sockaddr_in6 *>(&clientSockName))->sin6_port;
-    } else {
-        *clientPort = (reinterpret_cast<sockaddr_in *>(&clientSockName))->sin_port;
-    }
+        status = getsockname(*clientSocket, reinterpret_cast<sockaddr *>(&clientSockName), &nameLen);
+        if (status == SOCKET_ERROR) {
+            wprintf(L"\ngetsockname failed %d", WSAGetLastError());
+            break;
+        }
+        if (v6) {
+            *clientPort = (reinterpret_cast<sockaddr_in6 *>(&clientSockName))->sin6_port;
+        } else {
+            *clientPort = (reinterpret_cast<sockaddr_in *>(&clientSockName))->sin_port;
+        }
 
-    *acceptSocket = accept(*serviceSocket, nullptr, nullptr);
-    if (*acceptSocket == INVALID_SOCKET) {
-        wprintf(L"\nFailed to accept socket connection %d", WSAGetLastError());
-        goto bail;
-    }
+        *acceptSocket = accept(*serviceSocket, nullptr, nullptr);
+        if (*acceptSocket == INVALID_SOCKET) {
+            wprintf(L"\nFailed to accept socket connection %d", WSAGetLastError());
+            break;
+        }
 
-    return ERROR_SUCCESS;
+        return ERROR_SUCCESS;
+    } while (0);
 
-bail:
     if (localhost != nullptr)
         FreeAddrInfoW(localhost);
 

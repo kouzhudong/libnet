@@ -245,9 +245,10 @@ EnumIPv4ByMasks("1.2.3.5", 31);
 EnumIPv4ByMasks("1.2.3.5", 32);
 */
 {
-    _ASSERTE(mask <= 32);
+    if (mask > 32) {
+        return;
+    }
 
-    //此处可检验输入IPv4的合法性。
     IN_ADDR IPv4;
     InetPtonA(AF_INET, ipv4, &IPv4);
 
@@ -289,16 +290,16 @@ EnumIPv4ByMasks("1.2.3.5", 32);
     //////////////////////////////////////////////////////////////////////////////////////////////
     //打印信息。
 
-    UINT64 numbers = (UINT64)1 << (32 - mask); //必须是64位，否则可能整数溢出。
+    UINT64 numbers = (UINT64)1 << (32 - mask);
 
     printf("IPv4的子网掩码位数：%u\n", mask);
     printf("IPv4地址个数（包括特殊地址）：%I64u\n", numbers);
     printf("\n");
 
-    for (ULONG i = 0; i < numbers; i++) {
+    for (UINT64 i = 0; i < numbers; i++) {
         IN_ADDR temp;
 
-        temp.S_un.S_addr = base.S_un.S_addr + ntohl(i);
+        temp.S_un.S_addr = base.S_un.S_addr + ntohl(static_cast<ULONG>(i));
 
         wchar_t buf[INET_ADDRSTRLEN] = {0};
         InetNtop(AF_INET, &temp, buf, _ARRAYSIZE(buf));
@@ -340,44 +341,40 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
     /* Variables used to return error message */
     LPVOID lpMsgBuf;
 
-    // Validate the parameters
     if (argc != 3) {
         printf("usage: %s IPAddress SubnetMask\n", argv[0]);
-        exit(1);
+        return 1;
     }
 
     iaIPAddress = inet_addr(argv[1]);
     if (iaIPAddress == INADDR_NONE) {
         printf("usage: %s IPAddress SubnetMask\n", argv[0]);
-        exit(1);
+        return 1;
     }
 
     iaIPMask = inet_addr(argv[2]);
     if (iaIPMask == INADDR_NONE) {
         printf("usage: %s IPAddress SubnetMask\n", argv[0]);
-        exit(1);
+        return 1;
     }
 
-    // Before calling AddIPAddress we use GetIpAddrTable to get an adapter to which we can add the IP.
     pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(sizeof(MIB_IPADDRTABLE));
     if (pIPAddrTable == NULL) {
         printf("Error allocating memory needed to call GetIpAddrTable\n");
-        exit(1);
+        return 1;
     } else {
         dwSize = 0;
-        // Make an initial call to GetIpAddrTable to get the necessary size into the dwSize variable
         if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) {
             FREE(pIPAddrTable);
             pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(dwSize);
         }
         if (pIPAddrTable == NULL) {
             printf("Memory allocation failed for GetIpAddrTable\n");
-            exit(1);
+            return 1;
         }
     }
-    // Make a second call to GetIpAddrTable to get the actual data we want
+
     if ((dwRetVal = GetIpAddrTable(pIPAddrTable, &dwSize, 0)) == NO_ERROR) {
-        // Save the interface index to use for adding an IP address
         ifIndex = pIPAddrTable->table[0].dwIndex;
         printf("\n\tInterface Index:\t%ld\n", ifIndex);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[0].dwAddr;
@@ -391,7 +388,7 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
         printf("Call to GetIpAddrTable failed with error %d.\n", dwRetVal);
         if (pIPAddrTable)
             FREE(pIPAddrTable);
-        exit(1);
+        return 1;
     }
 
     if (pIPAddrTable) {
@@ -407,25 +404,24 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
         if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                           NULL,
                           dwRetVal,
-                          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                           (LPTSTR)&lpMsgBuf,
                           0,
                           NULL)) {
             printf("\tError: %ls", (LPCWSTR)lpMsgBuf);
             LocalFree(lpMsgBuf);
-            exit(1);
+            return 1;
         }
     }
 
-    // Delete the IP we just added using the NTEContext variable where the handle was returned
     if ((dwRetVal = DeleteIPAddress(NTEContext)) == NO_ERROR) {
         printf("\tIPv4 address %s was successfully deleted.\n", argv[1]);
     } else {
         printf("\tDeleteIPAddress failed with error: %d\n", dwRetVal);
-        exit(1);
+        return 1;
     }
 
-    exit(0);
+    return 0;
 }
 
 
@@ -689,12 +685,6 @@ int TestParseIPv6CIDR()
     return 0;
 }
 
-
-#include <iostream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <iomanip>
 
 std::string prefixToIPv4Mask(int prefix)
 // 将 IPv4 前缀长度转换为子网掩码字符串

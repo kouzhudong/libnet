@@ -27,7 +27,6 @@ void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
         break;
     }
     default:
-        _ASSERTE(false);
         break;
     }
 }
@@ -48,15 +47,20 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getpera
         return;
     }
 
-    _ASSERTE(ERROR_BUFFER_OVERFLOW == ret);
+    if (ERROR_BUFFER_OVERFLOW != ret) {
+        return;
+    }
 
     auto pPerAdapterInfo = static_cast<PIP_PER_ADAPTER_INFO>(MALLOC(OutBufLen));
-    _ASSERTE(pPerAdapterInfo);
+    if (!pPerAdapterInfo) {
+        return;
+    }
 
     ret = GetPerAdapterInfo(IfIndex, pPerAdapterInfo, &OutBufLen);
-    _ASSERTE(ERROR_SUCCESS == ret);
-
-    //这里也没啥东西，内容大多为NULL。
+    if (ERROR_SUCCESS != ret) {
+        FREE(pPerAdapterInfo);
+        return;
+    }
 
     FREE(pPerAdapterInfo);
 }
@@ -572,7 +576,6 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
                                         break;
                                     }
                                     default:
-                                        _ASSERTE(false);
                                         break;
                                     }
 
@@ -584,7 +587,6 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
                         break;
                     }
                     default:
-                        _ASSERTE(false);
                         break;
                     }
 

@@ -190,6 +190,9 @@
 #pragma comment (lib,"Dnsapi.lib")
 
 #include <string>
+#include <sstream>
+#include <iomanip>
+#include <vector>
 #include <list>
 #include <regex>
 #include <map>

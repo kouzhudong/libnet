@@ -482,69 +482,52 @@ address..
     HANDLE CancelHandle = nullptr;
     DWORD QueryTimeout = 5 * 1000; // 5 seconds
 
-    if (Argc != 2) { //  Validate the parameters
-        wprintf(L"Usage: ResolveName <QueryName>\n");
-        goto exit;
-    }
+    do {
+        if (Argc != 2) {
+            wprintf(L"Usage: ResolveName <QueryName>\n");
+            break;
+        }
 
-    Error = WSAStartup(MAKEWORD(2, 2), &wsaData); //  All Winsock functions require WSAStartup() to be called first
-    if (Error != 0) {
-        wprintf(L"WSAStartup failed with %d\n", Error);
-        goto exit;
-    }
+        Error = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        if (Error != 0) {
+            wprintf(L"WSAStartup failed with %d\n", Error);
+            break;
+        }
 
-    IsWSAStartupCalled = TRUE;
+        IsWSAStartupCalled = TRUE;
 
-    ZeroMemory(&Hints, sizeof(Hints));
-    Hints.ai_family = AF_UNSPEC;
+        ZeroMemory(&Hints, sizeof(Hints));
+        Hints.ai_family = AF_UNSPEC;
 
-    //  Note that this is a simple sample that waits/cancels a single
-    //  asynchronous query. The reader may extend this to support multiple asynchronous queries.
-    QueryContext.CompleteEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-    if (QueryContext.CompleteEvent == nullptr) {
-        Error = GetLastError();
-        wprintf(L"Failed to create completion event: Error %d\n", Error);
-        goto exit;
-    }
+        QueryContext.CompleteEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+        if (QueryContext.CompleteEvent == nullptr) {
+            Error = GetLastError();
+            wprintf(L"Failed to create completion event: Error %d\n", Error);
+            break;
+        }
 
-    //  Initiate asynchronous GetAddrInfoExW.
-    //
-    //  Note GetAddrInfoEx can also be invoked asynchronously using an event
-    //  in the overlapped object (Just set hEvent in the Overlapped object and set NULL as completion callback.)
-    //
-    //  This sample uses the completion callback method.
+        Error = GetAddrInfoExW(Argv[1],
+                               nullptr,
+                               NS_DNS,
+                               nullptr,
+                               &Hints,
+                               &QueryContext.QueryResults,
+                               nullptr,
+                               &QueryContext.QueryOverlapped,
+                               QueryCompleteCallback,
+                               &CancelHandle);
 
-    Error = GetAddrInfoExW(Argv[1],
-                           nullptr,
-                           NS_DNS,
-                           nullptr,
-                           &Hints,
-                           &QueryContext.QueryResults,
-                           nullptr,
-                           &QueryContext.QueryOverlapped,
-                           QueryCompleteCallback,
-                           &CancelHandle);
+        if (Error != WSA_IO_PENDING) {
+            QueryCompleteCallback(Error, 0, &QueryContext.QueryOverlapped);
+            break;
+        }
 
-    //  If GetAddrInfoExW() returns  WSA_IO_PENDING, GetAddrInfoExW will invoke the completion routine.
-    //  If GetAddrInfoExW returned anything else we must invoke the completion directly.
-    if (Error != WSA_IO_PENDING) {
-        QueryCompleteCallback(Error, 0, &QueryContext.QueryOverlapped);
-        goto exit;
-    }
-
-    //  Wait for query completion for 5 seconds and cancel the query if it has not yet completed.
-    if (WaitForSingleObject(QueryContext.CompleteEvent, QueryTimeout) == WAIT_TIMEOUT) {
-        //  Cancel the query: Note that the GetAddrInfoExCancelcancel call does not block, so we must wait for the completion routine to be invoked.
-        //  If we fail to wait, WSACleanup() could be called while an asynchronous query is still in progress, possibly causing a crash.
-
-        wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
-
-        GetAddrInfoExCancel(&CancelHandle);
-
-        WaitForSingleObject(QueryContext.CompleteEvent, INFINITE);
-    }
-
-exit:
+        if (WaitForSingleObject(QueryContext.CompleteEvent, QueryTimeout) == WAIT_TIMEOUT) {
+            wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
+            GetAddrInfoExCancel(&CancelHandle);
+            WaitForSingleObject(QueryContext.CompleteEvent, INFINITE);
+        }
+    } while (0);
 
     if (IsWSAStartupCalled) {
         WSACleanup();
@@ -559,7 +542,6 @@ exit:
 
 
 VOID WINAPI QueryCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOVERLAPPED Overlapped)
-// Callback function called by Winsock as part of asynchronous query complete
 {
     PQUERY_CONTEXT QueryContext = nullptr;
     PADDRINFOEX QueryResults = nullptr;
@@ -569,30 +551,25 @@ VOID WINAPI QueryCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOVE
     UNREFERENCED_PARAMETER(Bytes);
 
     QueryContext = CONTAINING_RECORD(Overlapped, QUERY_CONTEXT, QueryOverlapped);
-    if (Error != ERROR_SUCCESS) {
+    if (Error == ERROR_SUCCESS) {
+        wprintf(L"ResolveName succeeded. Query Results:\n");
+
+        QueryResults = QueryContext->QueryResults;
+        while (QueryResults) {
+            AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
+            WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
+            wprintf(L"Ip Address: %s\n", AddrString);
+            QueryResults = QueryResults->ai_next;
+        }
+    } else {
         wprintf(L"ResolveName failed with %u\n", Error);
-        goto exit;
     }
 
-    wprintf(L"ResolveName succeeded. Query Results:\n");
-
-    QueryResults = QueryContext->QueryResults;
-
-    while (QueryResults) {
-        AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
-
-        WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
-
-        wprintf(L"Ip Address: %s\n", AddrString);
-        QueryResults = QueryResults->ai_next;
-    }
-
-exit:
     if (QueryContext->QueryResults) {
         FreeAddrInfoEx(QueryContext->QueryResults);
     }
 
-    SetEvent(QueryContext->CompleteEvent); //  Notify caller that the query completed
+    SetEvent(QueryContext->CompleteEvent);
 }
 
 
@@ -776,68 +753,52 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
 
     ZeroMemory(&QueryContext, sizeof(QueryContext));
 
-    if (Argc != 2) { //  Validate the parameters
-        wprintf(L"Usage: ResolveName <QueryName>\n");
-        goto exit;
-    }
+    do {
+        if (Argc != 2) {
+            wprintf(L"Usage: ResolveName <QueryName>\n");
+            break;
+        }
 
-    Error = WSAStartup(MAKEWORD(2, 2), &wsaData); //  All Winsock functions require WSAStartup() to be called first
-    if (Error != 0) {
-        wprintf(L"WSAStartup failed with %d\n", Error);
-        goto exit;
-    }
+        Error = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        if (Error != 0) {
+            wprintf(L"WSAStartup failed with %d\n", Error);
+            break;
+        }
 
-    IsWSAStartupCalled = TRUE;
+        IsWSAStartupCalled = TRUE;
 
-    ZeroMemory(&Hints, sizeof(Hints));
-    Hints.ai_family = AF_UNSPEC;
+        ZeroMemory(&Hints, sizeof(Hints));
+        Hints.ai_family = AF_UNSPEC;
 
-    //  Note that this is a simple sample that waits/cancels a single asynchronous query.
-    //  The reader may extend this to support multiple asynchronous queries.
-    QueryContext.CompleteEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-    if (QueryContext.CompleteEvent == nullptr) {
-        Error = GetLastError();
-        wprintf(L"Failed to create completion event: Error %d\n", Error);
-        goto exit;
-    }
+        QueryContext.CompleteEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+        if (QueryContext.CompleteEvent == nullptr) {
+            Error = GetLastError();
+            wprintf(L"Failed to create completion event: Error %d\n", Error);
+            break;
+        }
 
-    //  Initiate asynchronous GetAddrInfoExW.
-    //
-    //  Note GetAddrInfoEx can also be invoked asynchronously using an event
-    //  in the overlapped object (Just set hEvent in the Overlapped object and set NULL as completion callback.)
-    //
-    //  This sample uses the completion callback method.
-    Error = GetAddrInfoExW(Argv[1], 
-                           nullptr,
-                           NS_DNS,
-                           nullptr,
-                           &Hints,
-                           &QueryContext.QueryResults,
-                           nullptr,
-                           &QueryContext.QueryOverlapped,
-                           QueryCompleteCallback2,
-                           &CancelHandle);
+        Error = GetAddrInfoExW(Argv[1],
+                               nullptr,
+                               NS_DNS,
+                               nullptr,
+                               &Hints,
+                               &QueryContext.QueryResults,
+                               nullptr,
+                               &QueryContext.QueryOverlapped,
+                               QueryCompleteCallback2,
+                               &CancelHandle);
 
-    //  If GetAddrInfoExW() returns  WSA_IO_PENDING, GetAddrInfoExW will invoke the completion routine.
-    //  If GetAddrInfoExW returned anything else we must invoke the completion directly.
-    if (Error != WSA_IO_PENDING) {
-        QueryCompleteCallback2(Error, 0, &QueryContext.QueryOverlapped);
-        goto exit;
-    }
+        if (Error != WSA_IO_PENDING) {
+            QueryCompleteCallback2(Error, 0, &QueryContext.QueryOverlapped);
+            break;
+        }
 
-    //  Wait for query completion for 5 seconds and cancel the query if it has not yet completed.
-    if (WaitForSingleObject(QueryContext.CompleteEvent, QueryTimeout) == WAIT_TIMEOUT) {
-        //  Cancel the query: Note that the GetAddrInfoExCancelcancel call does not block, so we must wait for the completion routine to be invoked.
-        //  If we fail to wait, WSACleanup() could be called while an asynchronous query is still in progress, possibly causing a crash.
-
-        wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
-
-        GetAddrInfoExCancel(&CancelHandle);
-
-        WaitForSingleObject(QueryContext.CompleteEvent, INFINITE);
-    }
-
-exit:
+        if (WaitForSingleObject(QueryContext.CompleteEvent, QueryTimeout) == WAIT_TIMEOUT) {
+            wprintf(L"The query took longer than %u seconds to complete; cancelling the query...\n", QueryTimeout / 1000);
+            GetAddrInfoExCancel(&CancelHandle);
+            WaitForSingleObject(QueryContext.CompleteEvent, INFINITE);
+        }
+    } while (0);
 
     if (IsWSAStartupCalled) {
         WSACleanup();
@@ -852,7 +813,6 @@ exit:
 
 
 VOID WINAPI QueryCompleteCallback2(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOVERLAPPED Overlapped)
-// Callback function called by Winsock as part of asynchronous query complete
 {
     PQUERY_CONTEXT QueryContext = nullptr;
     PADDRINFOEX QueryResults = nullptr;
@@ -862,30 +822,25 @@ VOID WINAPI QueryCompleteCallback2(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOV
     UNREFERENCED_PARAMETER(Bytes);
 
     QueryContext = CONTAINING_RECORD(Overlapped, QUERY_CONTEXT, QueryOverlapped);
-    if (Error != ERROR_SUCCESS) {
+    if (Error == ERROR_SUCCESS) {
+        wprintf(L"ResolveName succeeded. Query Results:\n");
+
+        QueryResults = QueryContext->QueryResults;
+        while (QueryResults) {
+            AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
+            WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
+            wprintf(L"Ip Address: %s\n", AddrString);
+            QueryResults = QueryResults->ai_next;
+        }
+    } else {
         wprintf(L"ResolveName failed with %u\n", Error);
-        goto exit;
     }
 
-    wprintf(L"ResolveName succeeded. Query Results:\n");
-
-    QueryResults = QueryContext->QueryResults;
-
-    while (QueryResults) {
-        AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
-
-        WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
-
-        wprintf(L"Ip Address: %s\n", AddrString);
-        QueryResults = QueryResults->ai_next;
-    }
-
-exit:
     if (QueryContext->QueryResults) {
         FreeAddrInfoEx(QueryContext->QueryResults);
     }
 
-    SetEvent(QueryContext->CompleteEvent); //  Notify caller that the query completed
+    SetEvent(QueryContext->CompleteEvent);
 }
 
 
