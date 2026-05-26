@@ -29,7 +29,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     char * ip{};
     u_short port = 27015;
     thisHost = gethostbyname("");
-    ip = inet_ntoa(*reinterpret_cast<struct in_addr *>(*thisHost->h_addr_list));
+    char ipBuf[INET_ADDRSTRLEN]{};
+    inet_ntop(AF_INET, *thisHost->h_addr_list, ipBuf, sizeof(ipBuf));
+    ip = ipBuf;
 
     sockaddr_in service{};
     service.sin_family = AF_INET;
@@ -209,7 +211,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
     char * ip{};
     u_short port = 27015;
     thisHost = gethostbyname("");
-    ip = inet_ntoa(*reinterpret_cast<struct in_addr *>(*thisHost->h_addr_list));
+    char ipBuf[INET_ADDRSTRLEN]{};
+    inet_ntop(AF_INET, *thisHost->h_addr_list, ipBuf, sizeof(ipBuf));
+    ip = ipBuf;
 
     sockaddr_in service{};
     service.sin_family = AF_INET;

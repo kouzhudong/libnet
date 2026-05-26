@@ -12,7 +12,9 @@ void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
     case AF_INET: {
         const PSOCKADDR_IN sockaddr_ipv4 = reinterpret_cast<const PSOCKADDR_IN>(Address->lpSockaddr);
 
-        printf("\t%s:%s\n", Msg, inet_ntoa(sockaddr_ipv4->sin_addr));
+        char v4Buf[INET_ADDRSTRLEN]{};
+        inet_ntop(AF_INET, &sockaddr_ipv4->sin_addr, v4Buf, sizeof(v4Buf));
+        printf("\t%s:%s\n", Msg, v4Buf);
 
         break;
     }
@@ -429,7 +431,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
         //经测试：NumIf > pInfo->NumAdapters.
 
 #pragma prefast(push)
-#pragma prefast(disable : 6011, "取消对 NULL 指针“pInfo”的引用")
+#pragma prefast(disable : 6011, "取消对 nullptr 指针“pInfo”的引用")
         printf("Number of Adapters: %ld\n\n", pInfo->NumAdapters);
 #pragma prefast(pop)
 

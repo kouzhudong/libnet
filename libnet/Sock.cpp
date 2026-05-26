@@ -439,7 +439,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"\tLength of the blob: %u\n", static_cast<DWORD>(ptr->ai_bloblen));
 
         if (ptr->ai_provider == nullptr)
-            wprintf(L"\tNamespace provider GUID: (null)\n");
+            wprintf(L"\tNamespace provider GUID: (nullptr)\n");
         else {
             iRet = StringFromGUID2(*(ptr->ai_provider), reinterpret_cast<LPOLESTR>(&GuidString), 39);
             // For c rather than C++ source code, the above line needs to be
@@ -703,12 +703,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname);
 
         if (ptr->ai_blob == nullptr)
-            wprintf(L"\tBlob: (null)\n");
+            wprintf(L"\tBlob: (nullptr)\n");
         else
             wprintf(L"\tLength of the blob: %u\n", static_cast<DWORD>(ptr->ai_bloblen));
 
         if (ptr->ai_provider == nullptr)
-            wprintf(L"\tNamespace provider GUID: (null)\n");
+            wprintf(L"\tNamespace provider GUID: (nullptr)\n");
         else {
             iRet = StringFromGUID2(*(ptr->ai_provider), reinterpret_cast<LPOLESTR>(&GuidString), 39);
             // For c rather than C++ source code, the above line needs to be

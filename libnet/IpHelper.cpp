@@ -51,16 +51,20 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
     printf("\tNum Entries: %lu\n", pIPAddrTable->dwNumEntries);
     for (int i = 0; i < (int)pIPAddrTable->dwNumEntries; i++) {
         IN_ADDR IPAddr{};
+        char addrBuf[INET_ADDRSTRLEN]{};
         printf("\n\tInterface Index[%d]:\t%lu\n", i, pIPAddrTable->table[i].dwIndex);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwAddr;
-        printf("\tIP Address[%d]:     \t%s\n", i, inet_ntoa(IPAddr));
+        inet_ntop(AF_INET, &IPAddr, addrBuf, sizeof(addrBuf));
+        printf("\tIP Address[%d]:     \t%s\n", i, addrBuf);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwMask;
-        printf("\tSubnet Mask[%d]:    \t%s\n", i, inet_ntoa(IPAddr));
+        inet_ntop(AF_INET, &IPAddr, addrBuf, sizeof(addrBuf));
+        printf("\tSubnet Mask[%d]:    \t%s\n", i, addrBuf);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwBCastAddr;
+        inet_ntop(AF_INET, &IPAddr, addrBuf, sizeof(addrBuf));
 
 #pragma warning(push)
 #pragma warning(disable : 4476) //"printf": 格式说明符中的类型字段字符")"未知
-        printf("\tBroadCast[%d]:      \t%s (%lu%)\n", i, inet_ntoa(IPAddr), pIPAddrTable->table[i].dwBCastAddr);
+        printf("\tBroadCast[%d]:      \t%s (%lu%)\n", i, addrBuf, pIPAddrTable->table[i].dwBCastAddr);
 #pragma warning(pop)
 
         printf("\tReassembly size[%d]:\t%lu\n", i, pIPAddrTable->table[i].dwReasmSize);
@@ -127,7 +131,9 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
 
         in_addr in;
         in.S_un.S_addr = IpNetTable->table[i].dwAddr;
-        printf("IPv4:%-16s\t", inet_ntoa(in));
+        char v4Str[INET_ADDRSTRLEN]{};
+        inet_ntop(AF_INET, &in, v4Str, sizeof(v4Str));
+        printf("IPv4:%-16s\t", v4Str);
 
         printf("MAC:");
         for (DWORD j = 0; j < IpNetTable->table[i].dwPhysAddrLen; j++) {
@@ -452,11 +458,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
         for (i = 0; i < (int)pIpForwardTable->dwNumEntries; i++) {
             /* Convert IPv4 addresses to strings */
             IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardDest;
-            strcpy_s(szDestIp, sizeof(szDestIp), inet_ntoa(IpAddr));
+            inet_ntop(AF_INET, &IpAddr, szDestIp, sizeof(szDestIp));
             IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardMask;
-            strcpy_s(szMaskIp, sizeof(szMaskIp), inet_ntoa(IpAddr));
+            inet_ntop(AF_INET, &IpAddr, szMaskIp, sizeof(szMaskIp));
             IpAddr.S_un.S_addr = (u_long)pIpForwardTable->table[i].dwForwardNextHop;
-            strcpy_s(szGatewayIp, sizeof(szGatewayIp), inet_ntoa(IpAddr));
+            inet_ntop(AF_INET, &IpAddr, szGatewayIp, sizeof(szGatewayIp));
 
             printf("\n\tRoute[%d] Dest IP: %s\n", i, szDestIp);
             printf("\tRoute[%d] Subnet Mask: %s\n", i, szMaskIp);
@@ -863,12 +869,12 @@ void PrintUnicastIpAddress(PMIB_UNICASTIPADDRESS_ROW pipRow)
     switch (pipRow->Address.si_family) {
     case AF_INET:
         wprintf(L"IPv4\n");
-        if (InetNtop(AF_INET, &pipRow->Address.Ipv4.sin_addr, Ipv4String, _ARRAYSIZE(Ipv4String)) != NULL)
+        if (InetNtop(AF_INET, &pipRow->Address.Ipv4.sin_addr, Ipv4String, _ARRAYSIZE(Ipv4String)) != nullptr)
             wprintf(L"IPv4 Address:\t\t\t %ws\n", Ipv4String);
         break;
     case AF_INET6:
         wprintf(L"IPv6\n");
-        if (InetNtop(AF_INET6, &pipRow->Address.Ipv6.sin6_addr, Ipv6String, _ARRAYSIZE(Ipv6String)) != NULL)
+        if (InetNtop(AF_INET6, &pipRow->Address.Ipv6.sin6_addr, Ipv6String, _ARRAYSIZE(Ipv6String)) != nullptr)
             wprintf(L"IPv6 Address:\t\t\t %s\n", Ipv6String);
         break;
     default:
@@ -1181,9 +1187,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     A pointer to the IPv6 header options for the request, in the form of an IP_OPTION_INFORMATION structure.
     On a 64-bit platform, this parameter is in the form for an IP_OPTION_INFORMATION32 structure.
 
-    This parameter may be NULL if no IP header options need to be specified.
+    This parameter may be nullptr if no IP header options need to be specified.
 
-    Note  On Windows Server 2003 and Windows XP, the RequestOptions parameter is not optional and must not be NULL and only the Ttl and Flags members are used.
+    Note  On Windows Server 2003 and Windows XP, the RequestOptions parameter is not optional and must not be nullptr and only the Ttl and Flags members are used.
     */
     IP_OPTION_INFORMATION RequestOptions = {30, 0, 0, 0, nullptr};
 
@@ -1199,9 +1205,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     /*
     The time, in milliseconds, to wait for replies.
     This parameter is only used if the Icmp6SendEcho2 function is called synchronously.
-    So this parameter is not used if either the ApcRoutine or Event parameter are not NULL.
-    （谷歌翻译：因此，如果 ApcRoutine 或 Event 参数不为 NULL，则不使用此参数。）
-    反过来，ApcRoutine 和 Event 参数为 NULL，则使用此参数。
+    So this parameter is not used if either the ApcRoutine or Event parameter are not nullptr.
+    （谷歌翻译：因此，如果 ApcRoutine 或 Event 参数不为 nullptr，则不使用此参数。）
+    反过来，ApcRoutine 和 Event 参数为 nullptr，则使用此参数。
 
     这个必须设置，不是可选的，且不能为0，你看是_In_，否则，返回ERROR_INVALID_PARAMETER。
     */
@@ -1476,7 +1482,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getipin
 {
     int i;
     DWORD dwRetVal = 0;
-    PMIB_IPINTERFACE_TABLE pipTable = NULL;
+    PMIB_IPINTERFACE_TABLE pipTable = nullptr;
 
     dwRetVal = GetIpInterfaceTable(AF_UNSPEC, &pipTable);
     if (dwRetVal != NO_ERROR) {
@@ -1580,7 +1586,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getipin
     }
 
     FreeMibTable(pipTable);
-    pipTable = NULL;
+    pipTable = nullptr;
     return dwRetVal;
 }
 
@@ -1632,7 +1638,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
     unsigned long ipaddr = INADDR_NONE;
     DWORD dwRetVal = 0;
     char SendData[32] = "Data Buffer";
-    LPVOID ReplyBuffer = NULL;
+    LPVOID ReplyBuffer = nullptr;
     DWORD ReplySize = 0;
 
     // Validate the parameters
@@ -1678,7 +1684,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
             printf("\tReceived %ld icmp message response\n", dwRetVal);
             printf("\tInformation from this response:\n");
         }
-        printf("\t  Received from %s\n", inet_ntoa(ReplyAddr));
+        do { char replyBuf[INET_ADDRSTRLEN]{}; inet_ntop(AF_INET, &ReplyAddr, replyBuf, sizeof(replyBuf)); printf("\t  Received from %s\n", replyBuf); } while(0);
         printf("\t  Status = %ld\n", pEchoReply->Status);
         printf("\t  Roundtrip time = %ld milliseconds\n", pEchoReply->RoundTripTime);
     } else {
@@ -1711,7 +1717,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
     DWORD dwRetVal = 0;
     DWORD dwError = 0;
     char SendData[] = "Data Buffer";
-    LPVOID ReplyBuffer = NULL;
+    LPVOID ReplyBuffer = nullptr;
     DWORD ReplySize = 0;
 
     // Validate the parameters.
@@ -1754,7 +1760,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
             printf("\tReceived %ld icmp message response\n", dwRetVal);
             printf("\tInformation from this response:\n");
         }
-        printf("\t  Received from %s\n", inet_ntoa(ReplyAddr));
+        do { char replyBuf[INET_ADDRSTRLEN]{}; inet_ntop(AF_INET, &ReplyAddr, replyBuf, sizeof(replyBuf)); printf("\t  Received from %s\n", replyBuf); } while(0);
         printf("\t  Status = %ld  ", pEchoReply->Status);
         switch (pEchoReply->Status) {
         case IP_DEST_HOST_UNREACHABLE:
