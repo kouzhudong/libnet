@@ -70,17 +70,6 @@ int Usage(_In_ LPCWSTR programName)
 }
 
 
-void help()
-{
-    banner();
-}
-
-
-void init()
-{
-}
-
-
 int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 {
     //__debugbreak();
@@ -98,6 +87,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     if (1 == argc) {
         Usage(Arglist[0]);
+        LocalFree(Arglist);
         return ret;
     }
 

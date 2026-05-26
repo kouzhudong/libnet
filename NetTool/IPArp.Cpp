@@ -17,7 +17,7 @@
 #pragma warning(disable : 4996)
 #pragma warning(disable : 28193)
 
-void Usage(const char * pszProgramName)
+static void Usage(const char * pszProgramName)
 {
     printf("%s -s inet_addr eth_addr [if_addr]\n", pszProgramName);
     printf("%s -d inet_addr [if_addr]\n", pszProgramName);
@@ -39,8 +39,6 @@ void Usage(const char * pszProgramName)
     printf("                                  arp entry on interface number 0x2000003.\n");
     printf("   >IpArp -a                                    ....Displays the arp table.\n");
     printf("   >IpArp -d 157.55.85.212                      ....Delete an entry.\n");
-    WSACleanup();
-    exit(1);
 }
 
 
@@ -55,11 +53,17 @@ void _cdecl IpArp(int argc, char ** argv)
         return;
     }
 
-    if ((argc < 2) || (argv[1][0] != '-'))
+    if ((argc < 2) || (argv[1][0] != '-')) {
         Usage("IpArp");
+        WSACleanup();
+        return;
+    }
 
-    if (strlen(argv[1]) > 2)
+    if (strlen(argv[1]) > 2) {
         Usage("IpArp");
+        WSACleanup();
+        return;
+    }
 
     switch (argv[1][1]) {
     case 'a':
@@ -245,7 +249,7 @@ int StringToPhysAddr(char * szInEther, char * szOutEther)
     if (strlen(szInEther) != 17)
         return (-1);
 
-    if (szInEther[2] != DASH || szInEther[5] != DASH || szInEther[8] != DASH || szInEther[14] != DASH)
+    if (szInEther[2] != DASH || szInEther[5] != DASH || szInEther[8] != DASH || szInEther[11] != DASH || szInEther[14] != DASH)
         return (-1);
 
     if (!isxdigit(szInEther[0]) || !isxdigit(szInEther[1]) || !isxdigit(szInEther[3]) || !isxdigit(szInEther[4]) || !isxdigit(szInEther[6]) || !isxdigit(szInEther[7]) ||
@@ -322,7 +326,10 @@ void PrintIpNetTable(PMIB_IPNETTABLE pIpNetTable)
             free(pIpAddrTable);
         return;
     }
-    assert(pIpAddrTable);
+    if (pIpAddrTable == NULL) {
+        printf("GetIpAddrTable returned NULL\n");
+        return;
+    }
 
     // Note: the ARP table should be sorted in interface index
     DWORD dwCurrIndex = pIpNetTable->table[0].dwIndex;
@@ -418,7 +425,8 @@ DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE & pIpAddrTable, bool fOrder)
         return status;
     } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpAddrTable = (PMIB_IPADDRTABLE)malloc(dwActualSize);
-        assert(pIpAddrTable);
+        if (pIpAddrTable == NULL)
+            return ERROR_NOT_ENOUGH_MEMORY;
 
         statusRetry = GetIpAddrTable(pIpAddrTable, &dwActualSize, fOrder);
         return statusRetry;
@@ -442,7 +450,8 @@ DWORD MyGetIpNetTable(PMIB_IPNETTABLE & pIpNetTable, bool fOrder)
         return status;
     } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpNetTable = (PMIB_IPNETTABLE)malloc(dwActualSize);
-        assert(pIpNetTable);
+        if (pIpNetTable == NULL)
+            return ERROR_NOT_ENOUGH_MEMORY;
 
         statusRetry = GetIpNetTable(pIpNetTable, &dwActualSize, fOrder);
         if (statusRetry != NO_ERROR) {

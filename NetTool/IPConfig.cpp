@@ -186,7 +186,7 @@ void __cdecl Ipconfig(void)
         printf("\tSecondary WINS Server . . . : %s\n", pAdapt->SecondaryWinsServer.IpAddress.String);
 
         // Display coordinated universal time - GMT
-    #ifdef WIN64
+    #ifdef _WIN64
         error = _localtime64_s(&newtime, &pAdapt->LeaseObtained);
     #else
         error = _localtime32_s(&newtime, (const __time32_t *)&pAdapt->LeaseObtained);
@@ -203,7 +203,7 @@ void __cdecl Ipconfig(void)
             }
         }
 
-    #ifdef WIN64
+    #ifdef _WIN64
         error = _localtime64_s(&newtime, &pAdapt->LeaseExpires);
     #else
         error = _localtime32_s(&newtime, (const __time32_t *)&pAdapt->LeaseExpires);
@@ -222,4 +222,7 @@ void __cdecl Ipconfig(void)
 
         pAdapt = pAdapt->Next;
     }
+
+    GlobalFree(pFixedInfo);
+    GlobalFree(pAdapterInfo);
 }

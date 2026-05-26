@@ -18,6 +18,11 @@
 #pragma warning(disable : 28193)
 
 
+static bool InterfaceIdxToInterfaceIp(PMIB_IPADDRTABLE pIpAddrTable, DWORD dwIndex, char str[]);
+static bool InterfaceIpToIdxAndMask(PMIB_IPADDRTABLE pIpAddrTable, char str[], DWORD & dwIndex, DWORD & dwMask);
+static DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE & pIpAddrTable, BOOL fOrder = FALSE);
+
+
 static void Usage(const char * pszProgramName)
 {
     printf("Manipulates network routing tables.\n\n");
@@ -52,8 +57,6 @@ static void Usage(const char * pszProgramName)
     printf("> IpRoute -d 157.0.0.0\n");
     printf("> IpRoute -p\n");
 
-    WSACleanup();
-    exit(1);
 }
 
 
@@ -71,10 +74,16 @@ void _cdecl IpRoute(int argc, char ** argv)
         return;
     }
 
-    if ((argc < 2) || (argv[1][0] != '-'))
+    if ((argc < 2) || (argv[1][0] != '-')) {
         Usage("IpRoute");
-    if (strlen(argv[1]) > 2)
+        WSACleanup();
+        return;
+    }
+    if (strlen(argv[1]) > 2) {
         Usage("IpRoute");
+        WSACleanup();
+        return;
+    }
 
     switch (argv[1][1]) {
     case 'p':
@@ -187,7 +196,10 @@ void DoSetIpForwardEntry(char * pszDest, char * pszNetMask, char * pszGateway, c
         return;
     }
 
-    assert(pIpAddrTable);
+    if (pIpAddrTable == NULL) {
+        printf("GetIpAddrTable returned NULL\n");
+        return;
+    }
     if (InterfaceIpToIdxAndMask(pIpAddrTable, pszInterface, dwIfIndex, dwIfMask) == FALSE) {
         printf("IpRoute: Bad Argument %s\n", pszInterface);
         return;
@@ -275,7 +287,8 @@ DWORD MyGetIpForwardTable(PMIB_IPFORWARDTABLE & pIpRouteTab, BOOL fOrder)
         return status;
     } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpRouteTab = (PMIB_IPFORWARDTABLE)malloc(dwActualSize);
-        assert(pIpRouteTab);
+        if (pIpRouteTab == NULL)
+            return ERROR_NOT_ENOUGH_MEMORY;
 
         statusRetry = GetIpForwardTable(pIpRouteTab, &dwActualSize, fOrder);
         return statusRetry;
@@ -321,7 +334,10 @@ void PrintIpForwardTable(PMIB_IPFORWARDTABLE pIpRouteTable)
             free(pIpAddrTable);
         return;
     }
-    assert(pIpAddrTable);
+    if (pIpAddrTable == NULL) {
+        printf("GetIpAddrTable returned NULL\n");
+        return;
+    }
 
     printf("Active Routes:\n\n");
 
@@ -378,7 +394,7 @@ static bool InterfaceIdxToInterfaceIp(PMIB_IPADDRTABLE pIpAddrTable, DWORD dwInd
 }
 
 
-bool InterfaceIpToIdxAndMask(PMIB_IPADDRTABLE pIpAddrTable, char str[], DWORD & dwIndex, DWORD & dwMask)
+static bool InterfaceIpToIdxAndMask(PMIB_IPADDRTABLE pIpAddrTable, char str[], DWORD & dwIndex, DWORD & dwMask)
 // Inputs: pIpAddrTable is the IP address table
 //         str is the Interface Ip address in dotted decimal format
 // Output: If it returns TRUE, dwIndex contains the interface index number and dwMask contains the corresponding subnet mask.
@@ -404,7 +420,7 @@ bool InterfaceIpToIdxAndMask(PMIB_IPADDRTABLE pIpAddrTable, char str[], DWORD & 
 }
 
 
-DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE & pIpAddrTable, BOOL fOrder)
+static DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE & pIpAddrTable, BOOL fOrder)
 // If returned status is NO_ERROR, then pIpAddrTable points to a Ip Address table.
 {
     DWORD status = NO_ERROR;
@@ -418,7 +434,8 @@ DWORD MyGetIpAddrTable(PMIB_IPADDRTABLE & pIpAddrTable, BOOL fOrder)
         return status;
     } else if (status == ERROR_INSUFFICIENT_BUFFER) { // need more space
         pIpAddrTable = (PMIB_IPADDRTABLE)malloc(dwActualSize);
-        assert(pIpAddrTable);
+        if (pIpAddrTable == NULL)
+            return ERROR_NOT_ENOUGH_MEMORY;
 
         statusRetry = GetIpAddrTable(pIpAddrTable, &dwActualSize, fOrder);
         return statusRetry;

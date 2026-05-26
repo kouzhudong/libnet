@@ -31,32 +31,29 @@
 
 #include "whois.h"
 
-#pragma warning(disable : 6011) // 取消对 NULL 指针“XXX”的引用
+#pragma warning(disable : 6011)
 
 static char NICHOST[] = "whois.internic.net";
-char * host = NULL;
-int optset = 0;
-static void usage();
-static void cleanup(int iExitCode);
 
-void getwhoisserver(int argc, char ** argv)
+
+static void getwhoisserver(int argc, char ** argv, char ** outHost, int * outOptset)
 {
     int i = 1;
 
     while (i < argc) {
         if (!strcmp(argv[i], "-h")) {
             if (i + 2 < argc) {
-                host = argv[i + 1];
-                optset = i + 1;
+                *outHost = argv[i + 1];
+                *outOptset = i + 1;
             } else {
-                optset = argc;
+                *outOptset = argc;
             }
             return;
         }
         i++;
     }
-    host = NICHOST;
-    optset = 1;
+    *outHost = NICHOST;
+    *outOptset = 1;
 }
 
 
@@ -66,96 +63,87 @@ int whois(int argc, char ** argv)
     struct sockaddr_in sin;
     struct hostent * hp;
     struct servent * sp;
-    SOCKET s;
+    SOCKET s = INVALID_SOCKET;
+    int status = 0;
+    char * host = NULL;
+    int optset = 0;
 
     WORD wVersionRequested;
     WSADATA wsaData;
     int err;
 
-    getwhoisserver(argc, argv);
+    getwhoisserver(argc, argv, &host, &optset);
     argc -= optset;
     argv += optset;
 
-    if (!host || !argc)
-        usage();
+    if (!host || !argc) {
+        (void)fprintf(stderr, "usage: whois [-h hostname] name ...\n");
+        return 1;
+    }
 
-    /* Start winsock */
     wVersionRequested = MAKEWORD(1, 1);
     err = WSAStartup(wVersionRequested, &wsaData);
     if (err != 0) {
-        /* Tell the user that we couldn't find a usable */
-        /* WinSock DLL.                                 */
         perror("whois: WSAStartup failed");
-        cleanup(1);
+        return 1;
     }
 
-    hp = gethostbyname(host);
-    if (hp == NULL) {
-        (void)fprintf(stderr, "whois: %s: ", host);
-        cleanup(1);
-    }
-    host = hp->h_name;
+    do {
+        hp = gethostbyname(host);
+        if (hp == NULL) {
+            (void)fprintf(stderr, "whois: %s: ", host);
+            status = 1;
+            break;
+        }
+        host = hp->h_name;
 
-    s = socket(hp->h_addrtype, SOCK_STREAM, 0);
-    if (s == INVALID_SOCKET) {
-        perror("whois: socket");
-        cleanup(1);
-    }
+        s = socket(hp->h_addrtype, SOCK_STREAM, 0);
+        if (s == INVALID_SOCKET) {
+            perror("whois: socket");
+            status = 1;
+            break;
+        }
 
-    memset(/*(caddr_t)*/ &sin, 0, sizeof(sin));
-    sin.sin_family = hp->h_addrtype;
-    if (bind(s, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
-        perror("whois: bind");
-        cleanup(1);
-    }
+        memset(&sin, 0, sizeof(sin));
+        sin.sin_family = hp->h_addrtype;
+        if (bind(s, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
+            perror("whois: bind");
+            status = 1;
+            break;
+        }
 
-    memcpy((char *)&sin.sin_addr, hp->h_addr, hp->h_length);
-    sp = getservbyname("nicname", "tcp");
-    if (sp == NULL) {
-        (void)fprintf(stderr, "whois: nicname/tcp: unknown service\n");
-        cleanup(1);
-    }
+        memcpy((char *)&sin.sin_addr, hp->h_addr, hp->h_length);
+        sp = getservbyname("nicname", "tcp");
+        if (sp == NULL) {
+            (void)fprintf(stderr, "whois: nicname/tcp: unknown service\n");
+            status = 1;
+            break;
+        }
 
-    sin.sin_port = sp->s_port;
+        sin.sin_port = sp->s_port;
 
-    /* have network connection; identify the host connected with */
-    (void)printf("[%s]\n", hp->h_name);
+        (void)printf("[%s]\n", hp->h_name);
 
-    if (connect(s, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
-        fprintf(stderr, "whois: connect error = %d\n", WSAGetLastError());
-        cleanup(1);
-    }
+        if (connect(s, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
+            fprintf(stderr, "whois: connect error = %d\n", WSAGetLastError());
+            status = 1;
+            break;
+        }
 
-    /* WinSock doesn't allow using a socket as a file descriptor. */
-    /* Have to use send() and recv().  whois will drop connection. */
-
-    /* For each request */
-    while (argc-- > 1) {
-        /* Send the request */
+        while (argc-- > 1) {
+            send(s, *argv, (int)strlen(*argv), 0);
+            send(s, " ", 1, 0);
+            argv++;
+        }
         send(s, *argv, (int)strlen(*argv), 0);
-        send(s, " ", 1, 0);
-        argv++;
-    }
-    /* Send the last request */
-    send(s, *argv, (int)strlen(*argv), 0);
-    send(s, "\r\n", 2, 0);
+        send(s, "\r\n", 2, 0);
 
-    /* Receive anything and print it */
-    while (recv(s, &ch, 1, 0) == 1)
-        putchar(ch);
+        while (recv(s, &ch, 1, 0) == 1)
+            putchar(ch);
+    } while (0);
 
-    cleanup(0);
-    return 0;
-}
-
-static void usage()
-{
-    (void)fprintf(stderr, "usage: whois [-h hostname] name ...\n");
-    cleanup(1);
-}
-
-static void cleanup(int iExitCode)
-{
+    if (s != INVALID_SOCKET)
+        closesocket(s);
     WSACleanup();
-    exit(iExitCode);
+    return status;
 }
