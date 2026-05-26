@@ -458,6 +458,7 @@ int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
 功能：获取本地IPv4地址的默认网关地址（也是IPv4，不包括IPv6）。
 */
 {
+    Gateway[0] = '\0';
     ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
     PIP_ADAPTER_INFO pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(sizeof(IP_ADAPTER_INFO));
     if (pAdapterInfo == nullptr) {
@@ -512,6 +513,8 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
 2.Gateway容纳下一个IPv6地址的字符串。
 */
 {
+    Gateway[0] = '\0';
+
     /* Declare and initialize variables */
     DWORD dwRetVal = 0;
     unsigned int i = 0;
@@ -632,6 +635,7 @@ int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac)
 3.最好的思路是用ResolveIpNetEntry2实现。
 */
 {
+    RtlZeroMemory(GatewayMac, sizeof(DL_EUI48));
     char Gateway[128] = {0};
     int ret = GetGatewayByIPv6(IPv6, Gateway);
     if (ret != 0 || Gateway[0] == '\0') {

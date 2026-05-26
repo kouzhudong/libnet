@@ -73,11 +73,14 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         case AF_UNSPEC:
             printf("Unspecified\n");
             break;
-        case AF_INET:
+        case AF_INET: {
             printf("AF_INET (IPv4)\n");
             sockaddr_ipv4 = reinterpret_cast<struct sockaddr_in *>(ptr->ai_addr);
-            printf("\tIPv4 address %s\n", inet_ntoa(sockaddr_ipv4->sin_addr));
+            char v4Buf[INET_ADDRSTRLEN]{};
+            inet_ntop(AF_INET, &sockaddr_ipv4->sin_addr, v4Buf, sizeof(v4Buf));
+            printf("\tIPv4 address %s\n", v4Buf);
             break;
+        }
         case AF_INET6:
             printf("AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
@@ -1049,7 +1052,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
         if (remoteHost->h_addrtype == AF_INET) {
             while (remoteHost->h_addr_list[i] != 0) {
                 addr.s_addr = *reinterpret_cast<u_long *>(remoteHost->h_addr_list[i++]);
-                printf("\tIPv4 Address #%d: %s\n", i, inet_ntoa(addr));
+                char addrStr[INET_ADDRSTRLEN]{};
+                inet_ntop(AF_INET, &addr, addrStr, sizeof(addrStr));
+                printf("\tIPv4 Address #%d: %s\n", i, addrStr);
             }
         } else if (remoteHost->h_addrtype == AF_INET6)
             printf("\tRemotehost is an IPv6 address\n");
@@ -1117,7 +1122,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
             in_addr addr{};
             while (remoteHost->h_addr_list[i] != 0) {
                 addr.s_addr = *reinterpret_cast<u_long *>(remoteHost->h_addr_list[i++]);
-                printf("\tIP Address #%d: %s\n", i, inet_ntoa(addr));
+                char addrStr[INET_ADDRSTRLEN]{};
+                inet_ntop(AF_INET, &addr, addrStr, sizeof(addrStr));
+                printf("\tIP Address #%d: %s\n", i, addrStr);
             }
         } else if (remoteHost->h_addrtype == AF_NETBIOS) {
             printf("NETBIOS address was returned\n");

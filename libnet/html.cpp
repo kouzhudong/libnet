@@ -135,7 +135,9 @@ made at 2014.07.23
                               0};
 
     ATOM a = RegisterClassEx(&sWndClassEx);
-    _ASSERTE(a);
+    if (!a) {
+        return;
+    }
     HWND hWindow = CreateWindowEx(0,
                                   L"correy",
                                   L"correy",

@@ -107,12 +107,12 @@ https://api4.ipify.org          结果是代理的。有可能访问失败。
 https://ifconfig.me/ip          有可能是IPv6.
 */
 {    
-    HINTERNET hInternet = InternetOpenA("IPFetcher", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);// 1. 初始化 Internet 环境
+    HINTERNET hInternet = InternetOpenA("IPFetcher", INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);// 1. 初始化 Internet 环境
     if (!hInternet) {
         return;
     }
     
-    HINTERNET hUrl = InternetOpenUrlA(hInternet, lpszUrl, NULL, 0, INTERNET_FLAG_RELOAD, 0); // 2. 打开返回纯文本 IP 的 URL
+    HINTERNET hUrl = InternetOpenUrlA(hInternet, lpszUrl, nullptr, 0, INTERNET_FLAG_RELOAD, 0); // 2. 打开返回纯文本 IP 的 URL
     if (hUrl) {
         char buffer[64]{};
         DWORD bytesRead{};        
@@ -137,16 +137,16 @@ AI的代码。
 */
 {
     static char ip[32] = {0};
-    HINTERNET hInternet = InternetOpenA("IPFetcher", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    HINTERNET hInternet = InternetOpenA("IPFetcher", INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
     if (!hInternet)
-        return NULL;
+        return nullptr;
 
     // 推荐几个稳定的服务，按顺序尝试
     const char * urls[] = {
-        "https://ipv4.icanhazip.com", "https://checkip.amazonaws.com", "https://ipv4.myip.wtf/text", "https://ipv4.seeip.org", "https://4.ident.me", NULL};
+        "https://ipv4.icanhazip.com", "https://checkip.amazonaws.com", "https://ipv4.myip.wtf/text", "https://ipv4.seeip.org", "https://4.ident.me", nullptr};
 
     for (int i = 0; urls[i]; i++) {
-        HINTERNET hConnect = InternetOpenUrlA(hInternet, urls[i], NULL, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+        HINTERNET hConnect = InternetOpenUrlA(hInternet, urls[i], nullptr, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0);
         if (!hConnect)
             continue;
 
@@ -171,7 +171,7 @@ AI的代码。
     }
 
     InternetCloseHandle(hInternet);
-    return NULL;
+    return nullptr;
 }
 
 

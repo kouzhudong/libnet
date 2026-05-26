@@ -3,6 +3,7 @@
 #include "IpAddr.h"
 
 
+#pragma warning(push)
 #pragma warning(disable : 6387)
 #pragma warning(disable : 6011)
 #pragma warning(disable : 6255)
@@ -146,7 +147,9 @@ SUPPORTED PLATFORMS:
         if (wType == DNS_TYPE_A) {
             // convert the Internet network address into a string in Internet standard dotted format.
             ipaddr.S_un.S_addr = (pDnsRecord->Data.A.IpAddress);
-            printf("The IP address of the host %s is %s \n", pOwnerName, inet_ntoa(ipaddr));
+            char ipBuf[INET_ADDRSTRLEN]{};
+            inet_ntop(AF_INET, &ipaddr, ipBuf, sizeof(ipBuf));
+            printf("The IP address of the host %s is %s \n", pOwnerName, ipBuf);
             DnsRecordListFree(pDnsRecord, freetype); // Free memory allocated for DNS records
         } else {
             printf("The host name is %ws  \n", (pDnsRecord->Data.PTR.pNameHost));
@@ -624,6 +627,9 @@ VOID WINAPI PrintDnsRecordList(PDNS_RECORD DnsRecord)
         DnsRecord = DnsRecord->pNext;
     }
 }
+
+
+#pragma warning(pop)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -16,55 +16,82 @@ int _cdecl special_ip()
     RtlIpv4AddressToStringW(&in4addr_any, IPv4);
     printf("in4addr_any:%ls.\n", IPv4);
     test.S_un.S_addr = IN4ADDR_ANY;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_any, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_any, &test)) {
+        printf("MISMATCH: in4addr_any\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_loopback, IPv4);
     printf("in4addr_loopback:%ls.\n", IPv4);
     test.S_un.S_addr = IN4ADDR_LOOPBACK;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_loopback, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_loopback, &test)) {
+        printf("MISMATCH: in4addr_loopback\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_broadcast, IPv4);
     printf("in4addr_broadcast:%ls.\n", IPv4);
     test.S_un.S_addr = IN4ADDR_BROADCAST;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_broadcast, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_broadcast, &test)) {
+        printf("MISMATCH: in4addr_broadcast\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_allnodesonlink, IPv4);
     printf("in4addr_allnodesonlink:%ls.\n", IPv4);
     test.S_un.S_un_b = IN4ADDR_ALLNODESONLINK_INIT;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_allnodesonlink, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_allnodesonlink, &test)) {
+        printf("MISMATCH: in4addr_allnodesonlink\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_allroutersonlink, IPv4);
     printf("in4addr_allroutersonlink:%ls.\n", IPv4);
     test.S_un.S_un_b = IN4ADDR_ALLROUTERSONLINK_INIT;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_allroutersonlink, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_allroutersonlink, &test)) {
+        printf("MISMATCH: in4addr_allroutersonlink\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_alligmpv3routersonlink, IPv4);
     printf("in4addr_alligmpv3routersonlink:%ls.\n", IPv4);
     test.S_un.S_un_b = IN4ADDR_ALLIGMPV3ROUTERSONLINK_INIT;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_alligmpv3routersonlink, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_alligmpv3routersonlink, &test)) {
+        printf("MISMATCH: in4addr_alligmpv3routersonlink\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_allteredohostsonlink, IPv4);
     printf("in4addr_allteredohostsonlink:%ls.\n", IPv4);
     test.S_un.S_un_b = IN4ADDR_ALLTEREDONODESONLINK_INIT;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_allteredohostsonlink, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_allteredohostsonlink, &test)) {
+        printf("MISMATCH: in4addr_allteredohostsonlink\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_linklocalprefix, IPv4);
     printf("in4addr_linklocalprefix:%ls.\n", IPv4);
     test.S_un.S_un_b = IN4ADDR_LINKLOCALPREFIX_INIT;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_linklocalprefix, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_linklocalprefix, &test)) {
+        printf("MISMATCH: in4addr_linklocalprefix\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv4, sizeof(IPv4));
     RtlIpv4AddressToStringW(&in4addr_multicastprefix, IPv4);
     printf("in4addr_multicastprefix:%ls.\n", IPv4);
     test.S_un.S_un_b = IN4ADDR_MULTICASTPREFIX_INIT;
-    _ASSERTE(IN4_ADDR_EQUAL(&in4addr_multicastprefix, &test));
+    if (!IN4_ADDR_EQUAL(&in4addr_multicastprefix, &test)) {
+        printf("MISMATCH: in4addr_multicastprefix\n");
+        return 1;
+    }
 
     printf("\n");
 
@@ -82,85 +109,127 @@ int _cdecl special_ip()
     RtlIpv6AddressToStringA(&in6addr_any, IPv6);
     printf("in6addr_any:%s.\n", IPv6);
     temp = IN6ADDR_ANY_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_any, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_any, &temp)) {
+        printf("MISMATCH: in6addr_any\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_loopback, IPv6);
     printf("in6addr_loopback:%s.\n", IPv6);
     temp = IN6ADDR_LOOPBACK_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_loopback, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_loopback, &temp)) {
+        printf("MISMATCH: in6addr_loopback\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_allnodesonnode, IPv6);
     printf("in6addr_allnodesonnode:%s.\n", IPv6);
     temp = IN6ADDR_ALLNODESONNODE_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_allnodesonnode, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_allnodesonnode, &temp)) {
+        printf("MISMATCH: in6addr_allnodesonnode\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_allnodesonlink, IPv6);
     printf("in6addr_allnodesonlink:%s.\n", IPv6);
     temp = IN6ADDR_ALLNODESONLINK_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_allnodesonlink, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_allnodesonlink, &temp)) {
+        printf("MISMATCH: in6addr_allnodesonlink\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_allroutersonlink, IPv6);
     printf("in6addr_allroutersonlink:%s.\n", IPv6);
     temp = IN6ADDR_ALLROUTERSONLINK_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_allroutersonlink, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_allroutersonlink, &temp)) {
+        printf("MISMATCH: in6addr_allroutersonlink\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_allmldv2routersonlink, IPv6);
     printf("in6addr_allmldv2routersonlink:%s.\n", IPv6);
     temp = IN6ADDR_ALLMLDV2ROUTERSONLINK_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_allmldv2routersonlink, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_allmldv2routersonlink, &temp)) {
+        printf("MISMATCH: in6addr_allmldv2routersonlink\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_teredoinitiallinklocaladdress, IPv6);
     printf("in6addr_teredoinitiallinklocaladdress:%s.\n", IPv6);
     temp = IN6ADDR_TEREDOINITIALLINKLOCALADDRESS_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_teredoinitiallinklocaladdress, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_teredoinitiallinklocaladdress, &temp)) {
+        printf("MISMATCH: in6addr_teredoinitiallinklocaladdress\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_linklocalprefix, IPv6);
     printf("in6addr_linklocalprefix:%s.\n", IPv6);
     temp = IN6ADDR_LINKLOCALPREFIX_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_linklocalprefix, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_linklocalprefix, &temp)) {
+        printf("MISMATCH: in6addr_linklocalprefix\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_multicastprefix, IPv6);
     printf("in6addr_multicastprefix:%s.\n", IPv6);
     temp = IN6ADDR_MULTICASTPREFIX_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_multicastprefix, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_multicastprefix, &temp)) {
+        printf("MISMATCH: in6addr_multicastprefix\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_solicitednodemulticastprefix, IPv6);
     printf("in6addr_solicitednodemulticastprefix:%s.\n", IPv6);
     temp = IN6ADDR_SOLICITEDNODEMULTICASTPREFIX_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_solicitednodemulticastprefix, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_solicitednodemulticastprefix, &temp)) {
+        printf("MISMATCH: in6addr_solicitednodemulticastprefix\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_v4mappedprefix, IPv6);
     printf("in6addr_v4mappedprefix:%s.\n", IPv6);
     temp = IN6ADDR_V4MAPPEDPREFIX_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_v4mappedprefix, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_v4mappedprefix, &temp)) {
+        printf("MISMATCH: in6addr_v4mappedprefix\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_6to4prefix, IPv6);
     printf("in6addr_6to4prefix:%s.\n", IPv6);
     temp = IN6ADDR_6TO4PREFIX_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_6to4prefix, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_6to4prefix, &temp)) {
+        printf("MISMATCH: in6addr_6to4prefix\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_teredoprefix, IPv6);
     printf("in6addr_teredoprefix:%s.\n", IPv6);
     temp = IN6ADDR_TEREDOPREFIX_INIT;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_teredoprefix, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_teredoprefix, &temp)) {
+        printf("MISMATCH: in6addr_teredoprefix\n");
+        return 1;
+    }
 
     RtlZeroMemory(IPv6, sizeof(IPv6));
     RtlIpv6AddressToStringA(&in6addr_teredoprefix_old, IPv6);
     printf("in6addr_teredoprefix_old:%s.\n", IPv6);
     temp = IN6ADDR_TEREDOPREFIX_INIT_OLD;
-    _ASSERTE(IN6_ADDR_EQUAL(&in6addr_teredoprefix_old, &temp));
+    if (!IN6_ADDR_EQUAL(&in6addr_teredoprefix_old, &temp)) {
+        printf("MISMATCH: in6addr_teredoprefix_old\n");
+        return 1;
+    }
 
     return 0;
 }
@@ -359,7 +428,7 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
     }
 
     pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(sizeof(MIB_IPADDRTABLE));
-    if (pIPAddrTable == NULL) {
+    if (pIPAddrTable == nullptr) {
         printf("Error allocating memory needed to call GetIpAddrTable\n");
         return 1;
     } else {
@@ -368,7 +437,7 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
             FREE(pIPAddrTable);
             pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(dwSize);
         }
-        if (pIPAddrTable == NULL) {
+        if (pIPAddrTable == nullptr) {
             printf("Memory allocation failed for GetIpAddrTable\n");
             return 1;
         }
@@ -377,12 +446,16 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
     if ((dwRetVal = GetIpAddrTable(pIPAddrTable, &dwSize, 0)) == NO_ERROR) {
         ifIndex = pIPAddrTable->table[0].dwIndex;
         printf("\n\tInterface Index:\t%ld\n", ifIndex);
+        char addrBuf[INET_ADDRSTRLEN]{};
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[0].dwAddr;
-        printf("\tIP Address:       \t%s (%lu)\n", inet_ntoa(IPAddr), pIPAddrTable->table[0].dwAddr);
+        inet_ntop(AF_INET, &IPAddr, addrBuf, sizeof(addrBuf));
+        printf("\tIP Address:       \t%s (%lu)\n", addrBuf, pIPAddrTable->table[0].dwAddr);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[0].dwMask;
-        printf("\tSubnet Mask:      \t%s (%lu)\n", inet_ntoa(IPAddr), pIPAddrTable->table[0].dwMask);
+        inet_ntop(AF_INET, &IPAddr, addrBuf, sizeof(addrBuf));
+        printf("\tSubnet Mask:      \t%s (%lu)\n", addrBuf, pIPAddrTable->table[0].dwMask);
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[0].dwBCastAddr;
-        printf("\tBroadCast Address:\t%s (%lu)\n", inet_ntoa(IPAddr), pIPAddrTable->table[0].dwBCastAddr);
+        inet_ntop(AF_INET, &IPAddr, addrBuf, sizeof(addrBuf));
+        printf("\tBroadCast Address:\t%s (%lu)\n", addrBuf, pIPAddrTable->table[0].dwBCastAddr);
         printf("\tReassembly size:  \t%lu\n\n", pIPAddrTable->table[0].dwReasmSize);
     } else {
         printf("Call to GetIpAddrTable failed with error %d.\n", dwRetVal);
@@ -393,7 +466,7 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
 
     if (pIPAddrTable) {
         FREE(pIPAddrTable);
-        pIPAddrTable = NULL;
+        pIPAddrTable = nullptr;
     }
 
     if ((dwRetVal = AddIPAddress(iaIPAddress, iaIPMask, ifIndex, &NTEContext, &NTEInstance)) == NO_ERROR) {
@@ -402,12 +475,12 @@ https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-addipad
         printf("AddIPAddress failed with error: %d\n", dwRetVal);
 
         if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                          NULL,
+                          nullptr,
                           dwRetVal,
                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                           (LPTSTR)&lpMsgBuf,
                           0,
-                          NULL)) {
+                          nullptr)) {
             printf("\tError: %ls", (LPCWSTR)lpMsgBuf);
             LocalFree(lpMsgBuf);
             return 1;
@@ -443,7 +516,7 @@ grok 3 AI 生成
     }
 
     // Initialize COM security
-    hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
+    hres = CoInitializeSecurity(nullptr, -1, nullptr, nullptr, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE, nullptr);
     if (FAILED(hres)) {
         printf("Failed to initialize COM security: %ld\n", hres);
         CoUninitialize();
@@ -451,7 +524,7 @@ grok 3 AI 生成
     }
 
     // Connect to WMI
-    IWbemLocator * pLoc = NULL;
+    IWbemLocator * pLoc = nullptr;
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *)&pLoc);
     if (FAILED(hres)) {
         printf("Failed to create IWbemLocator: %ld\n", hres);
@@ -459,8 +532,8 @@ grok 3 AI 生成
         return 1;
     }
 
-    IWbemServices * pSvc = NULL;
-    hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, 0, 0, 0, &pSvc);
+    IWbemServices * pSvc = nullptr;
+    hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), nullptr, nullptr, 0, 0, 0, 0, &pSvc);
     if (FAILED(hres)) {
         printf("Failed to connect to WMI: %ld\n", hres);
         pLoc->Release();
@@ -469,7 +542,7 @@ grok 3 AI 生成
     }
 
     // Set security levels on the proxy
-    hres = CoSetProxyBlanket(pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
+    hres = CoSetProxyBlanket(pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, nullptr, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE);
     if (FAILED(hres)) {
         printf("Failed to set proxy blanket: %ld\n", hres);
         pSvc->Release();
@@ -479,11 +552,11 @@ grok 3 AI 生成
     }
 
     // Query for network adapters
-    IEnumWbemClassObject * pEnumerator = NULL;
+    IEnumWbemClassObject * pEnumerator = nullptr;
     hres = pSvc->ExecQuery(_bstr_t("WQL"),
                            _bstr_t("SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = TRUE"),
                            WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-                           NULL,
+                           nullptr,
                            &pEnumerator);
     if (FAILED(hres)) {
         printf("Query failed: %ld\n", hres);
@@ -494,7 +567,7 @@ grok 3 AI 生成
     }
 
     // Iterate through adapters
-    IWbemClassObject * pclsObj = NULL;
+    IWbemClassObject * pclsObj = nullptr;
     ULONG uReturn = 0;
     while (pEnumerator) {
         hres = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
@@ -505,16 +578,16 @@ grok 3 AI 生成
         VariantInit(&vtProp);
 
         // Get the EnableStatic method
-        IWbemClassObject * pClass = NULL;
-        hres = pSvc->GetObject(_bstr_t("Win32_NetworkAdapterConfiguration"), 0, NULL, &pClass, NULL);
+        IWbemClassObject * pClass = nullptr;
+        hres = pSvc->GetObject(_bstr_t("Win32_NetworkAdapterConfiguration"), 0, nullptr, &pClass, nullptr);
         if (FAILED(hres)) {
             printf("Failed to get class object: %ld\n", hres);
             pclsObj->Release();
             continue;
         }
 
-        IWbemClassObject * pInParamsDefinition = NULL;
-        hres = pClass->GetMethod(_bstr_t("EnableStatic"), 0, &pInParamsDefinition, NULL);
+        IWbemClassObject * pInParamsDefinition = nullptr;
+        hres = pClass->GetMethod(_bstr_t("EnableStatic"), 0, &pInParamsDefinition, nullptr);
         if (FAILED(hres)) {
             printf("Failed to get method: %ld\n", hres);
             pClass->Release();
@@ -522,7 +595,7 @@ grok 3 AI 生成
             continue;
         }
 
-        IWbemClassObject * pInParams = NULL;
+        IWbemClassObject * pInParams = nullptr;
         hres = pInParamsDefinition->SpawnInstance(0, &pInParams);
         if (FAILED(hres)) {
             printf("Failed to spawn instance: %ld\n", hres);
@@ -552,8 +625,8 @@ grok 3 AI 生成
         hres = pInParams->Put(_bstr_t("SubnetMask"), 0, &vSubnet, 0);
 
         // Execute the EnableStatic method
-        IWbemClassObject * pOutParams = NULL;
-        hres = pSvc->ExecMethod(_bstr_t(pclsObj), _bstr_t("EnableStatic"), 0, NULL, pInParams, &pOutParams, NULL);
+        IWbemClassObject * pOutParams = nullptr;
+        hres = pSvc->ExecMethod(_bstr_t(pclsObj), _bstr_t("EnableStatic"), 0, nullptr, pInParams, &pOutParams, nullptr);
         if (FAILED(hres)) {
             printf("Failed to execute EnableStatic: %ld\n", hres);
         } else {

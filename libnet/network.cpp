@@ -23,7 +23,7 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
 
     int Args;
     LPWSTR * Arglist = CommandLineToArgvW(GetCommandLineW(), &Args);
-    if (NULL == Arglist) {
+    if (nullptr == Arglist) {
         LOGA(ERROR_LEVEL, "LastError：%d", GetLastError());
         return 0;
     } 

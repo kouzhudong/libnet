@@ -33,7 +33,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
 
     sockaddr_in service{};
     service.sin_family = AF_INET;
-    service.sin_addr.s_addr = inet_addr(ip);
+    inet_pton(AF_INET, ip, &service.sin_addr);
     service.sin_port = htons(port);
     if (bind(ListenSocket, reinterpret_cast<SOCKADDR *>(&service), sizeof(service)) == SOCKET_ERROR) {
         printf("bind failed\n");
@@ -213,7 +213,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
 
     sockaddr_in service{};
     service.sin_family = AF_INET;
-    service.sin_addr.s_addr = inet_addr(ip);
+    inet_pton(AF_INET, ip, &service.sin_addr);
     service.sin_port = htons(port);
     iResult = bind(ListenSocket, reinterpret_cast<SOCKADDR *>(&service), sizeof(service));
     if (iResult == SOCKET_ERROR) {
@@ -300,7 +300,7 @@ ka.keepalivetime = 30 * 1000;      // 30 秒无数据后开始探测
 ka.keepaliveinterval = 5 * 1000;  // 每 5 秒一次
 
 DWORD bytesReturned;
-WSAIoctl(sock, SIO_KEEPALIVE_VALS, &ka, sizeof(ka), NULL, 0, &bytesReturned, NULL, NULL);
+WSAIoctl(sock, SIO_KEEPALIVE_VALS, &ka, sizeof(ka), nullptr, 0, &bytesReturned, nullptr, nullptr);
 */
 /*
 检测代码：
@@ -317,7 +317,7 @@ int main() {
         FD_SET(sock, &readfds);
 
         struct timeval timeout = {5, 0};  // 每 5 秒检查一次
-        int ret = select(0, &readfds, NULL, NULL, &timeout);
+        int ret = select(0, &readfds, nullptr, nullptr, &timeout);
 
         if (ret == SOCKET_ERROR) {
             // select 错误
@@ -366,7 +366,7 @@ int main() {
     alive.keepaliveinterval = 1000;
 
     DWORD bytesReturned;
-    if (WSAIoctl(sock, SIO_KEEPALIVE_VALS, &alive, sizeof(alive), NULL, 0, &bytesReturned, NULL, NULL) == SOCKET_ERROR) {
+    if (WSAIoctl(sock, SIO_KEEPALIVE_VALS, &alive, sizeof(alive), nullptr, 0, &bytesReturned, nullptr, nullptr) == SOCKET_ERROR) {
         // 处理错误
     }
 }

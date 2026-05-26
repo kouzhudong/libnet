@@ -277,6 +277,7 @@ EXTERN_C
 DLLEXPORT
 void WINAPI GetMacByIPv6(const char * IPv6, PDL_EUI48 Mac)
 {
+    RtlZeroMemory(Mac, sizeof(DL_EUI48));
     MIB_IPNET_ROW2 Row{};
 
     Row.Address.si_family = AF_INET6;
@@ -373,6 +374,7 @@ BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac)
 注意：这个功能不能叫 获取一个IPv6地址的默认网关的MAC地址，因为不是所有的IPv6都有MAC在邻居表中。
 */
 {
+    RtlZeroMemory(mac, sizeof(DL_EUI48));
     bool ret = false;
 
     PMIB_IPNET_TABLE2 pipTable = nullptr;
@@ -837,6 +839,7 @@ EXTERN_C
 DLLEXPORT
 int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac)
 {
+    RtlZeroMemory(GatewayMac, sizeof(DL_EUI48));
     char Gateway[INET_ADDRSTRLEN] = {0};
     int ret = GetGatewayByIPv4(IPv4, Gateway);
     if (ret != 0 || Gateway[0] == '\0') {

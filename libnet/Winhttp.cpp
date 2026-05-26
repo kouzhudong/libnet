@@ -312,7 +312,10 @@ ProxyBypass:<local>.
 {
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG pProxyConfig;
     BOOL ret = WinHttpGetIEProxyConfigForCurrentUser(&pProxyConfig);
-    _ASSERTE(ret);
+    if (!ret) {
+        printf("WinHttpGetIEProxyConfigForCurrentUser failed: %lu\n", GetLastError());
+        return;
+    }
 
     printf("AutoDetect:%s.\n", pProxyConfig.fAutoDetect ? "true" : "false");
     printf("AutoConfigUrl:%ls.\n", pProxyConfig.lpszAutoConfigUrl);

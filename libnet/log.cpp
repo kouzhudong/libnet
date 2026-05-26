@@ -89,6 +89,34 @@ void LogA(IN LOG_LEVEL Level, IN char const * Format, ...)
 
 void LogW(IN LOG_LEVEL Level, IN wchar_t const * Format, ...)
 {
-    UNREFERENCED_PARAMETER(Level);
-    UNREFERENCED_PARAMETER(Format);
+    if (!BitTest(reinterpret_cast<const LONG *>(&g_log_level), Level)) {
+        return;
+    }
+
+    if (Level >= MAX_LEVEL) {
+        return;
+    }
+
+    EnterCriticalSection(&g_log_cs);
+
+    va_list args;
+    va_start(args, Format);
+
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    wchar_t time[MAX_PATH] = {0};
+    wsprintfW(time, L"%04u-%02u-%02u %02u:%02u:%02u:%03u\t", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+
+    wprintf(L"%ls", time);
+
+#pragma prefast(push)
+#pragma prefast(disable : 33010, "Unchecked lower bound for enum Level used as index.")
+    wprintf(L"%ls", g_log_level_w[Level]);
+#pragma prefast(pop)
+
+    vwprintf(Format, args);
+
+    va_end(args);
+
+    LeaveCriticalSection(&g_log_cs);
 }

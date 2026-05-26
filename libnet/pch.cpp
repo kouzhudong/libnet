@@ -32,12 +32,17 @@ void GetTimeString(LARGE_INTEGER UtcTime, _Out_ LPWSTR TimeString)
 
     FILETIME lft;
     BOOL B = FileTimeToLocalFileTime(&ft, &lft);
-    _ASSERTE(B);
+    if (!B) {
+        wsprintfW(TimeString, L"FileTimeToLocalFileTime failed\r\n");
+        return;
+    }
 
     SYSTEMTIME st;
-    // GetLocalTime(&st);
     B = FileTimeToSystemTime(&lft, &st);
-    _ASSERTE(B);
+    if (!B) {
+        wsprintfW(TimeString, L"FileTimeToSystemTime failed\r\n");
+        return;
+    }
 
     // SystemTimeToTzSpecificLocalTime
 
@@ -95,9 +100,6 @@ void PrintTcpConnectionState(_In_ DWORD dwState)
 
 void PrintInterfaceType(_In_ WORD Type)
 {
-    _ASSERTE(Type >= MIN_IF_TYPE);
-    _ASSERTE(Type <= MAX_IF_TYPE);
-
     switch (Type) {
     case IF_TYPE_OTHER:
         printf("OTHER\n");
@@ -882,8 +884,6 @@ void PrintSocketType(int SocketType)
 
 void PrintAddressFamily(_In_ ADDRESS_FAMILY Family)
 {
-    _ASSERTE(Family < AF_MAX);
-
     switch (Family) {
     case AF_UNSPEC:
         printf("Unspecified\n");
@@ -1091,8 +1091,6 @@ void PrintProviderNamespace(DWORD NameSpace)
 
 void PrintOffloadStateOfTcpConnection(_In_ TCP_CONNECTION_OFFLOAD_STATE OffloadState)
 {
-    _ASSERTE(OffloadState < TcpConnectionOffloadStateMax);
-
     switch (OffloadState) {
     case TcpConnectionOffloadStateInHost:
         printf("Owned by the network stack and not offloaded \n");
