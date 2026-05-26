@@ -300,7 +300,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
             // wprintf(L"\tTCP[%d] Remote Scope ID: %d \n", i, ntohl(pUdp6Table->table[i].dwRemoteScopeId));
             wprintf(L"\tTCP[%d] Remote Port: %u\n", i, ntohs((u_short)pTcpTable->table[i].dwRemotePort));
 
-            wprintf(L"\tTCP[%d] OwningPid: %u\n", i, ntohs((u_short)pTcpTable->table[i].dwOwningPid));
+            wprintf(L"\tTCP[%d] OwningPid: %lu\n", i, pTcpTable->table[i].dwOwningPid);
 
             // char szModName[MAX_PATH] = {0};
             // DWORD Size = _countof(szModName);
@@ -413,20 +413,24 @@ void GetOwnerModuleFromTcp4EntryEx(_In_ PMIB_TCPROW_OWNER_MODULE pTcpEntry)
         return;
     }
 
-    //_ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
-
     if (ERROR_NOT_FOUND == ret) {
         return;
     }
 
+    if (ERROR_INSUFFICIENT_BUFFER != ret) {
+        return;
+    }
+
     auto pBuffer = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
-    _ASSERTE(pBuffer);
+    if (!pBuffer) {
+        return;
+    }
 
     ret = GetOwnerModuleFromTcpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, pBuffer, &Size);
-    _ASSERTE(NO_ERROR == ret);
-
-    printf("\tModuleName: %ls\n", pBuffer->pModuleName);
-    printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls\n", pBuffer->pModuleName);
+        printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+    }
 
     FREE(pBuffer);
 }
@@ -511,16 +515,20 @@ void GetOwnerModuleFromTcp6EntryEx(_In_ PMIB_TCP6ROW_OWNER_MODULE pTcpEntry)
         return;
     }
 
-    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+    if (ERROR_INSUFFICIENT_BUFFER != ret) {
+        return;
+    }
 
     auto pBuffer = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
-    _ASSERTE(pBuffer);
+    if (!pBuffer) {
+        return;
+    }
 
     ret = GetOwnerModuleFromTcp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, pBuffer, &Size);
-    _ASSERTE(NO_ERROR == ret);
-
-    printf("\tModuleName: %ls\n", pBuffer->pModuleName);
-    printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls\n", pBuffer->pModuleName);
+        printf("\tModulePath: %ls\n", pBuffer->pModulePath);
+    }
 
     FREE(pBuffer);
 }

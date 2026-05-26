@@ -139,21 +139,24 @@ void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
     TCPIP_OWNER_MODULE_BASIC_INFO temp{};
     DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
     DWORD ret = GetOwnerModuleFromUdpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
-    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls, ModulePath: %ls \n", temp.pModuleName, temp.pModulePath);
+        return;
+    }
+
+    if (ERROR_INSUFFICIENT_BUFFER != ret) {
+        return;
+    }
 
     auto ptombi = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
-    _ASSERTE(ptombi);
+    if (!ptombi) {
+        return;
+    }
 
     ret = GetOwnerModuleFromUdpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
-    _ASSERTE(NO_ERROR == ret);
-
-    printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
-
-    /*
-    pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
-    其实完全可根据dwOwningPid获取EXE的全路径。
-    GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
-    */
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
+    }
 
     FREE(ptombi);
 }
@@ -231,21 +234,24 @@ void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
     TCPIP_OWNER_MODULE_BASIC_INFO temp{};
     DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
     DWORD ret = GetOwnerModuleFromUdp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
-    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls, ModulePath: %ls \n", temp.pModuleName, temp.pModulePath);
+        return;
+    }
+
+    if (ERROR_INSUFFICIENT_BUFFER != ret) {
+        return;
+    }
 
     auto ptombi = reinterpret_cast<PTCPIP_OWNER_MODULE_BASIC_INFO>(MALLOC(Size));
-    _ASSERTE(ptombi);
+    if (!ptombi) {
+        return;
+    }
 
     ret = GetOwnerModuleFromUdp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
-    _ASSERTE(NO_ERROR == ret);
-
-    printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
-
-    /*
-    pModulePath是全路径，但并非是EXE，而有可能是DLL，这个更精细。
-    其实完全可根据dwOwningPid获取EXE的全路径。
-    GetOwnerModuleFromPidAndInfo与GetOwnerModuleFromUdpEntry的功能类似。
-    */
+    if (NO_ERROR == ret) {
+        printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
+    }
 
     FREE(ptombi);
 }

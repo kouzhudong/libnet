@@ -693,7 +693,7 @@ std::string prefixToIPv4Mask(int prefix)
         return "Invalid prefix";
     }
 
-    uint32_t mask = 0xffffffff << (32 - prefix);
+    uint32_t mask = (prefix == 0) ? 0 : (0xffffffff << (32 - prefix));
     std::vector<int> octets(4);
     octets[0] = (mask >> 24) & 0xff;
     octets[1] = (mask >> 16) & 0xff;

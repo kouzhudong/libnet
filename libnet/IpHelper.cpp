@@ -59,7 +59,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwBCastAddr;
 
 #pragma warning(push)
-#pragma warning(disable : 4476) //"printf": 格式说明符中的类型字段字符“)”未知
+#pragma warning(disable : 4476) //"printf": 格式说明符中的类型字段字符")"未知
         printf("\tBroadCast[%d]:      \t%s (%lu%)\n", i, inet_ntoa(IPAddr), pIPAddrTable->table[i].dwBCastAddr);
 #pragma warning(pop)
 
@@ -105,24 +105,31 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
 {
     ULONG SizePointer = 0;
     ULONG ret = GetIpNetTable(nullptr, &SizePointer, TRUE);
-    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+    if (ERROR_INSUFFICIENT_BUFFER != ret) {
+        return ret;
+    }
 
-    PMIB_IPNETTABLE IpNetTable = (PMIB_IPNETTABLE)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, SizePointer);
-    _ASSERTE(IpNetTable);
+    PMIB_IPNETTABLE IpNetTable = static_cast<PMIB_IPNETTABLE>(MALLOC(SizePointer));
+    if (!IpNetTable) {
+        return ERROR_OUTOFMEMORY;
+    }
 
     ret = GetIpNetTable(IpNetTable, &SizePointer, TRUE);
-    _ASSERTE(NO_ERROR == ret); // ERROR_NO_DATA
+    if (NO_ERROR != ret) {
+        FREE(IpNetTable);
+        return ret;
+    }
 
     printf("Number of IPv4 table entries: %lu\n\n", IpNetTable->dwNumEntries);
 
     for (DWORD i = 0; i < IpNetTable->dwNumEntries; i++) {
-        printf("Index: %02u\t", IpNetTable->table[i].dwIndex); // 类似于arp -a的接口。
+        printf("Index: %02u\t", IpNetTable->table[i].dwIndex);
 
         in_addr in;
         in.S_un.S_addr = IpNetTable->table[i].dwAddr;
         printf("IPv4:%-16s\t", inet_ntoa(in));
 
-        printf("MAC:"); // Physical Address
+        printf("MAC:");
         for (DWORD j = 0; j < IpNetTable->table[i].dwPhysAddrLen; j++) {
             if (j == (IpNetTable->table[i].dwPhysAddrLen - 1))
                 printf("%.2X\t", (int)IpNetTable->table[i].bPhysAddr[j]);
@@ -133,7 +140,7 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
         PrintArpType(IpNetTable->table[i].Type);
     }
 
-    HeapFree(GetProcessHeap(), 0, IpNetTable);
+    FREE(IpNetTable);
 
     return 0;
 }
@@ -154,27 +161,34 @@ BOOL WINAPI GetIPv4ByMac(_In_ PDL_EUI48 Mac, _Inout_ PIN_ADDR IPv4)
 {
     ULONG SizePointer = 0;
     ULONG ret = GetIpNetTable(nullptr, &SizePointer, TRUE);
-    _ASSERTE(ERROR_INSUFFICIENT_BUFFER == ret);
+    if (ERROR_INSUFFICIENT_BUFFER != ret) {
+        return FALSE;
+    }
 
-    PMIB_IPNETTABLE IpNetTable = (PMIB_IPNETTABLE)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, SizePointer);
-    _ASSERTE(IpNetTable);
+    PMIB_IPNETTABLE IpNetTable = static_cast<PMIB_IPNETTABLE>(MALLOC(SizePointer));
+    if (!IpNetTable) {
+        return FALSE;
+    }
 
     ret = GetIpNetTable(IpNetTable, &SizePointer, TRUE);
-    _ASSERTE(NO_ERROR == ret); // ERROR_NO_DATA
+    if (NO_ERROR != ret) {
+        FREE(IpNetTable);
+        return FALSE;
+    }
 
-    ret = 0;
+    BOOL found = FALSE;
 
     for (DWORD i = 0; i < IpNetTable->dwNumEntries; i++) {
         if (0 == memcmp(&IpNetTable->table[i].bPhysAddr, Mac, sizeof(DL_EUI48))) {
             IPv4->S_un.S_addr = IpNetTable->table[i].dwAddr;
-            ret = true;
-            break; // 有可能是多个。可考虑用stl的string存储。
+            found = TRUE;
+            break;
         }
     }
 
-    HeapFree(GetProcessHeap(), 0, IpNetTable);
+    FREE(IpNetTable);
 
-    return ret;
+    return found;
 }
 
 
@@ -217,7 +231,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
             InetNtop(AF_INET6, &pipTable->Table[i].Address.Ipv6.sin6_addr, IpStr, _ARRAYSIZE(IpStr));
             break;
         default:
-            _ASSERTE(false);
             break;
         }
         printf("IP Address[%d]:\t %ls\n", (int)i, IpStr);
@@ -611,11 +624,17 @@ int WINAPI EnumIfTable2()
 
         printf("Alias: %ls\n", table->Table[i].Alias);
         printf("Description: %ls\n", table->Table[i].Description);
-        printf("PhysicalAddress: %s\n", table->Table[i].PhysicalAddress);
-        printf("PermanentPhysicalAddress: %s\n", table->Table[i].PermanentPhysicalAddress);
-
-
+        printf("PhysicalAddress: ");
+        for (ULONG j = 0; j < table->Table[i].PhysicalAddressLength; j++) {
+            printf(j == table->Table[i].PhysicalAddressLength - 1 ? "%.2X" : "%.2X-", table->Table[i].PhysicalAddress[j]);
+        }
         printf("\n");
+
+        printf("PermanentPhysicalAddress: ");
+        for (ULONG j = 0; j < table->Table[i].PhysicalAddressLength; j++) {
+            printf(j == table->Table[i].PhysicalAddressLength - 1 ? "%.2X" : "%.2X-", table->Table[i].PermanentPhysicalAddress[j]);
+        }
+        printf("\n\n");
     }
 
     FreeMibTable(table);
@@ -647,11 +666,17 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftab
 
         printf("Alias: %ls\n", table->Table[i].Alias);
         printf("Description: %ls\n", table->Table[i].Description);
-        printf("PhysicalAddress: %s\n", table->Table[i].PhysicalAddress);
-        printf("PermanentPhysicalAddress: %s\n", table->Table[i].PermanentPhysicalAddress);
-
-
+        printf("PhysicalAddress: ");
+        for (ULONG j = 0; j < table->Table[i].PhysicalAddressLength; j++) {
+            printf(j == table->Table[i].PhysicalAddressLength - 1 ? "%.2X" : "%.2X-", table->Table[i].PhysicalAddress[j]);
+        }
         printf("\n");
+
+        printf("PermanentPhysicalAddress: ");
+        for (ULONG j = 0; j < table->Table[i].PhysicalAddressLength; j++) {
+            printf(j == table->Table[i].PhysicalAddressLength - 1 ? "%.2X" : "%.2X-", table->Table[i].PermanentPhysicalAddress[j]);
+        }
+        printf("\n\n");
     }
 
     FreeMibTable(table);
@@ -669,7 +694,6 @@ void usage(char * pname)
     printf("\t -h \t\thelp\n");
     printf("\t -l length \tMAC physical address length to set\n");
     printf("\t -s src-ip \tsource IP address\n");
-    exit(1);
 }
 
 
@@ -712,7 +736,7 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
                 case 'h':
                 default:
                     usage(argv[0]);
-                    break;
+                    return 1;
                 } /* end switch */
             } else {
                 DestIpString = argv[i];
@@ -720,10 +744,13 @@ https://msdn.microsoft.com/en-us/library/aa366358(VS.85).aspx
         } /* end for */
     } else {
         usage(argv[0]);
+        return 1;
     }
 
-    if (DestIpString == nullptr || DestIpString[0] == '\0')
+    if (DestIpString == nullptr || DestIpString[0] == '\0') {
         usage(argv[0]);
+        return 1;
+    }
 
     DestIp = inet_addr(DestIpString);
 
@@ -810,12 +837,13 @@ EXTERN_C
 DLLEXPORT
 int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac)
 {
-    char Gateway[4 * 4];
-    GetGatewayByIPv4(IPv4, Gateway);
+    char Gateway[INET_ADDRSTRLEN] = {0};
+    int ret = GetGatewayByIPv4(IPv4, Gateway);
+    if (ret != 0 || Gateway[0] == '\0') {
+        return 1;
+    }
 
-    GetMacByIPv4(inet_addr(Gateway), GatewayMac);
-
-    return 0;
+    return GetMacByIPv4(inet_addr(Gateway), GatewayMac);
 }
 
 
@@ -984,17 +1012,17 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getunic
     if (addressFamily == AF_INET) {
         if (InetPtonW(addressFamily, IPAddress, &Ipv4Addr) != 1) {
             wprintf(L"Unable to parse IPv4 address string: %ls\n", IPAddress);
-            exit(1);
+            return 1;
         }
     } else if (addressFamily == AF_INET6) {
         if (InetPton(addressFamily, IPAddress, &Ipv6Addr) != 1) {
             wprintf(L"Unable to parse IPv6 address string: %ls\n", IPAddress);
-            exit(1);
+            return 1;
         }
     }
 
     MIB_UNICASTIPADDRESS_ROW ipRow = {0};
-    ipRow.Address.si_family = (ADDRESS_FAMILY)addressFamily;
+    ipRow.Address.si_family = static_cast<ADDRESS_FAMILY>(addressFamily);
     ipRow.InterfaceIndex = InterfaceIndex;
 
     if (addressFamily == AF_INET) {
@@ -1009,7 +1037,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getunic
     ULONG Result = GetUnicastIpAddressEntry(&ipRow);
     if (Result != NO_ERROR) {
         wprintf(L"GetUnicastIpAddressEntry returned error: %lu\n", Result);
-        exit(1);
+        return 1;
     }
 
     PrintUnicastIpAddress(&ipRow);
@@ -1176,9 +1204,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     */
     DWORD Timeout = 1000;
 
-    ReplyBuffer = (PVOID)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, ReplySize);
-    ;
-    _ASSERTE(ReplyBuffer);
+    ReplyBuffer = (PVOID)MALLOC(ReplySize);
+    if (ReplyBuffer == nullptr) {
+        IcmpCloseHandle(hIcmpFile);
+        return;
+    }
 
     DWORD ret = Icmp6SendEcho2(hIcmpFile,
                                nullptr,
@@ -1448,7 +1478,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getipin
     dwRetVal = GetIpInterfaceTable(AF_UNSPEC, &pipTable);
     if (dwRetVal != NO_ERROR) {
         printf("GetIpInterfaceTable returned error: %ld\n", dwRetVal);
-        exit(1);
+        return 1;
     }
     // Print some variables from the rows in the table
     printf("Number of table entries: %lu\n\n", pipTable->NumEntries);
@@ -1622,16 +1652,16 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
     }
 
     ReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(SendData);
-    ReplyBuffer = (VOID *)malloc(ReplySize);
-    if (ReplyBuffer == NULL) {
+    ReplyBuffer = (VOID *)MALLOC(ReplySize);
+    if (ReplyBuffer == nullptr) {
         printf("\tUnable to allocate memory\n");
+        IcmpCloseHandle(hIcmpFile);
         return 1;
     }
 
 #pragma warning(push)
-#pragma warning(disable : 28020) // 表达式“_Param_(7)>=sizeof(struct icmp_echo_reply
-                                 // ICMP_ECHO_REPLY)+_Param_(4)+8”对此调用无效。
-    dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), NULL, ReplyBuffer, ReplySize, 1000);
+#pragma warning(disable : 28020)
+    dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), nullptr, ReplyBuffer, ReplySize, 1000);
 #pragma warning(pop)
     if (dwRetVal != 0) {
         PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
@@ -1651,9 +1681,13 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
     } else {
         printf("\tCall to IcmpSendEcho failed.\n");
         printf("\tIcmpSendEcho returned error: %ld\n", GetLastError());
+        FREE(ReplyBuffer);
+        IcmpCloseHandle(hIcmpFile);
         return 1;
     }
 
+    FREE(ReplyBuffer);
+    IcmpCloseHandle(hIcmpFile);
     return 0;
 }
 
@@ -1696,15 +1730,15 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
         return 1;
     }
 
-    // Allocate space for a single reply.
     ReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(SendData) + 8;
-    ReplyBuffer = (VOID *)malloc(ReplySize);
-    if (ReplyBuffer == NULL) {
+    ReplyBuffer = (VOID *)MALLOC(ReplySize);
+    if (ReplyBuffer == nullptr) {
         printf("\tUnable to allocate memory for reply buffer\n");
+        IcmpCloseHandle(hIcmpFile);
         return 1;
     }
 
-    dwRetVal = IcmpSendEcho2(hIcmpFile, NULL, NULL, NULL, ipaddr, SendData, sizeof(SendData), NULL, ReplyBuffer, ReplySize, 1000);
+    dwRetVal = IcmpSendEcho2(hIcmpFile, nullptr, nullptr, nullptr, ipaddr, SendData, sizeof(SendData), nullptr, ReplyBuffer, ReplySize, 1000);
     if (dwRetVal != 0) {
         PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
         in_addr ReplyAddr;
@@ -1749,8 +1783,13 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
             printf("\tExtended error returned: %ld\n", dwError);
             break;
         }
+        FREE(ReplyBuffer);
+        IcmpCloseHandle(hIcmpFile);
         return 1;
     }
+
+    FREE(ReplyBuffer);
+    IcmpCloseHandle(hIcmpFile);
     return 0;
 }
 

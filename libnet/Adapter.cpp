@@ -632,8 +632,11 @@ int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac)
 3.最好的思路是用ResolveIpNetEntry2实现。
 */
 {
-    char Gateway[128];
-    GetGatewayByIPv6(IPv6, Gateway);
+    char Gateway[128] = {0};
+    int ret = GetGatewayByIPv6(IPv6, Gateway);
+    if (ret != 0 || Gateway[0] == '\0') {
+        return 1;
+    }
 
     GetMacByGatewayIPv6(Gateway, GatewayMac);
 

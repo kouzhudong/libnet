@@ -386,7 +386,7 @@ VOID PtrRecordPrint(PDNS_RECORD DnsRecord)
 
 VOID SoaRecordPrint(PDNS_RECORD DnsRecord)
 {
-    wprintf(L"n\tPrimary        = %s\n"
+    wprintf(L"\n\tPrimary        = %s\n"
             L"\tAdmin          = %s\n"
             L"\tSerial         = %u\n"
             L"\tRefresh        = %u\n"
