@@ -268,21 +268,29 @@ void SetIcmpSequence(char * buf)
 
 USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen, struct addrinfo * dest)
 {
-    char tmp[MAX_RECV_BUF_LEN] = {'\0'};
     SOCKADDR_STORAGE localif;
     DWORD bytes;
     char *ptr = NULL, proto = 0;
     int rc, total, length, i;
 
+    // 2 * in6_addr(16) + sizeof(int) + 3 + 1 + icmplen + 1(padding)
+    int buflen = 2 * (int)sizeof(struct in6_addr) + (int)sizeof(int) + 4 + icmplen + 1;
+    char * tmp = (char *)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, buflen);
+    if (tmp == NULL) {
+        return 0xFFFF;
+    }
+
     rc = WSAIoctl(s, SIO_ROUTING_INTERFACE_QUERY, dest->ai_addr, (DWORD)dest->ai_addrlen, (SOCKADDR *)&localif, (DWORD)sizeof(localif), &bytes, NULL, NULL);
     if (rc == SOCKET_ERROR) {
         fprintf(stderr, "WSAIoctl failed: %d\n", WSAGetLastError());
+        HeapFree(GetProcessHeap(), 0, tmp);
         return 0xFFFF;
     }
 
     ptr = tmp;
     total = 0;
 
+#pragma warning(suppress : 6386)
     memcpy(ptr, &((SOCKADDR_IN6 *)&localif)->sin6_addr, sizeof(struct in6_addr));
     ptr += sizeof(struct in6_addr);
     total += sizeof(struct in6_addr);
@@ -325,7 +333,9 @@ USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s, char * icmppacket, int icmplen
         total++;
     }
 
-    return checksum((USHORT *)tmp, total);
+    USHORT result = checksum((USHORT *)tmp, total);
+    HeapFree(GetProcessHeap(), 0, tmp);
+    return result;
 }
 
 
