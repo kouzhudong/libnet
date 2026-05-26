@@ -35,6 +35,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
     hr = NetworkConnection.GetNetwork(&pNetwork);
     if (hr == S_OK && pNetwork) {
         // TestNetwork(*pNetwork);//不能再枚举了，否则，递归了。
+        pNetwork->Release();
     }
 }
 
@@ -54,6 +55,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ien
         }
 
         TestINetworkConnection(*rgelt);
+        rgelt->Release();
     }
 }
 
@@ -88,12 +90,13 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netlistmgr/nn-netlistmgr-ine
 
     BSTR NetworkName = nullptr;
     hr = Network.GetName(&NetworkName);
-    // SysFreeString(Description);//文档没说要执行这个，否则出问题。
+    SysFreeString(NetworkName);
 
     IEnumNetworkConnections * pEnumNetworkConnection = nullptr;
     hr = Network.GetNetworkConnections(&pEnumNetworkConnection);
     if (hr == S_OK && pEnumNetworkConnection) {
         TestIEnumNetworkConnections(*pEnumNetworkConnection);
+        pEnumNetworkConnection->Release();
     }
 
     GUID GuidNetworkId;
@@ -128,6 +131,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
 
     INetworkListManager * pNetworkListManager = nullptr;
     hr = CoCreateInstance(CLSID_NetworkListManager, nullptr, CLSCTX_ALL, IID_INetworkListManager, (LPVOID *)&pNetworkListManager);
+    if (FAILED(hr) || pNetworkListManager == nullptr) {
+        wprintf(L"CoCreateInstance failed: 0x%08lx\n", hr);
+        CoUninitialize();
+        return;
+    }
 
     VARIANT_BOOL IsConnected = 0;
     hr = pNetworkListManager->get_IsConnected(&IsConnected);
@@ -140,13 +148,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
     hr = pNetworkListManager->GetConnectivity(&Connectivity);
     // Connectivity ==	NLM_CONNECTIVITY_IPV4_INTERNET | NLM_CONNECTIVITY_IPV6_INTERNET (1088)	NLM_CONNECTIVITY
 
-    IEnumNetworkConnections * pEnum;
+    IEnumNetworkConnections * pEnum = nullptr;
     hr = pNetworkListManager->GetNetworkConnections(&pEnum);
     if (hr == S_OK && pEnum) {
         TestIEnumNetworkConnections(*pEnum);
+        pEnum->Release();
     }
 
-    IEnumNetworks * pEnumNetwork;
+    IEnumNetworks * pEnumNetwork = nullptr;
     hr = pNetworkListManager->GetNetworks(NLM_ENUM_NETWORK_ALL, &pEnumNetwork);
     /*
     https://chromium.googlesource.com/chromium/src.git/+/72.0.3626.80/chrome/browser/ssl/captive_portal_helper_win.cc
@@ -169,7 +178,14 @@ https://learn.microsoft.com/zh-cn/windows/win32/nla/about-the-network-list-manag
         }
 
         TestNetwork(*rgelt);
+        rgelt->Release();
     }
+
+    if (pEnumNetwork) {
+        pEnumNetwork->Release();
+    }
+
+    pNetworkListManager->Release();
 
     // GetNetwork, GetNetworkConnection.
 
@@ -334,7 +350,7 @@ bool ShouldAttemptToConnectToInternet(NLM_CONNECTIVITY connectivity, INetworkLis
             // read the VT_UI4 from the VARIANT and cast it to a NLM_INTERNET_CONNECTIVITY
             // If there is no value, then assume no special treatment.
             NLM_INTERNET_CONNECTIVITY v4Connectivity =
-                static_cast<NLM_INTERNET_CONNECTIVITY>(variantInternetConnectivityV6.vt == VT_UI4 ? variantInternetConnectivityV4.ulVal : 0);
+                static_cast<NLM_INTERNET_CONNECTIVITY>(variantInternetConnectivityV4.vt == VT_UI4 ? variantInternetConnectivityV4.ulVal : 0);
             NLM_INTERNET_CONNECTIVITY v6Connectivity =
                 static_cast<NLM_INTERNET_CONNECTIVITY>(variantInternetConnectivityV6.vt == VT_UI4 ? variantInternetConnectivityV6.ulVal : 0);
 
