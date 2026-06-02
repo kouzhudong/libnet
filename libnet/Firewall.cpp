@@ -9,13 +9,10 @@ HRESULT WFCOMInitialize(INetFwPolicy2 ** ppNetFwPolicy2)
 // Instantiate INetFwPolicy2
 {
     HRESULT hr = CoCreateInstance(__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), reinterpret_cast<void **>(ppNetFwPolicy2));
-    do {
-        if (FAILED(hr)) {
-            wprintf(L"CoCreateInstance for INetFwPolicy2 failed: 0x%08lx\n", hr);
-            break;
-        }
+    if (FAILED(hr)) {
+        wprintf(L"CoCreateInstance for INetFwPolicy2 failed: 0x%08lx\n", hr);
+    }
 
-    } while (0);
     return hr;
 }
 
@@ -301,7 +298,7 @@ Abstract:
 ********************************************************************/
 
 
-void DumpFWRulesInCollection(INetFwRule * FwRule)
+static void DumpFWRulesInCollection(INetFwRule * FwRule)
 // Output properties of a Firewall rule
 {
     variant_t InterfaceArray{};
@@ -330,18 +327,26 @@ void DumpFWRulesInCollection(INetFwRule * FwRule)
 
     if (SUCCEEDED(FwRule->get_Name(&bstrVal))) {
         wprintf(L"Name:             %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_Description(&bstrVal))) {
         wprintf(L"Description:      %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_ApplicationName(&bstrVal))) {
         wprintf(L"Application Name: %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_ServiceName(&bstrVal))) {
         wprintf(L"Service Name:     %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_Protocol(&lVal))) {
@@ -359,24 +364,34 @@ void DumpFWRulesInCollection(INetFwRule * FwRule)
         if (lVal != NET_FW_IP_VERSION_V4 && lVal != NET_FW_IP_VERSION_V6) {
             if (SUCCEEDED(FwRule->get_LocalPorts(&bstrVal))) {
                 wprintf(L"Local Ports:      %s\n", bstrVal);
+                SysFreeString(bstrVal);
+                bstrVal = nullptr;
             }
 
             if (SUCCEEDED(FwRule->get_RemotePorts(&bstrVal))) {
                 wprintf(L"Remote Ports:      %s\n", bstrVal);
+                SysFreeString(bstrVal);
+                bstrVal = nullptr;
             }
         } else {
             if (SUCCEEDED(FwRule->get_IcmpTypesAndCodes(&bstrVal))) {
                 wprintf(L"ICMP TypeCode:      %s\n", bstrVal);
+                SysFreeString(bstrVal);
+                bstrVal = nullptr;
             }
         }
     }
 
     if (SUCCEEDED(FwRule->get_LocalAddresses(&bstrVal))) {
         wprintf(L"LocalAddresses:   %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_RemoteAddresses(&bstrVal))) {
         wprintf(L"RemoteAddresses:  %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_Profiles(&lProfileBitmask))) {
@@ -421,6 +436,7 @@ void DumpFWRulesInCollection(INetFwRule * FwRule)
             SAFEARRAY * pSa = InterfaceArray.parray;
 
             for (LONG index = (pSa->rgsabound->lLbound); index < static_cast<LONG>(pSa->rgsabound->cElements); index++) {
+                InterfaceString.Clear(); // 释放上一轮的 BSTR，避免泄漏
                 SafeArrayGetElement(pSa, &index, &InterfaceString);
                 wprintf(L"Interfaces:       %s\n", InterfaceString.bstrVal);
             }
@@ -429,6 +445,8 @@ void DumpFWRulesInCollection(INetFwRule * FwRule)
 
     if (SUCCEEDED(FwRule->get_InterfaceTypes(&bstrVal))) {
         wprintf(L"Interface Types:  %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_Enabled(&bEnabled))) {
@@ -441,6 +459,8 @@ void DumpFWRulesInCollection(INetFwRule * FwRule)
 
     if (SUCCEEDED(FwRule->get_Grouping(&bstrVal))) {
         wprintf(L"Grouping:         %s\n", bstrVal);
+        SysFreeString(bstrVal);
+        bstrVal = nullptr;
     }
 
     if (SUCCEEDED(FwRule->get_EdgeTraversal(&bEnabled))) {
@@ -502,7 +522,7 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
             break;
         }
 
-        wprintf(L"The number of rules in the Windows Firewall are %d\n", fwRuleCount);
+        wprintf(L"The number of rules in the Windows Firewall are %ld\n", fwRuleCount);
 
         pFwRules->get__NewEnum(&pEnumerator); // Iterate through all of the rules in pFwRules
         if (pEnumerator) {
@@ -523,13 +543,26 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
                 if (SUCCEEDED(hr)) {
                     DumpFWRulesInCollection(pFwRule); // Output the properties of this rule
                 }
+
+                if (pFwRule != nullptr) {
+                    pFwRule->Release(); // 每轮释放，避免循环内泄漏
+                    pFwRule = nullptr;
+                }
             }
         }
 
     } while (0);
 
-    if (pFwRule != nullptr) {
-        pFwRule->Release(); // Release pFwRule
+    if (pVariant != nullptr) {
+        pVariant->Release(); // Release IEnumVARIANT
+    }
+
+    if (pEnumerator != nullptr) {
+        pEnumerator->Release(); // Release the enumerator
+    }
+
+    if (pFwRules != nullptr) {
+        pFwRules->Release(); // Release INetFwRules
     }
 
     if (pNetFwPolicy2 != nullptr) {
@@ -596,15 +629,18 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-disabli
 
         // Retrieve Local Interface
         pSa = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-        if (!pSa)
-            _com_issue_error(E_OUTOFMEMORY);
-        else {
-            hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
-            if FAILED (hr)
-                _com_issue_error(hr);
-            vtInterface.vt = VT_ARRAY | VT_VARIANT;
-            vtInterface.parray = pSa;
+        if (pSa == nullptr) {
+            hr = E_OUTOFMEMORY;
+            break;
         }
+        hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
+        if (FAILED(hr)) {
+            SafeArrayDestroy(pSa);
+            pSa = nullptr;
+            break;
+        }
+        vtInterface.vt = VT_ARRAY | VT_VARIANT;
+        vtInterface.parray = pSa; // vtInterface 接管 pSa，析构时自动释放
 
         // Disable Windows Firewall for the local interface (Public profile)
         hr = pNetFwPolicy2->put_ExcludedInterfaces(NET_FW_PROFILE2_PRIVATE, vtInterface);
@@ -1641,15 +1677,18 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 
         // Retrieve Local Interface
         pSa = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-        if (!pSa)
-            _com_issue_error(E_OUTOFMEMORY);
-        else {
-            hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
-            if FAILED (hr)
-                _com_issue_error(hr);
-            vtInterface.vt = VT_ARRAY | VT_VARIANT;
-            vtInterface.parray = pSa;
+        if (pSa == nullptr) {
+            hr = E_OUTOFMEMORY;
+            break;
         }
+        hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
+        if (FAILED(hr)) {
+            SafeArrayDestroy(pSa);
+            pSa = nullptr;
+            break;
+        }
+        vtInterface.vt = VT_ARRAY | VT_VARIANT;
+        vtInterface.parray = pSa; // vtInterface 接管 pSa，析构时自动释放
 
         // Create a new Firewall Rule object.
         hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
@@ -2367,7 +2406,10 @@ HRESULT WindowsFirewallInitialize(OUT INetFwProfile ** fwProfile)
     INetFwPolicy * fwPolicy = nullptr;
     do {
 
-        _ASSERT(fwProfile != nullptr);
+        if (fwProfile == nullptr) {
+            hr = E_POINTER;
+            break;
+        }
 
         *fwProfile = nullptr;
 
@@ -2414,8 +2456,9 @@ void WindowsFirewallCleanup(IN INetFwProfile * fwProfile)
 
 HRESULT WindowsFirewallIsOn(IN INetFwProfile * fwProfile, OUT BOOL * fwOn)
 {
-    _ASSERT(fwProfile != nullptr);
-    _ASSERT(fwOn != nullptr);
+    if (fwProfile == nullptr || fwOn == nullptr) {
+        return E_POINTER;
+    }
 
     *fwOn = FALSE;
 
@@ -2441,7 +2484,9 @@ HRESULT WindowsFirewallIsOn(IN INetFwProfile * fwProfile, OUT BOOL * fwOn)
 
 HRESULT WindowsFirewallTurnOn(IN INetFwProfile * fwProfile)
 {
-    _ASSERT(fwProfile != nullptr);
+    if (fwProfile == nullptr) {
+        return E_POINTER;
+    }
 
     BOOL fwOn{};
     HRESULT hr = WindowsFirewallIsOn(fwProfile, &fwOn); // Check to see if the firewall is off.
@@ -2468,7 +2513,9 @@ HRESULT WindowsFirewallTurnOn(IN INetFwProfile * fwProfile)
 
 HRESULT WindowsFirewallTurnOff(IN INetFwProfile * fwProfile)
 {
-    _ASSERT(fwProfile != nullptr);
+    if (fwProfile == nullptr) {
+        return E_POINTER;
+    }
 
     BOOL fwOn{};
     HRESULT hr = WindowsFirewallIsOn(fwProfile, &fwOn); // Check to see if the firewall is on.
@@ -2502,9 +2549,10 @@ HRESULT WindowsFirewallAppIsEnabled(IN INetFwProfile * fwProfile, IN const wchar
     INetFwAuthorizedApplications * fwApps = nullptr;
     do {
 
-        _ASSERT(fwProfile != nullptr);
-        _ASSERT(fwProcessImageFileName != nullptr);
-        _ASSERT(fwAppEnabled != nullptr);
+        if (fwProfile == nullptr || fwProcessImageFileName == nullptr || fwAppEnabled == nullptr) {
+            hr = E_POINTER;
+            break;
+        }
 
         *fwAppEnabled = FALSE;
 
@@ -2574,9 +2622,10 @@ HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * f
     INetFwAuthorizedApplications * fwApps = nullptr;
     do {
 
-        _ASSERT(fwProfile != nullptr);
-        _ASSERT(fwProcessImageFileName != nullptr);
-        _ASSERT(fwName != nullptr);
+        if (fwProfile == nullptr || fwProcessImageFileName == nullptr || fwName == nullptr) {
+            hr = E_POINTER;
+            break;
+        }
 
         // First check to see if the application is already authorized.
         hr = WindowsFirewallAppIsEnabled(fwProfile, fwProcessImageFileName, &fwAppEnabled);
@@ -2664,8 +2713,10 @@ HRESULT WindowsFirewallPortIsEnabled(IN INetFwProfile * fwProfile, IN LONG portN
     INetFwOpenPorts * fwOpenPorts = nullptr;
     do {
 
-        _ASSERT(fwProfile != nullptr);
-        _ASSERT(fwPortEnabled != nullptr);
+        if (fwProfile == nullptr || fwPortEnabled == nullptr) {
+            hr = E_POINTER;
+            break;
+        }
 
         *fwPortEnabled = FALSE;
 
@@ -2724,8 +2775,10 @@ HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber,
     INetFwOpenPorts * fwOpenPorts = nullptr;
     do {
 
-        _ASSERT(fwProfile != nullptr);
-        _ASSERT(name != nullptr);
+        if (fwProfile == nullptr || name == nullptr) {
+            hr = E_POINTER;
+            break;
+        }
 
         // First check to see if the port is already added.
         hr = WindowsFirewallPortIsEnabled(fwProfile, portNumber, ipProtocol, &fwPortEnabled);
