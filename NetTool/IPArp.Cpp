@@ -242,8 +242,8 @@ int StringToPhysAddr(char * szInEther, char * szOutEther)
 // If it returns 0, ret contains the 6 bytes ethernet address.
 {
     const char DASH = '-';
-    register char c;
-    register int val;
+    char c;
+    int val;
 
     // check szInEther for the correct format
     if (strlen(szInEther) != 17)

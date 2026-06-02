@@ -9,12 +9,13 @@ HRESULT WFCOMInitialize(INetFwPolicy2 ** ppNetFwPolicy2)
 // Instantiate INetFwPolicy2
 {
     HRESULT hr = CoCreateInstance(__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), reinterpret_cast<void **>(ppNetFwPolicy2));
-    if (FAILED(hr)) {
-        wprintf(L"CoCreateInstance for INetFwPolicy2 failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+    do {
+        if (FAILED(hr)) {
+            wprintf(L"CoCreateInstance for INetFwPolicy2 failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
     return hr;
 }
 
@@ -67,26 +68,27 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
 
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+    do {
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            wprintf(L"CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                wprintf(L"CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    // Add firewall rule with EdgeTraversalOption=DeferApp (Windows7+) if available
-    //   else add with Edge=True (Vista and Server 2008).
-    AddFirewallRuleWithEdgeTraversal(pNetFwPolicy2);
+        // Add firewall rule with EdgeTraversalOption=DeferApp (Windows7+) if available
+        //   else add with Edge=True (Vista and Server 2008).
+        AddFirewallRuleWithEdgeTraversal(pNetFwPolicy2);
 
-Cleanup:
+    } while (0);
 
     WFCOMCleanup(pNetFwPolicy2); // Release INetFwPolicy2
 
@@ -111,158 +113,159 @@ HRESULT AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
     BSTR RuleGroupName = nullptr;
     BSTR RuleDescription = nullptr;
     BSTR RuleAppPath = nullptr;
+    do {
 
-    //  For localization purposes, the rule name, description, and group can be
-    //    provided as indirect strings. These indirect strings can be defined in an rc file.
-    //  Examples of the indirect string definitions in the rc file -
-    //    127                     "EdgeTraversalOptions Sample Application"
-    //    128                     "Allow inbound TCP traffic to application EdgeTraversalOptions.exe"
-    //    129                     "Allow EdgeTraversalOptions.exe to receive inbound traffic for TCP protocol
-    //                          from remote machines located within your network as well as from
-    //                          the Internet (i.e from outside of your Edge device like Firewall or NAT"
+        //  For localization purposes, the rule name, description, and group can be
+        //    provided as indirect strings. These indirect strings can be defined in an rc file.
+        //  Examples of the indirect string definitions in the rc file -
+        //    127                     "EdgeTraversalOptions Sample Application"
+        //    128                     "Allow inbound TCP traffic to application EdgeTraversalOptions.exe"
+        //    129                     "Allow EdgeTraversalOptions.exe to receive inbound traffic for TCP protocol
+        //                          from remote machines located within your network as well as from
+        //                          the Internet (i.e from outside of your Edge device like Firewall or NAT"
 
-    //    Examples of using indirect strings -
-    //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-128");
-    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"Allow inbound TCP traffic to application EdgeTraversalOptions.exe");
-    if (FAILED(hr)) {
-        wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-    RuleName = SysAllocString(pwszTemp);
-    if (nullptr == RuleName) {
-        wprintf(L"\nERROR: Insufficient memory\n");
-        goto Cleanup;
-    }
-    //    Examples of using indirect strings -
-    //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-127");
-    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"EdgeTraversalOptions Sample Application");
-    if (FAILED(hr)) {
-        wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-    RuleGroupName = SysAllocString(pwszTemp); // Used for grouping together multiple rules
-    if (nullptr == RuleGroupName) {
-        wprintf(L"\nERROR: Insufficient memory\n");
-        goto Cleanup;
-    }
-    //    Examples of using indirect strings -
-    //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-129");
-    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"Allow EdgeTraversalOptions.exe to receive \
+        //    Examples of using indirect strings -
+        //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-128");
+        hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"Allow inbound TCP traffic to application EdgeTraversalOptions.exe");
+        if (FAILED(hr)) {
+            wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
+            break;
+        }
+        RuleName = SysAllocString(pwszTemp);
+        if (nullptr == RuleName) {
+            wprintf(L"\nERROR: Insufficient memory\n");
+            break;
+        }
+        //    Examples of using indirect strings -
+        //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-127");
+        hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"EdgeTraversalOptions Sample Application");
+        if (FAILED(hr)) {
+            wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
+            break;
+        }
+        RuleGroupName = SysAllocString(pwszTemp); // Used for grouping together multiple rules
+        if (nullptr == RuleGroupName) {
+            wprintf(L"\nERROR: Insufficient memory\n");
+            break;
+        }
+        //    Examples of using indirect strings -
+        //    hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"@EdgeTraversalOptions.exe,-129");
+        hr = StringCchPrintfW(pwszTemp, STRING_BUFFER_SIZE, L"Allow EdgeTraversalOptions.exe to receive \
        inbound traffic for TCP protocol from remote machines located within your network as well as \
        from the Internet (i.e from outside of your Edge device like Firewall or NAT)");
-    if (FAILED(hr)) {
-        wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-    RuleDescription = SysAllocString(pwszTemp);
-    if (nullptr == RuleDescription) {
-        wprintf(L"\nERROR: Insufficient memory\n");
-        goto Cleanup;
-    }
-
-    RuleAppPath = SysAllocString(L"%ProgramFiles%\\EdgeTraversalOptions\\EdgeTraversalOptions.exe");
-    if (nullptr == RuleAppPath) {
-        wprintf(L"\nERROR: Insufficient memory\n");
-        goto Cleanup;
-    }
-
-    hr = pNetFwPolicy2->get_Rules(&pNetFwRules);
-    if (FAILED(hr)) {
-        wprintf(L"Failed to retrieve firewall rules collection : 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-
-    hr = CoCreateInstance(__uuidof(NetFwRule), // CLSID of the class whose object is to be created
-                          nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          __uuidof(INetFwRule), // Identifier of the Interface used for communicating with the object
-                          (void **)&pNetFwRule);
-    if (FAILED(hr)) {
-        wprintf(L"CoCreateInstance for INetFwRule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Name(RuleName);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Name failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Grouping(RuleGroupName);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Grouping failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Description(RuleDescription);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Description failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Direction(NET_FW_RULE_DIR_IN);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Direction failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Action(NET_FW_ACTION_ALLOW);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Action failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_ApplicationName(RuleAppPath);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_ApplicationName failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Protocol(6); // TCP
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Protocol failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Profiles(NET_FW_PROFILE2_DOMAIN | NET_FW_PROFILE2_PRIVATE);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Profiles failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pNetFwRule->put_Enabled(VARIANT_TRUE);
-    if (FAILED(hr)) {
-        wprintf(L"Failed INetFwRule::put_Enabled failed with error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
-
-    // Check if INetFwRule2 interface is available (i.e Windows7+)
-    // If supported, then use EdgeTraversalOptions
-    // Else use the EdgeTraversal boolean flag.
-
-    if (SUCCEEDED(pNetFwRule->QueryInterface(__uuidof(INetFwRule2), (void **)&pNetFwRule2))) {
-        hr = pNetFwRule2->put_EdgeTraversalOptions(NET_FW_EDGE_TRAVERSAL_TYPE_DEFER_TO_APP);
         if (FAILED(hr)) {
-            wprintf(L"Failed INetFwRule::put_EdgeTraversalOptions failed with error: 0x %x.\n", hr);
-            goto Cleanup;
+            wprintf(L"Failed to compose a resource identifier string: 0x%08lx\n", hr);
+            break;
         }
-    } else {
-        hr = pNetFwRule->put_EdgeTraversal(VARIANT_TRUE);
+        RuleDescription = SysAllocString(pwszTemp);
+        if (nullptr == RuleDescription) {
+            wprintf(L"\nERROR: Insufficient memory\n");
+            break;
+        }
+
+        RuleAppPath = SysAllocString(L"%ProgramFiles%\\EdgeTraversalOptions\\EdgeTraversalOptions.exe");
+        if (nullptr == RuleAppPath) {
+            wprintf(L"\nERROR: Insufficient memory\n");
+            break;
+        }
+
+        hr = pNetFwPolicy2->get_Rules(&pNetFwRules);
         if (FAILED(hr)) {
-            wprintf(L"Failed INetFwRule::put_EdgeTraversal failed with error: 0x %x.\n", hr);
-            goto Cleanup;
+            wprintf(L"Failed to retrieve firewall rules collection : 0x%08lx\n", hr);
+            break;
         }
-    }
 
-    hr = pNetFwRules->Add(pNetFwRule);
-    if (FAILED(hr)) {
-        wprintf(L"Failed to add firewall rule to the firewall rules collection : 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = CoCreateInstance(__uuidof(NetFwRule), // CLSID of the class whose object is to be created
+                              nullptr,
+                              CLSCTX_INPROC_SERVER,
+                              __uuidof(INetFwRule), // Identifier of the Interface used for communicating with the object
+                              (void **)&pNetFwRule);
+        if (FAILED(hr)) {
+            wprintf(L"CoCreateInstance for INetFwRule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    wprintf(L"Successfully added firewall rule !\n");
+        hr = pNetFwRule->put_Name(RuleName);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Name failed with error: 0x %x.\n", hr);
+            break;
+        }
 
-Cleanup:
+        hr = pNetFwRule->put_Grouping(RuleGroupName);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Grouping failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        hr = pNetFwRule->put_Description(RuleDescription);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Description failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        hr = pNetFwRule->put_Direction(NET_FW_RULE_DIR_IN);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Direction failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        hr = pNetFwRule->put_Action(NET_FW_ACTION_ALLOW);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Action failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        hr = pNetFwRule->put_ApplicationName(RuleAppPath);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_ApplicationName failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        hr = pNetFwRule->put_Protocol(6); // TCP
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Protocol failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        hr = pNetFwRule->put_Profiles(NET_FW_PROFILE2_DOMAIN | NET_FW_PROFILE2_PRIVATE);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Profiles failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        hr = pNetFwRule->put_Enabled(VARIANT_TRUE);
+        if (FAILED(hr)) {
+            wprintf(L"Failed INetFwRule::put_Enabled failed with error: 0x %x.\n", hr);
+            break;
+        }
+
+        // Check if INetFwRule2 interface is available (i.e Windows7+)
+        // If supported, then use EdgeTraversalOptions
+        // Else use the EdgeTraversal boolean flag.
+
+        if (SUCCEEDED(pNetFwRule->QueryInterface(__uuidof(INetFwRule2), (void **)&pNetFwRule2))) {
+            hr = pNetFwRule2->put_EdgeTraversalOptions(NET_FW_EDGE_TRAVERSAL_TYPE_DEFER_TO_APP);
+            if (FAILED(hr)) {
+                wprintf(L"Failed INetFwRule::put_EdgeTraversalOptions failed with error: 0x %x.\n", hr);
+                break;
+            }
+        } else {
+            hr = pNetFwRule->put_EdgeTraversal(VARIANT_TRUE);
+            if (FAILED(hr)) {
+                wprintf(L"Failed INetFwRule::put_EdgeTraversal failed with error: 0x %x.\n", hr);
+                break;
+            }
+        }
+
+        hr = pNetFwRules->Add(pNetFwRule);
+        if (FAILED(hr)) {
+            wprintf(L"Failed to add firewall rule to the firewall rules collection : 0x%08lx\n", hr);
+            break;
+        }
+
+        wprintf(L"Successfully added firewall rule !\n");
+
+    } while (0);
 
     SysFreeString(RuleName);
     SysFreeString(RuleGroupName);
@@ -469,60 +472,61 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
     INetFwRules * pFwRules = nullptr;
     INetFwRule * pFwRule = nullptr;
     long fwRuleCount{};
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            wprintf(L"CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
-        }
-    }
-
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
-
-    hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
-    if (FAILED(hr)) {
-        wprintf(L"get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-
-    hr = pFwRules->get_Count(&fwRuleCount); // Obtain the number of Firewall rules
-    if (FAILED(hr)) {
-        wprintf(L"get_Count failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-
-    wprintf(L"The number of rules in the Windows Firewall are %d\n", fwRuleCount);
-
-    pFwRules->get__NewEnum(&pEnumerator); // Iterate through all of the rules in pFwRules
-    if (pEnumerator) {
-        hr = pEnumerator->QueryInterface(__uuidof(IEnumVARIANT), reinterpret_cast<void **>(&pVariant));
-    }
-
-    while (SUCCEEDED(hr) && hr != S_FALSE) {
-        var.Clear();
-        hr = pVariant->Next(1, &var, &cFetched);
-        if (S_FALSE != hr) {
-            if (SUCCEEDED(hr)) {
-                hr = var.ChangeType(VT_DISPATCH);
-            }
-            if (SUCCEEDED(hr)) {
-                hr = (V_DISPATCH(&var))->QueryInterface(__uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-            }
-
-            if (SUCCEEDED(hr)) {
-                DumpFWRulesInCollection(pFwRule); // Output the properties of this rule
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                wprintf(L"CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
             }
         }
-    }
 
-Cleanup:
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
+
+        hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
+        if (FAILED(hr)) {
+            wprintf(L"get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
+
+        hr = pFwRules->get_Count(&fwRuleCount); // Obtain the number of Firewall rules
+        if (FAILED(hr)) {
+            wprintf(L"get_Count failed: 0x%08lx\n", hr);
+            break;
+        }
+
+        wprintf(L"The number of rules in the Windows Firewall are %d\n", fwRuleCount);
+
+        pFwRules->get__NewEnum(&pEnumerator); // Iterate through all of the rules in pFwRules
+        if (pEnumerator) {
+            hr = pEnumerator->QueryInterface(__uuidof(IEnumVARIANT), reinterpret_cast<void **>(&pVariant));
+        }
+
+        while (SUCCEEDED(hr) && hr != S_FALSE) {
+            var.Clear();
+            hr = pVariant->Next(1, &var, &cFetched);
+            if (S_FALSE != hr) {
+                if (SUCCEEDED(hr)) {
+                    hr = var.ChangeType(VT_DISPATCH);
+                }
+                if (SUCCEEDED(hr)) {
+                    hr = (V_DISPATCH(&var))->QueryInterface(__uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+                }
+
+                if (SUCCEEDED(hr)) {
+                    DumpFWRulesInCollection(pFwRule); // Output the properties of this rule
+                }
+            }
+        }
+
+    } while (0);
 
     if (pFwRule != nullptr) {
         pFwRule->Release(); // Release pFwRule
@@ -572,43 +576,44 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-disabli
     variant_t vtInterfaceName("Local Area Connection"), vtInterface;
     long index = 0;
     SAFEARRAY * pSa = nullptr;
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    // Retrieve Local Interface
-    pSa = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-    if (!pSa)
-        _com_issue_error(E_OUTOFMEMORY);
-    else {
-        hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
-        if FAILED (hr)
-            _com_issue_error(hr);
-        vtInterface.vt = VT_ARRAY | VT_VARIANT;
-        vtInterface.parray = pSa;
-    }
+        // Retrieve Local Interface
+        pSa = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+        if (!pSa)
+            _com_issue_error(E_OUTOFMEMORY);
+        else {
+            hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
+            if FAILED (hr)
+                _com_issue_error(hr);
+            vtInterface.vt = VT_ARRAY | VT_VARIANT;
+            vtInterface.parray = pSa;
+        }
 
-    // Disable Windows Firewall for the local interface (Public profile)
-    hr = pNetFwPolicy2->put_ExcludedInterfaces(NET_FW_PROFILE2_PRIVATE, vtInterface);
-    if (FAILED(hr)) {
-        printf("put_ExcludedInterfaces failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Disable Windows Firewall for the local interface (Public profile)
+        hr = pNetFwPolicy2->put_ExcludedInterfaces(NET_FW_PROFILE2_PRIVATE, vtInterface);
+        if (FAILED(hr)) {
+            printf("put_ExcludedInterfaces failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     if (pNetFwPolicy2 != nullptr) {
         pNetFwPolicy2->Release(); // Release the INetFwPolicy2 object
@@ -648,43 +653,44 @@ This example disables Windows Firewall using the Windows Firewall with Advanced 
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
 
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+    do {
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    // Disable Windows Firewall for the Domain profile
-    hr = pNetFwPolicy2->put_FirewallEnabled(NET_FW_PROFILE2_DOMAIN, FALSE);
-    if (FAILED(hr)) {
-        printf("put_FirewallEnabled failed for Domain: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Disable Windows Firewall for the Domain profile
+        hr = pNetFwPolicy2->put_FirewallEnabled(NET_FW_PROFILE2_DOMAIN, FALSE);
+        if (FAILED(hr)) {
+            printf("put_FirewallEnabled failed for Domain: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Disable Windows Firewall for the Private profile
-    hr = pNetFwPolicy2->put_FirewallEnabled(NET_FW_PROFILE2_PRIVATE, FALSE);
-    if (FAILED(hr)) {
-        printf("put_FirewallEnabled failed for Private: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Disable Windows Firewall for the Private profile
+        hr = pNetFwPolicy2->put_FirewallEnabled(NET_FW_PROFILE2_PRIVATE, FALSE);
+        if (FAILED(hr)) {
+            printf("put_FirewallEnabled failed for Private: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Disable Windows Firewall for the Public profile
-    hr = pNetFwPolicy2->put_FirewallEnabled(NET_FW_PROFILE2_PUBLIC, FALSE);
-    if (FAILED(hr)) {
-        printf("put_FirewallEnabled failed for Public: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Disable Windows Firewall for the Public profile
+        hr = pNetFwPolicy2->put_FirewallEnabled(NET_FW_PROFILE2_PUBLIC, FALSE);
+        if (FAILED(hr)) {
+            printf("put_FirewallEnabled failed for Public: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     if (pNetFwPolicy2 != nullptr) {
         pNetFwPolicy2->Release(); // Release INetFwPolicy2
@@ -727,44 +733,45 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enablin
     // Rule group to use
     BSTR bstrRuleGroup = SysAllocString(L"File and Printer Sharing");
     VARIANT_BOOL bIsEnabled = FALSE;
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
-    // initialized with a different mode. Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
+        // initialized with a different mode. Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
-
-    // Check if the rule group is enabled for the Private profile
-    hr = pNetFwPolicy2->IsRuleGroupEnabled(NET_FW_PROFILE2_PRIVATE, bstrRuleGroup, &bIsEnabled);
-    if (FAILED(hr)) {
-        printf("IsRuleGroupEnabled failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
-
-    if (!bIsEnabled) {
-        // Group is not enabled for the Private profile - need to enable it
-        printf("Rule Group is NOT enabled for the Private profile. Calling EnableRuleGroup...");
-
-        hr = pNetFwPolicy2->EnableRuleGroup(NET_FW_PROFILE2_PRIVATE, bstrRuleGroup, TRUE);
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
         if (FAILED(hr)) {
-            printf("EnableRuleGroup failed: 0x%08lx\n", hr);
-            goto Cleanup;
+            break;
         }
-    } else {
-        printf("Rule Group is enabled for the Private profile");
-    }
 
-Cleanup:
+        // Check if the rule group is enabled for the Private profile
+        hr = pNetFwPolicy2->IsRuleGroupEnabled(NET_FW_PROFILE2_PRIVATE, bstrRuleGroup, &bIsEnabled);
+        if (FAILED(hr)) {
+            printf("IsRuleGroupEnabled failed: 0x%08lx\n", hr);
+            break;
+        }
+
+        if (!bIsEnabled) {
+            // Group is not enabled for the Private profile - need to enable it
+            printf("Rule Group is NOT enabled for the Private profile. Calling EnableRuleGroup...");
+
+            hr = pNetFwPolicy2->EnableRuleGroup(NET_FW_PROFILE2_PRIVATE, bstrRuleGroup, TRUE);
+            if (FAILED(hr)) {
+                printf("EnableRuleGroup failed: 0x%08lx\n", hr);
+                break;
+            }
+        } else {
+            printf("Rule Group is enabled for the Private profile");
+        }
+
+    } while (0);
 
     SysFreeString(bstrRuleGroup); // Free BSTR's
 
@@ -809,31 +816,32 @@ Abstract:
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
 
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+    do {
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    printf("Settings for the firewall domain profile:\n");
-    Get_FirewallSettings_PerProfileType(NET_FW_PROFILE2_DOMAIN, pNetFwPolicy2);
+        printf("Settings for the firewall domain profile:\n");
+        Get_FirewallSettings_PerProfileType(NET_FW_PROFILE2_DOMAIN, pNetFwPolicy2);
 
-    printf("Settings for the firewall private profile:\n");
-    Get_FirewallSettings_PerProfileType(NET_FW_PROFILE2_PRIVATE, pNetFwPolicy2);
+        printf("Settings for the firewall private profile:\n");
+        Get_FirewallSettings_PerProfileType(NET_FW_PROFILE2_PRIVATE, pNetFwPolicy2);
 
-    printf("Settings for the firewall public profile:\n");
-    Get_FirewallSettings_PerProfileType(NET_FW_PROFILE2_PUBLIC, pNetFwPolicy2);
+        printf("Settings for the firewall public profile:\n");
+        Get_FirewallSettings_PerProfileType(NET_FW_PROFILE2_PUBLIC, pNetFwPolicy2);
 
-Cleanup:
+    } while (0);
 
     if (pNetFwPolicy2 != nullptr) {
         pNetFwPolicy2->Release(); // Release INetFwPolicy2
@@ -918,151 +926,152 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
     BSTR bstrRuleName = SysAllocString(L"Allow TCP 12345 to sampleservice");
     BSTR bstrRuleDescription = SysAllocString(L"Allow only TCP 12345 traffic to sampleservice service, block everything else");
     BSTR bstrRuleLPorts = SysAllocString(L"12345");
+    do {
 
-    // Error checking for BSTR allocations
-    if (nullptr == bstrServiceName) {
-        printf("Failed to allocate bstrServiceName\n");
-        goto Cleanup;
-    }
-    if (nullptr == bstrAppName) {
-        printf("Failed to allocate bstrAppName\n");
-        goto Cleanup;
-    }
-    if (nullptr == bstrRuleName) {
-        printf("Failed to allocate bstrRuleName\n");
-        goto Cleanup;
-    }
-    if (nullptr == bstrRuleDescription) {
-        printf("Failed to allocate bstrRuleDescription\n");
-        goto Cleanup;
-    }
-    if (nullptr == bstrRuleLPorts) {
-        printf("Failed to allocate bstrRuleLPorts\n");
-        goto Cleanup;
-    }
-
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
-
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Error checking for BSTR allocations
+        if (nullptr == bstrServiceName) {
+            printf("Failed to allocate bstrServiceName\n");
+            break;
         }
-    }
+        if (nullptr == bstrAppName) {
+            printf("Failed to allocate bstrAppName\n");
+            break;
+        }
+        if (nullptr == bstrRuleName) {
+            printf("Failed to allocate bstrRuleName\n");
+            break;
+        }
+        if (nullptr == bstrRuleDescription) {
+            printf("Failed to allocate bstrRuleDescription\n");
+            break;
+        }
+        if (nullptr == bstrRuleLPorts) {
+            printf("Failed to allocate bstrRuleLPorts\n");
+            break;
+        }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    hr = pNetFwPolicy2->get_ServiceRestriction(&pFwServiceRestriction); // Retrieve INetFwServiceRestriction
-    if (FAILED(hr)) {
-        printf("get_ServiceRestriction failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
+        }
 
-    // Restrict the sampleservice Service.
-    // This will add two WSH rules -
-    //    - a default block all inbound traffic to the service
-    //    - a default block all outbound traffic from the service
-    hr = pFwServiceRestriction->RestrictService(bstrServiceName, bstrAppName, TRUE, FALSE);
-    if (FAILED(hr)) {
-        printf("RestrictService failed: 0x%08lx\nMake sure you specified a valid service shortname.\n", hr);
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    // If the service does not send/receive any network traffic then you are done. You can skip adding the allow WSH rules below.
+        hr = pNetFwPolicy2->get_ServiceRestriction(&pFwServiceRestriction); // Retrieve INetFwServiceRestriction
+        if (FAILED(hr)) {
+            printf("get_ServiceRestriction failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // If the service requires sending/receiving certain traffic, then add 'allow' WSH rules as follows
+        // Restrict the sampleservice Service.
+        // This will add two WSH rules -
+        //    - a default block all inbound traffic to the service
+        //    - a default block all outbound traffic from the service
+        hr = pFwServiceRestriction->RestrictService(bstrServiceName, bstrAppName, TRUE, FALSE);
+        if (FAILED(hr)) {
+            printf("RestrictService failed: 0x%08lx\nMake sure you specified a valid service shortname.\n", hr);
+            break;
+        }
 
-    // Get the collections of Windows Service Hardening networking rules first
-    hr = pFwServiceRestriction->get_Rules(&pFwRules);
-    if (FAILED(hr)) {
-        wprintf(L"get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // If the service does not send/receive any network traffic then you are done. You can skip adding the allow WSH rules below.
 
-    // Add inbound WSH allow rule for allowing TCP 12345 to the service
-    // Create a new Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // If the service requires sending/receiving certain traffic, then add 'allow' WSH rules as follows
 
-    hr = pFwRule->put_Name(bstrRuleName); // Populate the Rule Name
-    if (FAILED(hr)) {
-        printf("put_Name failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Get the collections of Windows Service Hardening networking rules first
+        hr = pFwServiceRestriction->get_Rules(&pFwRules);
+        if (FAILED(hr)) {
+            wprintf(L"get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRule->put_Description(bstrRuleDescription); // Populate the Rule Description
-    if (FAILED(hr)) {
-        printf("put_Description failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Add inbound WSH allow rule for allowing TCP 12345 to the service
+        // Create a new Rule object.
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRule->put_ApplicationName(bstrAppName); // Populate the Application Name
-    if (FAILED(hr)) {
-        printf("put_ApplicationName failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRule->put_Name(bstrRuleName); // Populate the Rule Name
+        if (FAILED(hr)) {
+            printf("put_Name failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRule->put_ServiceName(bstrServiceName); // Populate the Service Name
-    if (FAILED(hr)) {
-        printf("put_ServiceName failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRule->put_Description(bstrRuleDescription); // Populate the Rule Description
+        if (FAILED(hr)) {
+            printf("put_Description failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP); // Populate the Protocol
-    if (FAILED(hr)) {
-        printf("put_Protocol failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRule->put_ApplicationName(bstrAppName); // Populate the Application Name
+        if (FAILED(hr)) {
+            printf("put_ApplicationName failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRule->put_LocalPorts(bstrRuleLPorts); // Populate the Local Ports
-    if (FAILED(hr)) {
-        printf("put_LocalPorts failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRule->put_ServiceName(bstrServiceName); // Populate the Service Name
+        if (FAILED(hr)) {
+            printf("put_ServiceName failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRule->put_Action(NET_FW_ACTION_ALLOW); // Populate the rule Action
-    if (FAILED(hr)) {
-        printf("put_Action failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP); // Populate the Protocol
+        if (FAILED(hr)) {
+            printf("put_Protocol failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRule->put_Enabled(VARIANT_TRUE); // Populate the rule Enabled setting
-    if (FAILED(hr)) {
-        printf("put_Enabled failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRule->put_LocalPorts(bstrRuleLPorts); // Populate the Local Ports
+        if (FAILED(hr)) {
+            printf("put_LocalPorts failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pFwRules->Add(pFwRule); // Add the Rule to the collection of Windows Service Hardening(WSH) rules
-    if (FAILED(hr)) {
-        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRule->put_Action(NET_FW_ACTION_ALLOW); // Populate the rule Action
+        if (FAILED(hr)) {
+            printf("put_Action failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    Sleep(3000);
+        hr = pFwRule->put_Enabled(VARIANT_TRUE); // Populate the rule Enabled setting
+        if (FAILED(hr)) {
+            printf("put_Enabled failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Check to see if the Service is Restricted
-    hr = pFwServiceRestriction->ServiceRestricted(bstrServiceName, bstrAppName, &isServiceRestricted);
-    if (FAILED(hr)) {
-        printf("ServiceRestricted failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRules->Add(pFwRule); // Add the Rule to the collection of Windows Service Hardening(WSH) rules
+        if (FAILED(hr)) {
+            printf("Firewall Rule Add failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    if (isServiceRestricted) {
-        printf("Service was successfully restricted in WSH.\nExcept for TCP 12345 inbound traffic and its "
-               "responses, all other inbound and outbound connections to and from the service will be blocked.\n");
-    } else {
-        printf("The Service could not be properly restricted.\n");
-    }
+        Sleep(3000);
 
-Cleanup:
+        // Check to see if the Service is Restricted
+        hr = pFwServiceRestriction->ServiceRestricted(bstrServiceName, bstrAppName, &isServiceRestricted);
+        if (FAILED(hr)) {
+            printf("ServiceRestricted failed: 0x%08lx\n", hr);
+            break;
+        }
+
+        if (isServiceRestricted) {
+            printf("Service was successfully restricted in WSH.\nExcept for TCP 12345 inbound traffic and its "
+                   "responses, all other inbound and outbound connections to and from the service will be blocked.\n");
+        } else {
+            printf("The Service could not be properly restricted.\n");
+        }
+
+    } while (0);
 
     // Free BSTR's
     SysFreeString(bstrServiceName);
@@ -1120,64 +1129,65 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleName = SysAllocString(L"GRE_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Allow GRE Traffic");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
-    if (FAILED(hr)) {
-        printf("get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
+        if (FAILED(hr)) {
+            printf("get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
-    if (FAILED(hr)) {
-        printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
+        if (FAILED(hr)) {
+            printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // When possible we avoid adding firewall rules to the Public profile.
-    // If Public is currently active and it is not the only active profile, we remove it from the bitmask
-    if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
-        CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
-    }
+        // When possible we avoid adding firewall rules to the Public profile.
+        // If Public is currently active and it is not the only active profile, we remove it from the bitmask
+        if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
+            CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
+        }
 
-    // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Create a new Firewall Rule object.
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Populate the Firewall Rule object
-    pFwRule->put_Name(bstrRuleName);
-    pFwRule->put_Description(bstrRuleDescription);
-    pFwRule->put_Protocol(47);
-    pFwRule->put_Grouping(bstrRuleGroup);
-    pFwRule->put_Profiles(CurrentProfilesBitMask);
-    pFwRule->put_Action(NET_FW_ACTION_ALLOW);
-    pFwRule->put_Enabled(VARIANT_TRUE);
+        // Populate the Firewall Rule object
+        pFwRule->put_Name(bstrRuleName);
+        pFwRule->put_Description(bstrRuleDescription);
+        pFwRule->put_Protocol(47);
+        pFwRule->put_Grouping(bstrRuleGroup);
+        pFwRule->put_Profiles(CurrentProfilesBitMask);
+        pFwRule->put_Action(NET_FW_ACTION_ALLOW);
+        pFwRule->put_Enabled(VARIANT_TRUE);
 
-    hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
-    if (FAILED(hr)) {
-        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
+        if (FAILED(hr)) {
+            printf("Firewall Rule Add failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     // Free BSTR's
     SysFreeString(bstrRuleName);
@@ -1236,53 +1246,54 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     // ICMP Echo Request
     BSTR bstrICMPTypeCode = SysAllocString(L"8:*");
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
-    if (FAILED(hr)) {
-        printf("get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
+        if (FAILED(hr)) {
+            printf("get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Create a new Firewall Rule object.
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Populate the Firewall Rule object
-    pFwRule->put_Name(bstrRuleName);
-    pFwRule->put_Description(bstrRuleDescription);
-    pFwRule->put_Protocol(1);
-    pFwRule->put_IcmpTypesAndCodes(bstrICMPTypeCode);
-    pFwRule->put_Grouping(bstrRuleGroup);
-    pFwRule->put_Profiles(NET_FW_PROFILE2_PRIVATE);
-    pFwRule->put_Action(NET_FW_ACTION_ALLOW);
-    pFwRule->put_Enabled(VARIANT_TRUE);
+        // Populate the Firewall Rule object
+        pFwRule->put_Name(bstrRuleName);
+        pFwRule->put_Description(bstrRuleDescription);
+        pFwRule->put_Protocol(1);
+        pFwRule->put_IcmpTypesAndCodes(bstrICMPTypeCode);
+        pFwRule->put_Grouping(bstrRuleGroup);
+        pFwRule->put_Profiles(NET_FW_PROFILE2_PRIVATE);
+        pFwRule->put_Action(NET_FW_ACTION_ALLOW);
+        pFwRule->put_Enabled(VARIANT_TRUE);
 
-    hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
-    if (FAILED(hr)) {
-        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
+        if (FAILED(hr)) {
+            printf("Firewall Rule Add failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     // Free BSTR's
     SysFreeString(bstrRuleName);
@@ -1343,66 +1354,67 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleLPorts = SysAllocString(L"2400-2450");
     BSTR bstrRuleInterfaceType = SysAllocString(L"LAN");
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
-    if (FAILED(hr)) {
-        printf("get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
+        if (FAILED(hr)) {
+            printf("get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
-    if (FAILED(hr)) {
-        printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
+        if (FAILED(hr)) {
+            printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // When possible we avoid adding firewall rules to the Public profile.
-    // If Public is currently active and it is not the only active profile, we remove it from the bitmask
-    if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
-        CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
-    }
+        // When possible we avoid adding firewall rules to the Public profile.
+        // If Public is currently active and it is not the only active profile, we remove it from the bitmask
+        if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
+            CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
+        }
 
-    // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Create a new Firewall Rule object.
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Populate the Firewall Rule object
-    pFwRule->put_Name(bstrRuleName);
-    pFwRule->put_Description(bstrRuleDescription);
-    pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
-    pFwRule->put_LocalPorts(bstrRuleLPorts);
-    pFwRule->put_Grouping(bstrRuleGroup);
-    pFwRule->put_InterfaceTypes(bstrRuleInterfaceType);
-    pFwRule->put_Profiles(CurrentProfilesBitMask);
-    pFwRule->put_Action(NET_FW_ACTION_ALLOW);
-    pFwRule->put_Enabled(VARIANT_TRUE);
+        // Populate the Firewall Rule object
+        pFwRule->put_Name(bstrRuleName);
+        pFwRule->put_Description(bstrRuleDescription);
+        pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
+        pFwRule->put_LocalPorts(bstrRuleLPorts);
+        pFwRule->put_Grouping(bstrRuleGroup);
+        pFwRule->put_InterfaceTypes(bstrRuleInterfaceType);
+        pFwRule->put_Profiles(CurrentProfilesBitMask);
+        pFwRule->put_Action(NET_FW_ACTION_ALLOW);
+        pFwRule->put_Enabled(VARIANT_TRUE);
 
-    hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
-    if (FAILED(hr)) {
-        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
+        if (FAILED(hr)) {
+            printf("Firewall Rule Add failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     // Free BSTR's
     SysFreeString(bstrRuleName);
@@ -1463,67 +1475,68 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleApplication = SysAllocString(L"%programfiles%\\MyApplication.exe");
     BSTR bstrRuleLPorts = SysAllocString(L"4000");
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
-    if (FAILED(hr)) {
-        printf("get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
+        if (FAILED(hr)) {
+            printf("get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
-    if (FAILED(hr)) {
-        printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
+        if (FAILED(hr)) {
+            printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // When possible we avoid adding firewall rules to the Public profile.
-    // If Public is currently active and it is not the only active profile, we remove it from the bitmask
-    if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
-        CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
-    }
+        // When possible we avoid adding firewall rules to the Public profile.
+        // If Public is currently active and it is not the only active profile, we remove it from the bitmask
+        if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
+            CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
+        }
 
-    // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Create a new Firewall Rule object.
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Populate the Firewall Rule object
-    pFwRule->put_Name(bstrRuleName);
-    pFwRule->put_Description(bstrRuleDescription);
-    pFwRule->put_ApplicationName(bstrRuleApplication);
-    pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
-    pFwRule->put_LocalPorts(bstrRuleLPorts);
-    pFwRule->put_Direction(NET_FW_RULE_DIR_OUT);
-    pFwRule->put_Grouping(bstrRuleGroup);
-    pFwRule->put_Profiles(CurrentProfilesBitMask);
-    pFwRule->put_Action(NET_FW_ACTION_ALLOW);
-    pFwRule->put_Enabled(VARIANT_TRUE);
+        // Populate the Firewall Rule object
+        pFwRule->put_Name(bstrRuleName);
+        pFwRule->put_Description(bstrRuleDescription);
+        pFwRule->put_ApplicationName(bstrRuleApplication);
+        pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
+        pFwRule->put_LocalPorts(bstrRuleLPorts);
+        pFwRule->put_Direction(NET_FW_RULE_DIR_OUT);
+        pFwRule->put_Grouping(bstrRuleGroup);
+        pFwRule->put_Profiles(CurrentProfilesBitMask);
+        pFwRule->put_Action(NET_FW_ACTION_ALLOW);
+        pFwRule->put_Enabled(VARIANT_TRUE);
 
-    hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
-    if (FAILED(hr)) {
-        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
+        if (FAILED(hr)) {
+            printf("Firewall Rule Add failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     // Free BSTR's
     SysFreeString(bstrRuleName);
@@ -1590,78 +1603,79 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleDescription = SysAllocString(L"Add a PER_INTERFACE rule");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleLPorts = SysAllocString(L"2300");
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
-    if (FAILED(hr)) {
-        printf("get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
+        if (FAILED(hr)) {
+            printf("get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
-    if (FAILED(hr)) {
-        printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
+        if (FAILED(hr)) {
+            printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // When possible we avoid adding firewall rules to the Public profile.
-    // If Public is currently active and it is not the only active profile, we remove it from the bitmask
-    if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
-        CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
-    }
+        // When possible we avoid adding firewall rules to the Public profile.
+        // If Public is currently active and it is not the only active profile, we remove it from the bitmask
+        if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
+            CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
+        }
 
-    // Retrieve Local Interface
-    pSa = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-    if (!pSa)
-        _com_issue_error(E_OUTOFMEMORY);
-    else {
-        hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
-        if FAILED (hr)
-            _com_issue_error(hr);
-        vtInterface.vt = VT_ARRAY | VT_VARIANT;
-        vtInterface.parray = pSa;
-    }
+        // Retrieve Local Interface
+        pSa = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+        if (!pSa)
+            _com_issue_error(E_OUTOFMEMORY);
+        else {
+            hr = SafeArrayPutElement(pSa, &index, &vtInterfaceName);
+            if FAILED (hr)
+                _com_issue_error(hr);
+            vtInterface.vt = VT_ARRAY | VT_VARIANT;
+            vtInterface.parray = pSa;
+        }
 
-    // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Create a new Firewall Rule object.
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Populate the Firewall Rule object
-    pFwRule->put_Name(bstrRuleName);
-    pFwRule->put_Description(bstrRuleDescription);
-    pFwRule->put_Enabled(VARIANT_TRUE);
-    pFwRule->put_Profiles(CurrentProfilesBitMask);
-    pFwRule->put_Grouping(bstrRuleGroup);
-    pFwRule->put_Interfaces(vtInterface);
-    pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
-    pFwRule->put_LocalPorts(bstrRuleLPorts);
-    pFwRule->put_Action(NET_FW_ACTION_ALLOW);
+        // Populate the Firewall Rule object
+        pFwRule->put_Name(bstrRuleName);
+        pFwRule->put_Description(bstrRuleDescription);
+        pFwRule->put_Enabled(VARIANT_TRUE);
+        pFwRule->put_Profiles(CurrentProfilesBitMask);
+        pFwRule->put_Grouping(bstrRuleGroup);
+        pFwRule->put_Interfaces(vtInterface);
+        pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
+        pFwRule->put_LocalPorts(bstrRuleLPorts);
+        pFwRule->put_Action(NET_FW_ACTION_ALLOW);
 
-    hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
-    if (FAILED(hr)) {
-        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
+        if (FAILED(hr)) {
+            printf("Firewall Rule Add failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     // Free BSTR's
     SysFreeString(bstrRuleName);
@@ -1723,67 +1737,68 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleApplication = SysAllocString(L"%systemroot%\\system32\\myservice.exe");
     BSTR bstrRuleService = SysAllocString(L"myservicename");
     BSTR bstrRuleLPorts = SysAllocString(L"135");
+    do {
 
-    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+        hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
-    if (FAILED(hr)) {
-        printf("get_Rules failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_Rules(&pFwRules); // Retrieve INetFwRules
+        if (FAILED(hr)) {
+            printf("get_Rules failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
-    if (FAILED(hr)) {
-        printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask); // Retrieve Current Profiles bitmask
+        if (FAILED(hr)) {
+            printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // When possible we avoid adding firewall rules to the Public profile.
-    // If Public is currently active and it is not the only active profile, we remove it from the bitmask
-    if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
-        CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
-    }
+        // When possible we avoid adding firewall rules to the Public profile.
+        // If Public is currently active and it is not the only active profile, we remove it from the bitmask
+        if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)) {
+            CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
+        }
 
-    // Create a new Firewall Rule object.
-    hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        // Create a new Firewall Rule object.
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), reinterpret_cast<void **>(&pFwRule));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Populate the Firewall Rule object
-    pFwRule->put_Name(bstrRuleName);
-    pFwRule->put_Description(bstrRuleDescription);
-    pFwRule->put_ApplicationName(bstrRuleApplication);
-    pFwRule->put_ServiceName(bstrRuleService);
-    pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
-    pFwRule->put_LocalPorts(bstrRuleLPorts);
-    pFwRule->put_Grouping(bstrRuleGroup);
-    pFwRule->put_Profiles(CurrentProfilesBitMask);
-    pFwRule->put_Action(NET_FW_ACTION_ALLOW);
-    pFwRule->put_Enabled(VARIANT_TRUE);
+        // Populate the Firewall Rule object
+        pFwRule->put_Name(bstrRuleName);
+        pFwRule->put_Description(bstrRuleDescription);
+        pFwRule->put_ApplicationName(bstrRuleApplication);
+        pFwRule->put_ServiceName(bstrRuleService);
+        pFwRule->put_Protocol(NET_FW_IP_PROTOCOL_TCP);
+        pFwRule->put_LocalPorts(bstrRuleLPorts);
+        pFwRule->put_Grouping(bstrRuleGroup);
+        pFwRule->put_Profiles(CurrentProfilesBitMask);
+        pFwRule->put_Action(NET_FW_ACTION_ALLOW);
+        pFwRule->put_Enabled(VARIANT_TRUE);
 
-    hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
-    if (FAILED(hr)) {
-        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
-        goto Cleanup;
-    }
+        hr = pFwRules->Add(pFwRule); // Add the Firewall Rule
+        if (FAILED(hr)) {
+            printf("Firewall Rule Add failed: 0x%08lx\n", hr);
+            break;
+        }
 
-Cleanup:
+    } while (0);
 
     // Free BSTR's
     SysFreeString(bstrRuleName);
@@ -1835,7 +1850,7 @@ Abstract:
     if ((ptr) == nullptr) {                                                                                                                                              \
         result = ERROR_NOT_ENOUGH_MEMORY;                                                                                                                                \
         printf(#fnName " = ERROR_NOT_ENOUGH_MEMORY\n");                                                                                                                  \
-        goto CLEANUP;                                                                                                                                                    \
+        break;                                                                                                                                                           \
     }
 
 
@@ -1865,73 +1880,74 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     int numberOfCategories = 1;
     long count = 0;
     BOOL comInit = FALSE;
+    do {
 
-    // Allocate Memory
-    categories = static_cast<long *>(calloc(numberOfCategories, sizeof(long)));
-    BAIL_ON_ALLOC_FAILURE(categories, calloc);
+        // Allocate Memory
+        categories = static_cast<long *>(calloc(numberOfCategories, sizeof(long)));
+        BAIL_ON_ALLOC_FAILURE(categories, calloc);
 
-    // Take Firewall Category Ownership
-    categories[0] = NET_FW_RULE_CATEGORY_FIREWALL;
-    result = ArrayOfLongsToVariant(numberOfCategories, categories, &varCategories);
+        // Take Firewall Category Ownership
+        categories[0] = NET_FW_RULE_CATEGORY_FIREWALL;
+        result = ArrayOfLongsToVariant(numberOfCategories, categories, &varCategories);
 
-    //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
-    //  Examples of the indirect string definition in the rc file -
-    //    127                     "A Test Firewall Product"
-    //    displayName = SysAllocString(L"@RegisterFirewallSample.exe,-127");
+        //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
+        //  Examples of the indirect string definition in the rc file -
+        //    127                     "A Test Firewall Product"
+        //    displayName = SysAllocString(L"@RegisterFirewallSample.exe,-127");
 
-    displayName = SysAllocString(L"A Test Firewall Product");
-    BAIL_ON_ALLOC_FAILURE(displayName, SysAllocString);
+        displayName = SysAllocString(L"A Test Firewall Product");
+        BAIL_ON_ALLOC_FAILURE(displayName, SysAllocString);
 
-    hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    if (FAILED(hr)) { // COM initialize failed
-        wprintf(L"CoInitialize failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
-    comInit = TRUE;
+        hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+        if (FAILED(hr)) { // COM initialize failed
+            wprintf(L"CoInitialize failed: 0x%08lx\n", hr);
+            break;
+        }
+        comInit = TRUE;
 
 
-    hr = CoCreateInstance(__uuidof(NetFwProduct), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), reinterpret_cast<void **>(&product));
-    if (FAILED(hr)) { // CoCreateInstance Failed
-        wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = CoCreateInstance(__uuidof(NetFwProduct), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), reinterpret_cast<void **>(&product));
+        if (FAILED(hr)) { // CoCreateInstance Failed
+            wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = product->put_DisplayName(displayName);
-    if (FAILED(hr)) { // Put_displayName failed
-        wprintf(L"put_DisplayName for INetFwProduct failed Error: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = product->put_DisplayName(displayName);
+        if (FAILED(hr)) { // Put_displayName failed
+            wprintf(L"put_DisplayName for INetFwProduct failed Error: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = product->put_RuleCategories(varCategories);
-    if (FAILED(hr)) { // Put_rulecategories failed
-        wprintf(L"put_RuleCategories failed for INetFwProduct Error: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = product->put_RuleCategories(varCategories);
+        if (FAILED(hr)) { // Put_rulecategories failed
+            wprintf(L"put_RuleCategories failed for INetFwProduct Error: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = CoCreateInstance(__uuidof(NetFwProducts), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), reinterpret_cast<void **>(&products));
-    if (FAILED(hr)) { // CoCreateInstance Failed
-        wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = CoCreateInstance(__uuidof(NetFwProducts), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), reinterpret_cast<void **>(&products));
+        if (FAILED(hr)) { // CoCreateInstance Failed
+            wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = products->Register(product, &registration);
-    if (FAILED(hr)) { // Failed to Register Products
-        wprintf(L"Register failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = products->Register(product, &registration);
+        if (FAILED(hr)) { // Failed to Register Products
+            wprintf(L"Register failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = products->get_Count(&count);
-    if (FAILED(hr)) { // Failed to get Count of Products
-        wprintf(L"Get count failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
-    wprintf(L"INetFwProducts_Count returned %ld.\n", count);
+        hr = products->get_Count(&count);
+        if (FAILED(hr)) { // Failed to get Count of Products
+            wprintf(L"Get count failed: 0x%08lx\n", hr);
+            break;
+        }
+        wprintf(L"INetFwProducts_Count returned %ld.\n", count);
 
-    wprintf(L"Hit any key to unregister.\n");
+        wprintf(L"Hit any key to unregister.\n");
 
-    //_getch();
+        //_getch();
 
-CLEANUP:
+    } while (0);
     if (registration != nullptr) {
         registration->Release();
     }
@@ -1959,31 +1975,32 @@ DWORD ArrayOfLongsToVariant(__in unsigned long numItems, __in_ecount(numItems) c
     SAFEARRAY * sa = nullptr;
     VARIANT * data{};
     unsigned long i{};
+    do {
 
-    VariantInit(dst);
+        VariantInit(dst);
 
-    // If there are no items, just return VT_EMPTY.
-    if (numItems == 0) {
-        goto CLEANUP;
-    }
+        // If there are no items, just return VT_EMPTY.
+        if (numItems == 0) {
+            break;
+        }
 
-    bound[0].lLbound = 0;
-    bound[0].cElements = numItems;
+        bound[0].lLbound = 0;
+        bound[0].cElements = numItems;
 
-    sa = SafeArrayCreate(VT_VARIANT, ARRAYSIZE(bound), bound);
-    BAIL_ON_ALLOC_FAILURE(sa, SafeArrayCreate);
+        sa = SafeArrayCreate(VT_VARIANT, ARRAYSIZE(bound), bound);
+        BAIL_ON_ALLOC_FAILURE(sa, SafeArrayCreate);
 
-    data = static_cast<VARIANT *>(sa->pvData);
+        data = static_cast<VARIANT *>(sa->pvData);
 
-    for (i = 0; i < numItems; ++i) {
-        V_VT(data + i) = VT_I4;
-        V_I4(data + i) = items[i];
-    }
+        for (i = 0; i < numItems; ++i) {
+            V_VT(data + i) = VT_I4;
+            V_I4(data + i) = items[i];
+        }
 
-    V_VT(dst) = VT_ARRAY | VT_VARIANT;
-    V_ARRAY(dst) = sa;
+        V_VT(dst) = VT_ARRAY | VT_VARIANT;
+        V_ARRAY(dst) = sa;
 
-CLEANUP:
+    } while (0);
     return result;
 }
 
@@ -2010,7 +2027,7 @@ Abstract:
 #define BAIL_ON_ALLOC_FAILURE_2(ptr, fnName)                                                                                                                             \
     if ((ptr) == nullptr) {                                                                                                                                              \
         printf(#fnName " = ERROR_NOT_ENOUGH_MEMORY\n");                                                                                                                  \
-        goto CLEANUP;                                                                                                                                                    \
+        break;                                                                                                                                                           \
     }
 
 
@@ -2033,64 +2050,65 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     VARIANT varCategories{};
     long count = 0;
     BOOL comInit = FALSE;
+    do {
 
-    //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
-    //  Examples of the indirect string definition in the rc file -
-    //    127                     "A Test Firewall Product"
-    //    displayName = SysAllocString(L"@RegisterWithoutCategoryOwnership.exe,-127");
+        //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
+        //  Examples of the indirect string definition in the rc file -
+        //    127                     "A Test Firewall Product"
+        //    displayName = SysAllocString(L"@RegisterWithoutCategoryOwnership.exe,-127");
 
-    displayName = SysAllocString(L"A Test Firewall Product");
-    BAIL_ON_ALLOC_FAILURE_2(displayName, SysAllocString);
+        displayName = SysAllocString(L"A Test Firewall Product");
+        BAIL_ON_ALLOC_FAILURE_2(displayName, SysAllocString);
 
-    hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    if (FAILED(hr)) { // COM initialize failed
-        wprintf(L"CoInitialize failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
-    comInit = TRUE;
+        hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+        if (FAILED(hr)) { // COM initialize failed
+            wprintf(L"CoInitialize failed: 0x%08lx\n", hr);
+            break;
+        }
+        comInit = TRUE;
 
-    hr = CoCreateInstance(__uuidof(NetFwProduct), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), reinterpret_cast<void **>(&product));
-    if (FAILED(hr)) { // CoCreateInstance Failed
-        wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = CoCreateInstance(__uuidof(NetFwProduct), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProduct), reinterpret_cast<void **>(&product));
+        if (FAILED(hr)) { // CoCreateInstance Failed
+            wprintf(L"CoCreateInstance for INetFwProduct failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = product->put_DisplayName(displayName);
-    if (FAILED(hr)) { // Put_displayName failed
-        wprintf(L"put_DisplayName for INetFwProduct failed Error: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = product->put_DisplayName(displayName);
+        if (FAILED(hr)) { // Put_displayName failed
+            wprintf(L"put_DisplayName for INetFwProduct failed Error: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = product->put_RuleCategories(varCategories);
-    if (FAILED(hr)) { // Put_rulecategories failed
-        wprintf(L"put_RuleCategories failed for INetFwProduct Error: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = product->put_RuleCategories(varCategories);
+        if (FAILED(hr)) { // Put_rulecategories failed
+            wprintf(L"put_RuleCategories failed for INetFwProduct Error: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = CoCreateInstance(__uuidof(NetFwProducts), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), reinterpret_cast<void **>(&products));
-    if (FAILED(hr)) { // CoCreateInstance Failed
-        wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = CoCreateInstance(__uuidof(NetFwProducts), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwProducts), reinterpret_cast<void **>(&products));
+        if (FAILED(hr)) { // CoCreateInstance Failed
+            wprintf(L"CoCreateInstance for INetFwProducts failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = products->Register(product, &registration);
-    if (FAILED(hr)) { // Failed to Register Products
-        wprintf(L"Register failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
+        hr = products->Register(product, &registration);
+        if (FAILED(hr)) { // Failed to Register Products
+            wprintf(L"Register failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = products->get_Count(&count);
-    if (FAILED(hr)) { // Failed to get Count of Products
-        wprintf(L"Get count failed: 0x%08lx\n", hr);
-        goto CLEANUP;
-    }
-    wprintf(L"INetFwProducts_Count returned %ld.\n", count);
+        hr = products->get_Count(&count);
+        if (FAILED(hr)) { // Failed to get Count of Products
+            wprintf(L"Get count failed: 0x%08lx\n", hr);
+            break;
+        }
+        wprintf(L"INetFwProducts_Count returned %ld.\n", count);
 
-    wprintf(L"Hit any key to unregister.\n");
+        wprintf(L"Hit any key to unregister.\n");
 
-    //_getch();
+        //_getch();
 
-CLEANUP:
+    } while (0);
     if (registration != nullptr) {
         registration->Release();
     }
@@ -2148,27 +2166,28 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/working-w
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
 
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
+    do {
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        if (FAILED(hrComInit)) {
-            wprintf(L"CoInitializeEx failed: 0x%08lx\n", hrComInit);
-            goto Cleanup;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (hrComInit != RPC_E_CHANGED_MODE) {
+            if (FAILED(hrComInit)) {
+                wprintf(L"CoInitializeEx failed: 0x%08lx\n", hrComInit);
+                break;
+            }
         }
-    }
 
-    hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
-    if (FAILED(hr)) {
-        goto Cleanup;
-    }
+        hr = WFCOMInitialize(&pNetFwPolicy2); // Retrieve INetFwPolicy2
+        if (FAILED(hr)) {
+            break;
+        }
 
-    GetCurrentFirewallState(pNetFwPolicy2);     // Show Firewall ON/OFF state on current profiles
-    IsRuleGroupCurrentlyEnabled(pNetFwPolicy2); // Show status of 'File and Printer Sharing' rule group on current profiles
-    IsRuleGroupEnabled(pNetFwPolicy2);          // Show status of 'File and Printer Sharing' rule group on specified profiles
-    GetLocalPolicyModifyState(pNetFwPolicy2);   // For the current firewall profiles display whether the changes to firewall rules will take effect or not
+        GetCurrentFirewallState(pNetFwPolicy2);     // Show Firewall ON/OFF state on current profiles
+        IsRuleGroupCurrentlyEnabled(pNetFwPolicy2); // Show status of 'File and Printer Sharing' rule group on current profiles
+        IsRuleGroupEnabled(pNetFwPolicy2);          // Show status of 'File and Printer Sharing' rule group on specified profiles
+        GetLocalPolicyModifyState(pNetFwPolicy2);   // For the current firewall profiles display whether the changes to firewall rules will take effect or not
 
-Cleanup:
+    } while (0);
 
     WFCOMCleanup(pNetFwPolicy2); // Release INetFwPolicy2
 
@@ -2197,30 +2216,31 @@ HRESULT GetCurrentFirewallState(__in INetFwPolicy2 * pNetFwPolicy2)
     ProfileMap[1].Name = L"Private";
     ProfileMap[2].Id = NET_FW_PROFILE2_PUBLIC;
     ProfileMap[2].Name = L"Public";
+    do {
 
-    wprintf(L"\n\nCurrent Firewall State:\n");
-    wprintf(L"-----------------------\n");
+        wprintf(L"\n\nCurrent Firewall State:\n");
+        wprintf(L"-----------------------\n");
 
-    hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask);
-    if (FAILED(hr)) {
-        wprintf(L"Failed to get CurrentProfileTypes. Error: %x.\n", hr);
-        goto CLEANUP;
-    }
-
-    // The returned 'CurrentProfiles' bitmask can have more than 1 bit set if multiple profiles are active or current at the same time
-
-    for (int i = 0; i < 3; i++) {
-        if (CurrentProfilesBitMask & ProfileMap[i].Id) {
-            hr = pNetFwPolicy2->get_FirewallEnabled(ProfileMap[i].Id, &bActualFirewallEnabled); /*Is Firewall Enabled?*/
-            if (FAILED(hr)) {
-                wprintf(L"Failed to get FirewallEnabled settings for %s profile. Error: %x.\n", ProfileMap[i].Name, hr);
-                goto CLEANUP;
-            }
-            wprintf(L"On %s profile (Current) : Firewall state is %s\n", ProfileMap[i].Name, (bActualFirewallEnabled ? L"ON" : L"OFF"));
+        hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask);
+        if (FAILED(hr)) {
+            wprintf(L"Failed to get CurrentProfileTypes. Error: %x.\n", hr);
+            break;
         }
-    }
 
-CLEANUP:
+        // The returned 'CurrentProfiles' bitmask can have more than 1 bit set if multiple profiles are active or current at the same time
+
+        for (int i = 0; i < 3; i++) {
+            if (CurrentProfilesBitMask & ProfileMap[i].Id) {
+                hr = pNetFwPolicy2->get_FirewallEnabled(ProfileMap[i].Id, &bActualFirewallEnabled); /*Is Firewall Enabled?*/
+                if (FAILED(hr)) {
+                    wprintf(L"Failed to get FirewallEnabled settings for %s profile. Error: %x.\n", ProfileMap[i].Name, hr);
+                    break;
+                }
+                wprintf(L"On %s profile (Current) : Firewall state is %s\n", ProfileMap[i].Name, (bActualFirewallEnabled ? L"ON" : L"OFF"));
+            }
+        }
+
+    } while (0);
     return hr;
 }
 
@@ -2231,25 +2251,26 @@ HRESULT IsRuleGroupCurrentlyEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
     HRESULT hr = S_OK;
     VARIANT_BOOL bActualEnabled = VARIANT_FALSE;
     BSTR GroupName = SysAllocString(L"File and Printer Sharing");
+    do {
 
-    wprintf(L"\n\nIs 'File and Printer Sharing' rule group currently enabled ?\n");
-    wprintf(L"------------------------------------------------------------\n");
+        wprintf(L"\n\nIs 'File and Printer Sharing' rule group currently enabled ?\n");
+        wprintf(L"------------------------------------------------------------\n");
 
-    hr = pNetFwPolicy2->get_IsRuleGroupCurrentlyEnabled(GroupName, &bActualEnabled);
-    if (SUCCEEDED(hr)) {
-        if (VARIANT_TRUE == bActualEnabled && S_OK == hr) {
-            wprintf(L"Rule Group currently enabled on all the current profiles\n");
-        } else if (VARIANT_TRUE == bActualEnabled && S_FALSE == hr) {
-            wprintf(L"Rule Group currently enabled on some of the current profiles but not on all the current profiles\n");
-        } else if (VARIANT_FALSE == bActualEnabled) {
-            wprintf(L"Rule Group Currently not enabled on any of the current profiles\n");
+        hr = pNetFwPolicy2->get_IsRuleGroupCurrentlyEnabled(GroupName, &bActualEnabled);
+        if (SUCCEEDED(hr)) {
+            if (VARIANT_TRUE == bActualEnabled && S_OK == hr) {
+                wprintf(L"Rule Group currently enabled on all the current profiles\n");
+            } else if (VARIANT_TRUE == bActualEnabled && S_FALSE == hr) {
+                wprintf(L"Rule Group currently enabled on some of the current profiles but not on all the current profiles\n");
+            } else if (VARIANT_FALSE == bActualEnabled) {
+                wprintf(L"Rule Group Currently not enabled on any of the current profiles\n");
+            }
+        } else {
+            wprintf(L"Failed calling API IsRuleGroupCurrentlyEnabled. Error: 0x %x.\n", hr);
+            break;
         }
-    } else {
-        wprintf(L"Failed calling API IsRuleGroupCurrentlyEnabled. Error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
 
-Cleanup:
+    } while (0);
     SysFreeString(GroupName);
     return hr;
 }
@@ -2261,25 +2282,26 @@ HRESULT IsRuleGroupEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
     HRESULT hr = S_OK;
     VARIANT_BOOL bActualEnabled = VARIANT_FALSE;
     BSTR GroupName = SysAllocString(L"File and Printer Sharing");
+    do {
 
-    wprintf(L"\n\nIs 'File and Printer Sharing' rule group enabled in public and private profiles ?\n");
-    wprintf(L"---------------------------------------------------------------------------------\n");
+        wprintf(L"\n\nIs 'File and Printer Sharing' rule group enabled in public and private profiles ?\n");
+        wprintf(L"---------------------------------------------------------------------------------\n");
 
-    hr = pNetFwPolicy2->IsRuleGroupEnabled(NET_FW_PROFILE2_PRIVATE | NET_FW_PROFILE2_PUBLIC, GroupName, &bActualEnabled);
-    if (SUCCEEDED(hr)) {
-        if (VARIANT_TRUE == bActualEnabled && S_OK == hr) {
-            wprintf(L"Rule Group currently enabled on both public and private profiles\n");
-        } else if (VARIANT_TRUE == bActualEnabled && S_FALSE == hr) {
-            wprintf(L"Rule Group currently enabled on either public or private profile but not both\n");
-        } else if (VARIANT_FALSE == bActualEnabled) {
-            wprintf(L"Rule Group currently disabled on both public and private profiles\n");
+        hr = pNetFwPolicy2->IsRuleGroupEnabled(NET_FW_PROFILE2_PRIVATE | NET_FW_PROFILE2_PUBLIC, GroupName, &bActualEnabled);
+        if (SUCCEEDED(hr)) {
+            if (VARIANT_TRUE == bActualEnabled && S_OK == hr) {
+                wprintf(L"Rule Group currently enabled on both public and private profiles\n");
+            } else if (VARIANT_TRUE == bActualEnabled && S_FALSE == hr) {
+                wprintf(L"Rule Group currently enabled on either public or private profile but not both\n");
+            } else if (VARIANT_FALSE == bActualEnabled) {
+                wprintf(L"Rule Group currently disabled on both public and private profiles\n");
+            }
+        } else {
+            wprintf(L"Failed calling API IsRuleGroupCurrentlyEnabled. Error: 0x %x.\n", hr);
+            break;
         }
-    } else {
-        wprintf(L"Failed calling API IsRuleGroupCurrentlyEnabled. Error: 0x %x.\n", hr);
-        goto Cleanup;
-    }
 
-Cleanup:
+    } while (0);
     SysFreeString(GroupName);
     return hr;
 }
@@ -2343,31 +2365,32 @@ HRESULT WindowsFirewallInitialize(OUT INetFwProfile ** fwProfile)
     HRESULT hr = S_OK;
     INetFwMgr * fwMgr = nullptr;
     INetFwPolicy * fwPolicy = nullptr;
+    do {
 
-    _ASSERT(fwProfile != nullptr);
+        _ASSERT(fwProfile != nullptr);
 
-    *fwProfile = nullptr;
+        *fwProfile = nullptr;
 
-    // Create an instance of the firewall settings manager.
-    hr = CoCreateInstance(__uuidof(NetFwMgr), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwMgr), reinterpret_cast<void **>(&fwMgr));
-    if (FAILED(hr)) {
-        printf("CoCreateInstance failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        // Create an instance of the firewall settings manager.
+        hr = CoCreateInstance(__uuidof(NetFwMgr), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwMgr), reinterpret_cast<void **>(&fwMgr));
+        if (FAILED(hr)) {
+            printf("CoCreateInstance failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = fwMgr->get_LocalPolicy(&fwPolicy); // Retrieve the local firewall policy.
-    if (FAILED(hr)) {
-        printf("get_LocalPolicy failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        hr = fwMgr->get_LocalPolicy(&fwPolicy); // Retrieve the local firewall policy.
+        if (FAILED(hr)) {
+            printf("get_LocalPolicy failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = fwPolicy->get_CurrentProfile(fwProfile); // Retrieve the firewall profile currently in effect.
-    if (FAILED(hr)) {
-        printf("get_CurrentProfile failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        hr = fwPolicy->get_CurrentProfile(fwProfile); // Retrieve the firewall profile currently in effect.
+        if (FAILED(hr)) {
+            printf("get_CurrentProfile failed: 0x%08lx\n", hr);
+            break;
+        }
 
-error:
+    } while (0);
 
     if (fwPolicy != nullptr) {
         fwPolicy->Release(); // Release the local firewall policy.
@@ -2398,19 +2421,20 @@ HRESULT WindowsFirewallIsOn(IN INetFwProfile * fwProfile, OUT BOOL * fwOn)
 
     VARIANT_BOOL fwEnabled{};
     HRESULT hr = fwProfile->get_FirewallEnabled(&fwEnabled); // Get the current state of the firewall.
-    if (FAILED(hr)) {
-        printf("get_FirewallEnabled failed: 0x%08lx\n", hr);
-        goto error;
-    }
+    do {
+        if (FAILED(hr)) {
+            printf("get_FirewallEnabled failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    if (fwEnabled != VARIANT_FALSE) { // Check to see if the firewall is on.
-        *fwOn = TRUE;
-        printf("The firewall is on.\n");
-    } else {
-        printf("The firewall is off.\n");
-    }
+        if (fwEnabled != VARIANT_FALSE) { // Check to see if the firewall is on.
+            *fwOn = TRUE;
+            printf("The firewall is on.\n");
+        } else {
+            printf("The firewall is off.\n");
+        }
 
-error:
+    } while (0);
     return hr;
 }
 
@@ -2421,22 +2445,23 @@ HRESULT WindowsFirewallTurnOn(IN INetFwProfile * fwProfile)
 
     BOOL fwOn{};
     HRESULT hr = WindowsFirewallIsOn(fwProfile, &fwOn); // Check to see if the firewall is off.
-    if (FAILED(hr)) {
-        printf("WindowsFirewallIsOn failed: 0x%08lx\n", hr);
-        goto error;
-    }
-
-    if (!fwOn) {                                           // If it is, turn it on.
-        hr = fwProfile->put_FirewallEnabled(VARIANT_TRUE); // Turn the firewall on.
+    do {
         if (FAILED(hr)) {
-            printf("put_FirewallEnabled failed: 0x%08lx\n", hr);
-            goto error;
+            printf("WindowsFirewallIsOn failed: 0x%08lx\n", hr);
+            break;
         }
 
-        printf("The firewall is now on.\n");
-    }
+        if (!fwOn) {                                           // If it is, turn it on.
+            hr = fwProfile->put_FirewallEnabled(VARIANT_TRUE); // Turn the firewall on.
+            if (FAILED(hr)) {
+                printf("put_FirewallEnabled failed: 0x%08lx\n", hr);
+                break;
+            }
 
-error:
+            printf("The firewall is now on.\n");
+        }
+
+    } while (0);
     return hr;
 }
 
@@ -2447,22 +2472,23 @@ HRESULT WindowsFirewallTurnOff(IN INetFwProfile * fwProfile)
 
     BOOL fwOn{};
     HRESULT hr = WindowsFirewallIsOn(fwProfile, &fwOn); // Check to see if the firewall is on.
-    if (FAILED(hr)) {
-        printf("WindowsFirewallIsOn failed: 0x%08lx\n", hr);
-        goto error;
-    }
-
-    if (fwOn) {                                             // If it is, turn it off.
-        hr = fwProfile->put_FirewallEnabled(VARIANT_FALSE); // Turn the firewall off.
+    do {
         if (FAILED(hr)) {
-            printf("put_FirewallEnabled failed: 0x%08lx\n", hr);
-            goto error;
+            printf("WindowsFirewallIsOn failed: 0x%08lx\n", hr);
+            break;
         }
 
-        printf("The firewall is now off.\n");
-    }
+        if (fwOn) {                                             // If it is, turn it off.
+            hr = fwProfile->put_FirewallEnabled(VARIANT_FALSE); // Turn the firewall off.
+            if (FAILED(hr)) {
+                printf("put_FirewallEnabled failed: 0x%08lx\n", hr);
+                break;
+            }
 
-error:
+            printf("The firewall is now off.\n");
+        }
+
+    } while (0);
     return hr;
 }
 
@@ -2474,54 +2500,55 @@ HRESULT WindowsFirewallAppIsEnabled(IN INetFwProfile * fwProfile, IN const wchar
     VARIANT_BOOL fwEnabled{};
     INetFwAuthorizedApplication * fwApp = nullptr;
     INetFwAuthorizedApplications * fwApps = nullptr;
+    do {
 
-    _ASSERT(fwProfile != nullptr);
-    _ASSERT(fwProcessImageFileName != nullptr);
-    _ASSERT(fwAppEnabled != nullptr);
+        _ASSERT(fwProfile != nullptr);
+        _ASSERT(fwProcessImageFileName != nullptr);
+        _ASSERT(fwAppEnabled != nullptr);
 
-    *fwAppEnabled = FALSE;
+        *fwAppEnabled = FALSE;
 
-    // Retrieve the authorized application collection.
-    hr = fwProfile->get_AuthorizedApplications(&fwApps);
-    if (FAILED(hr)) {
-        printf("get_AuthorizedApplications failed: 0x%08lx\n", hr);
-        goto error;
-    }
-
-    // Allocate a BSTR for the process image file name.
-    fwBstrProcessImageFileName = SysAllocString(fwProcessImageFileName);
-    if (fwBstrProcessImageFileName == nullptr) {
-        hr = E_OUTOFMEMORY;
-        printf("SysAllocString failed: 0x%08lx\n", hr);
-        goto error;
-    }
-
-    // Attempt to retrieve the authorized application.
-    hr = fwApps->Item(fwBstrProcessImageFileName, &fwApp);
-    if (SUCCEEDED(hr)) {
-        // Find out if the authorized application is enabled.
-        hr = fwApp->get_Enabled(&fwEnabled);
+        // Retrieve the authorized application collection.
+        hr = fwProfile->get_AuthorizedApplications(&fwApps);
         if (FAILED(hr)) {
-            printf("get_Enabled failed: 0x%08lx\n", hr);
-            goto error;
+            printf("get_AuthorizedApplications failed: 0x%08lx\n", hr);
+            break;
         }
 
-        if (fwEnabled != VARIANT_FALSE) {
-            // The authorized application is enabled.
-            *fwAppEnabled = TRUE;
+        // Allocate a BSTR for the process image file name.
+        fwBstrProcessImageFileName = SysAllocString(fwProcessImageFileName);
+        if (fwBstrProcessImageFileName == nullptr) {
+            hr = E_OUTOFMEMORY;
+            printf("SysAllocString failed: 0x%08lx\n", hr);
+            break;
+        }
 
-            printf("Authorized application %lS is enabled in the firewall.\n", fwProcessImageFileName);
+        // Attempt to retrieve the authorized application.
+        hr = fwApps->Item(fwBstrProcessImageFileName, &fwApp);
+        if (SUCCEEDED(hr)) {
+            // Find out if the authorized application is enabled.
+            hr = fwApp->get_Enabled(&fwEnabled);
+            if (FAILED(hr)) {
+                printf("get_Enabled failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            if (fwEnabled != VARIANT_FALSE) {
+                // The authorized application is enabled.
+                *fwAppEnabled = TRUE;
+
+                printf("Authorized application %lS is enabled in the firewall.\n", fwProcessImageFileName);
+            } else {
+                printf("Authorized application %lS is disabled in the firewall.\n", fwProcessImageFileName);
+            }
         } else {
+            // The authorized application was not in the collection.
+            hr = S_OK;
+
             printf("Authorized application %lS is disabled in the firewall.\n", fwProcessImageFileName);
         }
-    } else {
-        // The authorized application was not in the collection.
-        hr = S_OK;
 
-        printf("Authorized application %lS is disabled in the firewall.\n", fwProcessImageFileName);
-    }
-
-error:
+    } while (0);
 
     SysFreeString(fwBstrProcessImageFileName); // Free the BSTR.
 
@@ -2545,72 +2572,73 @@ HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * f
     BSTR fwBstrProcessImageFileName = nullptr;
     INetFwAuthorizedApplication * fwApp = nullptr;
     INetFwAuthorizedApplications * fwApps = nullptr;
+    do {
 
-    _ASSERT(fwProfile != nullptr);
-    _ASSERT(fwProcessImageFileName != nullptr);
-    _ASSERT(fwName != nullptr);
+        _ASSERT(fwProfile != nullptr);
+        _ASSERT(fwProcessImageFileName != nullptr);
+        _ASSERT(fwName != nullptr);
 
-    // First check to see if the application is already authorized.
-    hr = WindowsFirewallAppIsEnabled(fwProfile, fwProcessImageFileName, &fwAppEnabled);
-    if (FAILED(hr)) {
-        printf("WindowsFirewallAppIsEnabled failed: 0x%08lx\n", hr);
-        goto error;
-    }
-
-    // Only add the application if it isn't already authorized.
-    if (!fwAppEnabled) {
-        // Retrieve the authorized application collection.
-        hr = fwProfile->get_AuthorizedApplications(&fwApps);
+        // First check to see if the application is already authorized.
+        hr = WindowsFirewallAppIsEnabled(fwProfile, fwProcessImageFileName, &fwAppEnabled);
         if (FAILED(hr)) {
-            printf("get_AuthorizedApplications failed: 0x%08lx\n", hr);
-            goto error;
+            printf("WindowsFirewallAppIsEnabled failed: 0x%08lx\n", hr);
+            break;
         }
 
-        // Create an instance of an authorized application.
-        hr = CoCreateInstance(
-            __uuidof(NetFwAuthorizedApplication), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwAuthorizedApplication), reinterpret_cast<void **>(&fwApp));
-        if (FAILED(hr)) {
-            printf("CoCreateInstance failed: 0x%08lx\n", hr);
-            goto error;
+        // Only add the application if it isn't already authorized.
+        if (!fwAppEnabled) {
+            // Retrieve the authorized application collection.
+            hr = fwProfile->get_AuthorizedApplications(&fwApps);
+            if (FAILED(hr)) {
+                printf("get_AuthorizedApplications failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            // Create an instance of an authorized application.
+            hr = CoCreateInstance(
+                __uuidof(NetFwAuthorizedApplication), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwAuthorizedApplication), reinterpret_cast<void **>(&fwApp));
+            if (FAILED(hr)) {
+                printf("CoCreateInstance failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            // Allocate a BSTR for the process image file name.
+            fwBstrProcessImageFileName = SysAllocString(fwProcessImageFileName);
+            if (fwBstrProcessImageFileName == nullptr) {
+                hr = E_OUTOFMEMORY;
+                printf("SysAllocString failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            hr = fwApp->put_ProcessImageFileName(fwBstrProcessImageFileName); // Set the process image file name.
+            if (FAILED(hr)) {
+                printf("put_ProcessImageFileName failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            fwBstrName = SysAllocString(fwName); // Allocate a BSTR for the application friendly name.
+            if (SysStringLen(fwBstrName) == 0) {
+                hr = E_OUTOFMEMORY;
+                printf("SysAllocString failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            hr = fwApp->put_Name(fwBstrName); // Set the application friendly name.
+            if (FAILED(hr)) {
+                printf("put_Name failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            hr = fwApps->Add(fwApp); // Add the application to the collection.
+            if (FAILED(hr)) {
+                printf("Add failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            printf("Authorized application %lS is now enabled in the firewall.\n", fwProcessImageFileName);
         }
 
-        // Allocate a BSTR for the process image file name.
-        fwBstrProcessImageFileName = SysAllocString(fwProcessImageFileName);
-        if (fwBstrProcessImageFileName == nullptr) {
-            hr = E_OUTOFMEMORY;
-            printf("SysAllocString failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        hr = fwApp->put_ProcessImageFileName(fwBstrProcessImageFileName); // Set the process image file name.
-        if (FAILED(hr)) {
-            printf("put_ProcessImageFileName failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        fwBstrName = SysAllocString(fwName); // Allocate a BSTR for the application friendly name.
-        if (SysStringLen(fwBstrName) == 0) {
-            hr = E_OUTOFMEMORY;
-            printf("SysAllocString failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        hr = fwApp->put_Name(fwBstrName); // Set the application friendly name.
-        if (FAILED(hr)) {
-            printf("put_Name failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        hr = fwApps->Add(fwApp); // Add the application to the collection.
-        if (FAILED(hr)) {
-            printf("Add failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        printf("Authorized application %lS is now enabled in the firewall.\n", fwProcessImageFileName);
-    }
-
-error:
+    } while (0);
 
     // Free the BSTRs.
     SysFreeString(fwBstrName);
@@ -2634,45 +2662,46 @@ HRESULT WindowsFirewallPortIsEnabled(IN INetFwProfile * fwProfile, IN LONG portN
     VARIANT_BOOL fwEnabled{};
     INetFwOpenPort * fwOpenPort = nullptr;
     INetFwOpenPorts * fwOpenPorts = nullptr;
+    do {
 
-    _ASSERT(fwProfile != nullptr);
-    _ASSERT(fwPortEnabled != nullptr);
+        _ASSERT(fwProfile != nullptr);
+        _ASSERT(fwPortEnabled != nullptr);
 
-    *fwPortEnabled = FALSE;
+        *fwPortEnabled = FALSE;
 
-    // Retrieve the globally open ports collection.
-    hr = fwProfile->get_GloballyOpenPorts(&fwOpenPorts);
-    if (FAILED(hr)) {
-        printf("get_GloballyOpenPorts failed: 0x%08lx\n", hr);
-        goto error;
-    }
-
-    // Attempt to retrieve the globally open port.
-    hr = fwOpenPorts->Item(portNumber, ipProtocol, &fwOpenPort);
-    if (SUCCEEDED(hr)) {
-        // Find out if the globally open port is enabled.
-        hr = fwOpenPort->get_Enabled(&fwEnabled);
+        // Retrieve the globally open ports collection.
+        hr = fwProfile->get_GloballyOpenPorts(&fwOpenPorts);
         if (FAILED(hr)) {
-            printf("get_Enabled failed: 0x%08lx\n", hr);
-            goto error;
+            printf("get_GloballyOpenPorts failed: 0x%08lx\n", hr);
+            break;
         }
 
-        if (fwEnabled != VARIANT_FALSE) {
-            // The globally open port is enabled.
-            *fwPortEnabled = TRUE;
+        // Attempt to retrieve the globally open port.
+        hr = fwOpenPorts->Item(portNumber, ipProtocol, &fwOpenPort);
+        if (SUCCEEDED(hr)) {
+            // Find out if the globally open port is enabled.
+            hr = fwOpenPort->get_Enabled(&fwEnabled);
+            if (FAILED(hr)) {
+                printf("get_Enabled failed: 0x%08lx\n", hr);
+                break;
+            }
 
-            printf("Port %ld is open in the firewall.\n", portNumber);
+            if (fwEnabled != VARIANT_FALSE) {
+                // The globally open port is enabled.
+                *fwPortEnabled = TRUE;
+
+                printf("Port %ld is open in the firewall.\n", portNumber);
+            } else {
+                printf("Port %ld is not open in the firewall.\n", portNumber);
+            }
         } else {
+            // The globally open port was not in the collection.
+            hr = S_OK;
+
             printf("Port %ld is not open in the firewall.\n", portNumber);
         }
-    } else {
-        // The globally open port was not in the collection.
-        hr = S_OK;
 
-        printf("Port %ld is not open in the firewall.\n", portNumber);
-    }
-
-error:
+    } while (0);
 
     if (fwOpenPort != nullptr) {
         fwOpenPort->Release(); // Release the globally open port.
@@ -2693,68 +2722,69 @@ HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber,
     BSTR fwBstrName = nullptr;
     INetFwOpenPort * fwOpenPort = nullptr;
     INetFwOpenPorts * fwOpenPorts = nullptr;
+    do {
 
-    _ASSERT(fwProfile != nullptr);
-    _ASSERT(name != nullptr);
+        _ASSERT(fwProfile != nullptr);
+        _ASSERT(name != nullptr);
 
-    // First check to see if the port is already added.
-    hr = WindowsFirewallPortIsEnabled(fwProfile, portNumber, ipProtocol, &fwPortEnabled);
-    if (FAILED(hr)) {
-        printf("WindowsFirewallPortIsEnabled failed: 0x%08lx\n", hr);
-        goto error;
-    }
-
-    // Only add the port if it isn't already added.
-    if (!fwPortEnabled) {
-        // Retrieve the collection of globally open ports.
-        hr = fwProfile->get_GloballyOpenPorts(&fwOpenPorts);
+        // First check to see if the port is already added.
+        hr = WindowsFirewallPortIsEnabled(fwProfile, portNumber, ipProtocol, &fwPortEnabled);
         if (FAILED(hr)) {
-            printf("get_GloballyOpenPorts failed: 0x%08lx\n", hr);
-            goto error;
+            printf("WindowsFirewallPortIsEnabled failed: 0x%08lx\n", hr);
+            break;
         }
 
-        // Create an instance of an open port.
-        hr = CoCreateInstance(__uuidof(NetFwOpenPort), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwOpenPort), reinterpret_cast<void **>(&fwOpenPort));
-        if (FAILED(hr)) {
-            printf("CoCreateInstance failed: 0x%08lx\n", hr);
-            goto error;
+        // Only add the port if it isn't already added.
+        if (!fwPortEnabled) {
+            // Retrieve the collection of globally open ports.
+            hr = fwProfile->get_GloballyOpenPorts(&fwOpenPorts);
+            if (FAILED(hr)) {
+                printf("get_GloballyOpenPorts failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            // Create an instance of an open port.
+            hr = CoCreateInstance(__uuidof(NetFwOpenPort), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwOpenPort), reinterpret_cast<void **>(&fwOpenPort));
+            if (FAILED(hr)) {
+                printf("CoCreateInstance failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            hr = fwOpenPort->put_Port(portNumber); // Set the port number.
+            if (FAILED(hr)) {
+                printf("put_Port failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            hr = fwOpenPort->put_Protocol(ipProtocol); // Set the IP protocol.
+            if (FAILED(hr)) {
+                printf("put_Protocol failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            fwBstrName = SysAllocString(name); // Allocate a BSTR for the friendly name of the port.
+            if (SysStringLen(fwBstrName) == 0) {
+                hr = E_OUTOFMEMORY;
+                printf("SysAllocString failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            hr = fwOpenPort->put_Name(fwBstrName); // Set the friendly name of the port.
+            if (FAILED(hr)) {
+                printf("put_Name failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            hr = fwOpenPorts->Add(fwOpenPort); // Opens the port and adds it to the collection.
+            if (FAILED(hr)) {
+                printf("Add failed: 0x%08lx\n", hr);
+                break;
+            }
+
+            printf("Port %ld is now open in the firewall.\n", portNumber);
         }
 
-        hr = fwOpenPort->put_Port(portNumber); // Set the port number.
-        if (FAILED(hr)) {
-            printf("put_Port failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        hr = fwOpenPort->put_Protocol(ipProtocol); // Set the IP protocol.
-        if (FAILED(hr)) {
-            printf("put_Protocol failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        fwBstrName = SysAllocString(name); // Allocate a BSTR for the friendly name of the port.
-        if (SysStringLen(fwBstrName) == 0) {
-            hr = E_OUTOFMEMORY;
-            printf("SysAllocString failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        hr = fwOpenPort->put_Name(fwBstrName); // Set the friendly name of the port.
-        if (FAILED(hr)) {
-            printf("put_Name failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        hr = fwOpenPorts->Add(fwOpenPort); // Opens the port and adds it to the collection.
-        if (FAILED(hr)) {
-            printf("Add failed: 0x%08lx\n", hr);
-            goto error;
-        }
-
-        printf("Port %ld is now open in the firewall.\n", portNumber);
-    }
-
-error:
+    } while (0);
 
     SysFreeString(fwBstrName); // Free the BSTR.
 
@@ -2791,50 +2821,51 @@ https://docs.microsoft.com/en-us/previous-versions//aa364726(v=vs.85)?redirected
     UNREFERENCED_PARAMETER(argv);
 
     HRESULT comInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE); // Initialize COM.
+    do {
 
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
-    // Since we don't care what the mode is, we'll just use the existing mode.
-    if (comInit != RPC_E_CHANGED_MODE) {
-        hr = comInit;
-        if (FAILED(hr)) {
-            printf("CoInitializeEx failed: 0x%08lx\n", hr);
-            goto error;
+        // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
+        // Since we don't care what the mode is, we'll just use the existing mode.
+        if (comInit != RPC_E_CHANGED_MODE) {
+            hr = comInit;
+            if (FAILED(hr)) {
+                printf("CoInitializeEx failed: 0x%08lx\n", hr);
+                break;
+            }
         }
-    }
 
-    hr = WindowsFirewallInitialize(&fwProfile); // Retrieve the firewall profile currently in effect.
-    if (FAILED(hr)) {
-        printf("WindowsFirewallInitialize failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        hr = WindowsFirewallInitialize(&fwProfile); // Retrieve the firewall profile currently in effect.
+        if (FAILED(hr)) {
+            printf("WindowsFirewallInitialize failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = WindowsFirewallTurnOff(fwProfile); // Turn off the firewall.
-    if (FAILED(hr)) {
-        printf("WindowsFirewallTurnOff failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        hr = WindowsFirewallTurnOff(fwProfile); // Turn off the firewall.
+        if (FAILED(hr)) {
+            printf("WindowsFirewallTurnOff failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    hr = WindowsFirewallTurnOn(fwProfile); // Turn on the firewall.
-    if (FAILED(hr)) {
-        printf("WindowsFirewallTurnOn failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        hr = WindowsFirewallTurnOn(fwProfile); // Turn on the firewall.
+        if (FAILED(hr)) {
+            printf("WindowsFirewallTurnOn failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Add Windows Messenger to the authorized application collection.
-    hr = WindowsFirewallAddApp(fwProfile, L"%ProgramFiles%\\Messenger\\msmsgs.exe", L"Windows Messenger");
-    if (FAILED(hr)) {
-        printf("WindowsFirewallAddApp failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        // Add Windows Messenger to the authorized application collection.
+        hr = WindowsFirewallAddApp(fwProfile, L"%ProgramFiles%\\Messenger\\msmsgs.exe", L"Windows Messenger");
+        if (FAILED(hr)) {
+            printf("WindowsFirewallAddApp failed: 0x%08lx\n", hr);
+            break;
+        }
 
-    // Add TCP::80 to list of globally open ports.
-    hr = WindowsFirewallPortAdd(fwProfile, 80, NET_FW_IP_PROTOCOL_TCP, L"WWW");
-    if (FAILED(hr)) {
-        printf("WindowsFirewallPortAdd failed: 0x%08lx\n", hr);
-        goto error;
-    }
+        // Add TCP::80 to list of globally open ports.
+        hr = WindowsFirewallPortAdd(fwProfile, 80, NET_FW_IP_PROTOCOL_TCP, L"WWW");
+        if (FAILED(hr)) {
+            printf("WindowsFirewallPortAdd failed: 0x%08lx\n", hr);
+            break;
+        }
 
-error:
+    } while (0);
 
     WindowsFirewallCleanup(fwProfile); // Release the firewall profile.
 
