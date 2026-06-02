@@ -48,13 +48,13 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
     RtlZeroMemory(&RecAddr2, sizeof(SOCKADDR_IN));
     RtlZeroMemory(&SendAddr, sizeof(SOCKADDR_IN));
 
-    RequestID = ntohs(((PSHORT)&pInBuffer[0])[0]);/* Pull the request ID from the buffer. */
+    RequestID = ntohs(((PSHORT)&pInBuffer[0])[0]); /* Pull the request ID from the buffer. */
 
     /* If D2 flags is enabled, then display D2 information. */
     if (State.d2)
         PrintD2(pInBuffer, InBufferLength);
-    
-    s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);/* Create the sockets for both send and receive. */
+
+    s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); /* Create the sockets for both send and receive. */
     if (s == INVALID_SOCKET)
         return FALSE;
 
@@ -68,7 +68,7 @@ BOOL SendRequest(PCHAR pInBuffer, ULONG InBufferLength, PCHAR pOutBuffer, PULONG
     RecAddr2.sin_port = htons(State.port);
     RecAddr2.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    bind(s, (SOCKADDR *)&RecAddr2, sizeof(RecAddr2));/* Bind the receive socket. */
+    bind(s, (SOCKADDR *)&RecAddr2, sizeof(RecAddr2)); /* Bind the receive socket. */
 
     /* Send the datagram to the DNS server. */
     j = sendto(s, pInBuffer, InBufferLength, 0, (SOCKADDR *)&RecAddr, sizeof(RecAddr));
@@ -490,7 +490,7 @@ void PrintD2(PCHAR pBuffer, DWORD BufferLength)
         printf((", want recursion"));
     printf(("\n"));
 
-    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"), 
+    printf(("        questions = %d,  answers = %d,  authority records = %d,  additional = %d\n\n"),
            (int)NumQuestions,
            (int)NumAnswers,
            (int)NumAuthority,
@@ -590,8 +590,8 @@ void PrintDebug(PCHAR pBuffer, DWORD BufferLength)
 
         for (k = 0; k < NumAnswers; k += 1) {
             printf(("    ->  "));
-            
-            i += ExtractName(pBuffer, pName, i, 0);/* Print out the name. */
+
+            i += ExtractName(pBuffer, pName, i, 0); /* Print out the name. */
 
             printf(("%s\n"), pName);
 
@@ -916,122 +916,123 @@ BOOL PerformInternalLookup(PCHAR pAddr, PCHAR pResult)
     if ((strlen(pAddr) + 1) > 255)
         return FALSE;
 
-    Type = TYPE_A;
-    if (IsValidIP(pAddr))
-        Type = TYPE_PTR;
+    do {
+        Type = TYPE_A;
+        if (IsValidIP(pAddr))
+            Type = TYPE_PTR;
 
-    /* If it's a PTR lookup then append the ARPA sig to the end. */
-    if (Type == TYPE_PTR) {
-        ReverseIP(pAddr, pResolve);
-        strcat(pResolve, ARPA_SIG);
-    } else {
-        strcpy(pResolve, pAddr);
-    }
-
-    /* Base header length + length of QNAME + length of QTYPE and QCLASS */
-    BufferLength = 12 + (strlen(pResolve) + 2) + 4;
-
-    /* Allocate memory for the buffer. */
-    Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength);
-    if (!Buffer) {
-        printf(("ERROR: Out of memory\n"));
-        goto cleanup;
-    }
-
-    /* Allocate the receiving buffer. */
-    RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength);
-    if (!RecBuffer) {
-        printf(("ERROR: Out of memory\n"));
-        goto cleanup;
-    }
-
-    /* Insert the ID field. */
-    ((PSHORT)&Buffer[i])[0] = htons(RequestID);
-    i += 2;
-
-    /* Bits 0-7 of the second 16 are all 0, except for when recursion is desired. */
-    Buffer[i] = 0x00;
-    if (State.recurse)
-        Buffer[i] |= 0x01;
-    i += 1;
-
-    /* Bits 8-15 of the second 16 are 0 for a query. */
-    Buffer[i] = 0x00;
-    i += 1;
-
-    /* Only 1 question. */
-    ((PSHORT)&Buffer[i])[0] = htons(1);
-    i += 2;
-
-    /* We aren't sending a response, so 0 out the rest of the header. */
-    Buffer[i] = 0x00;
-    Buffer[i + 1] = 0x00;
-    Buffer[i + 2] = 0x00;
-    Buffer[i + 3] = 0x00;
-    Buffer[i + 4] = 0x00;
-    Buffer[i + 5] = 0x00;
-    i += 6;
-
-    /* Walk through the query address. Split each section delimited by '.'.
-       Format of the QNAME section is length|data, etc. Last one is null */
-    j = i;
-    i += 1;
-
-    for (k = 0; k < strlen(pResolve); k += 1) {
-        if (pResolve[k] != '.') {
-            Buffer[i] = pResolve[k];
-            i += 1;
+        /* If it's a PTR lookup then append the ARPA sig to the end. */
+        if (Type == TYPE_PTR) {
+            ReverseIP(pAddr, pResolve);
+            strcat(pResolve, ARPA_SIG);
         } else {
-            Buffer[j] = (i - j) - 1;
-            j = i;
-            i += 1;
+            strcpy(pResolve, pAddr);
         }
-    }
 
-    Buffer[j] = (i - j) - 1;
-    Buffer[i] = 0x00;
-    i += 1;
+        /* Base header length + length of QNAME + length of QTYPE and QCLASS */
+        BufferLength = 12 + (strlen(pResolve) + 2) + 4;
 
-    /* QTYPE */
-    ((PSHORT)&Buffer[i])[0] = htons(Type);
-    i += 2;
-
-    /* QCLASS */
-    ((PSHORT)&Buffer[i])[0] = htons(CLASS_IN);
-
-    /* Ship the request off to the DNS server. */
-    bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
-    if (!bOk)
-        goto cleanup;
-    
-    NumQuestions = ntohs(((PSHORT)&RecBuffer[4])[0]);/* Start parsing the received packet. */
-
-    k = 12;
-
-    /* We don't care about the questions section, blow through it. */
-    if (NumQuestions) {
-        for (i = 0; i < NumQuestions; i += 1) {
-            /* Quick way to skip the domain name section. */
-            k += ExtractName(RecBuffer, pResult, k, 0);
-            k += 4;
+        /* Allocate memory for the buffer. */
+        Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength);
+        if (!Buffer) {
+            printf(("ERROR: Out of memory\n"));
+            break;
         }
-    }
-    
-    k += ExtractName(RecBuffer, pResult, k, 0);/* Skip the answer name. */
 
-    Type = ntohs(((PUSHORT)&RecBuffer[k])[0]);
-    k += 8;
+        /* Allocate the receiving buffer. */
+        RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength);
+        if (!RecBuffer) {
+            printf(("ERROR: Out of memory\n"));
+            break;
+        }
 
-    d = ntohs(((PUSHORT)&RecBuffer[k])[0]);
-    k += 2;
+        /* Insert the ID field. */
+        ((PSHORT)&Buffer[i])[0] = htons(RequestID);
+        i += 2;
 
-    if (TYPE_PTR == Type) {
-        k += ExtractName(RecBuffer, pResult, k, d);
-    } else if (TYPE_A == Type) {
-        k += ExtractIP(RecBuffer, pResult, k);
-    }
+        /* Bits 0-7 of the second 16 are all 0, except for when recursion is desired. */
+        Buffer[i] = 0x00;
+        if (State.recurse)
+            Buffer[i] |= 0x01;
+        i += 1;
 
-cleanup:
+        /* Bits 8-15 of the second 16 are 0 for a query. */
+        Buffer[i] = 0x00;
+        i += 1;
+
+        /* Only 1 question. */
+        ((PSHORT)&Buffer[i])[0] = htons(1);
+        i += 2;
+
+        /* We aren't sending a response, so 0 out the rest of the header. */
+        Buffer[i] = 0x00;
+        Buffer[i + 1] = 0x00;
+        Buffer[i + 2] = 0x00;
+        Buffer[i + 3] = 0x00;
+        Buffer[i + 4] = 0x00;
+        Buffer[i + 5] = 0x00;
+        i += 6;
+
+        /* Walk through the query address. Split each section delimited by '.'.
+           Format of the QNAME section is length|data, etc. Last one is null */
+        j = i;
+        i += 1;
+
+        for (k = 0; k < strlen(pResolve); k += 1) {
+            if (pResolve[k] != '.') {
+                Buffer[i] = pResolve[k];
+                i += 1;
+            } else {
+                Buffer[j] = (i - j) - 1;
+                j = i;
+                i += 1;
+            }
+        }
+
+        Buffer[j] = (i - j) - 1;
+        Buffer[i] = 0x00;
+        i += 1;
+
+        /* QTYPE */
+        ((PSHORT)&Buffer[i])[0] = htons(Type);
+        i += 2;
+
+        /* QCLASS */
+        ((PSHORT)&Buffer[i])[0] = htons(CLASS_IN);
+
+        /* Ship the request off to the DNS server. */
+        bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
+        if (!bOk)
+            break;
+
+        NumQuestions = ntohs(((PSHORT)&RecBuffer[4])[0]); /* Start parsing the received packet. */
+
+        k = 12;
+
+        /* We don't care about the questions section, blow through it. */
+        if (NumQuestions) {
+            for (i = 0; i < NumQuestions; i += 1) {
+                /* Quick way to skip the domain name section. */
+                k += ExtractName(RecBuffer, pResult, k, 0);
+                k += 4;
+            }
+        }
+
+        k += ExtractName(RecBuffer, pResult, k, 0); /* Skip the answer name. */
+
+        Type = ntohs(((PUSHORT)&RecBuffer[k])[0]);
+        k += 8;
+
+        d = ntohs(((PUSHORT)&RecBuffer[k])[0]);
+        k += 2;
+
+        if (TYPE_PTR == Type) {
+            k += ExtractName(RecBuffer, pResult, k, d);
+        } else if (TYPE_A == Type) {
+            k += ExtractIP(RecBuffer, pResult, k);
+        }
+    } while (0);
+
     /* Free memory. */
     if (Buffer)
         HeapFree(ProcessHeap, 0, Buffer);
@@ -1064,168 +1065,169 @@ void PerformLookup(PCHAR pAddr)
     if ((strlen(pAddr) + 1) > 255)
         return;
 
-    printf("Server:  %s\n", State.DefaultServer);
-    printf("Address:  %s\n\n", State.DefaultServerAddress);
+    do {
+        printf("Server:  %s\n", State.DefaultServer);
+        printf("Address:  %s\n\n", State.DefaultServerAddress);
 
-    if (!strcmp(TypeA, State.type) || !strcmp(TypeAAAA, State.type) || !strcmp(TypeBoth, State.type)) {
-        Type = TYPE_A;
-        if (IsValidIP(pAddr))
-            Type = TYPE_PTR;
-    } else
-        Type = TypeNametoTypeID(State.type);
+        if (!strcmp(TypeA, State.type) || !strcmp(TypeAAAA, State.type) || !strcmp(TypeBoth, State.type)) {
+            Type = TYPE_A;
+            if (IsValidIP(pAddr))
+                Type = TYPE_PTR;
+        } else
+            Type = TypeNametoTypeID(State.type);
 
-    /* If it's a PTR lookup then append the ARPA sig to the end. */
-    if ((Type == TYPE_PTR) && IsValidIP(pAddr)) {
-        ReverseIP(pAddr, pResolve);
-        strcat(pResolve, ARPA_SIG);
-    } else {
-        strcpy(pResolve, pAddr);
-    }
-    
-    BufferLength = 12 + (strlen(pResolve) + 2) + 4;/* Base header length + length of QNAME + length of QTYPE and QCLASS */
-    
-    Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength);/* Allocate memory for the buffer. */
-    if (!Buffer) {
-        printf(("ERROR: Out of memory\n"));
-        goto cleanup;
-    }
-    
-    RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength);/* Allocate memory for the return buffer. */
-    if (!RecBuffer) {
-        printf(("ERROR: Out of memory\n"));
-        goto cleanup;
-    }
-
-    /* Insert the ID field. */
-    ((PSHORT)&Buffer[i])[0] = htons(RequestID);
-    i += 2;
-
-    /* Bits 0-7 of the second 16 are all 0, except for when recursion is desired. */
-    Buffer[i] = 0x00;
-    if (State.recurse)
-        Buffer[i] |= 0x01;
-    i += 1;
-
-    /* Bits 8-15 of the second 16 are 0 for a query. */
-    Buffer[i] = 0x00;
-    i += 1;
-
-    /* Only 1 question. */
-    ((PSHORT)&Buffer[i])[0] = htons(1);
-    i += 2;
-
-    /* We aren't sending a response, so 0 out the rest of the header. */
-    Buffer[i] = 0x00;
-    Buffer[i + 1] = 0x00;
-    Buffer[i + 2] = 0x00;
-    Buffer[i + 3] = 0x00;
-    Buffer[i + 4] = 0x00;
-    Buffer[i + 5] = 0x00;
-    i += 6;
-
-    /* Walk through the query address. Split each section delimited by '.'.
-       Format of the QNAME section is length|data, etc. Last one is null */
-    j = i;
-    i += 1;
-
-    for (k = 0; k < strlen(pResolve); k += 1) {
-        if (pResolve[k] != '.') {
-            Buffer[i] = pResolve[k];
-            i += 1;
+        /* If it's a PTR lookup then append the ARPA sig to the end. */
+        if ((Type == TYPE_PTR) && IsValidIP(pAddr)) {
+            ReverseIP(pAddr, pResolve);
+            strcat(pResolve, ARPA_SIG);
         } else {
-            Buffer[j] = (i - j) - 1;
-            j = i;
-            i += 1;
-        }
-    }
-
-    Buffer[j] = (i - j) - 1;
-    Buffer[i] = 0x00;
-    i += 1;
-
-    /* QTYPE */
-    ((PSHORT)&Buffer[i])[0] = htons(Type);
-    i += 2;
-
-    /* QCLASS */
-    ((PSHORT)&Buffer[i])[0] = htons(ClassNametoClassID(State.Class));
-
-    /* Ship off the request to the DNS server. */
-    bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
-    if (!bOk)
-        goto cleanup;
-
-    /* Start parsing the received packet. */
-    Header2 = RecBuffer[3];
-    NumQuestions = ntohs(((PSHORT)&RecBuffer[4])[0]);
-    NumAnswers = ntohs(((PSHORT)&RecBuffer[6])[0]);
-    NumAuthority = ntohs(((PUSHORT)&RecBuffer[8])[0]);
-    Type = 0;
-
-    /* Check the RCODE for failure. */
-    d = Header2 & 0x0F;
-    if (d != RCODE_NOERROR) {
-        switch (d) {
-        case RCODE_NXDOMAIN:
-            printf(("*** %s can't find %s: Non-existant domain\n"), State.DefaultServer, pAddr);
-            break;
-        case RCODE_REFUSED:
-            printf(("*** %s can't find %s: Query refused\n"), State.DefaultServer, pAddr);
-            break;
-        default:
-            printf(("*** %s can't find %s: Unknown RCODE\n"), State.DefaultServer, pAddr);
+            strcpy(pResolve, pAddr);
         }
 
-        goto cleanup;
-    }
+        BufferLength = 12 + (strlen(pResolve) + 2) + 4; /* Base header length + length of QNAME + length of QTYPE and QCLASS */
 
-    k = 12;
+        Buffer = (PCHAR)HeapAlloc(ProcessHeap, 0, BufferLength); /* Allocate memory for the buffer. */
+        if (!Buffer) {
+            printf(("ERROR: Out of memory\n"));
+            break;
+        }
 
-    if (NumQuestions) {
-        /* Blow through the questions section since we don't care about it. */
-        for (i = 0; i < NumQuestions; i += 1) {
+        RecBuffer = (PCHAR)HeapAlloc(ProcessHeap, 0, RecBufferLength); /* Allocate memory for the return buffer. */
+        if (!RecBuffer) {
+            printf(("ERROR: Out of memory\n"));
+            break;
+        }
+
+        /* Insert the ID field. */
+        ((PSHORT)&Buffer[i])[0] = htons(RequestID);
+        i += 2;
+
+        /* Bits 0-7 of the second 16 are all 0, except for when recursion is desired. */
+        Buffer[i] = 0x00;
+        if (State.recurse)
+            Buffer[i] |= 0x01;
+        i += 1;
+
+        /* Bits 8-15 of the second 16 are 0 for a query. */
+        Buffer[i] = 0x00;
+        i += 1;
+
+        /* Only 1 question. */
+        ((PSHORT)&Buffer[i])[0] = htons(1);
+        i += 2;
+
+        /* We aren't sending a response, so 0 out the rest of the header. */
+        Buffer[i] = 0x00;
+        Buffer[i + 1] = 0x00;
+        Buffer[i + 2] = 0x00;
+        Buffer[i + 3] = 0x00;
+        Buffer[i + 4] = 0x00;
+        Buffer[i + 5] = 0x00;
+        i += 6;
+
+        /* Walk through the query address. Split each section delimited by '.'.
+           Format of the QNAME section is length|data, etc. Last one is null */
+        j = i;
+        i += 1;
+
+        for (k = 0; k < strlen(pResolve); k += 1) {
+            if (pResolve[k] != '.') {
+                Buffer[i] = pResolve[k];
+                i += 1;
+            } else {
+                Buffer[j] = (i - j) - 1;
+                j = i;
+                i += 1;
+            }
+        }
+
+        Buffer[j] = (i - j) - 1;
+        Buffer[i] = 0x00;
+        i += 1;
+
+        /* QTYPE */
+        ((PSHORT)&Buffer[i])[0] = htons(Type);
+        i += 2;
+
+        /* QCLASS */
+        ((PSHORT)&Buffer[i])[0] = htons(ClassNametoClassID(State.Class));
+
+        /* Ship off the request to the DNS server. */
+        bOk = SendRequest(Buffer, BufferLength, RecBuffer, &RecBufferLength);
+        if (!bOk)
+            break;
+
+        /* Start parsing the received packet. */
+        Header2 = RecBuffer[3];
+        NumQuestions = ntohs(((PSHORT)&RecBuffer[4])[0]);
+        NumAnswers = ntohs(((PSHORT)&RecBuffer[6])[0]);
+        NumAuthority = ntohs(((PUSHORT)&RecBuffer[8])[0]);
+        Type = 0;
+
+        /* Check the RCODE for failure. */
+        d = Header2 & 0x0F;
+        if (d != RCODE_NOERROR) {
+            switch (d) {
+            case RCODE_NXDOMAIN:
+                printf(("*** %s can't find %s: Non-existant domain\n"), State.DefaultServer, pAddr);
+                break;
+            case RCODE_REFUSED:
+                printf(("*** %s can't find %s: Query refused\n"), State.DefaultServer, pAddr);
+                break;
+            default:
+                printf(("*** %s can't find %s: Unknown RCODE\n"), State.DefaultServer, pAddr);
+            }
+
+            break;
+        }
+
+        k = 12;
+
+        if (NumQuestions) {
+            /* Blow through the questions section since we don't care about it. */
+            for (i = 0; i < NumQuestions; i += 1) {
+                k += ExtractName(RecBuffer, pResult, k, 0);
+                k += 4;
+            }
+        }
+
+        if (NumAnswers) {
+            /* Skip the name. */
             k += ExtractName(RecBuffer, pResult, k, 0);
-            k += 4;
+
+            Type = ntohs(((PUSHORT)&RecBuffer[k])[0]);
+            k += 8;
+
+            d = ntohs(((PUSHORT)&RecBuffer[k])[0]);
+            k += 2;
+
+            if (TYPE_PTR == Type) {
+                k += ExtractName(RecBuffer, pResult, k, d);
+            } else if (TYPE_A == Type) {
+                k += ExtractIP(RecBuffer, pResult, k);
+            }
         }
-    }
 
-    if (NumAnswers) {
-        /* Skip the name. */
-        k += ExtractName(RecBuffer, pResult, k, 0);
+        /* FIXME: This'll need to support more than PTR and A at some point. */
+        if (!strcmp(State.type, TypePTR)) {
+            if (TYPE_PTR == Type) {
+                printf(("%s     name = %s\n"), pResolve, pResult);
+            } else {
+            }
+        } else if (!strcmp(State.type, TypeA) || !strcmp(State.type, TypeAAAA) || !strcmp(State.type, TypeBoth)) {
+            if ((TYPE_A == Type) /*|| (TYPE_AAAA == Type)*/) {
+                if (0 == NumAuthority)
+                    printf(("Non-authoritative answer:\n"));
 
-        Type = ntohs(((PUSHORT)&RecBuffer[k])[0]);
-        k += 8;
-
-        d = ntohs(((PUSHORT)&RecBuffer[k])[0]);
-        k += 2;
-
-        if (TYPE_PTR == Type) {
-            k += ExtractName(RecBuffer, pResult, k, d);
-        } else if (TYPE_A == Type) {
-            k += ExtractIP(RecBuffer, pResult, k);
+                printf(("Name:    %s\n"), pAddr);
+                printf(("Address:  %s\n\n"), pResult);
+            } else {
+                printf("Name:    %s\n", pResult);
+                printf("Address:  %s\n\n", pAddr);
+            }
         }
-    }
+    } while (0);
 
-    /* FIXME: This'll need to support more than PTR and A at some point. */
-    if (!strcmp(State.type, TypePTR)) {
-        if (TYPE_PTR == Type) {
-            printf(("%s     name = %s\n"), pResolve, pResult);
-        } else {
-        }
-    } else if (!strcmp(State.type, TypeA) || !strcmp(State.type, TypeAAAA) || !strcmp(State.type, TypeBoth)) {
-        if ((TYPE_A == Type) /*|| (TYPE_AAAA == Type)*/) {
-            if (0 == NumAuthority)
-                printf(("Non-authoritative answer:\n"));
-
-            printf(("Name:    %s\n"), pAddr);
-            printf(("Address:  %s\n\n"), pResult);
-        } else {
-            printf("Name:    %s\n", pResult);
-            printf("Address:  %s\n\n", pAddr);
-        }
-    }
-
-cleanup:
     /* Free memory. */
     if (Buffer)
         HeapFree(ProcessHeap, 0, Buffer);

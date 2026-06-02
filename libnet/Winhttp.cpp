@@ -393,62 +393,63 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
     ZeroMemory(&AutoProxyOptions, sizeof(AutoProxyOptions));
     ZeroMemory(&ProxyInfo, sizeof(ProxyInfo));
 
-    // Create the WinHTTP session.
-    hHttpSession = WinHttpOpen(L"WinHTTP AutoProxy Sample/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-    if (!hHttpSession)
-        goto Exit; // Exit if WinHttpOpen failed.
+    do {
+        // Create the WinHTTP session.
+        hHttpSession = WinHttpOpen(L"WinHTTP AutoProxy Sample/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+        if (!hHttpSession)
+            break; // Exit if WinHttpOpen failed.
 
-    // Create the WinHTTP connect handle.
-    hConnect = WinHttpConnect(hHttpSession, L"www.microsoft.com", INTERNET_DEFAULT_HTTP_PORT, 0);
-    if (!hConnect)
-        goto Exit; // Exit if WinHttpConnect failed.
+        // Create the WinHTTP connect handle.
+        hConnect = WinHttpConnect(hHttpSession, L"www.microsoft.com", INTERNET_DEFAULT_HTTP_PORT, 0);
+        if (!hConnect)
+            break; // Exit if WinHttpConnect failed.
 
-    // Create the HTTP request handle.
-    hRequest = WinHttpOpenRequest(hConnect, L"GET", L"ms.htm", L"HTTP/1.1", WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
-    if (!hRequest)
-        goto Exit; // Exit if WinHttpOpenRequest failed.
+        // Create the HTTP request handle.
+        hRequest = WinHttpOpenRequest(hConnect, L"GET", L"ms.htm", L"HTTP/1.1", WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
+        if (!hRequest)
+            break; // Exit if WinHttpOpenRequest failed.
 
-    // Set up the autoproxy call.
+        // Set up the autoproxy call.
 
-    // Use auto-detection because the Proxy Auto-Config URL is not known.
-    AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
+        // Use auto-detection because the Proxy Auto-Config URL is not known.
+        AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
 
-    // Use DHCP and DNS-based auto-detection.
-    AutoProxyOptions.dwAutoDetectFlags = WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
+        // Use DHCP and DNS-based auto-detection.
+        AutoProxyOptions.dwAutoDetectFlags = WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
 
-    // If obtaining the PAC script requires NTLM/Negotiate
-    // authentication, then automatically supply the client domain credentials.
-    AutoProxyOptions.fAutoLogonIfChallenged = TRUE;
+        // If obtaining the PAC script requires NTLM/Negotiate
+        // authentication, then automatically supply the client domain credentials.
+        AutoProxyOptions.fAutoLogonIfChallenged = TRUE;
 
-    // Call WinHttpGetProxyForUrl with our target URL.
-    // If auto-proxy succeeds, then set the proxy info on the request handle.
-    // If auto-proxy fails, ignore the error and attempt to send the HTTP request directly to the target server (using the default WINHTTP_ACCESS_TYPE_NO_PROXY
-    // configuration, which the requesthandle will inherit from the session).
-    if (WinHttpGetProxyForUrl(hHttpSession, L"https://www.microsoft.com/ms.htm", &AutoProxyOptions, &ProxyInfo)) {
-        // A proxy configuration was found, set it on the request handle.
-        if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_PROXY, &ProxyInfo, cbProxyInfoSize)) {
-            goto Exit; // Exit if setting the proxy info failed.
+        // Call WinHttpGetProxyForUrl with our target URL.
+        // If auto-proxy succeeds, then set the proxy info on the request handle.
+        // If auto-proxy fails, ignore the error and attempt to send the HTTP request directly to the target server (using the default WINHTTP_ACCESS_TYPE_NO_PROXY
+        // configuration, which the requesthandle will inherit from the session).
+        if (WinHttpGetProxyForUrl(hHttpSession, L"https://www.microsoft.com/ms.htm", &AutoProxyOptions, &ProxyInfo)) {
+            // A proxy configuration was found, set it on the request handle.
+            if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_PROXY, &ProxyInfo, cbProxyInfoSize)) {
+                break; // Exit if setting the proxy info failed.
+            }
+        } else {
+            printf("LastError:%#x.\n", GetLastError()); //无论开启自动检测与否，都返回ERROR_WINHTTP_AUTODETECTION_FAILED
+
+            // If Step 1 fails, with ERROR_WINHTTP_LOGIN_FAILURE, then call WinHttpGetProxyForUrl with the fAutoLogonIfChallenged member set to TRUE.
+            // https://learn.microsoft.com/en-us/windows/win32/winhttp/autoproxy-cache
         }
-    } else {
-        printf("LastError:%#x.\n", GetLastError()); //无论开启自动检测与否，都返回ERROR_WINHTTP_AUTODETECTION_FAILED
 
-        // If Step 1 fails, with ERROR_WINHTTP_LOGIN_FAILURE, then call WinHttpGetProxyForUrl with the fAutoLogonIfChallenged member set to TRUE.
-        // https://learn.microsoft.com/en-us/windows/win32/winhttp/autoproxy-cache
-    }
+        // Send the request.
+        if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0)) {
+            break; // Exit if WinHttpSendRequest failed.
+        }
 
-    // Send the request.
-    if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0)) {
-        goto Exit; // Exit if WinHttpSendRequest failed.
-    }
+        // Wait for the response.
+        if (!WinHttpReceiveResponse(hRequest, nullptr))
+            break;
 
-    // Wait for the response.
-    if (!WinHttpReceiveResponse(hRequest, nullptr))
-        goto Exit;
+        // A response has been received, then process it.
+        // (omitted)
+    } while (0);
 
-    // A response has been received, then process it.
-    // (omitted)
-
-Exit:
     // Clean up the WINHTTP_PROXY_INFO structure.
     if (ProxyInfo.lpszProxy != nullptr)
         GlobalFree(ProxyInfo.lpszProxy);

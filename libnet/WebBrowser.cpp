@@ -88,29 +88,30 @@ void WebBrowserApp()
         return;
     }
 
-    if (FAILED(hr = CoCreateInstance(
-                   CLSID_InternetExplorer, nullptr, CLSCTX_SERVER, IID_IWebBrowserApp, (LPVOID *)&pWBApp))) {
-        goto Error;
-    }
+    do {
+        if (FAILED(hr = CoCreateInstance(
+                       CLSID_InternetExplorer, nullptr, CLSCTX_SERVER, IID_IWebBrowserApp, (LPVOID *)&pWBApp))) {
+            break;
+        }
 
-    bstrURL = SysAllocString(L"http://127.0.0.1/data.asp"); // http://<server>/scripts/navpost.asp
-    if (!bstrURL) {
-        goto Error;
-    }
+        bstrURL = SysAllocString(L"http://127.0.0.1/data.asp"); // http://<server>/scripts/navpost.asp
+        if (!bstrURL) {
+            break;
+        }
 
-    bstrHeaders = SysAllocString(L"Content-Type: application/x-www-form-urlencoded\r\n");
-    if (!bstrHeaders) {
-        goto Error;
-    }
+        bstrHeaders = SysAllocString(L"Content-Type: application/x-www-form-urlencoded\r\n");
+        if (!bstrHeaders) {
+            break;
+        }
 
-    V_VT(&vHeaders) = VT_BSTR;
-    V_BSTR(&vHeaders) = bstrHeaders;
+        V_VT(&vHeaders) = VT_BSTR;
+        V_BSTR(&vHeaders) = bstrHeaders;
 
-    hr = GetPostData(&vPostData);
-    hr = pWBApp->Navigate(bstrURL, &vFlags, &vTargetFrameName, &vPostData, &vHeaders);
-    pWBApp->put_Visible(VARIANT_TRUE); //显示。
+        hr = GetPostData(&vPostData);
+        hr = pWBApp->Navigate(bstrURL, &vFlags, &vTargetFrameName, &vPostData, &vHeaders);
+        pWBApp->put_Visible(VARIANT_TRUE); //显示。
+    } while (0);
 
-Error:
     if (bstrURL)
         SysFreeString(bstrURL);
     if (bstrHeaders)
