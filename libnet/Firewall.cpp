@@ -63,10 +63,9 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
 {
     HRESULT hr = S_OK;
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
-
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
-    do {
 
+    do {
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
         // Since we don't care what the mode is, we'll just use the existing mode.
         if (hrComInit != RPC_E_CHANGED_MODE) {
@@ -84,7 +83,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
         // Add firewall rule with EdgeTraversalOption=DeferApp (Windows7+) if available
         //   else add with Edge=True (Vista and Server 2008).
         AddFirewallRuleWithEdgeTraversal(pNetFwPolicy2);
-
     } while (0);
 
     WFCOMCleanup(pNetFwPolicy2); // Release INetFwPolicy2
@@ -110,8 +108,8 @@ HRESULT AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
     BSTR RuleGroupName = nullptr;
     BSTR RuleDescription = nullptr;
     BSTR RuleAppPath = nullptr;
-    do {
 
+    do {
         //  For localization purposes, the rule name, description, and group can be
         //    provided as indirect strings. These indirect strings can be defined in an rc file.
         //  Examples of the indirect string definitions in the rc file -
@@ -261,7 +259,6 @@ HRESULT AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
         }
 
         wprintf(L"Successfully added firewall rule !\n");
-
     } while (0);
 
     SysFreeString(RuleName);
@@ -492,8 +489,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
     INetFwRules * pFwRules = nullptr;
     INetFwRule * pFwRule = nullptr;
     long fwRuleCount{};
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -550,7 +547,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
                 }
             }
         }
-
     } while (0);
 
     if (pVariant != nullptr) {
@@ -609,8 +605,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-disabli
     variant_t vtInterfaceName("Local Area Connection"), vtInterface;
     long index = 0;
     SAFEARRAY * pSa = nullptr;
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -648,7 +644,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-disabli
             printf("put_ExcludedInterfaces failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     if (pNetFwPolicy2 != nullptr) {
@@ -687,10 +682,9 @@ This example disables Windows Firewall using the Windows Firewall with Advanced 
 {
     HRESULT hr = S_OK;
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
-
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
-    do {
 
+    do {
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
         // Since we don't care what the mode is, we'll just use the existing mode.
         if (hrComInit != RPC_E_CHANGED_MODE) {
@@ -725,7 +719,6 @@ This example disables Windows Firewall using the Windows Firewall with Advanced 
             printf("put_FirewallEnabled failed for Public: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     if (pNetFwPolicy2 != nullptr) {
@@ -769,8 +762,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enablin
     // Rule group to use
     BSTR bstrRuleGroup = SysAllocString(L"File and Printer Sharing");
     VARIANT_BOOL bIsEnabled = FALSE;
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
@@ -806,7 +799,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enablin
         } else {
             printf("Rule Group is enabled for the Private profile");
         }
-
     } while (0);
 
     SysFreeString(bstrRuleGroup); // Free BSTR's
@@ -850,10 +842,9 @@ Abstract:
 {
     HRESULT hr = S_OK;
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
-
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
-    do {
 
+    do {
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
         // Since we don't care what the mode is, we'll just use the existing mode.
         if (hrComInit != RPC_E_CHANGED_MODE) {
@@ -876,7 +867,6 @@ Abstract:
 
         printf("Settings for the firewall public profile:\n");
         Get_FirewallSettings_PerProfileType(NET_FW_PROFILE2_PUBLIC, pNetFwPolicy2);
-
     } while (0);
 
     if (pNetFwPolicy2 != nullptr) {
@@ -962,8 +952,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
     BSTR bstrRuleName = SysAllocString(L"Allow TCP 12345 to sampleservice");
     BSTR bstrRuleDescription = SysAllocString(L"Allow only TCP 12345 traffic to sampleservice service, block everything else");
     BSTR bstrRuleLPorts = SysAllocString(L"12345");
-    do {
 
+    do {
         // Error checking for BSTR allocations
         if (nullptr == bstrServiceName) {
             printf("Failed to allocate bstrServiceName\n");
@@ -1106,7 +1096,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-restric
         } else {
             printf("The Service could not be properly restricted.\n");
         }
-
     } while (0);
 
     // Free BSTR's
@@ -1165,8 +1154,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleName = SysAllocString(L"GRE_RULE");
     BSTR bstrRuleDescription = SysAllocString(L"Allow GRE Traffic");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -1222,7 +1211,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
             printf("Firewall Rule Add failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     // Free BSTR's
@@ -1282,8 +1270,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     // ICMP Echo Request
     BSTR bstrICMPTypeCode = SysAllocString(L"8:*");
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -1328,7 +1316,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
             printf("Firewall Rule Add failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     // Free BSTR's
@@ -1390,8 +1377,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleLPorts = SysAllocString(L"2400-2450");
     BSTR bstrRuleInterfaceType = SysAllocString(L"LAN");
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -1449,7 +1436,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
             printf("Firewall Rule Add failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     // Free BSTR's
@@ -1511,8 +1497,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleApplication = SysAllocString(L"%programfiles%\\MyApplication.exe");
     BSTR bstrRuleLPorts = SysAllocString(L"4000");
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -1571,7 +1557,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
             printf("Firewall Rule Add failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     // Free BSTR's
@@ -1639,8 +1624,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleDescription = SysAllocString(L"Add a PER_INTERFACE rule");
     BSTR bstrRuleGroup = SysAllocString(L"Sample Rule Group");
     BSTR bstrRuleLPorts = SysAllocString(L"2300");
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -1713,7 +1698,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
             printf("Firewall Rule Add failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     // Free BSTR's
@@ -1776,8 +1760,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
     BSTR bstrRuleApplication = SysAllocString(L"%systemroot%\\system32\\myservice.exe");
     BSTR bstrRuleService = SysAllocString(L"myservicename");
     BSTR bstrRuleLPorts = SysAllocString(L"135");
-    do {
 
+    do {
         hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
 
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
@@ -1836,7 +1820,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-adding-
             printf("Firewall Rule Add failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     // Free BSTR's
@@ -1919,8 +1902,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     int numberOfCategories = 1;
     long count = 0;
     BOOL comInit = FALSE;
-    do {
 
+    do {
         // Allocate Memory
         categories = static_cast<long *>(calloc(numberOfCategories, sizeof(long)));
         BAIL_ON_ALLOC_FAILURE(categories, calloc);
@@ -2014,8 +1997,8 @@ DWORD ArrayOfLongsToVariant(__in unsigned long numItems, __in_ecount(numItems) c
     SAFEARRAY * sa = nullptr;
     VARIANT * data{};
     unsigned long i{};
-    do {
 
+    do {
         VariantInit(dst);
 
         // If there are no items, just return VT_EMPTY.
@@ -2038,8 +2021,8 @@ DWORD ArrayOfLongsToVariant(__in unsigned long numItems, __in_ecount(numItems) c
 
         V_VT(dst) = VT_ARRAY | VT_VARIANT;
         V_ARRAY(dst) = sa;
-
     } while (0);
+
     return result;
 }
 
@@ -2089,8 +2072,8 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
     VARIANT varCategories{};
     long count = 0;
     BOOL comInit = FALSE;
-    do {
 
+    do {
         //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
         //  Examples of the indirect string definition in the rc file -
         //    127                     "A Test Firewall Product"
@@ -2203,10 +2186,9 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/working-w
 {
     HRESULT hr = S_OK;
     INetFwPolicy2 * pNetFwPolicy2 = nullptr;
-
     HRESULT hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED); // Initialize COM.
-    do {
 
+    do {
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
         // Since we don't care what the mode is, we'll just use the existing mode.
         if (hrComInit != RPC_E_CHANGED_MODE) {
@@ -2225,7 +2207,6 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/working-w
         IsRuleGroupCurrentlyEnabled(pNetFwPolicy2); // Show status of 'File and Printer Sharing' rule group on current profiles
         IsRuleGroupEnabled(pNetFwPolicy2);          // Show status of 'File and Printer Sharing' rule group on specified profiles
         GetLocalPolicyModifyState(pNetFwPolicy2);   // For the current firewall profiles display whether the changes to firewall rules will take effect or not
-
     } while (0);
 
     WFCOMCleanup(pNetFwPolicy2); // Release INetFwPolicy2
@@ -2255,8 +2236,8 @@ HRESULT GetCurrentFirewallState(__in INetFwPolicy2 * pNetFwPolicy2)
     ProfileMap[1].Name = L"Private";
     ProfileMap[2].Id = NET_FW_PROFILE2_PUBLIC;
     ProfileMap[2].Name = L"Public";
-    do {
 
+    do {
         wprintf(L"\n\nCurrent Firewall State:\n");
         wprintf(L"-----------------------\n");
 
@@ -2278,8 +2259,8 @@ HRESULT GetCurrentFirewallState(__in INetFwPolicy2 * pNetFwPolicy2)
                 wprintf(L"On %s profile (Current) : Firewall state is %s\n", ProfileMap[i].Name, (bActualFirewallEnabled ? L"ON" : L"OFF"));
             }
         }
-
     } while (0);
+
     return hr;
 }
 
@@ -2290,8 +2271,8 @@ HRESULT IsRuleGroupCurrentlyEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
     HRESULT hr = S_OK;
     VARIANT_BOOL bActualEnabled = VARIANT_FALSE;
     BSTR GroupName = SysAllocString(L"File and Printer Sharing");
-    do {
 
+    do {
         wprintf(L"\n\nIs 'File and Printer Sharing' rule group currently enabled ?\n");
         wprintf(L"------------------------------------------------------------\n");
 
@@ -2308,8 +2289,8 @@ HRESULT IsRuleGroupCurrentlyEnabled(__in INetFwPolicy2 * pNetFwPolicy2)
             wprintf(L"Failed calling API IsRuleGroupCurrentlyEnabled. Error: 0x %x.\n", hr);
             break;
         }
-
     } while (0);
+
     SysFreeString(GroupName);
     return hr;
 }
@@ -2404,8 +2385,8 @@ HRESULT WindowsFirewallInitialize(OUT INetFwProfile ** fwProfile)
     HRESULT hr = S_OK;
     INetFwMgr * fwMgr = nullptr;
     INetFwPolicy * fwPolicy = nullptr;
-    do {
 
+    do {
         if (fwProfile == nullptr) {
             hr = E_POINTER;
             break;
@@ -2431,7 +2412,6 @@ HRESULT WindowsFirewallInitialize(OUT INetFwProfile ** fwProfile)
             printf("get_CurrentProfile failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     if (fwPolicy != nullptr) {
@@ -2464,6 +2444,7 @@ HRESULT WindowsFirewallIsOn(IN INetFwProfile * fwProfile, OUT BOOL * fwOn)
 
     VARIANT_BOOL fwEnabled{};
     HRESULT hr = fwProfile->get_FirewallEnabled(&fwEnabled); // Get the current state of the firewall.
+
     do {
         if (FAILED(hr)) {
             printf("get_FirewallEnabled failed: 0x%08lx\n", hr);
@@ -2476,8 +2457,8 @@ HRESULT WindowsFirewallIsOn(IN INetFwProfile * fwProfile, OUT BOOL * fwOn)
         } else {
             printf("The firewall is off.\n");
         }
-
     } while (0);
+
     return hr;
 }
 
@@ -2490,6 +2471,7 @@ HRESULT WindowsFirewallTurnOn(IN INetFwProfile * fwProfile)
 
     BOOL fwOn{};
     HRESULT hr = WindowsFirewallIsOn(fwProfile, &fwOn); // Check to see if the firewall is off.
+
     do {
         if (FAILED(hr)) {
             printf("WindowsFirewallIsOn failed: 0x%08lx\n", hr);
@@ -2505,8 +2487,8 @@ HRESULT WindowsFirewallTurnOn(IN INetFwProfile * fwProfile)
 
             printf("The firewall is now on.\n");
         }
-
     } while (0);
+
     return hr;
 }
 
@@ -2519,6 +2501,7 @@ HRESULT WindowsFirewallTurnOff(IN INetFwProfile * fwProfile)
 
     BOOL fwOn{};
     HRESULT hr = WindowsFirewallIsOn(fwProfile, &fwOn); // Check to see if the firewall is on.
+
     do {
         if (FAILED(hr)) {
             printf("WindowsFirewallIsOn failed: 0x%08lx\n", hr);
@@ -2534,8 +2517,8 @@ HRESULT WindowsFirewallTurnOff(IN INetFwProfile * fwProfile)
 
             printf("The firewall is now off.\n");
         }
-
     } while (0);
+
     return hr;
 }
 
@@ -2547,8 +2530,8 @@ HRESULT WindowsFirewallAppIsEnabled(IN INetFwProfile * fwProfile, IN const wchar
     VARIANT_BOOL fwEnabled{};
     INetFwAuthorizedApplication * fwApp = nullptr;
     INetFwAuthorizedApplications * fwApps = nullptr;
-    do {
 
+    do {
         if (fwProfile == nullptr || fwProcessImageFileName == nullptr || fwAppEnabled == nullptr) {
             hr = E_POINTER;
             break;
@@ -2595,7 +2578,6 @@ HRESULT WindowsFirewallAppIsEnabled(IN INetFwProfile * fwProfile, IN const wchar
 
             printf("Authorized application %lS is disabled in the firewall.\n", fwProcessImageFileName);
         }
-
     } while (0);
 
     SysFreeString(fwBstrProcessImageFileName); // Free the BSTR.
@@ -2620,8 +2602,8 @@ HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * f
     BSTR fwBstrProcessImageFileName = nullptr;
     INetFwAuthorizedApplication * fwApp = nullptr;
     INetFwAuthorizedApplications * fwApps = nullptr;
-    do {
 
+    do {
         if (fwProfile == nullptr || fwProcessImageFileName == nullptr || fwName == nullptr) {
             hr = E_POINTER;
             break;
@@ -2686,7 +2668,6 @@ HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * f
 
             printf("Authorized application %lS is now enabled in the firewall.\n", fwProcessImageFileName);
         }
-
     } while (0);
 
     // Free the BSTRs.
@@ -2711,8 +2692,8 @@ HRESULT WindowsFirewallPortIsEnabled(IN INetFwProfile * fwProfile, IN LONG portN
     VARIANT_BOOL fwEnabled{};
     INetFwOpenPort * fwOpenPort = nullptr;
     INetFwOpenPorts * fwOpenPorts = nullptr;
-    do {
 
+    do {
         if (fwProfile == nullptr || fwPortEnabled == nullptr) {
             hr = E_POINTER;
             break;
@@ -2751,7 +2732,6 @@ HRESULT WindowsFirewallPortIsEnabled(IN INetFwProfile * fwProfile, IN LONG portN
 
             printf("Port %ld is not open in the firewall.\n", portNumber);
         }
-
     } while (0);
 
     if (fwOpenPort != nullptr) {
@@ -2773,8 +2753,8 @@ HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber,
     BSTR fwBstrName = nullptr;
     INetFwOpenPort * fwOpenPort = nullptr;
     INetFwOpenPorts * fwOpenPorts = nullptr;
-    do {
 
+    do {
         if (fwProfile == nullptr || name == nullptr) {
             hr = E_POINTER;
             break;
@@ -2836,7 +2816,6 @@ HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber,
 
             printf("Port %ld is now open in the firewall.\n", portNumber);
         }
-
     } while (0);
 
     SysFreeString(fwBstrName); // Free the BSTR.
@@ -2874,8 +2853,8 @@ https://docs.microsoft.com/en-us/previous-versions//aa364726(v=vs.85)?redirected
     UNREFERENCED_PARAMETER(argv);
 
     HRESULT comInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE); // Initialize COM.
-    do {
 
+    do {
         // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been initialized with a different mode.
         // Since we don't care what the mode is, we'll just use the existing mode.
         if (comInit != RPC_E_CHANGED_MODE) {
@@ -2911,13 +2890,11 @@ https://docs.microsoft.com/en-us/previous-versions//aa364726(v=vs.85)?redirected
             break;
         }
 
-        // Add TCP::80 to list of globally open ports.
-        hr = WindowsFirewallPortAdd(fwProfile, 80, NET_FW_IP_PROTOCOL_TCP, L"WWW");
+        hr = WindowsFirewallPortAdd(fwProfile, 80, NET_FW_IP_PROTOCOL_TCP, L"WWW"); // Add TCP::80 to list of globally open ports.
         if (FAILED(hr)) {
             printf("WindowsFirewallPortAdd failed: 0x%08lx\n", hr);
             break;
         }
-
     } while (0);
 
     WindowsFirewallCleanup(fwProfile); // Release the firewall profile.
