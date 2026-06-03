@@ -2,11 +2,6 @@
 #include "tcp.h"
 
 
-#pragma warning(disable : 4477)
-#pragma warning(disable : 6101)
-#pragma warning(disable : 6328)
-
-
 void GetOwnerModuleFromTcp6EntryEx(_In_ PMIB_TCP6ROW_OWNER_MODULE pTcpEntry);
 void GetOwnerModuleFromTcp4EntryEx(_In_ PMIB_TCPROW_OWNER_MODULE pTcpEntry);
 
@@ -1030,6 +1025,11 @@ void GetAllEstats(void * row, bool v6)
 DWORD GetTcpRow(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __out PMIB_TCPROW row)
 // Returns a MIB_TCPROW corresponding to the local port, remote port and state filter parameters.
 {
+    if (row == nullptr) {
+        return ERROR_INVALID_PARAMETER;
+    }
+    ZeroMemory(row, sizeof(*row)); // 确保 _Out_ 参数在所有路径上都被初始化。
+
     PMIB_TCPTABLE tcpTable = nullptr;
     PMIB_TCPROW tcpRowIt = nullptr;
 
@@ -1075,6 +1075,11 @@ DWORD GetTcp6Row(u_short localPort, u_short remotePort, MIB_TCP_STATE state, __o
 // Returns a MIB_TCP6ROW corresponding to the local port, remote port and state
 // filter parameters. This is a v6 equivalent of the GetTcpRow function.
 {
+    if (row == nullptr) {
+        return ERROR_INVALID_PARAMETER;
+    }
+    ZeroMemory(row, sizeof(*row)); // 确保 _Out_ 参数在所有路径上都被初始化。
+
     PMIB_TCP6TABLE tcp6Table = nullptr;
     PMIB_TCP6ROW tcp6RowIt = nullptr;
 
@@ -1363,20 +1368,20 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
         case TcpConnectionEstatsData:
             dataRod = reinterpret_cast<PTCP_ESTATS_DATA_ROD_v0>(rod);
             wprintf(L"\n\nData");
-            wprintf(L"\nBytes Out:   %lu", dataRod->DataBytesOut);
-            wprintf(L"\nSegs Out:    %lu", dataRod->DataSegsOut);
-            wprintf(L"\nBytes In:    %lu", dataRod->DataBytesIn);
-            wprintf(L"\nSegs In:     %lu", dataRod->DataSegsIn);
-            wprintf(L"\nSegs Out:    %u", dataRod->SegsOut);
-            wprintf(L"\nSegs In:     %u", dataRod->SegsIn);
+            wprintf(L"\nBytes Out:   %llu", dataRod->DataBytesOut);
+            wprintf(L"\nSegs Out:    %llu", dataRod->DataSegsOut);
+            wprintf(L"\nBytes In:    %llu", dataRod->DataBytesIn);
+            wprintf(L"\nSegs In:     %llu", dataRod->DataSegsIn);
+            wprintf(L"\nSegs Out:    %llu", dataRod->SegsOut);
+            wprintf(L"\nSegs In:     %llu", dataRod->SegsIn);
             wprintf(L"\nSoft Errors: %u", dataRod->SoftErrors);
             wprintf(L"\nSoft Error Reason: %u", dataRod->SoftErrorReason);
             wprintf(L"\nSnd Una:     %u", dataRod->SndUna);
             wprintf(L"\nSnd Nxt:     %u", dataRod->SndNxt);
             wprintf(L"\nSnd Max:     %u", dataRod->SndMax);
-            wprintf(L"\nBytes Acked: %lu", dataRod->ThruBytesAcked);
+            wprintf(L"\nBytes Acked: %llu", dataRod->ThruBytesAcked);
             wprintf(L"\nRcv Nxt:     %u", dataRod->RcvNxt);
-            wprintf(L"\nBytes Rcv:   %lu", dataRod->ThruBytesReceived);
+            wprintf(L"\nBytes Rcv:   %llu", dataRod->ThruBytesReceived);
             break;
         case TcpConnectionEstatsSndCong:
             sndCongRod = reinterpret_cast<PTCP_ESTATS_SND_CONG_ROD_v0>(rod);
@@ -1384,13 +1389,13 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
             wprintf(L"\n\nSnd Cong");
             wprintf(L"\nTrans Rwin:       %u", sndCongRod->SndLimTransRwin);
             wprintf(L"\nLim Time Rwin:    %u", sndCongRod->SndLimTimeRwin);
-            wprintf(L"\nLim Bytes Rwin:   %u", sndCongRod->SndLimBytesRwin);
+            wprintf(L"\nLim Bytes Rwin:   %llu", sndCongRod->SndLimBytesRwin);
             wprintf(L"\nLim Trans Cwnd:   %u", sndCongRod->SndLimTransCwnd);
             wprintf(L"\nLim Time Cwnd:    %u", sndCongRod->SndLimTimeCwnd);
-            wprintf(L"\nLim Bytes Cwnd:   %u", sndCongRod->SndLimBytesCwnd);
+            wprintf(L"\nLim Bytes Cwnd:   %llu", sndCongRod->SndLimBytesCwnd);
             wprintf(L"\nLim Trans Snd:    %u", sndCongRod->SndLimTransSnd);
             wprintf(L"\nLim Time Snd:     %u", sndCongRod->SndLimTimeSnd);
-            wprintf(L"\nLim Bytes Snd:    %u", sndCongRod->SndLimBytesSnd);
+            wprintf(L"\nLim Bytes Snd:    %llu", sndCongRod->SndLimBytesSnd);
             wprintf(L"\nSlow Start:       %u", sndCongRod->SlowStart);
             wprintf(L"\nCong Avoid:       %u", sndCongRod->CongAvoid);
             wprintf(L"\nOther Reductions: %u", sndCongRod->OtherReductions);
@@ -1449,10 +1454,10 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
         case TcpConnectionEstatsSendBuff:
             sndBuffRod = reinterpret_cast<PTCP_ESTATS_SEND_BUFF_ROD_v0>(rod);
             wprintf(L"\n\nSend Buff");
-            wprintf(L"\nCur Retx Queue:   %u", sndBuffRod->CurRetxQueue);
-            wprintf(L"\nMax Retx Queue:   %u", sndBuffRod->MaxRetxQueue);
-            wprintf(L"\nCur App W Queue:  %u", sndBuffRod->CurAppWQueue);
-            wprintf(L"\nMax App W Queue:  %u", sndBuffRod->MaxAppWQueue);
+            wprintf(L"\nCur Retx Queue:   %llu", sndBuffRod->CurRetxQueue);
+            wprintf(L"\nMax Retx Queue:   %llu", sndBuffRod->MaxRetxQueue);
+            wprintf(L"\nCur App W Queue:  %llu", sndBuffRod->CurAppWQueue);
+            wprintf(L"\nMax App W Queue:  %llu", sndBuffRod->MaxAppWQueue);
             break;
         case TcpConnectionEstatsRec:
             recRod = reinterpret_cast<PTCP_ESTATS_REC_ROD_v0>(rod);
@@ -1468,8 +1473,8 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
             wprintf(L"\nEcn Nonces Rcvd: %u", recRod->EcnNoncesRcvd);
             wprintf(L"\nCur Reasm Queue: %u", recRod->CurReasmQueue);
             wprintf(L"\nMax Reasm Queue: %u", recRod->MaxReasmQueue);
-            wprintf(L"\nCur App R Queue: %u", recRod->CurAppRQueue);
-            wprintf(L"\nMax App R Queue: %u", recRod->MaxAppRQueue);
+            wprintf(L"\nCur App R Queue: %llu", recRod->CurAppRQueue);
+            wprintf(L"\nMax App R Queue: %llu", recRod->MaxAppRQueue);
             wprintf(L"\nWin Scale Sent:  0x%.2x", recRod->WinScaleSent);
             break;
         case TcpConnectionEstatsObsRec:
@@ -1483,10 +1488,10 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
         case TcpConnectionEstatsBandwidth:
             bandwidthRod = reinterpret_cast<PTCP_ESTATS_BANDWIDTH_ROD_v0>(rod);
             wprintf(L"\n\nBandwidth");
-            wprintf(L"\nOutbound Bandwidth:   %lu", bandwidthRod->OutboundBandwidth);
-            wprintf(L"\nInbound Bandwidth:    %lu", bandwidthRod->InboundBandwidth);
-            wprintf(L"\nOutbound Instability: %lu", bandwidthRod->OutboundInstability);
-            wprintf(L"\nInbound Instability:  %lu", bandwidthRod->InboundInstability);
+            wprintf(L"\nOutbound Bandwidth:   %llu", bandwidthRod->OutboundBandwidth);
+            wprintf(L"\nInbound Bandwidth:    %llu", bandwidthRod->InboundBandwidth);
+            wprintf(L"\nOutbound Instability: %llu", bandwidthRod->OutboundInstability);
+            wprintf(L"\nInbound Instability:  %llu", bandwidthRod->InboundInstability);
             wprintf(L"\nOutbound Bandwidth Peaked: %s", bandwidthRod->OutboundBandwidthPeaked ? L"Yes" : L"No");
             wprintf(L"\nInbound Bandwidth Peaked:  %s", bandwidthRod->InboundBandwidthPeaked ? L"Yes" : L"No");
             break;

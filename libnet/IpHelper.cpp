@@ -3,9 +3,6 @@
 #include "Adapter.h"
 
 
-#pragma warning(disable : 6387)
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -62,10 +59,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
         IPAddr.S_un.S_addr = (u_long)pIPAddrTable->table[i].dwBCastAddr;
         inet_ntop(AF_INET, &IPAddr, addrBuf, sizeof(addrBuf));
 
-#pragma warning(push)
-#pragma warning(disable : 4476) //"printf": 格式说明符中的类型字段字符")"未知
-        printf("\tBroadCast[%d]:      \t%s (%lu%)\n", i, addrBuf, pIPAddrTable->table[i].dwBCastAddr);
-#pragma warning(pop)
+        printf("\tBroadCast[%d]:      \t%s (%lu)\n", i, addrBuf, pIPAddrTable->table[i].dwBCastAddr);
 
         printf("\tReassembly size[%d]:\t%lu\n", i, pIPAddrTable->table[i].dwReasmSize);
         printf("\tType and State[%d]:", i);
@@ -1237,10 +1231,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
         return;
     }
 
-#pragma prefast(push)
-#pragma prefast(disable : 28020, "XXXXX")
+    // Icmp6ParseReplies 的 SAL 前置条件在此为误报：ReplySize 已含一个 ICMPV6_ECHO_REPLY 头加 8 字节，缓冲区足够。
+#pragma warning(suppress : 28020)
     ret = Icmp6ParseReplies(ReplyBuffer, ReplySize);
-#pragma prefast(pop)
     if (0 == ret) {
         printf("LastError:%lu\n", GetLastError());
         IcmpCloseHandle(hIcmpFile);
@@ -1668,10 +1661,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/icmpapi/nf-icmpapi-icmpsende
         return 1;
     }
 
-#pragma warning(push)
-#pragma warning(disable : 28020)
+    // IcmpSendEcho 的 SAL 前置条件在此为误报：ReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(SendData)，缓冲区足够。
+#pragma warning(suppress : 28020)
     dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), nullptr, ReplyBuffer, ReplySize, 1000);
-#pragma warning(pop)
     if (dwRetVal != 0) {
         PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
         in_addr ReplyAddr;

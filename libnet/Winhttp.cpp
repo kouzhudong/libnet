@@ -158,12 +158,15 @@ www.126.com
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#pragma prefast(push)
-#pragma prefast(disable : 33005, "XXX")
-#pragma prefast(disable : 26812, "XXX")
+// #import 生成的包装代码会触发以下告警，均为生成代码固有问题、与本项目代码无关：
+//   C33005/C26812：生成代码中的 SAL 与未限定枚举用法；C4471：未提供前向声明的枚举。
+// 用 warning(push/pop) 同时覆盖编译器与分析器告警，确保抑制范围仅限本次 #import。
+#pragma warning(push)
+#pragma warning(disable : 33005)
+#pragma warning(disable : 26812)
 #pragma warning(disable : 4471)
-#import "C:\\Windows\\SysWOW64\\winhttpcom.dll" no_namespace //OK
-#pragma prefast(pop)
+#import "C:\\Windows\\SysWOW64\\winhttpcom.dll" no_namespace
+#pragma warning(pop)
 
 /*关于这个文件有三种实现的办法：
 1。网上搜索相应的文件，http://www.koders.com上面有。
@@ -772,10 +775,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/winhttp/nf-winhttp-winhttpre
 {
     DWORD ret = 0;
 
-#pragma prefast(push)
-#pragma prefast(disable : 6387, ""_Param_(3) " 可以是 " 0 "")
     // ret = WinHttpRegisterProxyChangeNotification(WINHTTP_PROXY_NOTIFY_CHANGE, ProxyChangeNotificationCallback, nullptr, &hRegistration);
-#pragma prefast(pop)
 
     return ret;
 }

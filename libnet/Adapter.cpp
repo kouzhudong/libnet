@@ -423,6 +423,12 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
         }
     }
 
+    //第一次调用未返回 ERROR_INSUFFICIENT_BUFFER 时 pInfo 仍为空，无缓冲区可用，直接返回。
+    if (pInfo == nullptr) {
+        printf("GetInterfaceInfo failed with error: %lu\n", dwRetVal);
+        return 1;
+    }
+
     // Make a second call to GetInterfaceInfo to get the actual data we need
     dwRetVal = GetInterfaceInfo(pInfo, &ulOutBufLen);
     if (dwRetVal == NO_ERROR) {
@@ -430,10 +436,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
         iReturn = GetNumberOfInterfaces(&NumIf);
         //经测试：NumIf > pInfo->NumAdapters.
 
-#pragma prefast(push)
-#pragma prefast(disable : 6011, "取消对 nullptr 指针“pInfo”的引用")
         printf("Number of Adapters: %ld\n\n", pInfo->NumAdapters);
-#pragma prefast(pop)
 
         for (int i = 0; i < pInfo->NumAdapters; i++) {
             printf("Adapter Index[%d]: %lu\n", i, pInfo->Adapter[i].Index);

@@ -3,13 +3,6 @@
 #include "IpAddr.h"
 
 
-#pragma warning(push)
-#pragma warning(disable : 6387)
-#pragma warning(disable : 6011)
-#pragma warning(disable : 6255)
-#pragma warning(disable : 6263)
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -68,10 +61,6 @@ SUPPORTED PLATFORMS:
     PCSTR pOwnerName = nullptr;    // owner name to be queried
     WORD wType = 0;                // Type of the record to be queried
     char DnsServIp[BUFFER_LEN]{};  // DNS server ip address
-#pragma warning(push)
-#pragma warning(disable : 4189) //“freetype”: 局部变量已初始化但不引用
-    DNS_FREE_TYPE freetype = DnsFreeRecordListDeep; //编译器瞎眼了，没看到下面有两处调用吗？估计是优化导致的，DEBUG也是这样啊！
-#pragma warning(pop)
     IN_ADDR ipaddr{};
 
     if (argc > 4) {
@@ -131,6 +120,13 @@ SUPPORTED PLATFORMS:
         return;
     }
 
+    // 未提供 -n 参数时 pOwnerName 为空，DnsQuery_A 要求非空名称。
+    if (pOwnerName == nullptr) {
+        UsageA(argv[0]);
+        LocalFree(pSrvList);
+        return;
+    }
+
     // Calling function DnsQuery_A() to query Host or PTR records
     status = DnsQuery_A(pOwnerName,             // pointer to OwnerName
                         wType,                  // Type of the record to be queried
@@ -143,17 +139,17 @@ SUPPORTED PLATFORMS:
             printf("Failed to query the host record for %s and the error is %ld \n", pOwnerName, status);
         else
             printf("Failed to query the PTR record and the error is %ld \n", status);
-    } else {
+    } else if (pDnsRecord != nullptr) {
         if (wType == DNS_TYPE_A) {
             // convert the Internet network address into a string in Internet standard dotted format.
             ipaddr.S_un.S_addr = (pDnsRecord->Data.A.IpAddress);
             char ipBuf[INET_ADDRSTRLEN]{};
             inet_ntop(AF_INET, &ipaddr, ipBuf, sizeof(ipBuf));
             printf("The IP address of the host %s is %s \n", pOwnerName, ipBuf);
-            DnsRecordListFree(pDnsRecord, freetype); // Free memory allocated for DNS records
+            DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep); // Free memory allocated for DNS records
         } else {
             printf("The host name is %ws  \n", (pDnsRecord->Data.PTR.pNameHost));
-            DnsRecordListFree(pDnsRecord, freetype); // Free memory allocated for DNS records
+            DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep); // Free memory allocated for DNS records
         }
     }
 
@@ -228,8 +224,6 @@ SUPPORTED PLATFORMS:
 本工程原来是单字符版本，这里需要改为宽字符版本。
 */
 {
-    USES_CONVERSION;
-
     DNS_STATUS status{};                              // return value of  DnsModifyRecordsInSet() function.
     PDNS_RECORD pmyDnsRecord = nullptr;               // pointer to DNS_RECORD structure
     PIP4_ARRAY pSrvList = nullptr;                    // pinter to IP4_ARRAY structure
@@ -274,7 +268,10 @@ SUPPORTED PLATFORMS:
                         pmyDnsRecord->wDataLength = sizeof(DNS_A_DATA);
                         wcsncpy_s(HostipAddress, _countof(HostipAddress), argv[++i], _TRUNCATE);
                         HostipAddress[_ARRAYSIZE(HostipAddress) - 1] = '\0';
-                        pmyDnsRecord->Data.A.IpAddress = inet_addr(W2A(HostipAddress));
+                        // 用定长缓冲做宽转窄，避免在循环里使用基于 _alloca 的 W2A 宏。
+                        char HostipAddressA[BUFFER_LEN]{};
+                        WideCharToMultiByte(CP_ACP, 0, HostipAddress, -1, HostipAddressA, sizeof(HostipAddressA), nullptr, nullptr);
+                        pmyDnsRecord->Data.A.IpAddress = inet_addr(HostipAddressA);
                         if (pmyDnsRecord->Data.A.IpAddress == INADDR_NONE) {
                             printf("Invalid IP address in A record data \n");
                             UsageW(argv[0]);
@@ -299,7 +296,10 @@ SUPPORTED PLATFORMS:
                         wcsncpy_s(DnsServIp, _countof(DnsServIp), argv[i], _TRUNCATE);
                         DnsServIp[_ARRAYSIZE(DnsServIp) - 1] = '\0';
                         pSrvList->AddrCount = 1;
-                        pSrvList->AddrArray[0] = inet_addr(W2A(DnsServIp));
+                        // 用定长缓冲做宽转窄，避免在循环里使用基于 _alloca 的 W2A 宏。
+                        char DnsServIpA[BUFFER_LEN]{};
+                        WideCharToMultiByte(CP_ACP, 0, DnsServIp, -1, DnsServIpA, sizeof(DnsServIpA), nullptr, nullptr);
+                        pSrvList->AddrArray[0] = inet_addr(DnsServIpA);
                         if (pSrvList->AddrArray[0] == INADDR_NONE) {
                             printf("Invalid DNS server IP address\n");
                             UsageW(argv[0]);
@@ -627,9 +627,6 @@ VOID WINAPI PrintDnsRecordList(PDNS_RECORD DnsRecord)
         DnsRecord = DnsRecord->pNext;
     }
 }
-
-
-#pragma warning(pop)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

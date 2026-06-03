@@ -3,9 +3,6 @@
 #include "udp.h"
 
 
-#pragma warning(disable : 4366) // 一元“&”运算符的结果可能是未对齐的
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // 计算校验和相关的函数。
 
@@ -434,6 +431,8 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PDL_EUI48 SrcMac, IN PD
     PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv4Header + Ip4HeaderLengthInBytes(IPv4Header));
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, &buffer->eth_hdr);
+    // ip_hdr 是紧凑布局网络帧内的成员（紧随 14 字节以太网头），取址必然“未对齐”；x86/x64 允许非对齐访问，安全。
+#pragma warning(suppress : 4366)
     InitIpv4Header(IPv4Header, sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT), false, &buffer->ip_hdr);
     InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
@@ -461,6 +460,8 @@ buffer：长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, &tcp4->eth_hdr);
 
+    // ip_hdr 是紧凑布局网络帧内的成员（紧随 14 字节以太网头），取址必然“未对齐”；x86/x64 允许非对齐访问，安全。
+#pragma warning(suppress : 4366)
     InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_TCP, sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT_MSS), &tcp4->ip_hdr);
 
     InitTcpHeaderBySyn(th_sport, th_dport, sizeof(TCP_OPT_MSS), &tcp4->tcp_hdr);
@@ -563,6 +564,8 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PDL_EUI48 SrcMac, IN PD
     PTCP_HDR tcp = (PTCP_HDR)((PBYTE)IPv6Header + sizeof(IPV6_HEADER));
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, &buffer->eth_hdr);
+    // ip_hdr 是紧凑布局网络帧内的成员（紧随 14 字节以太网头），取址必然“未对齐”；x86/x64 允许非对齐访问，安全。
+#pragma warning(suppress : 4366)
     InitIpv6Header(IPv6Header, false, sizeof(TCP_OPT), &buffer->ip_hdr);
     InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
 
@@ -590,6 +593,8 @@ buffer：长度是sizeof(RAW6_TCP)。
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, &tcp6->eth_hdr);
 
+    // ip_hdr 是紧凑布局网络帧内的成员（紧随 14 字节以太网头），取址必然“未对齐”；x86/x64 允许非对齐访问，安全。
+#pragma warning(suppress : 4366)
     InitIpv6HeaderForTcp(SourceAddress, DestinationAddress, IPPROTO_TCP, 0, &tcp6->ip_hdr);
 
     InitTcpHeaderBySyn(th_sport, th_dport, 0, &tcp6->tcp_hdr);
