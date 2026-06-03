@@ -31,8 +31,6 @@
 
 #include "whois.h"
 
-#pragma warning(disable : 6011)
-
 static char NICHOST[] = "whois.internic.net";
 
 

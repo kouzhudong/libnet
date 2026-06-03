@@ -23,7 +23,6 @@ using namespace std;
 #include <stdio.h>
 #include <shlwapi.h>
 
-#pragma warning(disable : 4127) // conditional expression is constant
 #define SAFE_RELEASE(I)                                                                                                                                                  \
     do {                                                                                                                                                                 \
         if (I) {                                                                                                                                                         \

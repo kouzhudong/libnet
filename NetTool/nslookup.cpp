@@ -15,12 +15,14 @@ STATE State;
 HANDLE ProcessHeap;
 ULONG RequestID;
 
+// Third-party ported code (ReactOS nslookup) with many legacy C idioms. Rewriting each site to clear
+// the warnings below is risky and diverges from upstream, so they are suppressed file-wide:
+//   4996 (unsafe CRT) / 4477 (printf format) / 4267,4244 (integer truncation) / 6386 (buffer analysis).
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4477)
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4244)
 #pragma warning(disable : 6386)
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

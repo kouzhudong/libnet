@@ -1,6 +1,5 @@
 #include "PortReuse.h"
 
-#pragma warning(disable : 6386)
 
 /*
 import socket
@@ -49,7 +48,7 @@ void handle_client(SOCKET client_socket)
     char buffer[1024]{};
     int bytes_received{};
 
-    while ((bytes_received = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
+    while ((bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0) {
         buffer[bytes_received] = '\0';//
         printf("Received: %s\n", buffer);
         send(client_socket, "ACK", 3, 0);
@@ -413,7 +412,7 @@ void handle_client2(SOCKET client_socket)
     char buffer[1024];
     int bytes_received;
 
-    while ((bytes_received = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
+    while ((bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0) {
         buffer[bytes_received] = '\0';
         printf("Received: %s\n", buffer);
         send(client_socket, "ACK", 3, 0);

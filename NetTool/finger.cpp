@@ -15,9 +15,6 @@ int opterr = 1,      /* if error message should be printed */
 const char * optarg; /* argument associated with option */
 
 
-#pragma warning(disable : 28182)
-
-
 int getopt(int nargc, char * const * nargv, const char * ostr)
 {
     static const char * place = EMSG; /* option letter processing */
@@ -225,8 +222,10 @@ static void userlist(int argc, char ** argv)
     WSADATA wsaData;
     int iErr;
 
-    if ((nargv = (char **)malloc(((size_t)argc + 1) * sizeof(char *))) == NULL || (used = (int *)calloc(argc, sizeof(int))) == NULL)
-        err(1, NULL);
+    if ((nargv = (char **)malloc(((size_t)argc + 1) * sizeof(char *))) == NULL || (used = (int *)calloc(argc, sizeof(int))) == NULL) {
+        err(1, NULL); // err() exits; the explicit return makes nargv/used provably non-null below.
+        return;
+    }
 
     /* Pull out all network requests into nargv. */
     for (ap = p = argv, np = nargv; *p; ++p)

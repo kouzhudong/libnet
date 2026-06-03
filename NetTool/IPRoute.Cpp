@@ -15,7 +15,6 @@
 #include "IpRoute.h"
 
 
-#pragma warning(disable : 28193)
 
 
 static bool InterfaceIdxToInterfaceIp(PMIB_IPADDRTABLE pIpAddrTable, DWORD dwIndex, char str[]);
@@ -69,8 +68,13 @@ void _cdecl IpRoute(int argc, char ** argv)
     WORD wVersionRequested = MAKEWORD(1, 1);
     WSADATA wsaData;
     int nRet = WSAStartup(wVersionRequested, &wsaData);
+    if (nRet != 0) {
+        fprintf(stderr, "\n WSAStartup failed: %d\n", nRet);
+        return;
+    }
     if (wsaData.wVersion != wVersionRequested) {
         fprintf(stderr, "\n Wrong version\n");
+        WSACleanup();
         return;
     }
 

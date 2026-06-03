@@ -14,9 +14,6 @@
 
 #include "IpArp.h"
 
-#pragma warning(disable : 4996)
-#pragma warning(disable : 28193)
-
 static void Usage(const char * pszProgramName)
 {
     printf("%s -s inet_addr eth_addr [if_addr]\n", pszProgramName);
@@ -48,8 +45,13 @@ void _cdecl IpArp(int argc, char ** argv)
     WORD wVersionRequested = MAKEWORD(1, 1);
     WSADATA wsaData;
     int nRet = WSAStartup(wVersionRequested, &wsaData);
+    if (nRet != 0) {
+        fprintf(stderr, "\n WSAStartup failed: %d\n", nRet);
+        return;
+    }
     if (wsaData.wVersion != wVersionRequested) {
         fprintf(stderr, "\n Wrong version\n");
+        WSACleanup();
         return;
     }
 
