@@ -4,18 +4,13 @@
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *    notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software must display the following acknowledgement:
+ *	This product includes software developed by the University of California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
+ *    may be used to endorse or promote products derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
@@ -25,8 +20,7 @@
  *
  * 8/1/97 - Ted Felix <tfelix@fred.net>
  *          Ported to Win32 from 4.4-BSDLITE2 from wcarchive.
- *          Added WSAStartup()/WSACleanup() and switched from the
- *          more convenient fdopen()/fprintf() to send()/recv().
+ *          Added WSAStartup()/WSACleanup() and switched from the more convenient fdopen()/fprintf() to send()/recv().
  */
 
 #include "whois.h"
@@ -46,10 +40,13 @@ static void getwhoisserver(int argc, char ** argv, char ** outHost, int * outOpt
             } else {
                 *outOptset = argc;
             }
+
             return;
         }
+
         i++;
     }
+
     *outHost = NICHOST;
     *outOptset = 1;
 }
@@ -57,18 +54,11 @@ static void getwhoisserver(int argc, char ** argv, char ** outHost, int * outOpt
 
 int whois(int argc, char ** argv)
 {
-    char ch;
-    struct sockaddr_in sin;
-    struct hostent * hp;
-    struct servent * sp;
+    char ch;    
     SOCKET s = INVALID_SOCKET;
     int status = 0;
     char * host = NULL;
-    int optset = 0;
-
-    WORD wVersionRequested;
-    WSADATA wsaData;
-    int err;
+    int optset = 0;   
 
     getwhoisserver(argc, argv, &host, &optset);
     argc -= optset;
@@ -79,15 +69,16 @@ int whois(int argc, char ** argv)
         return 1;
     }
 
-    wVersionRequested = MAKEWORD(1, 1);
-    err = WSAStartup(wVersionRequested, &wsaData);
+    WORD wVersionRequested = MAKEWORD(1, 1);
+    WSADATA wsaData;
+    int err = WSAStartup(wVersionRequested, &wsaData);
     if (err != 0) {
         perror("whois: WSAStartup failed");
         return 1;
     }
 
     do {
-        hp = gethostbyname(host);
+        struct hostent * hp = gethostbyname(host);
         if (hp == NULL) {
             (void)fprintf(stderr, "whois: %s: ", host);
             status = 1;
@@ -102,6 +93,7 @@ int whois(int argc, char ** argv)
             break;
         }
 
+        struct sockaddr_in sin;
         memset(&sin, 0, sizeof(sin));
         sin.sin_family = hp->h_addrtype;
         if (bind(s, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
@@ -111,7 +103,7 @@ int whois(int argc, char ** argv)
         }
 
         memcpy((char *)&sin.sin_addr, hp->h_addr, hp->h_length);
-        sp = getservbyname("nicname", "tcp");
+        struct servent * sp = getservbyname("nicname", "tcp");
         if (sp == NULL) {
             (void)fprintf(stderr, "whois: nicname/tcp: unknown service\n");
             status = 1;
