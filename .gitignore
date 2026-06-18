@@ -59,3 +59,11 @@ x64/
 .vs/
 Debug/
 Release/
+rust/target/*
+NetTool/localmsg.h
+NetTool/MSG00001.bin
+NetTool/localmsg.rc
+NetTool/nlstxt.h
+NetTool/nlstxt.rc
+NetTool/pathping.h
+NetTool/pathping.rc
