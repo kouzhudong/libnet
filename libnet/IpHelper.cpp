@@ -382,23 +382,31 @@ BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac)
 */
 {
     RtlZeroMemory(mac, sizeof(DL_EUI48));
-    bool ret = false;
 
-    PMIB_IPNET_TABLE2 pipTable = nullptr;
-    unsigned long status = GetIpNetTable2(AF_INET6, &pipTable);
-    if (status != NO_ERROR) {
-        return ret;
-    }
+    // 剥离 % 区域后缀后再解析，InetPtonA 不支持 % 语法
+    char addrNoBracket[INET6_ADDRSTRLEN]{};
+    strncpy_s(addrNoBracket, ipv6, _TRUNCATE);
+    char * pct = strchr(addrNoBracket, '%');
+    if (pct)
+        *pct = '\0';
 
     IN6_ADDR sin6_addr{};
-    InetPtonA(AF_INET6, ipv6, &sin6_addr);
+    if (InetPtonA(AF_INET6, addrNoBracket, &sin6_addr) != 1) {
+        return FALSE;
+    }
 
-    for (int i = 0; (unsigned)i < pipTable->NumEntries; i++) {
+    PMIB_IPNET_TABLE2 pipTable = nullptr;
+    if (GetIpNetTable2(AF_INET6, &pipTable) != NO_ERROR) {
+        return FALSE;
+    }
+
+    BOOL found = FALSE;
+    for (ULONG i = 0; i < pipTable->NumEntries; i++) {
         if (IN6_ADDR_EQUAL(&sin6_addr, &pipTable->Table[i].Address.Ipv6.sin6_addr)) {
             if (pipTable->Table[i].IsRouter) { // && (pipTable->Table[i].State == NlnsStale)
-                if (6 == pipTable->Table[i].PhysicalAddressLength) {
-                    RtlCopyMemory(mac, pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
-                    ret = true;
+                if (pipTable->Table[i].PhysicalAddressLength == sizeof(DL_EUI48)) {
+                    RtlCopyMemory(mac, pipTable->Table[i].PhysicalAddress, sizeof(DL_EUI48));
+                    found = TRUE;
                     break;
                 }
             }
@@ -406,7 +414,7 @@ BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac)
     }
 
     FreeMibTable(pipTable);
-    return ret;
+    return found;
 }
 
 
