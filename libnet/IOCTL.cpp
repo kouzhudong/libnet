@@ -29,8 +29,19 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     char * ip{};
     u_short port = 27015;
     thisHost = gethostbyname("");
+    if (thisHost == nullptr) {
+        printf("gethostbyname failed\n");
+        closesocket(ListenSocket);
+        WSACleanup();
+        return;
+    }
     char ipBuf[INET_ADDRSTRLEN]{};
-    inet_ntop(AF_INET, *thisHost->h_addr_list, ipBuf, sizeof(ipBuf));
+    if (inet_ntop(AF_INET, *thisHost->h_addr_list, ipBuf, sizeof(ipBuf)) == nullptr) {
+        printf("inet_ntop failed\n");
+        closesocket(ListenSocket);
+        WSACleanup();
+        return;
+    }
     ip = ipBuf;
 
     sockaddr_in service{};
@@ -40,6 +51,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     if (bind(ListenSocket, reinterpret_cast<SOCKADDR *>(&service), sizeof(service)) == SOCKET_ERROR) {
         printf("bind failed\n");
         closesocket(ListenSocket);
+        WSACleanup();
         return;
     }
 
@@ -62,6 +74,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockopt
     if (iResult != SOCKET_ERROR)
         printf("SockOpt Value: %d\n", optVal);
 
+    closesocket(ListenSocket);
     WSACleanup();
 }
 
@@ -150,7 +163,7 @@ void getsockopt3()
 参考：https://msdn.microsoft.com/en-us/library/windows/desktop/ms738544(v=vs.85).aspx
 */
 {
-    WSADATA wsaData;
+    WSADATA wsaData{};
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
     if (iResult != NO_ERROR)
         printf("Error at WSAStartup\n");
@@ -172,6 +185,7 @@ void getsockopt3()
     if (iResult != SOCKET_ERROR)
         printf("SO_SNDBUF Value: %d\n", optVal);
 
+    closesocket(ListenSocket);
     WSACleanup();
 }
 
@@ -211,8 +225,19 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
     char * ip{};
     u_short port = 27015;
     thisHost = gethostbyname("");
+    if (thisHost == nullptr) {
+        wprintf(L"gethostbyname failed\n");
+        closesocket(ListenSocket);
+        WSACleanup();
+        return 1;
+    }
     char ipBuf[INET_ADDRSTRLEN]{};
-    inet_ntop(AF_INET, *thisHost->h_addr_list, ipBuf, sizeof(ipBuf));
+    if (inet_ntop(AF_INET, *thisHost->h_addr_list, ipBuf, sizeof(ipBuf)) == nullptr) {
+        wprintf(L"inet_ntop failed\n");
+        closesocket(ListenSocket);
+        WSACleanup();
+        return 1;
+    }
     ip = ipBuf;
 
     sockaddr_in service{};
@@ -1101,7 +1126,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/winsock/so-exclusiveaddruse
         return 1;
     }
 
-    if (iPort <= 0 || iPort >= 65535) {
+    if (iPort <= 0 || iPort > 65535) {
         wprintf(L"Port specified must be greater than 0 and less than 65535\n");
         return 1;
     }

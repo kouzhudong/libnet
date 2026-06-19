@@ -76,7 +76,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             printf("AF_INET (IPv4)\n");
             sockaddr_ipv4 = reinterpret_cast<struct sockaddr_in *>(ptr->ai_addr);
             char v4Buf[INET_ADDRSTRLEN]{};
-                    if (inet_ntop(AF_INET, &sockaddr_ipv4->sin_addr, v4Buf, sizeof(v4Buf)) == nullptr)
+            if (inet_ntop(AF_INET, &sockaddr_ipv4->sin_addr, v4Buf, sizeof(v4Buf)) == nullptr)
                 printf("\tIPv4 address (inet_ntop failed)\n");
             else
                 printf("\tIPv4 address %s\n", v4Buf);
@@ -93,8 +93,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             ipbufferlength = 46;
-            iRetval = WSAAddressToStringA(
-                sockaddr_ip, static_cast<DWORD>(ptr->ai_addrlen), nullptr, ipstringbuffer, &ipbufferlength);
+            iRetval = WSAAddressToStringA(sockaddr_ip, static_cast<DWORD>(ptr->ai_addrlen), nullptr, ipstringbuffer, &ipbufferlength);
             if (iRetval)
                 printf("WSAAddressToString failed with %d\n", WSAGetLastError());
             else
@@ -163,10 +162,10 @@ http://correy.webs.com
     // Call getaddrinfo().
     // If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
     struct addrinfo * result = nullptr;
-    DWORD dwRetval = getaddrinfo( //感觉这个函数没啥大的意义。
-        argv[1],                  //只能是数字，不能是名字。这也符合了函数的名字。
-        nullptr,                  //可有可无，数字和名字无所谓。
-        &hints,                   //必须有，而且4个成员必须为0.
+    DWORD dwRetval = getaddrinfo( // 感觉这个函数没啥大的意义。
+        argv[1],                  // 只能是数字，不能是名字。这也符合了函数的名字。
+        nullptr,                  // 可有可无，数字和名字无所谓。
+        &hints,                   // 必须有，而且4个成员必须为0.
         &result);
     if (dwRetval != 0) {
         printf("getaddrinfo failed with error: %lu\n", dwRetval);
@@ -268,8 +267,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             ipbufferlength = 46;
-            iRetval = WSAAddressToString(
-                sockaddr_ip, static_cast<DWORD>(ptr->ai_addrlen), nullptr, ipstringbuffer, &ipbufferlength);
+            iRetval = WSAAddressToString(sockaddr_ip, static_cast<DWORD>(ptr->ai_addrlen), nullptr, ipstringbuffer, &ipbufferlength);
             if (iRetval)
                 wprintf(L"WSAAddressToString failed with %d\n", WSAGetLastError());
             else
@@ -286,8 +284,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             // The buffer length is changed by each call to WSAAddresstoString
             // So we need to set it for each iteration through the loop for safety
             ipbufferlength = 46;
-            iRetval = WSAAddressToString(
-                sockaddr_ip, static_cast<DWORD>(ptr->ai_addrlen), nullptr, ipstringbuffer, &ipbufferlength);
+            iRetval = WSAAddressToString(sockaddr_ip, static_cast<DWORD>(ptr->ai_addrlen), nullptr, ipstringbuffer, &ipbufferlength);
             if (iRetval)
                 wprintf(L"WSAAddressToString failed with %d\n", WSAGetLastError());
             else
@@ -367,8 +364,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     WCHAR GuidString[40] = {0};
 
     // Call getaddrinfoex(). If the call succeeds, the result variable will hold a linked list of addrinfo structures containing response information
-    dwRetval =
-        GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result, nullptr, nullptr, nullptr, nullptr);
+    dwRetval = GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result, nullptr, nullptr, nullptr, nullptr);
     if (dwRetval != 0) {
         wprintf(L"GetAddrInfoEx failed with error: %u\n", dwRetval);
         WSACleanup();
@@ -512,16 +508,8 @@ address..
             break;
         }
 
-        Error = GetAddrInfoExW(Argv[1],
-                               nullptr,
-                               NS_DNS,
-                               nullptr,
-                               &Hints,
-                               &QueryContext.QueryResults,
-                               nullptr,
-                               &QueryContext.QueryOverlapped,
-                               QueryCompleteCallback,
-                               &CancelHandle);
+        Error = GetAddrInfoExW(
+            Argv[1], nullptr, NS_DNS, nullptr, &Hints, &QueryContext.QueryResults, nullptr, &QueryContext.QueryOverlapped, QueryCompleteCallback, &CancelHandle);
 
         if (Error != WSA_IO_PENDING) {
             QueryCompleteCallback(Error, 0, &QueryContext.QueryOverlapped);
@@ -618,7 +606,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         wprintf(L"   from a host name to an IP address\n");
         wprintf(L"%ws example usage\n", argv[0]);
         wprintf(L"   %ws www.contoso.com 0 12\n", argv[0]);
-        wprintf(L"   %ws looks up the www.contoso.com in the NS_DNS namespace\n", argv[0]); //原始代码错误。
+        wprintf(L"   %ws looks up the www.contoso.com in the NS_DNS namespace\n", argv[0]); // 原始代码错误。
         return 1;
     }
 
@@ -787,16 +775,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             break;
         }
 
-        Error = GetAddrInfoExW(Argv[1],
-                               nullptr,
-                               NS_DNS,
-                               nullptr,
-                               &Hints,
-                               &QueryContext.QueryResults,
-                               nullptr,
-                               &QueryContext.QueryOverlapped,
-                               QueryCompleteCallback2,
-                               &CancelHandle);
+        Error = GetAddrInfoExW(
+            Argv[1], nullptr, NS_DNS, nullptr, &Hints, &QueryContext.QueryResults, nullptr, &QueryContext.QueryOverlapped, QueryCompleteCallback2, &CancelHandle);
 
         if (Error != WSA_IO_PENDING) {
             QueryCompleteCallback2(Error, 0, &QueryContext.QueryOverlapped);
@@ -898,14 +878,14 @@ http://correy.webs.com
     saGNI.sin_family = AF_INET;
     saGNI.sin_addr.s_addr = inet_addr(argv[1]);
     saGNI.sin_port = htons(port);
-    DWORD dwRetval = getnameinfo( //这个函数运行很慢，以分钟来计时单位。
+    DWORD dwRetval = getnameinfo( // 这个函数运行很慢，以分钟来计时单位。
         reinterpret_cast<struct sockaddr *>(&saGNI),
         sizeof(struct sockaddr),
-        hostname, //这个不会变。
+        hostname, // 这个不会变。
         NI_MAXHOST,
-        servInfo, //这个可以变。参见：%WINDIR%\system32\drivers\etc\services，感觉没啥大的意义。
+        servInfo, // 这个可以变。参见：%WINDIR%\system32\drivers\etc\services，感觉没啥大的意义。
         NI_MAXSERV,
-        NI_NOFQDN //取这个值，方显函数的意义。
+        NI_NOFQDN // 取这个值，方显函数的意义。
     );
     if (dwRetval != 0) {
         printf("failed with error # %d\n", WSAGetLastError());
