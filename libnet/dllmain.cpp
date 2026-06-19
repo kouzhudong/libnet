@@ -1,9 +1,6 @@
 // dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
 #include "log.h"
-#include "ioctl.h"
-#include "html.h"
-#include "IpAddr.h"
 
 
 void init()

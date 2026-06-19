@@ -8,8 +8,8 @@
 #include "spi.h"
 #include "Firewall.h"
 #include "IpAddr.h"
-#include "WinhttpExamples.h"
-#include "WinINetExamples.h"
+//#include "WinhttpExamples.h"   // TODO: 文件已迁移，待补全
+//#include "WinINetExamples.h"   // TODO: 文件已迁移，待补全
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

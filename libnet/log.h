@@ -44,7 +44,7 @@ void LogW(IN LOG_LEVEL Level, IN wchar_t const * Format, ...);
 注意：第二个参数是单字符，可以为空，但不要为NULL，更不能省略。
 */
 #define LOGW(Level, Format, ...) \
-{LogW(Level, L"FILE:%ls, LINE:%d, "##Format, __FILENAMEW__, __LINE__, __VA_ARGS__);} //\r\n
+{LogW(Level, L"FILE:%ls, LINE:%d, " Format, __FILENAMEW__, __LINE__, __VA_ARGS__);} //\r\n
 
 /*
 既支持单字符也支持宽字符。
@@ -56,4 +56,4 @@ void LogW(IN LOG_LEVEL Level, IN wchar_t const * Format, ...);
 \n却不会。
 */
 #define LOGA(Level, Format, ...) \
-{LogA(Level, "FILE:%s, LINE:%d, "##Format, __FILENAME__, __LINE__, __VA_ARGS__);} //\r\n
+{LogA(Level, "FILE:%s, LINE:%d, " Format, __FILENAME__, __LINE__, __VA_ARGS__);} //\r\n

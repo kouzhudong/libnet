@@ -458,7 +458,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
+int WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(16) char * Gateway)
 /*
 功能：获取本地IPv4地址的默认网关地址（也是IPv4，不包括IPv6）。
 */
@@ -506,7 +506,7 @@ int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway)
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
+int WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(46) char * Gateway)
 /*
 功能：获取本地IPv6地址的(任意一个)默认网关地址（也是IPv6，不包括IPv4）。
 
@@ -623,7 +623,7 @@ int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway)
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac)
+int WINAPI GetGatewayMacByIPv6(_In_z_ const char * IPv6, _Out_ PDL_EUI48 GatewayMac)
 /*
 功能：获取一个本地IPv6的一个默认网关的MAC.
 

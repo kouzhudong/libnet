@@ -1,8 +1,9 @@
 #pragma once
 
-#pragma warning(disable:28251)
-#pragma warning(disable:28301)
-#pragma warning(disable:4819) //该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+#pragma warning(push)
+#pragma warning(disable:28251) // SAL inconsistency — definitions in DLL lack SAL
+#pragma warning(disable:28301) // SAL inconsistency — same reason
+#pragma warning(disable:4819)  // non-CP936 chars in included system headers
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,8 +26,6 @@
 #include <Mswsock.h> //定义在Winsock2.h的后面。
 #include <windows.h>
 #include <strsafe.h>
-#include <assert.h>
-#include <crtdbg.h>
 #include <tchar.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -175,6 +174,8 @@
 #include <set>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma warning(pop)
+
 
 class WinsockInitializer 
 //AI的代码：RAII wrapper for Winsock initialization

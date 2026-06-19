@@ -18,8 +18,6 @@
 
 //#define _WIN32_WINNT 0x0501
 
-#pragma warning(pop)
-
 // ---------------------------------------------------------------------------
 // LIBNET_API: dllexport when building the DLL, dllimport for consumers.
 // Define LIBNET_EXPORTS before including this header only in the DLL project.
@@ -116,8 +114,8 @@ https://www.microsoftpressstore.com/articles/article.aspx?p=2225063&seqNum=6
 */
 typedef struct tsd6_hdr {
     IN6_ADDR      saddr;//Source Address
-    IN6_ADDR      daddr;//Destination Address 
-    unsigned long length;
+    IN6_ADDR      daddr;//Destination Address
+    ULONG         length;
     char          unused1;//zero
     char          unused2;//zero
     char          unused3;//zero
@@ -304,6 +302,9 @@ int WINAPI EnumInterfaceInfo();
 LIBNET_API
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
 
+LIBNET_API
+int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway);
+
 LIBNET_API int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac);
 
 LIBNET_API int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac);
@@ -418,5 +419,6 @@ LIBNET_API _Ret_maybenull_ _Post_writable_byte_size_(16) char * WINAPI GetPublic
 
 EXTERN_C_END
 
+#pragma warning(pop)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

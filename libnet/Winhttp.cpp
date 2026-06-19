@@ -4,6 +4,8 @@
 #include <Winhttp.h> //Winhttp.h与Wininet.h不能包含在同一个文件中编译，且建议不要在头文件里引用。
 #pragma comment(lib, "Winhttp.lib")
 
+const IID IID_IWinHttpRequest = {0x06f29373, 0x5c5a, 0x4b54, {0xb0, 0x25, 0x6e, 0xf1, 0xbf, 0x8a, 0xbf, 0x0e}};
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
