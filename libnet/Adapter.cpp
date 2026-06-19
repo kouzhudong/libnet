@@ -10,7 +10,7 @@ void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
 {
     switch (Address->lpSockaddr->sa_family) {
     case AF_INET: {
-        const PSOCKADDR_IN sockaddr_ipv4 = reinterpret_cast<const PSOCKADDR_IN>(Address->lpSockaddr);
+        const SOCKADDR_IN * sockaddr_ipv4 = reinterpret_cast<const SOCKADDR_IN *>(Address->lpSockaddr);
 
         char v4Buf[INET_ADDRSTRLEN]{};
         inet_ntop(AF_INET, &sockaddr_ipv4->sin_addr, v4Buf, sizeof(v4Buf));
@@ -21,7 +21,7 @@ void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
     case AF_INET6: {
         char ipstringbuffer[INET6_ADDRSTRLEN] = {0};
 
-        const PSOCKADDR_IN6_LH sa_in6 = reinterpret_cast<const PSOCKADDR_IN6_LH>(Address->lpSockaddr);
+        const SOCKADDR_IN6_LH * sa_in6 = reinterpret_cast<const SOCKADDR_IN6_LH *>(Address->lpSockaddr);
         inet_ntop(AF_INET6, &sa_in6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer));
 
         printf("\t%s:%s\n", Msg, ipstringbuffer);
@@ -48,7 +48,9 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getpera
     if (ERROR_NO_DATA == ret) {
         return;
     }
-
+    if (ERROR_SUCCESS == ret) {
+        return;
+    }
     if (ERROR_BUFFER_OVERFLOW != ret) {
         return;
     }
@@ -353,9 +355,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
 
                 printf("\t  Lease Obtained: ");
                 /* Display local time */
-                errno_t error = _localtime32_s(&newtime, (__time32_t *)&pAdapter->LeaseObtained);
+                errno_t error = localtime_s(&newtime, &pAdapter->LeaseObtained);
                 if (error)
-                    printf("Invalid Argument to _localtime32_s\n");
+                    printf("Invalid Argument to localtime_s\n");
                 else {
                     error = asctime_s(buffer, 32, &newtime); // Convert to an ASCII representation
                     if (error)
@@ -365,9 +367,9 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
                 }
 
                 printf("\t  Lease Expires:  ");
-                error = _localtime32_s(&newtime, (__time32_t *)&pAdapter->LeaseExpires);
+                error = localtime_s(&newtime, &pAdapter->LeaseExpires);
                 if (error)
-                    printf("Invalid Argument to _localtime32_s\n");
+                    printf("Invalid Argument to localtime_s\n");
                 else {
                     error = asctime_s(buffer, 32, &newtime); // Convert to an ASCII representation
                     if (error)
@@ -432,10 +434,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
     // Make a second call to GetInterfaceInfo to get the actual data we need
     dwRetVal = GetInterfaceInfo(pInfo, &ulOutBufLen);
     if (dwRetVal == NO_ERROR) {
-        DWORD NumIf = 0;
-        iReturn = GetNumberOfInterfaces(&NumIf);
-        //经测试：NumIf > pInfo->NumAdapters.
-
+        //经测试：GetNumberOfInterfaces 返回值 > pInfo->NumAdapters.
         printf("Number of Adapters: %ld\n\n", pInfo->NumAdapters);
 
         for (int i = 0; i < pInfo->NumAdapters; i++) {
@@ -536,7 +535,11 @@ int WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(46) char * 
     PIP_ADAPTER_UNICAST_ADDRESS pUnicast = nullptr;
 
     IN6_ADDR sin6_addr{};
-    InetPtonA(AF_INET6, IPv6, &sin6_addr);
+    char addrNoBracket[INET6_ADDRSTRLEN]{};
+    strncpy_s(addrNoBracket, IPv6, _TRUNCATE);
+    char * pct = strchr(addrNoBracket, '%');
+    if (pct) *pct = '\0';
+    InetPtonA(AF_INET6, addrNoBracket, &sin6_addr);
 
     do {
         pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
@@ -577,7 +580,9 @@ int WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(46) char * 
                                         char ipstringbuffer[46] = {0};
 
                                         PSOCKADDR_IN6_LH temp = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
-                                        inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, ipbufferlength);
+                                        if (inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, ipbufferlength) == nullptr) {
+                                            break;
+                                        }
 
                                         lstrcpyA(Gateway, ipstringbuffer); //会有多个，取最后一个。
 
