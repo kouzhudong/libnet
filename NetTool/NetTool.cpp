@@ -91,75 +91,49 @@ int _cdecl main(_In_ int argc, _In_reads_(argc) CHAR * argv[])
         return ret;
     }
 
+    // Sub-argc/argv for narrow-char sub-commands (from the original ANSI main args).
+    int    NarrowSubArgc  = argc - 1;
+    CHAR** NarrowSubArgv  = argv + 1;
+
+    // Sub-argc/argv for wide-char sub-commands (from CommandLineToArgvW).
+    int     WideSubArgc   = Args - 1;
+    LPWSTR* WideSubArgv   = Arglist + 1;
+
     if (_wcsicmp(Arglist[1], L"ping") == 0) {
-        ping(--argc, ++argv);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"pathping") == 0) {
-        pathping(--argc, ++argv);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"tracert") == 0) {
-        tracert(--argc, ++argv);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"whois") == 0) {
-        whois(--argc, ++argv);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"Arp") == 0) {
-        IpArp(--argc, ++argv);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"Route") == 0) {
-        IpRoute(--argc, ++argv);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"Ipconfig") == 0) {
+        ping(NarrowSubArgc, NarrowSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"pathping") == 0) {
+        pathping(NarrowSubArgc, NarrowSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"tracert") == 0) {
+        tracert(NarrowSubArgc, NarrowSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"whois") == 0) {
+        whois(NarrowSubArgc, NarrowSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"Arp") == 0) {
+        IpArp(NarrowSubArgc, NarrowSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"Route") == 0) {
+        IpRoute(NarrowSubArgc, NarrowSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"Ipconfig") == 0) {
         Ipconfig();
-    }
-
-    else if (_wcsicmp(Arglist[1], L"wfp") == 0) {
-        EnumWfpInfo(--argc, ++Arglist);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"spi") == 0) {
-        EnumSpiInfo(--argc, ++Arglist);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"nbtstat") == 0) {
-        //nbtstat(--argc, ++Arglist);//Win2K3\NT\net\netbt\nbtstat
-    }
-
-    else if (_wcsicmp(Arglist[1], L"netstat") == 0) {
-        //netstat(--argc, ++Arglist);//reactos\base\applications\network\netstat
-    }
-
-    else if (_wcsicmp(Arglist[1], L"netsh") == 0) {
-        //netsh(--argc, ++Arglist);//reactos\base\applications\network\netsh
-    }
-
-    else if (_wcsicmp(Arglist[1], L"finger") == 0) {
-        finger(--argc, ++argv); //reactos\base\applications\network\finger
-    }
-
-    else if (_wcsicmp(Arglist[1], L"nslookup") == 0) {
-        nslookup(--argc, ++argv);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"wlan") == 0) {
-        wlan(--argc, ++Arglist);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"net") == 0) {
-        net(--argc, ++Arglist);
-    }
-
-    else if (_wcsicmp(Arglist[1], L"sock") == 0) {
-        sock(--argc, ++Arglist);
-    }
-
-    else {
+    } else if (_wcsicmp(Arglist[1], L"wfp") == 0) {
+        EnumWfpInfo(WideSubArgc, WideSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"spi") == 0) {
+        EnumSpiInfo(WideSubArgc, WideSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"nbtstat") == 0) {
+        printf("nbtstat: not implemented.\r\n"); //Win2K3\NT\net\netbt\nbtstat
+    } else if (_wcsicmp(Arglist[1], L"netstat") == 0) {
+        printf("netstat: not implemented.\r\n"); //reactos\base\applications\network\netstat
+    } else if (_wcsicmp(Arglist[1], L"netsh") == 0) {
+        printf("netsh: not implemented.\r\n"); //reactos\base\applications\network\netsh
+    } else if (_wcsicmp(Arglist[1], L"finger") == 0) {
+        finger(NarrowSubArgc, NarrowSubArgv); //reactos\base\applications\network\finger
+    } else if (_wcsicmp(Arglist[1], L"nslookup") == 0) {
+        nslookup(NarrowSubArgc, NarrowSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"wlan") == 0) {
+        wlan(WideSubArgc, WideSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"net") == 0) {
+        net(WideSubArgc, WideSubArgv);
+    } else if (_wcsicmp(Arglist[1], L"sock") == 0) {
+        sock(WideSubArgc, WideSubArgv);
+    } else {
         Usage(Arglist[0]);
     }
 

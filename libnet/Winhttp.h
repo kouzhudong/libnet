@@ -33,7 +33,7 @@ EXTERN_C_START
 
 
 DLLEXPORT
-void WINAPI HttpReadData();
+DWORD WINAPI HttpReadData();
 
 
 EXTERN_C_END

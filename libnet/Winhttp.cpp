@@ -10,7 +10,7 @@
 
 EXTERN_C
 DLLEXPORT
-void WINAPI HttpReadData()
+DWORD WINAPI HttpReadData()
 /*
 以前接触网络的时候,认为用户层用socket足矣(其实还有比socket更底层的),别的都不用,这样停止了几年.
 后来发现有一些操作,还是用高级的好.
@@ -145,6 +145,8 @@ www.126.com
         printf("Error %lu has occurred.\n", GetLastError()); // Report any errors.
     }
 
+    DWORD lastError = bResults ? ERROR_SUCCESS : GetLastError();
+
     // Close any open handles.
     if (hRequest)
         WinHttpCloseHandle(hRequest);
@@ -152,6 +154,8 @@ www.126.com
         WinHttpCloseHandle(hConnect);
     if (hSession)
         WinHttpCloseHandle(hSession);
+
+    return lastError;
 }
 
 
@@ -247,7 +251,7 @@ made at 2012.04.16
 
 EXTERN_C
 DLLEXPORT
-void WINAPI GetDefaultProxyConfiguration()
+DWORD WINAPI GetDefaultProxyConfiguration()
 /*
 The WinHttpGetDefaultProxyConfiguration function retrieves the default WinHTTP proxy configuration from the
 registry.
@@ -257,9 +261,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpget
 在开启翻墙的情况下，这个函数的测试竟然输出为空。
 */
 {
-    WINHTTP_PROXY_INFO proxyInfo;
+    WINHTTP_PROXY_INFO proxyInfo{};
 
-    WinHttpGetDefaultProxyConfiguration(&proxyInfo); // Retrieve the default proxy configuration.
+    if (!WinHttpGetDefaultProxyConfiguration(&proxyInfo)) {
+        return GetLastError();
+    }
 
     // Display the proxy servers and free memory allocated to this string.
     if (proxyInfo.lpszProxy != nullptr) {
@@ -272,6 +278,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpget
         printf("Proxy bypass list: %S\n", proxyInfo.lpszProxyBypass);
         GlobalFree(proxyInfo.lpszProxyBypass);
     }
+
+    return ERROR_SUCCESS;
 }
 
 
@@ -280,7 +288,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpget
 
 EXTERN_C
 DLLEXPORT
-void WINAPI GetIEProxyConfigForCurrentUser()
+DWORD WINAPI GetIEProxyConfigForCurrentUser()
 /*
 The WinHttpGetIEProxyConfigForCurrentUser function retrieves the Internet Explorer proxy configuration for the current user.
 
@@ -313,11 +321,11 @@ ProxyBypass:<local>.
 看来，这个代码还有点用处，不过，输出信息需要解析。
 */
 {
-    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG pProxyConfig;
-    BOOL ret = WinHttpGetIEProxyConfigForCurrentUser(&pProxyConfig);
-    if (!ret) {
-        printf("WinHttpGetIEProxyConfigForCurrentUser failed: %lu\n", GetLastError());
-        return;
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG pProxyConfig{};
+    if (!WinHttpGetIEProxyConfigForCurrentUser(&pProxyConfig)) {
+        DWORD err = GetLastError();
+        printf("WinHttpGetIEProxyConfigForCurrentUser failed: %lu\n", err);
+        return err;
     }
 
     printf("AutoDetect:%s.\n", pProxyConfig.fAutoDetect ? "true" : "false");
@@ -336,6 +344,8 @@ ProxyBypass:<local>.
     if (pProxyConfig.lpszProxyBypass) {
         GlobalFree(pProxyConfig.lpszProxyBypass);
     }
+
+    return ERROR_SUCCESS;
 }
 
 
@@ -344,29 +354,34 @@ ProxyBypass:<local>.
 
 EXTERN_C
 DLLEXPORT
-void WINAPI DetectAutoProxyConfigUrl()
+DWORD WINAPI DetectAutoProxyConfigUrl()
 /*
 经测试：此代码输出错误。
 */
 {
     LPWSTR ppwstrAutoConfigUrl = nullptr;
-    BOOL ret = WinHttpDetectAutoProxyConfigUrl(WINHTTP_AUTO_DETECT_TYPE_DHCP, &ppwstrAutoConfigUrl);
-    if (!ret) {
-        printf("LastError:%#lx.\n", GetLastError()); // LastError:0x2f94.
+    DWORD lastError = ERROR_SUCCESS;
+
+    if (!WinHttpDetectAutoProxyConfigUrl(WINHTTP_AUTO_DETECT_TYPE_DHCP, &ppwstrAutoConfigUrl)) {
+        lastError = GetLastError();
+        printf("LastError:%#lx.\n", lastError); // LastError:0x2f94.
+    }
+
+    if (ppwstrAutoConfigUrl) {
+        GlobalFree(ppwstrAutoConfigUrl);
+        ppwstrAutoConfigUrl = nullptr;
+    }
+
+    if (!WinHttpDetectAutoProxyConfigUrl(WINHTTP_AUTO_DETECT_TYPE_DNS_A, &ppwstrAutoConfigUrl)) {
+        lastError = GetLastError();
+        printf("LastError:%#lx.\n", lastError); // LastError:0x2f94.
     }
 
     if (ppwstrAutoConfigUrl) {
         GlobalFree(ppwstrAutoConfigUrl);
     }
 
-    ret = WinHttpDetectAutoProxyConfigUrl(WINHTTP_AUTO_DETECT_TYPE_DNS_A, &ppwstrAutoConfigUrl);
-    if (!ret) {
-        printf("LastError:%#lx.\n", GetLastError()); // LastError:0x2f94.
-    }
-
-    if (ppwstrAutoConfigUrl) {
-        GlobalFree(ppwstrAutoConfigUrl);
-    }
+    return lastError;
 }
 
 
@@ -375,7 +390,7 @@ void WINAPI DetectAutoProxyConfigUrl()
 
 EXTERN_C
 DLLEXPORT
-void WINAPI GetProxyForUrl()
+DWORD WINAPI GetProxyForUrl()
 /*
 The following example code uses autoproxy.
 It sets up an HTTP GET request by first creating the WinHTTP session connect and request handles.
@@ -392,6 +407,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
     WINHTTP_AUTOPROXY_OPTIONS AutoProxyOptions{};
     WINHTTP_PROXY_INFO ProxyInfo{};
     DWORD cbProxyInfoSize = sizeof(ProxyInfo);
+    DWORD lastError = ERROR_SUCCESS;
 
     ZeroMemory(&AutoProxyOptions, sizeof(AutoProxyOptions));
     ZeroMemory(&ProxyInfo, sizeof(ProxyInfo));
@@ -399,18 +415,15 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
     do {
         // Create the WinHTTP session.
         hHttpSession = WinHttpOpen(L"WinHTTP AutoProxy Sample/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-        if (!hHttpSession)
-            break; // Exit if WinHttpOpen failed.
+        if (!hHttpSession) { lastError = GetLastError(); break; }
 
         // Create the WinHTTP connect handle.
         hConnect = WinHttpConnect(hHttpSession, L"www.microsoft.com", INTERNET_DEFAULT_HTTP_PORT, 0);
-        if (!hConnect)
-            break; // Exit if WinHttpConnect failed.
+        if (!hConnect) { lastError = GetLastError(); break; }
 
         // Create the HTTP request handle.
         hRequest = WinHttpOpenRequest(hConnect, L"GET", L"ms.htm", L"HTTP/1.1", WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
-        if (!hRequest)
-            break; // Exit if WinHttpOpenRequest failed.
+        if (!hRequest) { lastError = GetLastError(); break; }
 
         // Set up the autoproxy call.
 
@@ -431,7 +444,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
         if (WinHttpGetProxyForUrl(hHttpSession, L"https://www.microsoft.com/ms.htm", &AutoProxyOptions, &ProxyInfo)) {
             // A proxy configuration was found, set it on the request handle.
             if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_PROXY, &ProxyInfo, cbProxyInfoSize)) {
-                break; // Exit if setting the proxy info failed.
+                lastError = GetLastError(); break;
             }
         } else {
             printf("LastError:%#x.\n", GetLastError()); //无论开启自动检测与否，都返回ERROR_WINHTTP_AUTODETECTION_FAILED
@@ -442,12 +455,13 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
 
         // Send the request.
         if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0)) {
-            break; // Exit if WinHttpSendRequest failed.
+            lastError = GetLastError(); break;
         }
 
         // Wait for the response.
-        if (!WinHttpReceiveResponse(hRequest, nullptr))
-            break;
+        if (!WinHttpReceiveResponse(hRequest, nullptr)) {
+            lastError = GetLastError(); break;
+        }
 
         // A response has been received, then process it.
         // (omitted)
@@ -469,6 +483,8 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
 
     if (hHttpSession != nullptr)
         WinHttpCloseHandle(hHttpSession);
+
+    return lastError;
 }
 
 
@@ -477,7 +493,7 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api
 
 EXTERN_C
 DLLEXPORT
-void WINAPI Sessions()
+DWORD WINAPI Sessions()
 /*
 * WinHTTP Sessions Overview
 *
@@ -546,6 +562,8 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
     if (!bResults)
         printf("Error %lu has occurred.\n", GetLastError());
 
+    DWORD sessionLastError = bResults ? ERROR_SUCCESS : GetLastError();
+
     // Close any open handles.
     if (hRequest)
         WinHttpCloseHandle(hRequest);
@@ -553,6 +571,8 @@ https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-sessions-overview
         WinHttpCloseHandle(hConnect);
     if (hSession)
         WinHttpCloseHandle(hSession);
+
+    return sessionLastError;
 }
 
 

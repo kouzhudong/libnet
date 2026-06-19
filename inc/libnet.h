@@ -6,9 +6,10 @@
 
 #pragma once
 
-#pragma warning(disable:28251)
-#pragma warning(disable:28301)
-#pragma warning(disable:4819) //该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+#pragma warning(push)
+#pragma warning(disable:28251) // SAL inconsistency between declaration and definition — definition is in DLL, no SAL there
+#pragma warning(disable:28301) // SAL inconsistency between declaration and definition — same reason
+#pragma warning(disable:4819)  // file contains characters not representable in current code page — file is intentionally UTF-8 for Rust bindgen
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,6 +17,18 @@
 
 
 //#define _WIN32_WINNT 0x0501
+
+#pragma warning(pop)
+
+// ---------------------------------------------------------------------------
+// LIBNET_API: dllexport when building the DLL, dllimport for consumers.
+// Define LIBNET_EXPORTS before including this header only in the DLL project.
+// ---------------------------------------------------------------------------
+#ifdef LIBNET_EXPORTS
+#define LIBNET_API __declspec(dllexport)
+#else
+#define LIBNET_API __declspec(dllimport)
+#endif
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
@@ -44,10 +57,10 @@
 
 
 typedef struct tsd_hdr {
-    unsigned long  saddr;//Source Address
-    unsigned long  daddr;//Destination Address 
+    ULONG          saddr;//Source Address
+    ULONG          daddr;//Destination Address
     char           mbz;  //zero
-    char           ptcl; //PTCL 
+    char           ptcl; //PTCL
     unsigned short tcpl; //TCP Length
 }PSD_HEADER;
 
@@ -134,111 +147,92 @@ typedef struct raw6_tcp {
 EXTERN_C_START
 
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI GetMacByIPv4Test(int argc, char ** argv);
 
-__declspec(dllimport) int WINAPI GetMacByIPv4(IPAddr DestIp, PDL_EUI48 MacAddr);
+LIBNET_API int WINAPI GetMacByIPv4(IPAddr DestIp, PDL_EUI48 MacAddr);
 
-__declspec(dllimport)
-int WINAPI EnumUnicastIpAddressTable();
+LIBNET_API int WINAPI EnumUnicastIpAddressTable();
 
-__declspec(dllimport)
-int WINAPI EnumAnycastIpAddress();
+LIBNET_API int WINAPI EnumAnycastIpAddress();
 
-__declspec(dllimport)
-int WINAPI EnumMulticastIpAddress();
+LIBNET_API int WINAPI EnumMulticastIpAddress();
 
-__declspec(dllimport)
-int WINAPI EnumStackInterface();
+LIBNET_API int WINAPI EnumStackInterface();
 
-__declspec(dllimport)
-int WINAPI EnumInvertedStackInterface();
+LIBNET_API int WINAPI EnumInvertedStackInterface();
 
-__declspec(dllimport)
-int WINAPI EnumIpInterface();
+LIBNET_API int WINAPI EnumIpInterface();
 
-__declspec(dllimport)
-int WINAPI EnumIpPath();
+LIBNET_API int WINAPI EnumIpPath();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI SendIcmpEcho(int argc, char ** argv);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI SendIcmpEcho2(int argc, char ** argv);
 
-__declspec(dllimport)
-void WINAPI Icmp6Test();
+LIBNET_API DWORD WINAPI Icmp6Test();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI GetNetworkParamsTest();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-__declspec(dllimport)
-void WINAPI DnsQueryTest(int argc, char * argv[]);
+LIBNET_API DWORD WINAPI DnsQueryTest(int argc, char * argv[]);
 
-__declspec(dllimport)
-void WINAPI ModifyRecords(int argc, wchar_t * argv[]);
+LIBNET_API DWORD WINAPI ModifyRecords(int argc, wchar_t * argv[]);
 
-__declspec(dllimport)
+LIBNET_API
 VOID WINAPI PrintDnsRecordList(PDNS_RECORD DnsRecord);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-__declspec(dllimport)
-void WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask);
+LIBNET_API DWORD WINAPI EnumIPv4ByMask(_In_z_ const char * ipv4, _In_z_ const char * mask);
 
-__declspec(dllimport)
-void WINAPI EnumIPv4ByMasks(const char * ipv4, BYTE mask);
+LIBNET_API DWORD WINAPI EnumIPv4ByMasks(_In_z_ const char * ipv4, _In_ BYTE mask);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI AddIPv4Address(int argc, char ** argv);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI SetStaticIPv4(PCWSTR Ipv4, PCWSTR SubnetMask);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-__declspec(dllimport)
-void WINAPI HttpReadData();
+LIBNET_API DWORD WINAPI HttpReadData();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI IWinHttpRequestSend();
 
-__declspec(dllimport)
-void WINAPI GetDefaultProxyConfiguration();
+LIBNET_API DWORD WINAPI GetDefaultProxyConfiguration();
 
-__declspec(dllimport)
-void WINAPI GetIEProxyConfigForCurrentUser();
+LIBNET_API DWORD WINAPI GetIEProxyConfigForCurrentUser();
 
-__declspec(dllimport)
-void WINAPI DetectAutoProxyConfigUrl();
+LIBNET_API DWORD WINAPI DetectAutoProxyConfigUrl();
 
-__declspec(dllimport)
-void WINAPI GetProxyForUrl();
+LIBNET_API DWORD WINAPI GetProxyForUrl();
 
-__declspec(dllimport)
-void WINAPI Sessions();
+LIBNET_API DWORD WINAPI Sessions();
 
-//__declspec(dllimport)
+//LIBNET_API
 //DWORD WINAPI RegisterProxyChangeNotification();
 
-//__declspec(dllimport)
+//LIBNET_API
 //DWORD WINAPI UnregisterProxyChangeNotification();
 
-__declspec(dllimport)
-void WINAPI SetDefaultProxyConfiguration();
+LIBNET_API DWORD WINAPI SetDefaultProxyConfiguration();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI SetProxy();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI WriteProxySettings();
 
 
@@ -246,25 +240,24 @@ int WINAPI WriteProxySettings();
 //TCP相关的。
 
 
-__declspec(dllimport)
-void WINAPI EnumTcpTable();
+LIBNET_API int WINAPI EnumTcpTable();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumTcpTable2();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumTcp6Table();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumTcp6Table2();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumTcpStatistics();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumExtendedTcpTable(_In_ ULONG ulAf, _In_ TCP_TABLE_CLASS TableClass);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI RunEstats();
 
 
@@ -272,67 +265,65 @@ int WINAPI RunEstats();
 //UDP相关的。
 
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumUdpTable();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumUdp6Table();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumExtendedUdpTable4();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumExtendedUdpTable6();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-__declspec(dllimport)
-void WINAPI EnumEntityArray();
+LIBNET_API int WINAPI EnumEntityArray();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI TestPersistentTcpPortReservation(int argc, WCHAR ** argv);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI GetPortReservation(int argc, WCHAR ** argv);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI TestLookupPersistentTcpPortReservation(int argc, WCHAR ** argv);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI Exclusiveaddruse(int argc, wchar_t ** argv);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumAdaptersInfo();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumInterfaceInfo();
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
 
-__declspec(dllimport) int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac);
+LIBNET_API int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac);
 
-__declspec(dllimport) int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac);
+LIBNET_API int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumIpNetTable();
 
-__declspec(dllimport)
+LIBNET_API
 BOOL WINAPI GetIPv4ByMac(_In_ PDL_EUI48 Mac, _Inout_ PIN_ADDR IPv4);
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumIpNetTable2(_In_ ADDRESS_FAMILY Family);
 
-__declspec(dllimport)
-void WINAPI ResolveIpNetEntry2Test(const char * ip);
+LIBNET_API DWORD WINAPI ResolveIpNetEntry2Test(_In_z_ const char * ip);
 
-__declspec(dllimport) void WINAPI GetMacByIPv6(const char * IPv6, PDL_EUI48 Mac);
+LIBNET_API DWORD WINAPI GetMacByIPv6(_In_z_ const char * IPv6, _Out_ PDL_EUI48 Mac);
 
-__declspec(dllimport) BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac); // c没有bool.
+LIBNET_API BOOL WINAPI GetMacByGatewayIPv6(const char * ipv6, PDL_EUI48 mac); // c没有bool.
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 
 
@@ -340,76 +331,86 @@ int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 //RAW相关的。
 
 
-__declspec(dllimport) void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW_TCP buffer);
+LIBNET_API void WINAPI PacketizeAck4(_In_ PIPV4_HEADER IPv4Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_ PRAW_TCP buffer);
 
-__declspec(dllimport) void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen);
+LIBNET_API void WINAPI calculation_icmpv6_echo_request_checksum(_Out_writes_bytes_(OptLen) PBYTE buffer, _In_ int OptLen);
 
-__declspec(dllimport) void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW6_TCP buffer);
+LIBNET_API void WINAPI PacketizeAck6(_In_ PIPV6_HEADER IPv6Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_ PRAW6_TCP buffer);
 
-__declspec(dllimport) void WINAPI PacketizeSyn4(IN PDL_EUI48 SrcMac,  
-                          IN PDL_EUI48 DesMac,
-                          IN PIN_ADDR SourceAddress,
-                          IN PIN_ADDR DestinationAddress,
-                          IN UINT16 th_sport, 
-                          IN UINT16 th_dport, 
-                          OUT PBYTE buffer);
+LIBNET_API void WINAPI PacketizeSyn4(_In_ PDL_EUI48 SrcMac,
+                                     _In_ PDL_EUI48 DesMac,
+                                     _In_ PIN_ADDR SourceAddress,
+                                     _In_ PIN_ADDR DestinationAddress,
+                                     _In_ UINT16 th_sport,
+                                     _In_ UINT16 th_dport,
+                                     _Out_ PBYTE buffer);
 
-__declspec(dllimport) void WINAPI PacketizeSyn6(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac,
-                          IN PIN6_ADDR SourceAddress,
-                          IN PIN6_ADDR DestinationAddress,
-                          IN UINT16 th_sport, 
-                          IN UINT16 th_dport, 
-                          OUT PBYTE buffer);
+LIBNET_API void WINAPI PacketizeSyn6(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac,
+                                     _In_ PIN6_ADDR SourceAddress,
+                                     _In_ PIN6_ADDR DestinationAddress,
+                                     _In_ UINT16 th_sport,
+                                     _In_ UINT16 th_dport,
+                                     _Out_ PBYTE buffer);
 
-__declspec(dllimport) void WINAPI packetize_icmpv4_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress,
-                                                                OUT PBYTE buffer);
+LIBNET_API void WINAPI packetize_icmpv4_echo_request(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac,
+                                                     _In_ PIN_ADDR SourceAddress, _In_ PIN_ADDR DestinationAddress,
+                                                     _Out_ PBYTE buffer);
 
-__declspec(dllimport) 
-void WINAPI InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header);
+LIBNET_API void WINAPI InitIpv6Header(_In_ PIN6_ADDR SourceAddress, _In_ PIN6_ADDR DestinationAddress,
+                                      _In_ UINT8 NextHeader, _In_ UINT16 OptLen,
+                                      _Out_ PIPV6_HEADER IPv6Header);
 
-__declspec(dllimport) void WINAPI packetize_icmpv6_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress,
-                                                                OUT PBYTE buffer);
+LIBNET_API void WINAPI packetize_icmpv6_echo_request(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac,
+                                                     _In_ PIN6_ADDR SourceAddress, _In_ PIN6_ADDR DestinationAddress,
+                                                     _Out_ PBYTE buffer);
 
-__declspec(dllimport) USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size);
+LIBNET_API USHORT WINAPI calc_udp4_sum(_In_reads_(size) USHORT * buffer, _In_ int size);
 
-__declspec(dllimport) USHORT WINAPI calc_udp6_sum(USHORT * buffer, int size);
+LIBNET_API USHORT WINAPI calc_udp6_sum(_In_reads_(size) USHORT * buffer, _In_ int size);
 
-__declspec(dllimport) USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size);
+LIBNET_API USHORT WINAPI calc_icmp4_sum(_In_ PICMP_HEADER icmp, _In_ int size);
 
-__declspec(dllimport) USHORT WINAPI checksum(USHORT * buffer, int size);
+LIBNET_API USHORT WINAPI checksum(_In_reads_(size) USHORT * buffer, _In_ int size);
 
-__declspec(dllimport) void WINAPI InitEthernetHeader(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, IN UINT16 Type, OUT PETHERNET_HEADER eth_hdr);
+LIBNET_API void WINAPI InitEthernetHeader(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _In_ UINT16 Type, _Out_ PETHERNET_HEADER eth_hdr);
 
-__declspec(dllimport) void WINAPI InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAddress, IN UINT8 Protocol, IN UINT16 TotalLength,
-                                                 OUT PIPV4_HEADER IPv4Header);
+LIBNET_API void WINAPI InitIpv4Header(_In_ PIN_ADDR SourceAddress, _In_ PIN_ADDR DestinationAddress,
+                                      _In_ UINT8 Protocol, _In_ UINT16 TotalLength,
+                                      _Out_ PIPV4_HEADER IPv4Header);
 
-__declspec(dllimport) PVOID WINAPI PacketizeUdp4(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN_ADDR SourceAddress, PIN_ADDR DestinationAddress, WORD SourcePort,
-                                                 WORD DestinationPort,
-                                                 PBYTE Data, WORD DataLen);
+LIBNET_API _Ret_writes_maybenull_z_(1) PVOID WINAPI PacketizeUdp4(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac,
+                                                                   _In_ PIN_ADDR SourceAddress, _In_ PIN_ADDR DestinationAddress,
+                                                                   _In_ WORD SourcePort, _In_ WORD DestinationPort,
+                                                                   _In_reads_bytes_(DataLen) PBYTE Data, _In_ WORD DataLen);
 
-__declspec(dllimport) PVOID WINAPI PacketizeUdp6(PDL_EUI48 SrcMac, PDL_EUI48 DesMac, PIN6_ADDR SourceAddress, PIN6_ADDR DestinationAddress, WORD SourcePort,
-                                                 WORD DestinationPort, PBYTE Data, WORD DataLen);
+LIBNET_API _Ret_writes_maybenull_z_(1) PVOID WINAPI PacketizeUdp6(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac,
+                                                                   _In_ PIN6_ADDR SourceAddress, _In_ PIN6_ADDR DestinationAddress,
+                                                                   _In_ WORD SourcePort, _In_ WORD DestinationPort,
+                                                                   _In_reads_bytes_(DataLen) PBYTE Data, _In_ WORD DataLen);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //防火墙相关的。
 
 
-__declspec(dllimport)
+LIBNET_API
 int WINAPI GettingFirewallSettings();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-__declspec(dllimport) int WINAPI getaddrinfo_test(int argc, char ** argv);
-__declspec(dllimport) int WINAPI GetAddrInfoW_test(int argc, wchar_t ** argv);
+LIBNET_API int WINAPI getaddrinfo_test(int argc, char ** argv);
+LIBNET_API int WINAPI GetAddrInfoW_test(int argc, wchar_t ** argv);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-__declspec(dllimport) char * WINAPI GetPublicIPv4();
+// Returns a heap-allocated null-terminated ASCII string containing the public IPv4 address.
+// Caller must free the returned pointer with HeapFree(GetProcessHeap(), 0, ptr).
+// Returns NULL on failure.
+LIBNET_API _Ret_maybenull_ _Post_writable_byte_size_(16) char * WINAPI GetPublicIPv4();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

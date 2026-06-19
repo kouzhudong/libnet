@@ -24,7 +24,7 @@ cd rust && cargo build --verbose
 ```
 Rust 构建依赖 libnet.lib 已存在于 `x64\Debug\`，需先构建 C++ 项目。
 
-CI 在 GitHub Actions 中运行：`github/workflows/msbuild.yml`（注意：不是 `.github/`）。
+CI 在 GitHub Actions 中运行：`.github/workflows/msbuild.yml`。构建矩阵覆盖 Debug/Release × x64/x86，Rust 绑定仅在 Debug x64 下构建。
 
 ## Solution Structure
 

@@ -275,27 +275,30 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getipnet
 
 EXTERN_C
 DLLEXPORT
-void WINAPI GetMacByIPv6(const char * IPv6, PDL_EUI48 Mac)
+DWORD WINAPI GetMacByIPv6(const char * IPv6, PDL_EUI48 Mac)
 {
     RtlZeroMemory(Mac, sizeof(DL_EUI48));
     MIB_IPNET_ROW2 Row{};
 
     Row.Address.si_family = AF_INET6;
-    InetPtonA(AF_INET6, IPv6, &Row.Address.Ipv6.sin6_addr);
+    if (!InetPtonA(AF_INET6, IPv6, &Row.Address.Ipv6.sin6_addr)) {
+        return ERROR_INVALID_PARAMETER;
+    }
 
     NTSTATUS status = ResolveIpNetEntry2(&Row, nullptr);
     if (NO_ERROR != status) {
         printf("%ld\n", status);
-        return;
+        return RtlNtStatusToDosError(status);
     }
 
     RtlCopyMemory(Mac, Row.PhysicalAddress, Row.PhysicalAddressLength);
+    return ERROR_SUCCESS;
 }
 
 
 EXTERN_C
 DLLEXPORT
-void WINAPI ResolveIpNetEntry2Test(const char * ip)
+DWORD WINAPI ResolveIpNetEntry2Test(const char * ip)
 /*
 功能：获取IP地址的一些信息（主要是MAC）。
 
@@ -347,7 +350,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-resolvei
     NTSTATUS status = ResolveIpNetEntry2(&Row, nullptr);
     if (NO_ERROR != status) {
         printf("%ld\n", status);
-        return;
+        return RtlNtStatusToDosError(status);
     }
 
     for (ULONG j = 0; j < Row.PhysicalAddressLength; j++) {
@@ -356,6 +359,8 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-resolvei
         else
             printf("%.2X-", (int)Row.PhysicalAddress[j]);
     }
+
+    return ERROR_SUCCESS;
 }
 
 
@@ -1136,7 +1141,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getunica
 
 EXTERN_C
 DLLEXPORT
-void WINAPI Icmp6Test()
+DWORD WINAPI Icmp6Test()
 /*
 功能：演示Icmp6CreateFile+Icmp6SendEcho2+Icmp6ParseReplies的用法。
 
@@ -1159,9 +1164,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
 {
     HANDLE hIcmpFile = Icmp6CreateFile();
     if (hIcmpFile == INVALID_HANDLE_VALUE) {
+        DWORD err = GetLastError();
         printf("\tUnable to open handle.\n");
-        printf("Icmp6Createfile returned error: %lu\n", GetLastError());
-        return;
+        printf("Icmp6Createfile returned error: %lu\n", err);
+        return err;
     }
 
     sockaddr_in6 SourceAddress{};
@@ -1210,7 +1216,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
     ReplyBuffer = (PVOID)MALLOC(ReplySize);
     if (ReplyBuffer == nullptr) {
         IcmpCloseHandle(hIcmpFile);
-        return;
+        return ERROR_NOT_ENOUGH_MEMORY;
     }
 
     DWORD ret = Icmp6SendEcho2(hIcmpFile,
@@ -1226,25 +1232,30 @@ https://docs.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6parse
                                ReplySize,
                                Timeout);
     if (0 == ret) {
-        printf("LastError:%lu\n", GetLastError()); // ERROR_INVALID_PARAMETER
+        DWORD err = GetLastError();
+        printf("LastError:%lu\n", err);
         IcmpCloseHandle(hIcmpFile);
-        return;
+        FREE(ReplyBuffer);
+        return err;
     }
 
     // Icmp6ParseReplies 的 SAL 前置条件在此为误报：ReplySize 已含一个 ICMPV6_ECHO_REPLY 头加 8 字节，缓冲区足够。
 #pragma warning(suppress : 28020)
     ret = Icmp6ParseReplies(ReplyBuffer, ReplySize);
     if (0 == ret) {
-        printf("LastError:%lu\n", GetLastError());
+        DWORD err = GetLastError();
+        printf("LastError:%lu\n", err);
         IcmpCloseHandle(hIcmpFile);
-        return;
+        FREE(ReplyBuffer);
+        return err;
     }
 
     PICMPV6_ECHO_REPLY Reply = static_cast<PICMPV6_ECHO_REPLY>(ReplyBuffer);
     printf("Status:%lu\n", Reply->Status);
 
-    HeapFree(GetProcessHeap(), 0, ReplyBuffer);
+    FREE(ReplyBuffer);
     IcmpCloseHandle(hIcmpFile);
+    return ERROR_SUCCESS;
 }
 
 

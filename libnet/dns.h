@@ -10,10 +10,10 @@ EXTERN_C_START
 
 
 DLLEXPORT
-void WINAPI DnsQueryTest(int argc, char * argv[]);
+DWORD WINAPI DnsQueryTest(int argc, char * argv[]);
 
 DLLEXPORT
-void WINAPI ModifyRecords(int argc, wchar_t * argv[]);
+DWORD WINAPI ModifyRecords(int argc, wchar_t * argv[]);
 
 DLLEXPORT
 VOID WINAPI PrintDnsRecordList(PDNS_RECORD DnsRecord);

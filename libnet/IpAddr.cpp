@@ -240,7 +240,7 @@ int _cdecl special_ip()
 
 EXTERN_C
 DLLEXPORT
-void WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask)
+DWORD WINAPI EnumIPv4ByMask(const char * ipv4, const char * mask)
 /*
 功能：枚举指定网络的IPv4(示例IPv4和子网掩码).
 
@@ -250,10 +250,14 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
 */
 {
     IN_ADDR IPv4;
-    InetPtonA(AF_INET, ipv4, &IPv4);
+    if (!InetPtonA(AF_INET, ipv4, &IPv4)) {
+        return ERROR_INVALID_PARAMETER;
+    }
 
     IN_ADDR Mask;
-    InetPtonA(AF_INET, mask, &Mask);
+    if (!InetPtonA(AF_INET, mask, &Mask)) {
+        return ERROR_INVALID_PARAMETER;
+    }
 
     ULONG z = ntohl(Mask.S_un.S_addr);
 
@@ -296,12 +300,14 @@ EnumIPv4ByMask("172.31.96.1", "255.255.240.0");
 
         printf("%ls\n", buf);
     }
+
+    return ERROR_SUCCESS;
 }
 
 
 EXTERN_C
 DLLEXPORT
-void WINAPI EnumIPv4ByMasks(const char * ipv4, BYTE mask)
+DWORD WINAPI EnumIPv4ByMasks(const char * ipv4, BYTE mask)
 /*
 功能：枚举指定网络的IPv4(示例IPv4和子网掩码).
 
@@ -315,11 +321,13 @@ EnumIPv4ByMasks("1.2.3.5", 32);
 */
 {
     if (mask > 32) {
-        return;
+        return ERROR_INVALID_PARAMETER;
     }
 
     IN_ADDR IPv4;
-    InetPtonA(AF_INET, ipv4, &IPv4);
+    if (!InetPtonA(AF_INET, ipv4, &IPv4)) {
+        return ERROR_INVALID_PARAMETER;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     /*
@@ -375,6 +383,8 @@ EnumIPv4ByMasks("1.2.3.5", 32);
 
         printf("%ls\n", buf);
     }
+
+    return ERROR_SUCCESS;
 }
 
 

@@ -8,7 +8,6 @@
 
 void init()
 {
-    setlocale(LC_CTYPE, ".936");
     InitializeCriticalSection(&g_log_cs);
 }
 

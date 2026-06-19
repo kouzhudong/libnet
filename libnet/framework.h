@@ -1,8 +1,9 @@
 #pragma once
 
-#pragma warning(disable:28251)
-#pragma warning(disable:28301)
-#pragma warning(disable:26812) //相比于 "enum"，首选 "enum class" (Enum.3)
+#pragma warning(push)
+#pragma warning(disable:28251) // SAL inconsistency — definitions in other TUs lack SAL
+#pragma warning(disable:28301) // SAL inconsistency — same reason
+#pragma warning(disable:26812) // prefer enum class — legacy C-style enums used for Windows API compatibility
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,8 +27,6 @@
 #include <Winsock2.h>
 #include <windows.h>
 #include <strsafe.h>
-#include <assert.h>
-#include <crtdbg.h>
 #include <tchar.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -198,5 +197,6 @@
 #include <map>
 #include <set>
 
+#pragma warning(pop)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

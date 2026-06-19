@@ -29,7 +29,7 @@ void UsageA(char * progname)
 
 EXTERN_C
 DLLEXPORT
-void WINAPI DnsQueryTest(int argc, char * argv[])
+DWORD WINAPI DnsQueryTest(int argc, char * argv[])
 /*Windows-classic-samples\Samples\Win7Samples\netds\dns\dnsquery\DNSQuery.Cpp
    FILE:          Dnsquery.cpp
    DESCRIPTION:   This sample illustrates the use of DnsQuery() function to send query to a DNS server to resolve the host name to an IP address and vice-versa.
@@ -77,7 +77,7 @@ SUPPORTED PLATFORMS:
                         wType = DNS_TYPE_PTR;
                     else {
                         UsageA(argv[0]);
-                        return;
+                        return ERROR_INVALID_PARAMETER;
                     }
 
                     i++;
@@ -86,7 +86,7 @@ SUPPORTED PLATFORMS:
                     pSrvList = (PIP4_ARRAY)LocalAlloc(LPTR, sizeof(IP4_ARRAY));
                     if (!pSrvList) {
                         printf("Memory allocation failed \n");
-                        return;
+                        return ERROR_NOT_ENOUGH_MEMORY;
                     }
 
                     if (argv[++i]) {
@@ -98,7 +98,7 @@ SUPPORTED PLATFORMS:
                             printf("Invalid DNS server IP address \n");
                             UsageA(argv[0]);
                             LocalFree(pSrvList);
-                            return;
+                            return ERROR_INVALID_PARAMETER;
                         }
                         break;
                     }
@@ -107,24 +107,24 @@ SUPPORTED PLATFORMS:
                 default:
                     UsageA(argv[0]);
                     LocalFree(pSrvList);
-                    return;
+                    return ERROR_INVALID_PARAMETER;
                 }
             } else {
                 UsageA(argv[0]);
                 LocalFree(pSrvList);
-                return;
+                return ERROR_INVALID_PARAMETER;
             }
         }
     } else {
         UsageA(argv[0]);
-        return;
+        return ERROR_INVALID_PARAMETER;
     }
 
     // 未提供 -n 参数时 pOwnerName 为空，DnsQuery_A 要求非空名称。
     if (pOwnerName == nullptr) {
         UsageA(argv[0]);
         LocalFree(pSrvList);
-        return;
+        return ERROR_INVALID_PARAMETER;
     }
 
     // Calling function DnsQuery_A() to query Host or PTR records
@@ -154,6 +154,7 @@ SUPPORTED PLATFORMS:
     }
 
     LocalFree(pSrvList);
+    return (DWORD)status;
 }
 
 
@@ -181,7 +182,7 @@ void UsageW(wchar_t * progname)
 
 EXTERN_C
 DLLEXPORT
-void WINAPI ModifyRecords(int argc, wchar_t * argv[])
+DWORD WINAPI ModifyRecords(int argc, wchar_t * argv[])
 /*
    FILE:          ModifyRecords.cpp
    DESCRIPTION:   This sample illustrates how to add Host Address( A) and CNAME resource records to DNS server using DNSModifyRecordsInSet() API.
@@ -237,7 +238,7 @@ SUPPORTED PLATFORMS:
     pmyDnsRecord = (PDNS_RECORD)LocalAlloc(LPTR, sizeof(DNS_RECORD));
     if (!pmyDnsRecord) {
         printf("Memory allocaltion failed\n");
-        return;
+        return ERROR_NOT_ENOUGH_MEMORY;
     }
 
     if (argc > 8) {
@@ -256,7 +257,7 @@ SUPPORTED PLATFORMS:
                     else {
                         UsageW(argv[0]);
                         LocalFree(pmyDnsRecord);
-                        return;
+                        return ERROR_INVALID_PARAMETER;
                     }
                     i++;
                     break;
@@ -276,7 +277,7 @@ SUPPORTED PLATFORMS:
                             printf("Invalid IP address in A record data \n");
                             UsageW(argv[0]);
                             LocalFree(pmyDnsRecord);
-                            return;
+                            return ERROR_INVALID_PARAMETER;
                         }
                         break;
                     } else {
@@ -290,7 +291,7 @@ SUPPORTED PLATFORMS:
                     if (!pSrvList) {
                         printf("Memory allocation failed \n");
                         LocalFree(pmyDnsRecord);
-                        return;
+                        return ERROR_NOT_ENOUGH_MEMORY;
                     }
                     if (argv[++i]) {
                         wcsncpy_s(DnsServIp, _countof(DnsServIp), argv[i], _TRUNCATE);
@@ -305,7 +306,7 @@ SUPPORTED PLATFORMS:
                             UsageW(argv[0]);
                             LocalFree(pmyDnsRecord);
                             LocalFree(pSrvList);
-                            return;
+                            return ERROR_INVALID_PARAMETER;
                         }
                         break;
                     }
@@ -315,19 +316,19 @@ SUPPORTED PLATFORMS:
                     UsageW(argv[0]);
                     LocalFree(pmyDnsRecord);
                     LocalFree(pSrvList);
-                    return;
+                    return ERROR_INVALID_PARAMETER;
                 }
             } else {
                 UsageW(argv[0]);
                 LocalFree(pmyDnsRecord);
                 LocalFree(pSrvList);
-                return;
+                return ERROR_INVALID_PARAMETER;
             }
         }
     } else {
         UsageW(argv[0]);
         LocalFree(pmyDnsRecord);
-        return;
+        return ERROR_INVALID_PARAMETER;
     }
 
     // Calling function DNSModifyRecordsInSet_A to add Host or CNAME records
@@ -351,6 +352,7 @@ SUPPORTED PLATFORMS:
 
     LocalFree(pmyDnsRecord); // Free the memory allocated for DNS_RECORD structure
     LocalFree(pSrvList);     // Free the memory allocated for IP4_ARRAY structure
+    return ERROR_SUCCESS;
 }
 
 
