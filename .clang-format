@@ -8,6 +8,12 @@ UseTab: Never
 MaxEmptyLinesToKeep: 3
 #SeparateDefinitionBlocks: Leave
 
+#BinPackParameters: false 已经自带这个行为：
+#•	能放进一行 → 全部在一行
+#•	放不下 → 每个参数单独一行并对齐
+AlignAfterOpenBracket: Align
+BinPackParameters: false
+
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
