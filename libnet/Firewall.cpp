@@ -521,12 +521,16 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-enumera
 
         wprintf(L"The number of rules in the Windows Firewall are %ld\n", fwRuleCount);
 
-        pFwRules->get__NewEnum(&pEnumerator); // Iterate through all of the rules in pFwRules
+        hr = pFwRules->get__NewEnum(&pEnumerator); // Iterate through all of the rules in pFwRules
+        if (FAILED(hr)) {
+            wprintf(L"get__NewEnum failed: 0x%08lx\n", hr);
+            break;
+        }
         if (pEnumerator) {
             hr = pEnumerator->QueryInterface(__uuidof(IEnumVARIANT), reinterpret_cast<void **>(&pVariant));
         }
 
-        while (SUCCEEDED(hr) && hr != S_FALSE) {
+        while (pVariant != nullptr && SUCCEEDED(hr) && hr != S_FALSE) {
             var.Clear();
             hr = pVariant->Next(1, &var, &cFetched);
             if (S_FALSE != hr) {
@@ -1911,6 +1915,10 @@ https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ics/c-registe
         // Take Firewall Category Ownership
         categories[0] = NET_FW_RULE_CATEGORY_FIREWALL;
         result = ArrayOfLongsToVariant(numberOfCategories, categories, &varCategories);
+        if (result != NO_ERROR) {
+            printf("ArrayOfLongsToVariant failed: %lu\n", result);
+            break;
+        }
 
         //  For localization purposes, the display name can be provided as an indirect string. The indirect strings can be defined in an rc file.
         //  Examples of the indirect string definition in the rc file -
@@ -2648,7 +2656,7 @@ HRESULT WindowsFirewallAddApp(IN INetFwProfile * fwProfile, IN const wchar_t * f
             }
 
             fwBstrName = SysAllocString(fwName); // Allocate a BSTR for the application friendly name.
-            if (SysStringLen(fwBstrName) == 0) {
+            if (fwBstrName == nullptr) {
                 hr = E_OUTOFMEMORY;
                 printf("SysAllocString failed: 0x%08lx\n", hr);
                 break;
@@ -2796,7 +2804,7 @@ HRESULT WindowsFirewallPortAdd(IN INetFwProfile * fwProfile, IN LONG portNumber,
             }
 
             fwBstrName = SysAllocString(name); // Allocate a BSTR for the friendly name of the port.
-            if (SysStringLen(fwBstrName) == 0) {
+            if (fwBstrName == nullptr) {
                 hr = E_OUTOFMEMORY;
                 printf("SysAllocString failed: 0x%08lx\n", hr);
                 break;
