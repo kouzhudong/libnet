@@ -25,16 +25,18 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa366309(v=vs.85).aspx
 
     // Before calling AddIPAddress we use GetIpAddrTable to get an adapter to which we can add the IP.
     PMIB_IPADDRTABLE pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(sizeof(MIB_IPADDRTABLE));
-    if (pIPAddrTable) {
-        // Make an initial call to GetIpAddrTable to get the necessary size into the dwSize variable
-        if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) {
-            FREE(pIPAddrTable);
-            pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(dwSize);
-        }
+    if (pIPAddrTable == nullptr) {
+        printf("Memory allocation failed for GetIpAddrTable\n");
+        return 1;
+    }
 
+    // Make an initial call to GetIpAddrTable to get the necessary size into the dwSize variable
+    if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) {
+        FREE(pIPAddrTable);
+        pIPAddrTable = (MIB_IPADDRTABLE *)MALLOC(dwSize);
         if (pIPAddrTable == nullptr) {
             printf("Memory allocation failed for GetIpAddrTable\n");
-            return (1);
+            return 1;
         }
     }
 
@@ -123,7 +125,7 @@ https://docs.microsoft.com/en-us/windows/win32/iphlp/using-the-address-resolutio
     for (DWORD i = 0; i < IpNetTable->dwNumEntries; i++) {
         printf("Index: %02u\t", IpNetTable->table[i].dwIndex);
 
-        in_addr in;
+        in_addr in{};
         in.S_un.S_addr = IpNetTable->table[i].dwAddr;
         char v4Str[INET_ADDRSTRLEN]{};
         inet_ntop(AF_INET, &in, v4Str, sizeof(v4Str));
@@ -499,7 +501,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
 微软没有例子，这个是自己写的。
 */
 {
-    PMIB_IPFORWARD_TABLE2 pIpForwardTable;
+    PMIB_IPFORWARD_TABLE2 pIpForwardTable = nullptr;
     if (GetIpForwardTable2(AF_UNSPEC, &pIpForwardTable) != NO_ERROR) {
         printf("\tGetIpForwardTable failed.\n");
         return 1;
@@ -507,7 +509,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getipfor
 
     printf("Number of entries: %d\n", (int)pIpForwardTable->NumEntries);
 
-    for (ULONG i = 0; i < (int)pIpForwardTable->NumEntries; i++) {
+    for (ULONG i = 0; i < pIpForwardTable->NumEntries; i++) {
     }
 
     FreeMibTable(pIpForwardTable);
@@ -616,7 +618,7 @@ int WINAPI EnumIfTable2()
 微软没有例子，这个是自己写的。
 */
 {
-    PMIB_IF_TABLE2 table;
+    PMIB_IF_TABLE2 table = nullptr;
     if (GetIfTable2(&table) != ERROR_SUCCESS) {
 
         return GetLastError();
@@ -658,7 +660,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getiftab
 此文是自己编写，微软没有例子。
 */
 {
-    PMIB_IF_TABLE2 table;
+    PMIB_IF_TABLE2 table = nullptr;
     if (GetIfTable2Ex(MibIfTableNormal, &table) != ERROR_SUCCESS) {
 
         return GetLastError();
@@ -1542,7 +1544,7 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/netioapi/nf-netioapi-getipin
             printf("IEEE 1394 (Firewire)\n");
             break;
         default:
-            printf("Unknown: %Id\n", pipTable->Table[i].InterfaceLuid.Info.IfType);
+            printf("Unknown: %llu\n", pipTable->Table[i].InterfaceLuid.Info.IfType);
             break;
         }
         printf("Interface Index[%d]:\t\t %lu\n", i, pipTable->Table[i].InterfaceIndex);
