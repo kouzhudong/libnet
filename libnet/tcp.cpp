@@ -90,7 +90,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
     }
 
     // Make an initial call to GetTcpTable2 to get the necessary size into the ulSize variable
-    ULONG ulSize = sizeof(MIB_TCPTABLE);
+    ULONG ulSize = sizeof(MIB_TCPTABLE2);
     DWORD dwRetVal = GetTcpTable2(pTcpTable, &ulSize, TRUE);
     if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
         FREE(pTcpTable);
@@ -130,6 +130,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcpta
             if (hProcess) {
                 if (4 == pTcpTable->table[i].dwOwningPid) {
                     lstrcpyA(szModName, "System");
+                    printf("\tTCP[%d] Owning FullProcessImageName: %s\n", i, szModName);
                 } else {
                     BOOL B = QueryFullProcessImageNameA(hProcess, 0, szModName, &Size);
                     if (!B) {
@@ -278,7 +279,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-gettcp6t
                 continue;
             }
 
-            wchar_t ipstringbuffer[INET6_ADDRSTRLEN];
+            wchar_t ipstringbuffer[INET6_ADDRSTRLEN]{};
             if (InetNtop(AF_INET6, &pTcpTable->table[i].LocalAddr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
                 wprintf(L"  InetNtop function failed for local IPv6 address\n");
             else
@@ -539,15 +540,19 @@ void DumpModuleExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_MODULE pTcpTable)
         printf("\n\tTCP[%lu] State: %lu - ", i, pTcpTable->table[i].dwState);
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
-        InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr));
-        printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
+        if (InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr)) == nullptr)
+            printf("\tTCP[%lu] Local Addr: (InetNtopA failed)\n", i);
+        else
+            printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
         printf("\tTCP[%lu] LocalScopeId: %lu \n", i, pTcpTable->table[i].dwLocalScopeId);
 
         printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
-        InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr));
-        printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
+        if (InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr)) == nullptr)
+            printf("\tTCP[%lu] Remote Addr: (InetNtopA failed)\n", i);
+        else
+            printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
         printf("\tTCP[%lu] RemoteScopeId: %lu \n", i, pTcpTable->table[i].dwRemoteScopeId);
 
@@ -578,15 +583,19 @@ void DumpPidExtendedTcp6Table(_In_ PMIB_TCP6TABLE_OWNER_PID pTcpTable)
         printf("\n\tTCP[%lu] State: %lu - ", i, pTcpTable->table[i].dwState);
         PrintTcpConnectionState(pTcpTable->table[i].dwState);
 
-        InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr));
-        printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
+        if (InetNtopA(AF_INET6, pTcpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr)) == nullptr)
+            printf("\tTCP[%lu] Local Addr: (InetNtopA failed)\n", i);
+        else
+            printf("\tTCP[%lu] Local Addr: %s\n", i, szLocalAddr);
 
         printf("\tTCP[%lu] LocalScopeId: %lu \n", i, pTcpTable->table[i].dwLocalScopeId);
 
         printf("\tTCP[%lu] Local Port: %u \n", i, ntohs(static_cast<u_short>(pTcpTable->table[i].dwLocalPort)));
 
-        InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr));
-        printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
+        if (InetNtopA(AF_INET6, pTcpTable->table[i].ucRemoteAddr, szRemoteAddr, _ARRAYSIZE(szRemoteAddr)) == nullptr)
+            printf("\tTCP[%lu] Remote Addr: (InetNtopA failed)\n", i);
+        else
+            printf("\tTCP[%lu] Remote Addr: %s\n", i, szRemoteAddr);
 
         printf("\tTCP[%lu] RemoteScopeId: %lu \n", i, pTcpTable->table[i].dwRemoteScopeId);
 
@@ -1339,7 +1348,7 @@ void GetAndOutputEstats(void * row, TCP_ESTATS_TYPE type, bool v6)
         RwEnableCollection = fineRttRw.EnableCollection;
         break;
     default:
-        winStatus = GetConnectionEStats(row, type, nullptr, v6, 0, ros, rosSize, rod, rodSize);
+        winStatus = GetConnectionEStats(row, type, nullptr, 0, v6, ros, rosSize, rod, rodSize);
         break;
     }
 
