@@ -244,11 +244,11 @@ LIBNET_API int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 // RAW相关的。
 
 
-LIBNET_API void WINAPI PacketizeAck4(_In_ PIPV4_HEADER IPv4Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_ PRAW_TCP buffer);
+LIBNET_API void WINAPI PacketizeAck4(_In_ PIPV4_HEADER IPv4Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_writes_bytes_(sizeof(RAW_TCP) + sizeof(TCP_OPT)) PRAW_TCP buffer);
 
-LIBNET_API void WINAPI calculation_icmpv6_echo_request_checksum(_Out_writes_bytes_(OptLen) PBYTE buffer, _In_ int OptLen);
+LIBNET_API void WINAPI calculation_icmpv6_echo_request_checksum(_Inout_updates_bytes_(OptLen) PBYTE buffer, _In_ int OptLen);
 
-LIBNET_API void WINAPI PacketizeAck6(_In_ PIPV6_HEADER IPv6Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_ PRAW6_TCP buffer);
+LIBNET_API void WINAPI PacketizeAck6(_In_ PIPV6_HEADER IPv6Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_writes_bytes_(sizeof(RAW6_TCP) + sizeof(TCP_OPT)) PRAW6_TCP buffer);
 
 LIBNET_API void WINAPI PacketizeSyn4(_In_ PDL_EUI48 SrcMac,
                                      _In_ PDL_EUI48 DesMac,
@@ -275,17 +275,17 @@ InitIpv6Header(_In_ PIN6_ADDR SourceAddress, _In_ PIN6_ADDR DestinationAddress, 
 LIBNET_API void WINAPI
 packetize_icmpv6_echo_request(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _In_ PIN6_ADDR SourceAddress, _In_ PIN6_ADDR DestinationAddress, _Out_ PBYTE buffer);
 
-LIBNET_API USHORT WINAPI calc_udp4_sum(_In_reads_(size) USHORT * buffer, _In_ int size);
-LIBNET_API USHORT WINAPI calc_udp6_sum(_In_reads_(size) USHORT * buffer, _In_ int size);
+LIBNET_API USHORT WINAPI calc_udp4_sum(_In_reads_bytes_(size) USHORT * buffer, _In_ int size);
+LIBNET_API USHORT WINAPI calc_udp6_sum(_In_reads_bytes_(size) USHORT * buffer, _In_ int size);
 LIBNET_API USHORT WINAPI calc_icmp4_sum(_In_ PICMP_HEADER icmp, _In_ int size);
-LIBNET_API USHORT WINAPI checksum(_In_reads_(size) USHORT * buffer, _In_ int size);
+LIBNET_API USHORT WINAPI checksum(_In_reads_bytes_(size) USHORT * buffer, _In_ int size);
 
 LIBNET_API void WINAPI InitEthernetHeader(_In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _In_ UINT16 Type, _Out_ PETHERNET_HEADER eth_hdr);
 
 LIBNET_API void WINAPI
 InitIpv4Header(_In_ PIN_ADDR SourceAddress, _In_ PIN_ADDR DestinationAddress, _In_ UINT8 Protocol, _In_ UINT16 TotalLength, _Out_ PIPV4_HEADER IPv4Header);
 
-LIBNET_API _Ret_writes_maybenull_z_(1) PVOID WINAPI PacketizeUdp4(_In_ PDL_EUI48 SrcMac,
+LIBNET_API _Ret_maybenull_ PVOID WINAPI PacketizeUdp4(_In_ PDL_EUI48 SrcMac,
                                                                   _In_ PDL_EUI48 DesMac,
                                                                   _In_ PIN_ADDR SourceAddress,
                                                                   _In_ PIN_ADDR DestinationAddress,
@@ -294,7 +294,7 @@ LIBNET_API _Ret_writes_maybenull_z_(1) PVOID WINAPI PacketizeUdp4(_In_ PDL_EUI48
                                                                   _In_reads_bytes_(DataLen) PBYTE Data,
                                                                   _In_ WORD DataLen);
 
-LIBNET_API _Ret_writes_maybenull_z_(1) PVOID WINAPI PacketizeUdp6(_In_ PDL_EUI48 SrcMac,
+LIBNET_API _Ret_maybenull_ PVOID WINAPI PacketizeUdp6(_In_ PDL_EUI48 SrcMac,
                                                                   _In_ PDL_EUI48 DesMac,
                                                                   _In_ PIN6_ADDR SourceAddress,
                                                                   _In_ PIN6_ADDR DestinationAddress,

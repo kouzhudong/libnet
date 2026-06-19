@@ -56,6 +56,7 @@ void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
 
     PBYTE test = &temp[0] + sizeof(PSD_HEADER);
     RtlCopyMemory(test, &tcp4->tcp_hdr, sizeof(TCP_HDR));
+    reinterpret_cast<PTCP_HDR>(test)->th_sum = 0;
 
     test = test + sizeof(TCP_HDR);
     RtlCopyMemory(test, (PBYTE)&tcp4->tcp_hdr + sizeof(TCP_HDR), OptLen);
@@ -79,7 +80,7 @@ void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
 
     RtlCopyMemory(&PseudoHeader->saddr, &tcp6->ip_hdr.SourceAddress, sizeof(IN6_ADDR));
     RtlCopyMemory(&PseudoHeader->daddr, &tcp6->ip_hdr.DestinationAddress, sizeof(IN6_ADDR));
-    PseudoHeader->length = ntohl(sizeof(TCP_HDR) + OptLen);
+    PseudoHeader->length = htonl(sizeof(TCP_HDR) + OptLen);
     PseudoHeader->unused1 = 0;
     PseudoHeader->unused2 = 0;
     PseudoHeader->unused3 = 0;
@@ -87,6 +88,7 @@ void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
 
     PBYTE test = &temp[0] + sizeof(PSD6_HEADER);
     RtlCopyMemory(test, &tcp6->tcp_hdr, sizeof(TCP_HDR));
+    reinterpret_cast<PTCP_HDR>(test)->th_sum = 0;
 
     test = test + sizeof(TCP_HDR);
     RtlCopyMemory(test, (PBYTE)&tcp6->tcp_hdr + sizeof(TCP_HDR), OptLen);
@@ -101,31 +103,38 @@ EXTERN_C
 DLLEXPORT
 void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen)
 /*
-
-
-数据结构的布局是：sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
+OptLen：整个包的字节数 = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + ICMPv6载荷长度。
 */
 {
-    UNREFERENCED_PARAMETER(OptLen);
+    int icmpv6_len = OptLen - (int)(sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER));
+    if (icmpv6_len <= 0) {
+        return;
+    }
 
     PIPV6_HEADER ip_hdr = (PIPV6_HEADER)(buffer + sizeof(ETHERNET_HEADER));
     PICMP_MESSAGE icmp_message = (PICMP_MESSAGE)(buffer + sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER));
 
-    BYTE temp[sizeof(PSD6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20]{};
+    PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD6_HEADER) + icmpv6_len));
+    if (!temp) {
+        return;
+    }
 
     PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
     RtlCopyMemory(&PseudoHeader->saddr, &ip_hdr->SourceAddress, sizeof(IN6_ADDR));
     RtlCopyMemory(&PseudoHeader->daddr, &ip_hdr->DestinationAddress, sizeof(IN6_ADDR));
-    PseudoHeader->length = ntohl(sizeof(ICMP_MESSAGE) + 0x20);
+    PseudoHeader->length = htonl((ULONG)icmpv6_len);
     PseudoHeader->unused1 = 0;
     PseudoHeader->unused2 = 0;
     PseudoHeader->unused3 = 0;
     PseudoHeader->proto = IPPROTO_ICMPV6;
 
     PBYTE test = temp + sizeof(PSD6_HEADER);
-    RtlCopyMemory(test, icmp_message, sizeof(ICMP_MESSAGE) + 0x20);
+    RtlCopyMemory(test, icmp_message, icmpv6_len);
+    reinterpret_cast<PICMP_MESSAGE>(test)->Header.Checksum = 0;
 
-    icmp_message->Header.Checksum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(temp));
+    icmp_message->Header.Checksum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD6_HEADER) + icmpv6_len);
+
+    FREE(temp);
 }
 
 
@@ -226,7 +235,7 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
 适用场景：修改了ICMPv4（头部及后面的内容）的情况。
 */
 {
-    PICMP_HEADER buf = (PICMP_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
+    PICMP_HEADER buf = (PICMP_HEADER)MALLOC(size);
     if (!buf) {
 
         return 0;
@@ -237,7 +246,7 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
 
     USHORT sum = checksum((USHORT *)buf, size);
 
-    HeapFree(GetProcessHeap(), 0, buf);
+    FREE(buf);
 
     return sum;
 }
@@ -361,7 +370,6 @@ th_flags：TH_ACK, TH_SYN等值的组合。
 
     tcp_hdr->th_sum = 0;
     tcp_hdr->th_urp = 0;
-    tcp_hdr->th_sum = 0;
 }
 
 
@@ -381,9 +389,9 @@ void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
 */
 {
     if (IsCopy) {
-        InitTcpHeader(tcp->th_sport, tcp->th_dport, tcp->th_seq + 1, TH_ACK | TH_SYN, 0, tcp_hdr);
+        InitTcpHeader(tcp->th_sport, tcp->th_dport, htonl(ntohl(tcp->th_seq) + 1), TH_ACK | TH_SYN, 0, tcp_hdr);
     } else {
-        InitTcpHeader(tcp->th_dport, tcp->th_sport, tcp->th_seq + 1, TH_ACK | TH_SYN, 0, tcp_hdr);
+        InitTcpHeader(tcp->th_dport, tcp->th_sport, htonl(ntohl(tcp->th_seq) + 1), TH_ACK | TH_SYN, 0, tcp_hdr);
     }
 }
 
@@ -424,7 +432,7 @@ EXTERN_C
 DLLEXPORT
 void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW_TCP buffer)
 {
-    if (!SrcMac || !buffer) {
+    if (!IPv4Header || !SrcMac || !DesMac || !buffer) {
         return;
     }
 
@@ -557,7 +565,7 @@ EXTERN_C
 DLLEXPORT
 void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesMac, OUT PRAW6_TCP buffer)
 {
-    if (!SrcMac || !buffer) {
+    if (!IPv6Header || !SrcMac || !DesMac || !buffer) {
         return;
     }
 
@@ -675,7 +683,7 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, eth_hdr);
 
     PIPV4_HEADER ipv4_header = (PIPV4_HEADER)((PBYTE)eth_hdr + ETH_LENGTH_OF_HEADER);
-    InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)Length - sizeof(ETHERNET_HEADER), ipv4_header);
+    InitIpv4Header(SourceAddress, DestinationAddress, IPPROTO_UDP, (UINT16)(Length - sizeof(ETHERNET_HEADER)), ipv4_header);
 
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv4_header + sizeof(IPV4_HEADER));
     InitUdpHeader(eth_hdr, Length, SourcePort, DestinationPort, udp_hdr, Data, DataLen, true);
