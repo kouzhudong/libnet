@@ -848,8 +848,8 @@ int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac)
 {
     RtlZeroMemory(GatewayMac, sizeof(DL_EUI48));
     char Gateway[INET_ADDRSTRLEN] = {0};
-    int ret = GetGatewayByIPv4(IPv4, Gateway);
-    if (ret != 0 || Gateway[0] == '\0') {
+    HRESULT hr = GetGatewayByIPv4(IPv4, Gateway);
+    if (FAILED(hr) || Gateway[0] == '\0') {
         return 1;
     }
 

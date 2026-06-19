@@ -110,10 +110,10 @@ DLLEXPORT
 int WINAPI EnumInterfaceInfo();
 
 DLLEXPORT
-int WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(16) char * Gateway);
+HRESULT WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(INET_ADDRSTRLEN) char * Gateway);
 
 DLLEXPORT
-int WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(46) char * Gateway);
+HRESULT WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(INET6_ADDRSTRLEN) char * Gateway);
 
 DLLEXPORT
 int WINAPI GetGatewayMacByIPv6(_In_z_ const char * IPv6, _Out_ PDL_EUI48 GatewayMac);

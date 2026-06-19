@@ -457,17 +457,17 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getinte
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(16) char * Gateway)
+HRESULT WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(INET_ADDRSTRLEN) char * Gateway)
 /*
 功能：获取本地IPv4地址的默认网关地址（也是IPv4，不包括IPv6）。
+返回值：S_OK 表示调用成功（Gateway[0]=='\0' 时表示未找到），失败返回对应 HRESULT。
 */
 {
     Gateway[0] = '\0';
     ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
     PIP_ADAPTER_INFO pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(sizeof(IP_ADAPTER_INFO));
     if (pAdapterInfo == nullptr) {
-        printf("Error allocating memory needed to call GetAdaptersinfo\n");
-        return 1;
+        return E_OUTOFMEMORY;
     }
 
     // Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
@@ -475,39 +475,37 @@ int WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(16) char * 
         FREE(pAdapterInfo);
         pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(ulOutBufLen);
         if (pAdapterInfo == nullptr) {
-            printf("Error allocating memory needed to call GetAdaptersinfo\n");
-            return 1;
+            return E_OUTOFMEMORY;
         }
     }
 
-    DWORD dwRetVal = 0;
-    if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
-        PIP_ADAPTER_INFO pAdapter = pAdapterInfo;
-        while (pAdapter) {
-            if (_stricmp(pAdapter->IpAddressList.IpAddress.String, IPv4) == 0) {
-                lstrcpyA(Gateway, pAdapter->GatewayList.IpAddress.String);
-                break;
-            }
-
-            pAdapter = pAdapter->Next;
-        }
-    } else {
-        printf("GetAdaptersInfo failed with error: %lu\n", dwRetVal);
-    }
-
-    if (pAdapterInfo) {
+    DWORD dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen);
+    if (dwRetVal != NO_ERROR) {
         FREE(pAdapterInfo);
+        return HRESULT_FROM_WIN32(dwRetVal);
     }
 
-    return 0;
+    for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != nullptr; pAdapter = pAdapter->Next) {
+        for (IP_ADDR_STRING * pAddr = &pAdapter->IpAddressList; pAddr != nullptr; pAddr = pAddr->Next) {
+            if (_stricmp(pAddr->IpAddress.String, IPv4) == 0) {
+                strcpy_s(Gateway, INET_ADDRSTRLEN, pAdapter->GatewayList.IpAddress.String);
+                FREE(pAdapterInfo);
+                return S_OK;
+            }
+        }
+    }
+
+    FREE(pAdapterInfo);
+    return S_OK; // Gateway[0] == '\0' 表示未找到
 }
 
 
 EXTERN_C
 DLLEXPORT
-int WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(46) char * Gateway)
+HRESULT WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(INET6_ADDRSTRLEN) char * Gateway)
 /*
 功能：获取本地IPv6地址的(任意一个)默认网关地址（也是IPv6，不包括IPv4）。
+返回值：S_OK 表示调用成功（Gateway[0]=='\0' 时表示未找到），失败返回对应 HRESULT。
 
 参数：
 1.IPv6是本地的IPv6地址（兼容%符号），可以取如下值：
@@ -519,33 +517,29 @@ int WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(46) char * 
 {
     Gateway[0] = '\0';
 
-    /* Declare and initialize variables */
-    DWORD dwRetVal = 0;
-    unsigned int i = 0;
+    // 去掉 % 后缀，将输入转为二进制地址
+    IN6_ADDR sin6_addr{};
+    char addrNoBracket[INET6_ADDRSTRLEN]{};
+    strncpy_s(addrNoBracket, IPv6, _TRUNCATE);
+    char * pct = strchr(addrNoBracket, '%');
+    if (pct) *pct = '\0';
+    if (InetPtonA(AF_INET6, addrNoBracket, &sin6_addr) != 1) {
+        return E_INVALIDARG;
+    }
 
     // Set the flags to pass to GetAdaptersAddresses
     ULONG flags = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_WINS_INFO | GAA_FLAG_INCLUDE_GATEWAYS |
                   GAA_FLAG_INCLUDE_ALL_INTERFACES | GAA_FLAG_INCLUDE_ALL_COMPARTMENTS | GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
 
     PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
-    ULONG outBufLen = WORKING_BUFFER_SIZE; // Allocate a 15 KB buffer to start with.
+    ULONG outBufLen = WORKING_BUFFER_SIZE;
     ULONG Iterations = 0;
-
-    PIP_ADAPTER_ADDRESSES pCurrAddresses = nullptr;
-    PIP_ADAPTER_UNICAST_ADDRESS pUnicast = nullptr;
-
-    IN6_ADDR sin6_addr{};
-    char addrNoBracket[INET6_ADDRSTRLEN]{};
-    strncpy_s(addrNoBracket, IPv6, _TRUNCATE);
-    char * pct = strchr(addrNoBracket, '%');
-    if (pct) *pct = '\0';
-    InetPtonA(AF_INET6, addrNoBracket, &sin6_addr);
+    DWORD dwRetVal = 0;
 
     do {
         pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
         if (pAddresses == nullptr) {
-            printf("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
-            return (1);
+            return E_OUTOFMEMORY;
         }
 
         dwRetVal = GetAdaptersAddresses(AF_INET6, flags, nullptr, pAddresses, &outBufLen);
@@ -559,70 +553,41 @@ int WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(46) char * 
         Iterations++;
     } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
 
-    if (dwRetVal == NO_ERROR) {
-        pCurrAddresses = pAddresses;
-        while (pCurrAddresses) {
-            pUnicast = pCurrAddresses->FirstUnicastAddress;
-            if (pUnicast != nullptr) {
-                for (i = 0; pUnicast != nullptr; i++) {
-                    switch (pUnicast->Address.lpSockaddr->sa_family) {
-                    case AF_INET6: {
-                        PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pUnicast->Address.lpSockaddr;
-                        if (IN6_ADDR_EQUAL(&sin6_addr, &sa_in6->sin6_addr)) {
+    if (dwRetVal != NO_ERROR) {
+        FREE(pAddresses);
+        return HRESULT_FROM_WIN32(dwRetVal);
+    }
 
-                            PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress = pCurrAddresses->FirstGatewayAddress;
-                            if (FirstGatewayAddress) {
-                                for (i = 0; FirstGatewayAddress != nullptr; i++) {
+    for (PIP_ADAPTER_ADDRESSES pCurr = pAddresses; pCurr != nullptr; pCurr = pCurr->Next) {
+        bool found = false;
+        for (PIP_ADAPTER_UNICAST_ADDRESS pUnicast = pCurr->FirstUnicastAddress; pUnicast != nullptr; pUnicast = pUnicast->Next) {
+            if (pUnicast->Address.lpSockaddr->sa_family != AF_INET6)
+                continue;
+            PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pUnicast->Address.lpSockaddr;
+            if (!IN6_ADDR_EQUAL(&sin6_addr, &sa_in6->sin6_addr))
+                continue;
 
-                                    switch (FirstGatewayAddress->Address.lpSockaddr->sa_family) {
-                                    case AF_INET6: {
-                                        DWORD ipbufferlength = 46;
-                                        char ipstringbuffer[46] = {0};
-
-                                        PSOCKADDR_IN6_LH temp = (PSOCKADDR_IN6_LH)FirstGatewayAddress->Address.lpSockaddr;
-                                        if (inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, ipbufferlength) == nullptr) {
-                                            break;
-                                        }
-
-                                        lstrcpyA(Gateway, ipstringbuffer); //会有多个，取最后一个。
-
-                                        break;
-                                    }
-                                    default:
-                                        break;
-                                    }
-
-                                    FirstGatewayAddress = FirstGatewayAddress->Next;
-                                }
-                            }
-                        }
-
-                        break;
-                    }
-                    default:
-                        break;
-                    }
-
-                    pUnicast = pUnicast->Next;
+            for (PIP_ADAPTER_GATEWAY_ADDRESS_LH gw = pCurr->FirstGatewayAddress; gw != nullptr; gw = gw->Next) {
+                if (gw->Address.lpSockaddr->sa_family != AF_INET6)
+                    continue;
+                char ipstringbuffer[INET6_ADDRSTRLEN]{};
+                PSOCKADDR_IN6_LH temp = (PSOCKADDR_IN6_LH)gw->Address.lpSockaddr;
+                if (inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, INET6_ADDRSTRLEN) != nullptr) {
+                    strcpy_s(Gateway, INET6_ADDRSTRLEN, ipstringbuffer); // 多个网关取最后一个
                 }
             }
 
-            pCurrAddresses = pCurrAddresses->Next;
+            found = true;
+            break;
         }
-    } else {
-        printf("Call to GetAdaptersAddresses failed with error: %lu\n", dwRetVal);
-        if (dwRetVal == ERROR_NO_DATA)
-            printf("\tNo addresses were found for the requested parameters\n");
-        else {
-            DisplayError(dwRetVal);
+
+        if (found) {
+            break;
         }
     }
 
-    if (pAddresses) {
-        FREE(pAddresses);
-    }
-
-    return 0;
+    FREE(pAddresses);
+    return S_OK; // Gateway[0] == '\0' 表示未找到
 }
 
 
@@ -646,9 +611,9 @@ int WINAPI GetGatewayMacByIPv6(_In_z_ const char * IPv6, _Out_ PDL_EUI48 Gateway
 */
 {
     RtlZeroMemory(GatewayMac, sizeof(DL_EUI48));
-    char Gateway[128] = {0};
-    int ret = GetGatewayByIPv6(IPv6, Gateway);
-    if (ret != 0 || Gateway[0] == '\0') {
+    char Gateway[INET6_ADDRSTRLEN]{};
+    HRESULT hr = GetGatewayByIPv6(IPv6, Gateway);
+    if (FAILED(hr) || Gateway[0] == '\0') {
         return 1;
     }
 

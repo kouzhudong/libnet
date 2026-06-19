@@ -227,8 +227,8 @@ LIBNET_API int WINAPI TestLookupPersistentTcpPortReservation(int argc, WCHAR ** 
 LIBNET_API int WINAPI Exclusiveaddruse(int argc, wchar_t ** argv);
 LIBNET_API int WINAPI EnumAdaptersInfo();
 LIBNET_API int WINAPI EnumInterfaceInfo();
-LIBNET_API int WINAPI GetGatewayByIPv4(const char * IPv4, char * Gateway);
-LIBNET_API int WINAPI GetGatewayByIPv6(const char * IPv6, char * Gateway);
+LIBNET_API HRESULT WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(INET_ADDRSTRLEN) char * Gateway);
+LIBNET_API HRESULT WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(INET6_ADDRSTRLEN) char * Gateway);
 LIBNET_API int WINAPI GetGatewayMacByIPv6(const char * IPv6, PDL_EUI48 GatewayMac);
 LIBNET_API int WINAPI GetGatewayMacByIPv4(const char * IPv4, PDL_EUI48 GatewayMac);
 LIBNET_API int WINAPI EnumIpNetTable();
