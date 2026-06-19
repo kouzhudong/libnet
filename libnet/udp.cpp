@@ -48,9 +48,10 @@ MSDN没有例子。
             in_addr IpAddr{};
 
             IpAddr.S_un.S_addr = pUdpTable->table[i].dwLocalAddr;
-            inet_ntop(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
-
-            printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
+            if (inet_ntop(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr)) == nullptr)
+                printf("\tUdp[%d] Local Addr: (inet_ntop failed)\n", i);
+            else
+                printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tUdp[%d] Local Port: %u \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
             printf("\n");
         }
@@ -134,11 +135,11 @@ MSDN没有例子。
 }
 
 
-void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
+void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pUdpEntry)
 {
     TCPIP_OWNER_MODULE_BASIC_INFO temp{};
     DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
-    DWORD ret = GetOwnerModuleFromUdpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
+    DWORD ret = GetOwnerModuleFromUdpEntry(pUdpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
     if (NO_ERROR == ret) {
         printf("\tModuleName: %ls, ModulePath: %ls \n", temp.pModuleName, temp.pModulePath);
         return;
@@ -153,7 +154,7 @@ void GetOwnerModuleFromUdpEntryEx(_In_ PMIB_UDPROW_OWNER_MODULE pTcpEntry)
         return;
     }
 
-    ret = GetOwnerModuleFromUdpEntry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
+    ret = GetOwnerModuleFromUdpEntry(pUdpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
     if (NO_ERROR == ret) {
         printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
     }
@@ -204,9 +205,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
             in_addr IpAddr{};
 
             IpAddr.S_un.S_addr = pUdpTable->table[i].dwLocalAddr;
-            inet_ntop(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr));
-
-            printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
+            if (inet_ntop(AF_INET, &IpAddr, szLocalAddr, sizeof(szLocalAddr)) == nullptr)
+                printf("\tUdp[%d] Local Addr: (inet_ntop failed)\n", i);
+            else
+                printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tUdp[%d] Local Port: %u \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
             printf("\tUdp[%d] OwningPid: %lu \n", i, pUdpTable->table[i].dwOwningPid);
 
@@ -229,11 +231,11 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
 }
 
 
-void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
+void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pUdpEntry)
 {
     TCPIP_OWNER_MODULE_BASIC_INFO temp{};
     DWORD Size = sizeof(TCPIP_OWNER_MODULE_BASIC_INFO);
-    DWORD ret = GetOwnerModuleFromUdp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
+    DWORD ret = GetOwnerModuleFromUdp6Entry(pUdpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, &temp, &Size);
     if (NO_ERROR == ret) {
         printf("\tModuleName: %ls, ModulePath: %ls \n", temp.pModuleName, temp.pModulePath);
         return;
@@ -248,7 +250,7 @@ void GetOwnerModuleFromUdp6EntryEx(_In_ PMIB_UDP6ROW_OWNER_MODULE pTcpEntry)
         return;
     }
 
-    ret = GetOwnerModuleFromUdp6Entry(pTcpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
+    ret = GetOwnerModuleFromUdp6Entry(pUdpEntry, TCPIP_OWNER_MODULE_INFO_BASIC, ptombi, &Size);
     if (NO_ERROR == ret) {
         printf("\tModuleName: %ls, ModulePath: %ls \n", ptombi->pModuleName, ptombi->pModulePath);
     }
@@ -294,11 +296,12 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getexten
         printf("\n");
 
         for (DWORD i = 0; i < pUdpTable->dwNumEntries; i++) {
-            char szLocalAddr[128];
+            char szLocalAddr[128]{};
 
-            InetNtopA(AF_INET6, &pUdpTable->table[i].ucLocalAddr, szLocalAddr, 46);
-
-            printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
+            if (InetNtopA(AF_INET6, &pUdpTable->table[i].ucLocalAddr, szLocalAddr, _ARRAYSIZE(szLocalAddr)) == nullptr)
+                printf("\tUdp[%d] Local Addr: (InetNtopA failed)\n", i);
+            else
+                printf("\tUdp[%d] Local Addr: %s\n", i, szLocalAddr);
             printf("\tUdp[%d] Local Port: %u \n", i, ntohs((u_short)pUdpTable->table[i].dwLocalPort));
             printf("\tUdp[%d] OwningPid: %lu \n", i, pUdpTable->table[i].dwOwningPid);
 
