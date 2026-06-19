@@ -45,7 +45,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
 
     // Setup the hints address info structure which is passed to the getaddrinfo() function
     addrinfo hints{};
-    ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -77,8 +76,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             printf("AF_INET (IPv4)\n");
             sockaddr_ipv4 = reinterpret_cast<struct sockaddr_in *>(ptr->ai_addr);
             char v4Buf[INET_ADDRSTRLEN]{};
-            inet_ntop(AF_INET, &sockaddr_ipv4->sin_addr, v4Buf, sizeof(v4Buf));
-            printf("\tIPv4 address %s\n", v4Buf);
+                    if (inet_ntop(AF_INET, &sockaddr_ipv4->sin_addr, v4Buf, sizeof(v4Buf)) == nullptr)
+                printf("\tIPv4 address (inet_ntop failed)\n");
+            else
+                printf("\tIPv4 address %s\n", v4Buf);
             break;
         }
         case AF_INET6:
@@ -111,7 +112,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         printf("\tProtocol: ");
         PrintProtocol(static_cast<IPPROTO>(ptr->ai_protocol));
         printf("\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
-        printf("\tCanonical name: %s\n", ptr->ai_canonname);
+        printf("\tCanonical name: %s\n", ptr->ai_canonname ? ptr->ai_canonname : "(null)");
     }
 
     freeaddrinfo(result);
@@ -154,7 +155,6 @@ http://correy.webs.com
 
     // Setup the hints address info structure which is passed to the getaddrinfo() function
     addrinfo hints{};
-    ZeroMemory(&hints, sizeof(hints));
     hints.ai_flags = AI_NUMERICHOST;
     hints.ai_family = AF_UNSPEC;
     //    hints.ai_socktype = SOCK_STREAM;
@@ -188,7 +188,7 @@ http://correy.webs.com
         printf("\tProtocol: ");
         PrintProtocol(static_cast<IPPROTO>(ptr->ai_protocol));
         printf("\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
-        printf("\tCanonical name: %s\n", ptr->ai_canonname);
+        printf("\tCanonical name: %s\n", ptr->ai_canonname ? ptr->ai_canonname : "(null)");
     }
 
     freeaddrinfo(result);
@@ -225,7 +225,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
 
     // Setup the hints address info structure which is passed to the getaddrinfo() function
     ADDRINFOW hints{};
-    ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -303,7 +302,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         wprintf(L"\tProtocol: ");
         PrintProtocol(static_cast<IPPROTO>(ptr->ai_protocol));
         wprintf(L"\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
-        wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname);
+        wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname ? ptr->ai_canonname : L"(null)");
     }
 
     FreeAddrInfoW(result);
@@ -337,7 +336,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
 
     // Setup the hints address info structure which is passed to the getaddrinfo() function
     ADDRINFOEX hints{};
-    ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -392,7 +390,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET (IPv4)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = reinterpret_cast<struct sockaddr_in *>(ptr->ai_addr);
-            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
+            if (InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
+                wprintf(L"\tIPv4 address (InetNtop failed)\n");
+            else
+                wprintf(L"\tIPv4 address %ws\n", ipstringbuffer);
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -409,7 +410,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = reinterpret_cast<struct sockaddr_in6 *>(ptr->ai_addr);
-            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
+            if (InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
+                wprintf(L"\tIPv6 address (InetNtop failed)\n");
+            else
+                wprintf(L"\tIPv6 address %ws\n", ipstringbuffer);
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -431,7 +435,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         wprintf(L"\tProtocol: ");
         PrintProtocol(static_cast<IPPROTO>(ptr->ai_protocol));
         wprintf(L"\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
-        wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname);
+        wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname ? ptr->ai_canonname : L"(null)");
 
         if (ptr->ai_blob == nullptr)
             wprintf(L"\tBlob: (nullptr)\n");
@@ -499,7 +503,6 @@ address..
 
         IsWSAStartupCalled = TRUE;
 
-        ZeroMemory(&Hints, sizeof(Hints));
         Hints.ai_family = AF_UNSPEC;
 
         QueryContext.CompleteEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
@@ -560,8 +563,10 @@ VOID WINAPI QueryCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOVE
         QueryResults = QueryContext->QueryResults;
         while (QueryResults) {
             AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
-            WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
-            wprintf(L"Ip Address: %s\n", AddrString);
+            if (WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength) == 0)
+                wprintf(L"Ip Address: %s\n", AddrString);
+            else
+                wprintf(L"Ip Address: (WSAAddressToString failed %d)\n", WSAGetLastError());
             QueryResults = QueryResults->ai_next;
         }
     } else {
@@ -624,7 +629,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     }
 
     // Setup the hints address info structure which is passed to the getaddrinfo() function
-    ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -661,7 +665,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET (IPv4)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv4 = reinterpret_cast<struct sockaddr_in *>(ptr->ai_addr);
-            wprintf(L"\tIPv4 address %ws\n", InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
+            if (InetNtop(AF_INET, &sockaddr_ipv4->sin_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
+                wprintf(L"\tIPv4 address (InetNtop failed)\n");
+            else
+                wprintf(L"\tIPv4 address %ws\n", ipstringbuffer);
 
             // We could also use the WSAAddressToString function
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -678,7 +685,10 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
             wprintf(L"AF_INET6 (IPv6)\n");
             // the InetNtop function is available on Windows Vista and later
             sockaddr_ipv6 = reinterpret_cast<struct sockaddr_in6 *>(ptr->ai_addr);
-            wprintf(L"\tIPv6 address %ws\n", InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)));
+            if (InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, _ARRAYSIZE(ipstringbuffer)) == nullptr)
+                wprintf(L"\tIPv6 address (InetNtop failed)\n");
+            else
+                wprintf(L"\tIPv6 address %ws\n", ipstringbuffer);
 
             // We could also use WSAAddressToString which also returns the scope ID
             // sockaddr_ip = (LPSOCKADDR) ptr->ai_addr;
@@ -700,7 +710,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
         wprintf(L"\tProtocol: ");
         PrintProtocol(static_cast<IPPROTO>(ptr->ai_protocol));
         wprintf(L"\tLength of this sockaddr: %zd\n", ptr->ai_addrlen);
-        wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname);
+        wprintf(L"\tCanonical name: %s\n", ptr->ai_canonname ? ptr->ai_canonname : L"(null)");
 
         if (ptr->ai_blob == nullptr)
             wprintf(L"\tBlob: (nullptr)\n");
@@ -754,8 +764,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
     HANDLE CancelHandle = nullptr;
     DWORD QueryTimeout = 5 * 1000; // 5 seconds
 
-    ZeroMemory(&QueryContext, sizeof(QueryContext));
-
     do {
         if (Argc != 2) {
             wprintf(L"Usage: ResolveName <QueryName>\n");
@@ -770,7 +778,6 @@ https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddri
 
         IsWSAStartupCalled = TRUE;
 
-        ZeroMemory(&Hints, sizeof(Hints));
         Hints.ai_family = AF_UNSPEC;
 
         QueryContext.CompleteEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
@@ -831,8 +838,10 @@ VOID WINAPI QueryCompleteCallback2(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOV
         QueryResults = QueryContext->QueryResults;
         while (QueryResults) {
             AddressStringLength = MAX_ADDRESS_STRING_LENGTH;
-            WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength);
-            wprintf(L"Ip Address: %s\n", AddrString);
+            if (WSAAddressToString(QueryResults->ai_addr, static_cast<DWORD>(QueryResults->ai_addrlen), nullptr, AddrString, &AddressStringLength) == 0)
+                wprintf(L"Ip Address: %s\n", AddrString);
+            else
+                wprintf(L"Ip Address: (WSAAddressToString failed %d)\n", WSAGetLastError());
             QueryResults = QueryResults->ai_next;
         }
     } else {
@@ -1011,7 +1020,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
     printf("Calling gethostbyaddr with %s\n", host_addr);
     if (bIpv6 == 1) {
         iResult = inet_pton(AF_INET6, host_addr, &addr6);
-        if (iResult == 0) {
+        if (iResult != 1) {
             printf("The IPv6 address entered must be a legal address\n");
             return 1;
         } else
@@ -1050,6 +1059,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-gethostb
         printf("\tAddress length: %d\n", remoteHost->h_length);
 
         if (remoteHost->h_addrtype == AF_INET) {
+            i = 0;
             while (remoteHost->h_addr_list[i] != 0) {
                 addr.s_addr = *reinterpret_cast<u_long *>(remoteHost->h_addr_list[i++]);
                 char addrStr[INET_ADDRSTRLEN]{};
