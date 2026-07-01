@@ -4,8 +4,7 @@
 *       All rights reserved.
 *       This source code is only intended as a supplement to
 *       Microsoft Development Tools and/or WinHelp documentation.
-*       See these sources for detailed information regarding the
-*       Microsoft samples programs.
+*       See these sources for detailed information regarding the Microsoft samples programs.
 \******************************************************************************/
 
 /*
@@ -41,16 +40,12 @@ void __cdecl Ipconfig(void)
 */
 {
     DWORD Err;
-
     PFIXED_INFO pFixedInfo;
     DWORD FixedInfoSize = 0;
-
     PIP_ADAPTER_INFO pAdapterInfo, pAdapt;
     DWORD AdapterInfoSize;
     PIP_ADDR_STRING pAddrStr;
-
     UINT i;
-
     struct tm newtime;
     char buffer[32];
     errno_t error;
