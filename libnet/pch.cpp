@@ -8,13 +8,7 @@ void DisplayError(_In_ DWORD dwMessageId)
 {
     LPVOID lpMsgBuf = nullptr; /* Variables used to return error message */
     DWORD dwFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-    if (FormatMessage(dwFlags,
-                      nullptr,
-                      dwMessageId,
-                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                      (LPTSTR)&lpMsgBuf,
-                      0,
-                      nullptr)) {
+    if (FormatMessage(dwFlags, nullptr, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, nullptr)) {
         printf("\tError: %s", (char *)lpMsgBuf);
     }
     LocalFree(lpMsgBuf);
@@ -1291,8 +1285,7 @@ void PrintAdapterType(INT Type)
     case IF_TYPE_IEEE80211: // An IEEE 802.11 wireless network interface.
         /*
         Note  This adapter type is returned on Windows Vista and later.
-        On Windows Server 2003 and Windows XP ,
-        an IEEE 802.11 wireless network interface returns an adapter type of MIB_IF_TYPE_ETHERNET.
+        On Windows Server 2003 and Windows XP , an IEEE 802.11 wireless network interface returns an adapter type of MIB_IF_TYPE_ETHERNET.
 
         https://docs.microsoft.com/en-us/windows/win32/api/iptypes/ns-iptypes-ip_adapter_info
         */
