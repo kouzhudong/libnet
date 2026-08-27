@@ -32,18 +32,20 @@ USHORT WINAPI checksum(USHORT * buffer, int size)
 }
 
 
-void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
+static BOOL CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
 /*
 功能：计算并设置tcp的校验和。
 
 参数：OptLen，是tcp的扩展选项（TCP_OPT）或者额外附带的数据（如http的html等)， 不包括ETHERNET_HEADER，IPV4_HEADER，TCP_HDR。
+
+返回：成功写入校验和返回TRUE；内存申请失败返回FALSE（此时校验和保持为0）。
 */
 {
     PRAW_TCP tcp4 = reinterpret_cast<PRAW_TCP>(buffer);
 
     PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen));
     if (!temp) {
-        return;
+        return FALSE;
     }
 
     PSD_HEADER * PseudoHeader = reinterpret_cast<PSD_HEADER *>(temp);
@@ -64,16 +66,18 @@ void CalculationTcp4Sum(OUT PBYTE buffer, WORD OptLen)
     tcp4->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD_HEADER) + sizeof(TCP_HDR) + OptLen);
 
     FREE(temp);
+
+    return TRUE;
 }
 
 
-void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
+static BOOL CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
 {
     PRAW6_TCP tcp6 = reinterpret_cast<PRAW6_TCP>(buffer);
 
     PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen));
     if (!temp) {
-        return;
+        return FALSE;
     }
 
     PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
@@ -96,19 +100,27 @@ void CalculationTcp6Sum(OUT PBYTE buffer, IN int OptLen)
     tcp6->tcp_hdr.th_sum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD6_HEADER) + sizeof(TCP_HDR) + OptLen);
 
     FREE(temp);
+
+    return TRUE;
 }
 
 
 EXTERN_C
 DLLEXPORT
-void WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen)
+BOOL WINAPI calculation_icmpv6_echo_request_checksum(OUT PBYTE buffer, IN int OptLen)
 /*
 OptLen：整个包的字节数 = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + ICMPv6载荷长度。
+
+返回：成功写入校验和返回TRUE；参数非法或内存申请失败返回FALSE（此时未写入校验和）。
 */
 {
+    if (!buffer) {
+        return FALSE;
+    }
+
     int icmpv6_len = OptLen - (int)(sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER));
     if (icmpv6_len <= 0) {
-        return;
+        return FALSE;
     }
 
     PIPV6_HEADER ip_hdr = (PIPV6_HEADER)(buffer + sizeof(ETHERNET_HEADER));
@@ -116,7 +128,7 @@ OptLen：整个包的字节数 = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) +
 
     PBYTE temp = reinterpret_cast<PBYTE>(MALLOC(sizeof(PSD6_HEADER) + icmpv6_len));
     if (!temp) {
-        return;
+        return FALSE;
     }
 
     PSD6_HEADER * PseudoHeader = reinterpret_cast<PSD6_HEADER *>(temp);
@@ -135,6 +147,8 @@ OptLen：整个包的字节数 = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) +
     icmp_message->Header.Checksum = checksum(reinterpret_cast<USHORT *>(temp), sizeof(PSD6_HEADER) + icmpv6_len);
 
     FREE(temp);
+
+    return TRUE;
 }
 
 
@@ -348,7 +362,7 @@ TotalLength 严格计算数据的大小。
 }
 
 
-void InitIpv4Header(IN PIPV4_HEADER InIPv4Header, IN UINT16 TotalLength, IN bool IsCopy, OUT PIPV4_HEADER OutIPv4Header)
+static void InitIpv4Header(IN PIPV4_HEADER InIPv4Header, IN UINT16 TotalLength, IN bool IsCopy, OUT PIPV4_HEADER OutIPv4Header)
 /*
 功能：把in_ipv4的SYN包里的ipv4信息组装为buffer的要发生的ACK的ipv4。
 
@@ -368,7 +382,7 @@ IsCopy：是复制还是回复。
 }
 
 
-void InitTcpHeader(IN UINT16 th_sport, IN UINT16 th_dport, IN SEQ_NUM th_ack, IN UINT8 th_flags, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
+static void InitTcpHeader(IN UINT16 th_sport, IN UINT16 th_dport, IN SEQ_NUM th_ack, IN UINT8 th_flags, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
 /*
 功能：组装TCP头（总共十个成员）。
 
@@ -406,7 +420,7 @@ th_flags：TH_ACK, TH_SYN等值的组合。
 }
 
 
-void InitTcpHeaderBySyn(IN UINT16 th_sport, IN UINT16 th_dport, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
+static void InitTcpHeaderBySyn(IN UINT16 th_sport, IN UINT16 th_dport, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
 /*
 th_sport, //网络序。如果是主机序，请用htons转换下。
 th_dport, //网络序。如果是主机序，请用htons转换下。
@@ -416,7 +430,7 @@ th_dport, //网络序。如果是主机序，请用htons转换下。
 }
 
 
-void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
+static void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
 /*
 用途：欺骗（扫描），而不是扫描和攻击。
 
@@ -432,7 +446,7 @@ OptLen：TCP头之后追加的选项（TCP_OPT）字节数，必须计入th_len�
 }
 
 
-void InitTcpMss(OUT TCP_OPT_MSS * mss)
+static void InitTcpMss(OUT TCP_OPT_MSS * mss)
 {
     mss->Kind = TH_OPT_MSS;
     mss->Length = 4;
@@ -440,7 +454,7 @@ void InitTcpMss(OUT TCP_OPT_MSS * mss)
 }
 
 
-void InitTcpMss(OUT PTCP_OPT tcp_opt)
+static void InitTcpMss(OUT PTCP_OPT tcp_opt)
 {
     InitTcpMss(&tcp_opt->mss);
 
@@ -449,7 +463,7 @@ void InitTcpMss(OUT PTCP_OPT tcp_opt)
 }
 
 
-void InitTcpWs(OUT TCP_OPT_WS * ws)
+static void InitTcpWs(OUT TCP_OPT_WS * ws)
 {
     ws->Kind = TH_OPT_WS;
     ws->Length = 3;
@@ -457,7 +471,7 @@ void InitTcpWs(OUT TCP_OPT_WS * ws)
 }
 
 
-void InitTcpSp(OUT TCP_OPT_SACK_PERMITTED * sp)
+static void InitTcpSp(OUT TCP_OPT_SACK_PERMITTED * sp)
 {
     sp->Kind = TH_OPT_SACK_PERMITTED;
     sp->Length = 2;
@@ -570,7 +584,7 @@ void WINAPI InitIpv6Header(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationA
 }
 
 
-void InitIpv6HeaderForTcp(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
+static void InitIpv6HeaderForTcp(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAddress, IN UINT8 NextHeader, IN UINT16 OptLen, OUT PIPV6_HEADER IPv6Header)
 /*
 功能：组装IPv6协议的TCP头。
 */
@@ -585,7 +599,7 @@ void InitIpv6HeaderForTcp(IN PIN6_ADDR SourceAddress, IN PIN6_ADDR DestinationAd
 }
 
 
-void InitIpv6Header(IN PIPV6_HEADER InIPv6Header, IN bool IsCopy, IN UINT16 OptLen, OUT PIPV6_HEADER OutIPv6Header)
+static void InitIpv6Header(IN PIPV6_HEADER InIPv6Header, IN bool IsCopy, IN UINT16 OptLen, OUT PIPV6_HEADER OutIPv6Header)
 /*
 功能：把in_ipv6的SYN包里的ipv6信息组装为buffer的要发生的ACK的ipv6。
 
@@ -697,7 +711,7 @@ buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_ME
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void InitUdpHeader(PETHERNET_HEADER eth_hdr, int Length, IN UINT16 SourcePort, IN UINT16 DestinationPort, OUT PUDP_HDR udp_hdr, PBYTE Data, WORD DataLen, bool IsIpv4)
+static void InitUdpHeader(PETHERNET_HEADER eth_hdr, int Length, IN UINT16 SourcePort, IN UINT16 DestinationPort, OUT PUDP_HDR udp_hdr, PBYTE Data, WORD DataLen, bool IsIpv4)
 /*
 功能：组装UDP头。
 
@@ -733,7 +747,6 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     int Length = sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(UDP_HDR) + DataLen;
     PETHERNET_HEADER eth_hdr = (PETHERNET_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Length);
     if (!eth_hdr) {
-        fprintf(stderr, "FILE:%hs, LINE:%d，申请内存失败:%d。\n", __FILE__, __LINE__, Length);
         return eth_hdr;
     }
 
@@ -761,7 +774,6 @@ AI生成的函数：名字是自己起的，参数和代码及注释都是AI生�
     int Length = sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(UDP_HDR) + DataLen;
     PETHERNET_HEADER eth_hdr = (PETHERNET_HEADER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Length);
     if (!eth_hdr) {
-        fprintf(stderr, "FILE:%hs, LINE:%d，申请内存失败:%d。\n", __FILE__, __LINE__, Length);
         return eth_hdr;
     }
 

@@ -246,7 +246,7 @@ LIBNET_API int WINAPI EnumAdaptersAddressesInfo(_In_ ADDRESS_FAMILY Family);
 
 LIBNET_API void WINAPI PacketizeAck4(_In_ PIPV4_HEADER IPv4Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_writes_bytes_(sizeof(RAW_TCP) + sizeof(TCP_OPT)) PRAW_TCP buffer);
 
-LIBNET_API void WINAPI calculation_icmpv6_echo_request_checksum(_Inout_updates_bytes_(OptLen) PBYTE buffer, _In_ int OptLen);
+LIBNET_API BOOL WINAPI calculation_icmpv6_echo_request_checksum(_Inout_updates_bytes_(OptLen) PBYTE buffer, _In_ int OptLen);
 
 LIBNET_API void WINAPI PacketizeAck6(_In_ PIPV6_HEADER IPv6Header, _In_ PDL_EUI48 SrcMac, _In_ PDL_EUI48 DesMac, _Out_writes_bytes_(sizeof(RAW6_TCP) + sizeof(TCP_OPT)) PRAW6_TCP buffer);
 
