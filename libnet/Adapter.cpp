@@ -6,8 +6,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
+static void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
 {
+    if (Address == nullptr || Address->lpSockaddr == nullptr) {
+        return;
+    }
+
     switch (Address->lpSockaddr->sa_family) {
     case AF_INET: {
         const SOCKADDR_IN * sockaddr_ipv4 = reinterpret_cast<const SOCKADDR_IN *>(Address->lpSockaddr);
@@ -34,9 +38,20 @@ void DumpAddress(const char * Msg, PSOCKET_ADDRESS Address)
 }
 
 
-void WINAPI GetPerAdapterInfoEx(ULONG IfIndex)
+static void PrintPerAdapterInfo(const IP_PER_ADAPTER_INFO * info)
+{
+    printf("\tAutoconfig Enabled: %s\n", info->AutoconfigEnabled ? "Yes" : "No");
+    for (const IP_ADDR_STRING * dns = &info->DnsServerList; dns != nullptr; dns = dns->Next) {
+        if (dns->IpAddress.String[0] != '\0') {
+            printf("\tDNS Server: %s\n", dns->IpAddress.String);
+        }
+    }
+}
+
+
+static void GetPerAdapterInfoEx(ULONG IfIndex)
 /*
-GetPerAdapterInfo 函数检索与指定接口对应的适配器的相关信息。
+GetPerAdapterInfo 函数检索与指定接口对应的适配器的相关信息（如 DNS 服务器列表）。
 
 https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getperadapterinfo
 https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getperadapterinfo
@@ -45,13 +60,11 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getpera
     IP_PER_ADAPTER_INFO PerAdapterInfo = {};
     ULONG OutBufLen = sizeof(IP_PER_ADAPTER_INFO);
     DWORD ret = GetPerAdapterInfo(IfIndex, &PerAdapterInfo, &OutBufLen);
-    if (ERROR_NO_DATA == ret) {
+    if (ERROR_SUCCESS == ret) { // 栈缓冲区已足够（0~1 个 DNS 服务器），直接消费数据。
+        PrintPerAdapterInfo(&PerAdapterInfo);
         return;
     }
-    if (ERROR_SUCCESS == ret) {
-        return;
-    }
-    if (ERROR_BUFFER_OVERFLOW != ret) {
+    if (ERROR_BUFFER_OVERFLOW != ret) { // 含 ERROR_NO_DATA：无数据或失败，直接返回。
         return;
     }
 
@@ -61,9 +74,8 @@ https://learn.microsoft.com/zh-cn/windows/win32/api/iphlpapi/nf-iphlpapi-getpera
     }
 
     ret = GetPerAdapterInfo(IfIndex, pPerAdapterInfo, &OutBufLen);
-    if (ERROR_SUCCESS != ret) {
-        FREE(pPerAdapterInfo);
-        return;
+    if (ERROR_SUCCESS == ret) {
+        PrintPerAdapterInfo(pPerAdapterInfo);
     }
 
     FREE(pPerAdapterInfo);
@@ -104,11 +116,13 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 
     printf("Calling GetAdaptersAddresses function with family = ");
     if (Family == AF_INET)
-        printf("AF_INET\n");
-    if (Family == AF_INET6)
-        printf("AF_INET6\n");
-    if (Family == AF_UNSPEC)
+        printf("AF_INET\n\n");
+    else if (Family == AF_INET6)
+        printf("AF_INET6\n\n");
+    else if (Family == AF_UNSPEC)
         printf("AF_UNSPEC\n\n");
+    else
+        printf("%u\n\n", (unsigned int)Family);
 
     do {
         pAddresses = (IP_ADAPTER_ADDRESSES *)MALLOC(outBufLen);
@@ -212,11 +226,9 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
             printf("\tOperStatus: %d\n", pCurrAddresses->OperStatus);
             printf("\tIpv6IfIndex (IPv6 interface): %lu\n", pCurrAddresses->Ipv6IfIndex);
             printf("\tZoneIndices (hex): ");
-            for (i = 0; i < 16; i++)
+            for (i = 0; i < _ARRAYSIZE(pCurrAddresses->ZoneIndices); i++)
                 printf("%lx ", pCurrAddresses->ZoneIndices[i]);
             printf("\n");
-
-            GetPerAdapterInfoEx(pCurrAddresses->Ipv6IfIndex);
 
             printf("\tTransmit link speed: %I64u\n", pCurrAddresses->TransmitLinkSpeed);
             printf("\tReceive link speed: %I64u\n", pCurrAddresses->ReceiveLinkSpeed);
@@ -275,7 +287,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
         FREE(pAddresses);
     }
 
-    return 0;
+    return (dwRetVal == NO_ERROR) ? 0 : 1;
 }
 
 
@@ -359,7 +371,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
                 if (error)
                     printf("Invalid Argument to localtime_s\n");
                 else {
-                    error = asctime_s(buffer, 32, &newtime); // Convert to an ASCII representation
+                    error = asctime_s(buffer, sizeof(buffer), &newtime); // Convert to an ASCII representation
                     if (error)
                         printf("Invalid Argument to asctime_s\n");
                     else /* asctime_s returns the string terminated by \n\0 */
@@ -371,7 +383,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
                 if (error)
                     printf("Invalid Argument to localtime_s\n");
                 else {
-                    error = asctime_s(buffer, 32, &newtime); // Convert to an ASCII representation
+                    error = asctime_s(buffer, sizeof(buffer), &newtime); // Convert to an ASCII representation
                     if (error)
                         printf("Invalid Argument to asctime_s\n");
                     else /* asctime_s returns the string terminated by \n\0 */
@@ -397,7 +409,7 @@ https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadapt
     if (pAdapterInfo)
         FREE(pAdapterInfo);
 
-    return 0;
+    return (dwRetVal == NO_ERROR) ? 0 : 1;
 }
 
 
@@ -463,7 +475,14 @@ HRESULT WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(INET_AD
 返回值：S_OK 表示调用成功（Gateway[0]=='\0' 时表示未找到），失败返回对应 HRESULT。
 */
 {
+    if (Gateway == nullptr) {
+        return E_POINTER;
+    }
     Gateway[0] = '\0';
+    if (IPv4 == nullptr) {
+        return E_INVALIDARG;
+    }
+
     ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
     PIP_ADAPTER_INFO pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(sizeof(IP_ADAPTER_INFO));
     if (pAdapterInfo == nullptr) {
@@ -488,7 +507,11 @@ HRESULT WINAPI GetGatewayByIPv4(_In_z_ const char * IPv4, _Out_writes_z_(INET_AD
     for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != nullptr; pAdapter = pAdapter->Next) {
         for (IP_ADDR_STRING * pAddr = &pAdapter->IpAddressList; pAddr != nullptr; pAddr = pAddr->Next) {
             if (_stricmp(pAddr->IpAddress.String, IPv4) == 0) {
-                strcpy_s(Gateway, INET_ADDRSTRLEN, pAdapter->GatewayList.IpAddress.String);
+                // GetAdaptersInfo 对无默认网关的网卡把 GatewayList 填成 "0.0.0.0"，
+                // 按本函数契约（空串=未找到）应视作无网关，保持 Gateway 为空串。
+                if (strcmp(pAdapter->GatewayList.IpAddress.String, "0.0.0.0") != 0) {
+                    strcpy_s(Gateway, INET_ADDRSTRLEN, pAdapter->GatewayList.IpAddress.String);
+                }
                 FREE(pAdapterInfo);
                 return S_OK;
             }
@@ -515,7 +538,13 @@ HRESULT WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(INET6_A
 2.Gateway容纳下一个IPv6地址的字符串。
 */
 {
+    if (Gateway == nullptr) {
+        return E_POINTER;
+    }
     Gateway[0] = '\0';
+    if (IPv6 == nullptr) {
+        return E_INVALIDARG;
+    }
 
     // 去掉 % 后缀，将输入转为二进制地址
     IN6_ADDR sin6_addr{};
@@ -561,18 +590,23 @@ HRESULT WINAPI GetGatewayByIPv6(_In_z_ const char * IPv6, _Out_writes_z_(INET6_A
     for (PIP_ADAPTER_ADDRESSES pCurr = pAddresses; pCurr != nullptr; pCurr = pCurr->Next) {
         bool found = false;
         for (PIP_ADAPTER_UNICAST_ADDRESS pUnicast = pCurr->FirstUnicastAddress; pUnicast != nullptr; pUnicast = pUnicast->Next) {
-            if (pUnicast->Address.lpSockaddr->sa_family != AF_INET6)
+            if (pUnicast->Address.lpSockaddr == nullptr || pUnicast->Address.lpSockaddr->sa_family != AF_INET6)
                 continue;
             PSOCKADDR_IN6_LH sa_in6 = (PSOCKADDR_IN6_LH)pUnicast->Address.lpSockaddr;
             if (!IN6_ADDR_EQUAL(&sin6_addr, &sa_in6->sin6_addr))
                 continue;
 
             for (PIP_ADAPTER_GATEWAY_ADDRESS_LH gw = pCurr->FirstGatewayAddress; gw != nullptr; gw = gw->Next) {
-                if (gw->Address.lpSockaddr->sa_family != AF_INET6)
+                if (gw->Address.lpSockaddr == nullptr || gw->Address.lpSockaddr->sa_family != AF_INET6)
                     continue;
                 char ipstringbuffer[INET6_ADDRSTRLEN]{};
                 PSOCKADDR_IN6_LH temp = (PSOCKADDR_IN6_LH)gw->Address.lpSockaddr;
                 if (inet_ntop(AF_INET6, &temp->sin6_addr, ipstringbuffer, INET6_ADDRSTRLEN) != nullptr) {
+                    // 链路本地网关（fe80::）必须带上 zone/scope id 才能唯一标识并被有 scope 的 IPv6 API 使用。
+                    if (temp->sin6_scope_id != 0) {
+                        size_t l = strlen(ipstringbuffer);
+                        sprintf_s(ipstringbuffer + l, sizeof(ipstringbuffer) - l, "%%%lu", temp->sin6_scope_id);
+                    }
                     strcpy_s(Gateway, INET6_ADDRSTRLEN, ipstringbuffer); // 多个网关取最后一个
                 }
             }
@@ -610,6 +644,10 @@ int WINAPI GetGatewayMacByIPv6(_In_z_ const char * IPv6, _Out_ PDL_EUI48 Gateway
 3.最好的思路是用ResolveIpNetEntry2实现。
 */
 {
+    if (GatewayMac == nullptr || IPv6 == nullptr) {
+        return 1;
+    }
+
     RtlZeroMemory(GatewayMac, sizeof(DL_EUI48));
     char Gateway[INET6_ADDRSTRLEN]{};
     HRESULT hr = GetGatewayByIPv6(IPv6, Gateway);
@@ -617,7 +655,11 @@ int WINAPI GetGatewayMacByIPv6(_In_z_ const char * IPv6, _Out_ PDL_EUI48 Gateway
         return 1;
     }
 
-    GetMacByGatewayIPv6(Gateway, GatewayMac);
+    // 传播 MAC 解析结果：网关存在但其 MAC 不在 IPv6 邻居表时返回失败，
+    // 避免留下全零 MAC 却报告成功（调用方无法与真实全零 MAC 区分）。
+    if (!GetMacByGatewayIPv6(Gateway, GatewayMac)) {
+        return 1;
+    }
 
     return 0;
 }
