@@ -147,6 +147,12 @@ USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size)
 */
 {
     USHORT sum = 0;
+
+    // 校验：至少要容纳 以太头 + 最小IPv4头 + UDP头，否则下面读取IHL/拷贝会越界。
+    if (!buffer || size < (int)(ETH_LENGTH_OF_HEADER + sizeof(IPV4_HEADER) + sizeof(UDP_HDR))) {
+        return sum;
+    }
+
     // PETHERNET_HEADER peh = (PETHERNET_HEADER)buffer;
     PIPV4_HEADER IPv4 = (PIPV4_HEADER)((PBYTE)buffer + ETH_LENGTH_OF_HEADER);
     PUDP_HDR udp = (PUDP_HDR)((PBYTE)IPv4 + Ip4HeaderLengthInBytes(IPv4));
@@ -154,6 +160,9 @@ USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size)
     int len = size - ETH_LENGTH_OF_HEADER;
     len -= Ip4HeaderLengthInBytes(IPv4);
     len -= sizeof(UDP_HDR);
+    if (len < 0) { // IHL含选项时头更长，防止负长度导致MALLOC回绕 + RtlCopyMemory巨量拷贝。
+        return sum;
+    }
 
     PSD_HEADER * buf = (PSD_HEADER *)MALLOC(sizeof(PSD_HEADER) + sizeof(UDP_HDR) + len);
     if (!buf) {
@@ -174,6 +183,9 @@ USHORT WINAPI calc_udp4_sum(USHORT * buffer, int size)
     RtlCopyMemory((PBYTE)buf + sizeof(PSD_HEADER) + sizeof(UDP_HDR), (PBYTE)udp + sizeof(UDP_HDR), len);
 
     sum = checksum((USHORT *)buf, sizeof(PSD_HEADER) + sizeof(UDP_HDR) + len);
+    if (sum == 0) {
+        sum = 0xFFFF; // RFC 768：UDP校验和计算为0时须以0xFFFF发送（0表示未校验；IPv6下0非法）。
+    }
 
     FREE(buf);
 
@@ -190,6 +202,12 @@ USHORT WINAPI calc_udp6_sum(USHORT * buffer, int size)
 */
 {
     USHORT sum = 0;
+
+    // 校验：至少要容纳 以太头 + IPv6头 + UDP头，否则len为负会导致MALLOC回绕 + RtlCopyMemory巨量拷贝。
+    if (!buffer || size < (int)(ETH_LENGTH_OF_HEADER + sizeof(IPV6_HEADER) + sizeof(UDP_HDR))) {
+        return sum;
+    }
+
     // PETHERNET_HEADER peh = (PETHERNET_HEADER)buffer;
     PIPV6_HEADER ipv6_hdr = (PIPV6_HEADER)((PBYTE)buffer + ETH_LENGTH_OF_HEADER);
     PUDP_HDR udp_hdr = (PUDP_HDR)((PBYTE)ipv6_hdr + sizeof(IPV6_HEADER));
@@ -219,6 +237,9 @@ USHORT WINAPI calc_udp6_sum(USHORT * buffer, int size)
     RtlCopyMemory((PBYTE)buf + sizeof(PSD6_HEADER) + sizeof(UDP_HDR), (PBYTE)udp_hdr + sizeof(UDP_HDR), len);
 
     sum = checksum((USHORT *)buf, sizeof(PSD6_HEADER) + sizeof(UDP_HDR) + len);
+    if (sum == 0) {
+        sum = 0xFFFF; // RFC 768/RFC 8200：UDP校验和计算为0时须以0xFFFF发送（IPv6下校验和0非法，接收方必丢弃）。
+    }
 
     FREE(buf);
 
@@ -235,6 +256,10 @@ USHORT WINAPI calc_icmp4_sum(PICMP_HEADER icmp, int size)
 适用场景：修改了ICMPv4（头部及后面的内容）的情况。
 */
 {
+    if (!icmp || size < (int)sizeof(ICMP_HEADER)) { // 防止NULL解引用，以及size过小时 buf->Checksum=0 越界写。
+        return 0;
+    }
+
     PICMP_HEADER buf = (PICMP_HEADER)MALLOC(size);
     if (!buf) {
 
@@ -303,6 +328,14 @@ void WINAPI InitIpv4Header(IN PIN_ADDR SourceAddress, IN PIN_ADDR DestinationAdd
 TotalLength 严格计算数据的大小。
 */
 {
+    if (!SourceAddress || !DestinationAddress || !IPv4Header) {
+        return;
+    }
+
+    // 先整体清零：TypeOfService(off1)、FlagsAndOffset(仅DontFragment是其中1个bit)、HeaderChecksum(off10)
+    // 下面都不会逐一赋值；若调用方缓冲区未清零，残留值会导致头校验和错误、并可能被接收方当成IP分片。
+    RtlZeroMemory(IPv4Header, sizeof(IPV4_HEADER));
+
     IPv4Header->VersionAndHeaderLength = (4 << 4) | (sizeof(IPV4_HEADER) / sizeof(unsigned long));
     IPv4Header->TotalLength = ntohs(TotalLength);
     IPv4Header->Identification = htons((UINT16)rand()); // 最佳做法：ipv4->Identification + 1; 不建议：ntohs(0);
@@ -383,15 +416,18 @@ th_dport, //网络序。如果是主机序，请用htons转换下。
 }
 
 
-void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, OUT PTCP_HDR tcp_hdr)
+void InitTcpHeaderWithAck(IN PTCP_HDR tcp, IN bool IsCopy, IN UINT8 OptLen, OUT PTCP_HDR tcp_hdr)
 /*
 用途：欺骗（扫描），而不是扫描和攻击。
+
+OptLen：TCP头之后追加的选项（TCP_OPT）字节数，必须计入th_len数据偏移，
+否则接收方会按th_len=5(20字节)解析，把选项当成段数据，MSS/窗口缩放/SACK等选项不会被协商。
 */
 {
     if (IsCopy) {
-        InitTcpHeader(tcp->th_sport, tcp->th_dport, htonl(ntohl(tcp->th_seq) + 1), TH_ACK | TH_SYN, 0, tcp_hdr);
+        InitTcpHeader(tcp->th_sport, tcp->th_dport, htonl(ntohl(tcp->th_seq) + 1), TH_ACK | TH_SYN, OptLen, tcp_hdr);
     } else {
-        InitTcpHeader(tcp->th_dport, tcp->th_sport, htonl(ntohl(tcp->th_seq) + 1), TH_ACK | TH_SYN, 0, tcp_hdr);
+        InitTcpHeader(tcp->th_dport, tcp->th_sport, htonl(ntohl(tcp->th_seq) + 1), TH_ACK | TH_SYN, OptLen, tcp_hdr);
     }
 }
 
@@ -442,7 +478,7 @@ void WINAPI PacketizeAck4(IN PIPV4_HEADER IPv4Header, IN PDL_EUI48 SrcMac, IN PD
     // ip_hdr 是紧凑布局网络帧内的成员（紧随 14 字节以太网头），取址必然“未对齐”；x86/x64 允许非对齐访问，安全。
 #pragma warning(suppress : 4366)
     InitIpv4Header(IPv4Header, sizeof(IPV4_HEADER) + sizeof(TCP_HDR) + sizeof(TCP_OPT), false, &buffer->ip_hdr);
-    InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
+    InitTcpHeaderWithAck(tcp, false, sizeof(TCP_OPT), &buffer->tcp_hdr);
 
     PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW_TCP));
 
@@ -464,6 +500,10 @@ th_dport：网络序。如果是主机序，请用htons转换下。
 buffer：长度是sizeof(RAW_TCP) + sizeof(TCP_OPT_MSS)。
 */
 {
+    if (!SrcMac || !DesMac || !SourceAddress || !DestinationAddress || !buffer) {
+        return;
+    }
+
     PRAW_TCP tcp4 = (PRAW_TCP)buffer;
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV4, &tcp4->eth_hdr);
@@ -488,6 +528,10 @@ void WINAPI packetize_icmpv4_echo_request(IN PDL_EUI48 SrcMac, IN PDL_EUI48 DesM
 buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) + sizeof(ICMP_MESSAGE)
 */
 {
+    if (!SrcMac || !DesMac || !SourceAddress || !DestinationAddress || !buffer) {
+        return;
+    }
+
     // BYTE icmpv4_echo_request[sizeof(ETHERNET_HEADER) + sizeof(IPV4_HEADER) +
     // sizeof(ICMP_MESSAGE)]{};//可以再附加数据。
 
@@ -575,7 +619,7 @@ void WINAPI PacketizeAck6(IN PIPV6_HEADER IPv6Header, IN PDL_EUI48 SrcMac, IN PD
     // ip_hdr 是紧凑布局网络帧内的成员（紧随 14 字节以太网头），取址必然“未对齐”；x86/x64 允许非对齐访问，安全。
 #pragma warning(suppress : 4366)
     InitIpv6Header(IPv6Header, false, sizeof(TCP_OPT), &buffer->ip_hdr);
-    InitTcpHeaderWithAck(tcp, false, &buffer->tcp_hdr);
+    InitTcpHeaderWithAck(tcp, false, sizeof(TCP_OPT), &buffer->tcp_hdr);
 
     PTCP_OPT tcp_opt = (PTCP_OPT)((PBYTE)buffer + sizeof(RAW6_TCP));
 
@@ -597,6 +641,10 @@ th_dport：网络序。如果是主机序，请用htons转换下。
 buffer：长度是sizeof(RAW6_TCP)。
 */
 {
+    if (!SrcMac || !DesMac || !SourceAddress || !DestinationAddress || !buffer) {
+        return;
+    }
+
     PRAW6_TCP tcp6 = (PRAW6_TCP)buffer;
 
     InitEthernetHeader(SrcMac, DesMac, ETHERNET_TYPE_IPV6, &tcp6->eth_hdr);
@@ -619,6 +667,10 @@ SrcMac：6字节长的本地的MAC。
 buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20
 */
 {
+    if (!SrcMac || !DesMac || !SourceAddress || !DestinationAddress || !buffer) {
+        return;
+    }
+
     // BYTE icmpv4_echo_request[sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) +
     // sizeof(ICMP_MESSAGE)]{};//可以再附加数据。
 
@@ -632,6 +684,11 @@ buffer：长度是sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_ME
     icmp_message->Header.Checksum = 0;
     icmp_message->icmp6_id = (USHORT)GetCurrentProcessId();
     icmp_message->icmp6_seq = (USHORT)GetTickCount64();
+
+    // ICMP_MESSAGE之后还有0x20字节载荷（PayloadLength已包含），本函数未写入。
+    // 若调用方缓冲区未清零，这些栈/堆残留数据会被算入校验和并发送出去（信息泄露），故先清零。
+    RtlZeroMemory((PBYTE)icmp_message + sizeof(ICMP_MESSAGE), 0x20);
+
     // icmp_message->Header.Checksum =
     calculation_icmpv6_echo_request_checksum(buffer, sizeof(ETHERNET_HEADER) + sizeof(IPV6_HEADER) + sizeof(ICMP_MESSAGE) + 0x20);
 }
