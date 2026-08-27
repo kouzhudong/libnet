@@ -170,11 +170,7 @@ HRESULT AddFirewallRuleWithEdgeTraversal(__in INetFwPolicy2 * pNetFwPolicy2)
             break;
         }
 
-        hr = CoCreateInstance(__uuidof(NetFwRule), // CLSID of the class whose object is to be created
-                              nullptr,
-                              CLSCTX_INPROC_SERVER,
-                              __uuidof(INetFwRule), // Identifier of the Interface used for communicating with the object
-                              (void **)&pNetFwRule);
+        hr = CoCreateInstance(__uuidof(NetFwRule), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void **)&pNetFwRule);
         if (FAILED(hr)) {
             wprintf(L"CoCreateInstance for INetFwRule failed: 0x%08lx\n", hr);
             break;

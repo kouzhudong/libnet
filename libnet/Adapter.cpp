@@ -107,8 +107,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
 
     // Set the flags to pass to GetAdaptersAddresses
     ULONG flags = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_WINS_INFO | GAA_FLAG_INCLUDE_GATEWAYS |
-                  GAA_FLAG_INCLUDE_ALL_INTERFACES | GAA_FLAG_INCLUDE_ALL_COMPARTMENTS |
-                  GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
+                  GAA_FLAG_INCLUDE_ALL_INTERFACES | GAA_FLAG_INCLUDE_ALL_COMPARTMENTS | GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER;
 
     PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
     ULONG outBufLen = WORKING_BUFFER_SIZE; // Allocate a 15 KB buffer to start with.
